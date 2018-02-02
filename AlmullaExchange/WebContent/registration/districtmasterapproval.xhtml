@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script >
+		 history.pushState(null, null, 'districtmasterapproval.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'districtmasterapproval.xhtml'); 
+		    });
+</script>
+</h:head>
+<p:dialog id="alreadyapprov" widgetVar="alreadyapprov" width="310"
+	height="70" showHeader="false" resizable="false"
+	style=" border:2px solid green !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.thisrecordalreadyapprovedby']}" />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{districtMasterBean.clickApproveOK}"
+		process="@this" />
+</p:dialog>
+
+<p:dialog id="approvedsucc" widgetVar="approvedsucc" width="260"
+	height="70" showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+
+	<p:outputLabel value="#{msg['lbl.approvedatasuccesfullmsg']}" />
+	<br />
+
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{districtMasterBean.clickApproveOK}" />
+</p:dialog>
+<h:body>
+
+	<p:dialog id="complete" widgetVar="complete" width="270" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+            											<p:outputLabel value="Record Approved Successfully....!"/><br/>
+            								<p:spacer width="15px" />
+            											<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{districtMasterBean.clickApproveOK}" process="@this"/>          
+</p:dialog> 
+	<p:confirmDialog id="notValidUser" widgetVar="notValidUser" width="370" styleClass="red"  showHeader="false" resizable="false" 	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" message="Same User Not Able To Approve The Record">
+      </p:confirmDialog>
+	
+<p:confirmDialog id="dataNotFund" widgetVar="dataNotFund" width="400"
+		height="17" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.recordnotfoundforthis']}">
+
+	</p:confirmDialog>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form">
+							<h1>
+									<h:outputText value="#{msg['lbl.districtmasterapproval']}" />
+									
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+								<p:commandLink action="#{districtMasterBean.exit}"
+														 process="@this">
+														<p:graphicImage value="../images/return.jpg" width="25" height="25" id="imgEdit" styleClass="icon_right" style="float:right;" />
+														<p:tooltip for="imgEdit" value="Go to Home" />
+													</p:commandLink>
+	
+									<h3>
+										<h:outputText value="#{msg['lbl.districtmasterapproval']}" />
+									</h3>
+									
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+									
+									<p:confirmDialog id="viewSearch" widgetVar="viewSearch"
+										width="400" styleClass="red" showHeader="false"
+										resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="Please Select Country and State...!">
+									</p:confirmDialog>
+									
+									<p:panel styleClass="panel_border" style="min-height:340px;">
+									
+									<p:panel id="headerPanel">
+									
+								
+									
+										<p:panel id="approveSearch" 
+										rendered="#{districtMasterBean.booSearchApproval}">
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.country']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgCountry" for="countryId" display="text" />
+												<p:selectOneMenu id="countryId"
+													value="#{districtMasterBean.countryId}"
+													filterMatchMode="contains" filter="true" required="true"
+													requiredMessage="#{msg['lbl.pleaseselectcountry']}">
+													<f:selectItem itemLabel="#{msg['lbl.beleselect']}"
+														itemValue="" />
+													<f:selectItems value="#{districtMasterBean.lstCountry}"
+														var="c" itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+														itemValue="#{c.fsCountryMaster.countryId}" />
+													<p:ajax event="change"
+														listener="#{districtMasterBean.popStatelist}"
+														update="stateId,msgCountry" />
+
+												</p:selectOneMenu>
+											</p:panel>
+									
+									</p:panel>
+									
+									
+									
+
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bankState']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgState" for="stateId" display="text" />
+												<p:selectOneMenu id="stateId"
+													value="#{districtMasterBean.stateId}"
+													filterMatchMode="contains" filter="true" required="true"
+													requiredMessage="#{msg['lbl.pleaseselectstate']}">
+													<!-- <f:selectItem itemLabel=" Select State " itemValue="" /> -->
+													<f:selectItem itemLabel="#{msg['lbl.selectState']}"
+														itemValue="" />
+													<f:selectItems value="#{districtMasterBean.lststate}"
+														var="c" itemLabel="#{c.fsStateMaster.stateCode} - #{c.stateName}"
+														itemValue="#{c.fsStateMaster.stateId}" />
+													<p:ajax event="change"
+														listener="#{districtMasterBean.clearDataTable}"
+														update="stateId,msgState,mainPanel" />
+													<!--  listener="#{districtMasterBean.popStatelist}" -->
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<!-- <p:commandButton value="#{msg['lbl.add']}"
+													action="#{districtMasterBean.addRecordsToDataTable}"
+													update="mainPanel"
+													style="font-size: 12px; font-weight: bold;float:center;" onstart="process.show();" onsuccess="process.hide();"/> -->
+												<p:commandButton value="#{msg['lbl.view']}"
+													action="#{districtMasterBean.approveView}" process="@this"
+													update="mainPanel"
+													style="font-size: 12px; font-weight: bold;float:center;"
+													onstart="process.show();" onsuccess="process.hide();" />
+												<!-- <p:commandButton value="#{msg['lbl.clear']}"
+													action="#{districtMasterBean.clear}"
+													disabled="#{districtMasterBean.booBtnClear}"
+													process="@this" update="mainPanel" /> -->
+											</h:panelGroup>
+
+
+										</p:panel>
+
+									<p:panel id="approve" 
+										rendered="#{districtMasterBean.booDistrictDetailsapproval}">
+
+
+
+										<!-- <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.country']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="countryId" value="#{districtMasterBean.countryId}" required="true"  style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;" dir="RTL" requiredMessage="Please enter the district code" 
+														maxlength="5">
+
+												</p:inputText>
+											</p:panel>
+
+										</p:panel> -->
+
+
+<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bankState']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="stateName" value="#{districtMasterBean.stateName}" required="true"  style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;" dir="RTL" requiredMessage="Please enter the district code" 
+														maxlength="5" styleClass="ui-state-disabled">
+
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.districtcode']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<!-- <p:message id="msgDistrict" for="district" display="text" /> -->
+												<p:inputText id="districtCode" value="#{districtMasterBean.districtCode}" required="true"  style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;" dir="RTL" requiredMessage="Please enter the district code" 
+													readonly="true" styleClass="ui-state-disabled"	maxlength="5">
+													</p:inputText>
+											</p:panel>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.englishdiscription']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<!-- <p:message id="msgDistrict" for="district" display="text" /> -->
+												<p:inputText value="#{districtMasterBean.englishDistrictName}" id="englishDistrictName" required="true"  style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;" dir="RTL" requiredMessage="Please enter the english district description" onkeyup="this.value=this.value.toUpperCase()" validatorMessage="Please Enter UpperCase Alphabets" readonly="true" styleClass="ui-state-disabled">
+											
+											
+											</p:inputText>
+											</p:panel>
+										</p:panel>
+
+
+
+
+
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.localdiscription']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<!-- <p:message id="msgDistrict" for="district" display="text" /> -->
+												<p:inputText value="#{districtMasterBean.localDistrictName}" id="localDistrictName" required="true" style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;" dir="RTL" requiredMessage="Please enter the local district description" readonly="true" styleClass="ui-state-disabled" >
+											
+											</p:inputText>
+											</p:panel>
+										</p:panel>
+<!-- 
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="City Status" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="cityStatus" value="Yes" maxlength="10"
+													readonly="true">
+
+												</p:inputText>
+
+											</p:panel>
+										</p:panel> -->
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.Approve']}" action="#{districtMasterBean.approveRecordSave}" process="@this"
+												update="mainPanel" style=" margin-right:10px;" tabindex="5" />
+											<p:commandButton value="#{msg['lbl.cancel']}" process="@this" action="#{districtMasterBean.cancel}"
+												update="mainPanel" style=" margin-right:10px; " tabindex="6" />
+
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+									</p:panel>
+
+
+									<h:panelGroup layout="block" class="clearfix" />
+									<p:panel rendered="#{districtMasterBean.booDistrictDetails}">
+										<p:panel id="datatTablePanel">
+											<p:dataTable id="dataTableId" var="d" sortMode="multiple"
+												rows="10" paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10,15"
+												value="#{districtMasterBean.lstDistrictMasterDataTables}" styleClass="mydatatableclass"
+												rowIndexVar="rowIndex" emptyMessage="No records Found"
+												rowStyleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+												paginatorPosition="bottom">
+
+												<p:column headerText="#{msg['lbl.sino']}">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<!-- <p:column headerText="Country" sortBy=""
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="India" />
+													</p:column> -->
+
+
+												<p:column headerText="#{msg['lbl.bankState']}" 
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{d.stateName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.districtcode']}"
+													sortBy="#{d.districtCode}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{d.districtCode}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.englishdiscription']}"
+													sortBy="#{d.englishDistrictName}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{d.englishDistrictName}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.localdiscription']}" 
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{d.localDistrictName}" />
+												</p:column>												
+
+												<!-- <p:column headerText="#{msg['lbl.approve']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:commandLink action="#{districtMasterBean.approve(d)}"
+														update=":form" process="@this" tabindex="8">
+														<p:graphicImage value="../images/approve.jpg" width="25"
+															height="25" style="float:center;" id="approve" />
+														<p:tooltip for="approve" value="#{msg['lbl.Approve']}" />
+													</p:commandLink>
+												</p:column> -->
+												
+												<p:column>
+												<f:facet name="header">
+													<p:outputLabel value="#{msg['lbl.selectAndDeselect']}"
+														style="text-align:center;"></p:outputLabel>
+													<p:selectBooleanCheckbox
+														value="#{districtMasterBean.selectAll}"
+														style="border: 5px solid white;">
+														<p:ajax event="change"
+															listener="#{districtMasterBean.selecatAndDeselectAll}"
+															update=":form:dataTableId" />
+													</p:selectBooleanCheckbox>
+												</f:facet>
+
+												<p:selectBooleanCheckbox value="#{d.isCheck}" id="cheid"
+													disabled="#{d.disableCheck}">
+													<p:ajax event="change"
+														listener="#{districtMasterBean.addingServiceAppApprovalRecord(c)}" />
+												</p:selectBooleanCheckbox>
+											</p:column>
+											</p:dataTable>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.Approve']}" action="#{districtMasterBean.approvalAllRecords}" update=":form:mainPanel" style="margin-right:10px; "
+												immediate="true"  tabindex="5" />
+											<p:commandButton value="#{msg['lbl.cancel']}" process="@this" action="#{districtMasterBean.cancel}"
+												update="mainPanel" style=" margin-right:10px; " tabindex="6" />
+
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+									</p:panel>
+
+
+</p:panel>	</p:panel>
+									
+
+									<h:panelGroup layout="block" class="clearfix" />
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

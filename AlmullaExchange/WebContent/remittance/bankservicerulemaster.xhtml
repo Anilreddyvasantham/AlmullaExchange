@@ -1,0 +1,936 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+
+		history.pushState(null, null, 'bankservicerulemaster.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'bankservicerulemaster.xhtml');
+		});
+	</script>
+</h:head>
+
+<h:body>
+
+	<p:dialog id="complete" widgetVar="complete" width="260" height="70"
+		showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+
+		<p:outputLabel value="#{msg['lbl.dataissuccessfullysaved']}" />
+		<br />
+
+		<p:commandButton value="#{msg['lbl.ok']}"
+			actionListener="#{bankServiceRule.exit}" />
+	</p:dialog>
+
+
+	<p:confirmDialog id="bankcharges" widgetVar="bankcharges" width="400"
+		header="Warning DialogBox" height="17" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.bankchargesChecking']}">
+	</p:confirmDialog>
+
+
+	<p:confirmDialog id="currencyNotExist" widgetVar="currencyNotExist"
+		width="500" header="Warning DialogBox" height="24" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.currencyNotExist']}">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="bnkchargesUstatus" widgetVar="bnkchargesUstatus"
+		header="Warning DialogBox" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true"
+		message="#{msg['lbl.thiscombinationalreadyexistedwithapprovedstatus']}">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="bankchargesDstatus" widgetVar="bankchargesDstatus"
+		header="Warning DialogBox" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true"
+		message="#{msg['lbl.thiscombinationalreadyexistedwithdeactivestatus']}">
+	</p:confirmDialog>
+	<p:confirmDialog id="NoDataFound" widgetVar="NoDataFound" width="370"
+		styleClass="red" showHeader="false" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip"
+		message="#{msg['lbl.norecordfound']}">
+	</p:confirmDialog>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="bankServiceForm">
+								<h1>
+									<h:outputText value="#{msg['lbl.bankservicerules']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{bankServiceRule.errorMessage}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{bankServiceRule.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+									
+									<p:confirmDialog widgetVar="deleteRecord"   showEffect="fade" header="#{msg['lbl.confirmation']}" message="#{msg['lbl.doyouwanttodeleterecordperminently']}" hideEffect="fade" 
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+									        <p:commandButton value="#{msg['lbl.yes']}" actionListener="#{bankServiceRule.deleteReocrd}" update=":bankServiceForm:mainPanel"  immediate="true" oncomplete="deleteRecord.hide();"/>
+									        <p:commandButton value="#{msg['lbl.no']}"  onclick="deleteRecord.hide();"/>
+									 </p:confirmDialog>
+
+
+									<h3>
+										<h:outputText value="#{msg['lbl.bankservicerules']}" />
+									</h3>
+
+
+									<!-- Remarks Dailog  -->
+									<p:dialog id="remarks" widgetVar="remarks" width="500"
+										height="200" showHeader="false" resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<p:outputLabel value="#{msg['lbl.activateddate']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:outputLabel value="#{bankServiceRule.activateDate}" />
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<p:outputLabel value="#{msg['lbl.activatedby']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:outputLabel value="#{bankServiceRule.activateBy}" />
+											</p:panel>
+										</p:panel>
+										<div class="clearfix" />
+										<p:panel styleClass="left_col">
+											<p:panel>
+												<h:outputText value="#{msg['lbl.pleaseenterremarks']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:spacer height="10px" />
+											<p:inputText id="remarksId"
+												value="#{bankServiceRule.remarks}">
+												<p:ajax />
+											</p:inputText>
+											<div class="clearfix" />
+										</p:panel>
+										<div class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											style="padding-right:50px;">
+											<p:commandButton value="#{msg['lbl.ok']}"
+												actionListener="#{bankServiceRule.remarkSelectedRecord}"
+												process="@this" oncomplete="PF('remarks').hide();"
+												update="mainPanel" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												onclick="PF('remarks').hide();" style="margin-left:10px;" />
+										</h:panelGroup>
+
+
+									</p:dialog>
+									<!-- dilaog remark -->
+
+
+									<p:panel styleClass="panel_border">
+
+										<p:panel id="headerPanel">
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.country']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="country" display="text" id="msgCountry" />
+													<p:selectOneMenu id="country"
+														value="#{bankServiceRule.countryId}" required="true"
+														filterMatchMode="contains"
+														requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.country']}"
+														filter="true">
+														<f:selectItem itemValue=""
+															itemLabel="#{msg['lbl.beleselect']}" />
+														<f:selectItems value="#{bankServiceRule.countryNameList}"
+															var="c"
+															itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+															itemValue="#{c.fsCountryMaster.countryId}" />
+														<p:ajax listener="#{bankServiceRule.popBank}"
+															update="msgCountry,mainPanel" onstart="process.show();"
+															onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.currency']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="currency" display="text" id="msgCurrency" />
+													<p:selectOneMenu id="currency"
+														value="#{bankServiceRule.currencyId}" required="true"
+														filterMatchMode="contains"
+														requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.currency']}"
+														filter="true">
+														<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}"
+															itemValue="" />
+														<f:selectItems value="#{bankServiceRule.currencyList}"
+															var="c"
+															itemLabel=" #{c.currencyId.currencyCode} - #{c.currencyId.quoteName}  - #{c.currencyId.currencyName}"
+															itemValue="#{c.currencyId.currencyId}" />
+														<p:ajax listener="#{bankServiceRule.popCurrency}"
+															update="msgCurrency,mainPanel" onstart="process.show();"
+															onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.bank']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="remittance" display="text" id="msgBank" />
+													<p:selectOneMenu id="bank"
+														value="#{bankServiceRule.bankId}" required="true"
+														requiredMessage="Please Select Bank" filter="true"
+														filterMatchMode="contains">
+														<f:selectItem itemValue=""
+															itemLabel="#{msg['lbl.prehyphen']} #{msg['lbl.select']} #{msg['lbl.bank']} #{msg['lbl.posthyphen']}" />
+														<f:selectItems value="#{bankServiceRule.bankMasterList}"
+															var="c" itemLabel="#{c.bankCode} - #{c.bankFullName}"
+															itemValue="#{c.bankId}" />
+														<p:ajax event="change"
+															listener="#{bankServiceRule.getBankcode}"
+															update="msgBank" onstart="process.show();"
+															onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col" id="panelRemittance">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.remittanc']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="remittance" display="text"
+														id="msgRemittance" />
+													<p:selectOneMenu id="remittance"
+														value="#{bankServiceRule.remittanceModeId}"
+														required="true"
+														requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.Remitmode']}"
+														filter="true" filterMatchMode="contains">
+														<f:selectItem itemValue=""
+															itemLabel="#{msg['lbl.prehyphen']} #{msg['lbl.select']} #{msg['lbl.remittanc']} #{msg['lbl.posthyphen']}" />
+														<f:selectItems value="#{bankServiceRule.remittanceList}"
+															var="c"
+															itemLabel="#{c.remittanceModeMaster.remittance} - #{c.remittanceDescription}"
+															itemValue="#{c.remittanceModeMaster.remittanceModeId}" />
+														<p:ajax event="change"
+															listener="#{bankServiceRule.popDeliverLst}"
+															update="msgRemittance,panelDeliverLst,deliveryModePanel,deliveryMode"
+															onstart="process.show();" onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+
+											<p:panel styleClass="left_col" id="panelDeliverLst">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.delivery']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col" id="deliveryModePanel">
+													<p:message id="msgDeliveMode" for="deliveryMode"
+														display="text" />
+													<p:selectOneMenu id="deliveryMode"
+														value="#{bankServiceRule.deliveryId}" required="true"
+														requiredMessage="Please Select Delivery Mode"
+														filter="true" filterMatchMode="contains">
+														<f:selectItem itemValue=""
+															itemLabel="#{msg['lbl.prehyphen']} #{msg['lbl.select']} #{msg['lbl.delivery']} #{msg['lbl.posthyphen']}" />
+														<f:selectItems value="#{bankServiceRule.deliveryList}"
+															var="c"
+															itemLabel="#{c.deliveryMode.deliveryMode} - #{c.englishDeliveryName}"
+															itemValue="#{c.deliveryMode.deliveryModeId}" />
+														<p:ajax event="change"
+															listener="#{bankServiceRule.fetchRecord}"
+															update="msgDeliveMode,mainPanel"
+															onstart="process.show();" onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.rulename']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgRulename" for="rulename" display="text" />
+													<p:inputText id="rulename"
+														value="#{bankServiceRule.ruleName}" required="true"
+														requiredMessage="Please Enter Rule Name">
+														<p:ajax update="msgRulename" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.deliverydays']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="deliverydays" display="text"
+														id="msgDeliverydays" />
+													<p:inputText id="deliverydays"
+														value="#{bankServiceRule.deliveryDays}" required="true"
+														requiredMessage="Please Enter Delivery Days">
+														<p:ajax update="msgDeliverydays" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.transfermode']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="transferMode" display="text"
+														id="msgTransferMode" />
+
+													<p:selectOneMenu id="transferMode"
+														value="#{bankServiceRule.transferMode}" required="true"
+														requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.currency']}"
+														filter="true" filterMatchMode="contains">
+														<f:selectItem
+															itemLabel=" -- #{msg['lbl.transfermode']} --"
+															itemValue="" />
+														<f:selectItems value="#{bankServiceRule.transferModeList}"
+															var="c"
+															itemLabel="#{c.transferMode} - #{c.transferModeDesc}"
+															itemValue="#{c.transferModeId}" />
+														<p:ajax update="msgTransferMode,productgroup,prodgrp" onstart="process.show();"
+															onsuccess="process.hide();" event="change"
+															listener="#{bankServiceRule.fetchProductGroupBasedonBankCurrency}" />
+													</p:selectOneMenu>
+
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col" id="prodgrp">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Product Group" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="productgroup" display="text"
+														id="msgproductgroup" />
+														<!-- rendered="#{bankServiceRule.productGroupOptional}" -->
+														<!-- required="#{bankServiceRule.productGroupOptional}" -->
+													<p:selectOneMenu id="productgroup"
+														value="#{bankServiceRule.productGroup}"  required="false"
+														requiredMessage="Please Select Product Group"
+														filter="true" filterMatchMode="contains">
+														<f:selectItem
+															itemLabel=" -- Select Product Group --" itemValue="" />
+														<f:selectItems value="#{bankServiceRule.productGroupList}"
+															var="c"
+															itemLabel="#{c.productGroupSerial} - #{c.productgroupdesc}"
+															itemValue="#{c.productGroupSerial}" />
+														<p:ajax update="msgproductgroup" onstart="process.show();"
+															onsuccess="process.hide();" event="change"
+															listener="#{bankServiceRule.checkTransferModeWithProductGroup}"/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.chargeaccount']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="accharge" display="text"
+														id="msgChargeAccount" />
+													<p:inputText id="accharge"
+														value="#{bankServiceRule.chargeAccount}" required="true"
+														requiredMessage="Please Enter Charge Account ">
+														<f:validateLength for="accharge" maximum="30" />
+														<p:ajax update="msgChargeAccount,error,accharge"
+															event="blur"
+															listener="#{bankServiceRule.checkingChargeAccWithVGLNO}" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.commissionaccount']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="commision" display="text" id="msgCommAc" />
+													<p:inputText id="commision"
+														value="#{bankServiceRule.commisionAccount}"
+														required="true"
+														requiredMessage="Please Enter Commision Account">
+														<p:ajax update="msgCommAc,error,commision" event="blur"
+															listener="#{bankServiceRule.checkingCommissionAccWithVGLNO}" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.chargedebitacc']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="debtacc" display="text" id="msgChargeDebt" />
+													<p:inputText id="debtacc"
+														value="#{bankServiceRule.chargeDebitAccount}"
+														required="true"
+														requiredMessage="Please Enter Charge Debit Account">
+														<p:ajax update="msgChargeDebt,error,debtacc" event="blur"
+															listener="#{bankServiceRule.checkingChargeDebitAccWithVGLNO}" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.chargecreditacc']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="credittacc" display="text"
+														id="msgChrgCredt" />
+													<p:inputText id="credittacc"
+														value="#{bankServiceRule.chargeCreditAccount}"
+														required="true"
+														requiredMessage="Please Enter Charge Credit Account">
+														<p:ajax></p:ajax>
+														<!-- <p:ajax update="msgChrgCredt,error,credittacc"
+															event="blur"
+															listener="#{bankServiceRule.checkingChargeCreditAccWithVGLNO}" /> -->
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.manualfeedback']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="feed" display="text" id="msgManFeedBack" />
+													<p:inputText id="feed"
+														value="#{bankServiceRule.manualFeedback}" required="true"
+														requiredMessage="Please Enter Manual Feed Back">
+														<p:ajax update="msgManFeedBack" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.pinformat']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="pinNo"
+														value="#{bankServiceRule.pinNoFormat}">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.pinpadding']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="pin"
+														value="#{bankServiceRule.pinNoPadding}">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.pinSpecialCharacter']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="remswift1"
+														value="#{bankServiceRule.specialCharacterforPin}">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.remittanceSwiftTransfer']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="remswift"
+														value="#{bankServiceRule.remittanceSwiftTrf}">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.testkeyinfile']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="testKeyInFile" display="text"
+														id="msgTestKeyInFile" />
+													<p:selectOneMenu id="testKeyInFile"
+														value="#{bankServiceRule.testKeyInFile}" filter="true">
+														<f:selectItem
+															itemLabel="#{msg['lbl.selecttestkeyinfile']}"
+															itemValue="0" />
+														<f:selectItem itemLabel="Yes" itemValue="1" />
+														<f:selectItem itemLabel="No" itemValue="2" />
+														<p:ajax update="msgTestKeyInFile"
+															onstart="process.show();" onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.bankfileprefix']}" />
+													<!-- <h:outputText value="*" style="color:red !important;" /> -->
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="bankFilePrefix" display="text"
+														id="msgBankFilePrefix" />
+													<p:inputText id="bankFilePrefix"
+														value="#{bankServiceRule.bankFilePrefix}">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:spacer height="10px" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</p:panel>
+
+										<h3>
+											<h:outputText value="#{msg['lbl.bankCharges']}" />
+										</h3>
+
+
+
+										<p:panel id="childPanel" styleClass="panel_border">
+
+
+											<p:panel id="bankChargesPanel">
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.chargeFor']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+
+													<p:panel styleClass="inner_right_col">
+														<p:message for="chargefor" display="text"
+															id="msgChargeFor" />
+														<p:selectOneMenu id="chargefor" tabindex="2"
+															required="true" requiredMessage="Please Select ID Type"
+															value="#{bankServiceRule.chargeFor}" style="width:180px;">
+															<f:selectItem itemLabel="#{msg['lbl.selectChargeFor']}"
+																itemValue="" />
+
+															<f:selectItems
+																value="#{bankServiceRule.cutomerTypeMap.entrySet()}"
+																var="c" itemLabel="#{c.value}" itemValue="#{c.key}" />
+															<f:selectItem itemLabel="Both" itemValue="777" />
+
+															<p:ajax update="msgChargeFor" onstart="process.show();"
+																onsuccess="process.hide();" />
+														</p:selectOneMenu>
+													</p:panel>
+
+
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.chargeTypes']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="chargestype" display="text"
+															id="msgChrgType" />
+														<p:selectOneMenu id="chargestype"
+															value="#{bankServiceRule.chargeType}" required="true"
+															requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.currency']}"
+															filter="true" filterMatchMode="contains">
+															<f:selectItem itemLabel="#{msg['lbl.selectChargeTypes']}"
+																itemValue="" />
+															<f:selectItem itemLabel="Comission" itemValue="C" />
+															<f:selectItem itemLabel="Oversease Charge" itemValue="O" />
+															<p:ajax update="msgChrgType" onstart="process.show();"
+																onsuccess="process.hide();" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+
+												<!-- <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currencycode']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message for="currencyCode" display="text" id="msgCurrencyCode"/>
+											<p:inputText id="currencyCode" value="#{bankServiceRule.currencyCode}" required="true" requiredMessage="Please Enter Currency Code" >
+											<p:ajax event="blur" listener="#{bankServiceRule.checkCurrencyCodeExist}" update="msgCurrencyCode,currencyCode"/>
+											</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.costCurrencyCode']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message for="costCurrencyCode" display="text" id="msgCostCurrencyCode"/>
+											<p:inputText id="costCurrencyCode" value="#{bankServiceRule.costCurrencyCode}" >
+											<p:ajax event="blur" listener="#{bankServiceRule.checkCostCurrencyCodeExist}" update="msgCostCurrencyCode,costCurrencyCode"/>
+											</p:inputText>
+											</p:panel>
+										</p:panel> -->
+
+
+
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.currencycode']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="bankChrgeCurrencyCode" display="text"
+															id="msgBankChrgeCurrencyCode" />
+														<p:selectOneMenu id="bankChrgeCurrencyCode"
+															value="#{bankServiceRule.bankChrgeCurrencyCode}"
+															required="true" filterMatchMode="contains"
+															requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.currency']}"
+															filter="true">
+															<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}"
+																itemValue="" />
+															<f:selectItems
+																value="#{bankServiceRule.lstBankChrgesCurrencyCode}"
+																var="c"
+																itemLabel=" #{c.currencyCode} - #{c.quoteName}  - #{c.currencyName}"
+																itemValue="#{c.currencyId}" />
+															<p:ajax update="msgBankChrgeCurrencyCode"
+																onstart="process.show();" onsuccess="process.hide();" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.costCurrencyCode']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="bankChrgeCostCurrencyCode" display="text"
+															id="msgBankChrgeCostCurrencyCode" />
+														<p:selectOneMenu id="bankChrgeCostCurrencyCode"
+															value="#{bankServiceRule.bankChrgeCostCurrencyCode}"
+															filter="true" filterMatchMode="contains">
+															<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}"
+																itemValue="" />
+															<f:selectItems
+																value="#{bankServiceRule.lstBankChrgesCostCurrencyCode}"
+																var="c"
+																itemLabel=" #{c.currencyCode} - #{c.quoteName}  - #{c.currencyName}"
+																itemValue="#{c.currencyId}" />
+															<!-- <p:ajax update="msgBankChrgeCostCurrencyCode"
+																onstart="process.show();" onsuccess="process.hide();" /> -->
+															<p:ajax update="msgChrgCredt,error,msgBankChrgeCostCurrencyCode"
+															event="change"
+															listener="#{bankServiceRule.checkingChargeCreditAccWithVGLNO}"/>
+																
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.fromAmount']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="frmamt" display="text" id="msgFromAmount" />
+														<p:inputText id="frmamt"
+															value="#{bankServiceRule.fromAmount}" required="true"
+															requiredMessage="Please Enter From Amount ">
+															<f:validator
+																validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+															<p:ajax update="msgFromAmount" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.toAmount']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="toamt" display="text" id="msgToAmount" />
+														<p:inputText id="toamt"
+															value="#{bankServiceRule.toAmount}" required="true"
+															requiredMessage="Please Enter To Amount ">
+															<f:validator
+																validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+															<p:ajax update="msgToAmount" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.chargeAmount']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="chgamt" display="text" id="msgChargAmount" />
+														<p:inputText id="chgamt"
+															value="#{bankServiceRule.chargeAmount}" required="true"
+															requiredMessage="Please Enter Charge Amount">
+															<p:ajax update="msgChargAmount" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.costAmount']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="costAmount" display="text"
+															id="msgcostAmount" />
+														<p:inputText id="costAmount"
+															value="#{bankServiceRule.costAmount}">
+															<p:ajax update="msgcostAmount" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="#{msg['lbl.add']}"
+													action="#{bankServiceRule.validationCheck}"
+													update="mainPanel"
+													style="font-size: 12px; font-weight: bold;float:center; margin-right:10px;" />
+												<p:commandButton value="#{msg['lbl.clear']}"
+													action="#{bankServiceRule.clearAll}" update="mainPanel"
+													immediate="true" process="@this"
+													style="margin-right:10px; " />
+											</h:panelGroup>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel id="datatTablePanel">
+												<p:dataTable id="datatable"
+													emptyMessage="#{msg['lbl.norecordfound']}"
+													value="#{bankServiceRule.bankServiceDataTableList}" var="c"
+													rowIndexVar="rowIndex"
+													rendered="#{bankServiceRule.renderDatatable}">
+
+													<p:column headerText="#{msg['lbl.sino']}">
+														<h:outputText value="#{rowIndex+1}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.chargeFor']}"
+														sortBy="#{c.chargeFordis}">
+														<h:outputText value="#{c.chargeFordis}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.chargeType']}"
+														sortBy="#{c.chargeTypedis}">
+														<h:outputText value="#{c.chargeTypedis}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.fromAmount']}"
+														sortBy="#{c.fromAmount}">
+														<h:outputText value="#{c.fromAmount}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.toAmount']}"
+														sortBy="#{c.toAmount}">
+														<h:outputText value="#{c.toAmount}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.chargeAmount']}"
+														sortBy="#{c.chargeAmount}">
+														<h:outputText value="#{c.chargeAmount}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.currencycode']}"
+														sortBy="#{c.currencyCodeName}">
+														<h:outputText value="#{c.currencyCodeName}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.costCurrencyCode']}"
+														sortBy="#{c.costCurrencyCodeName}">
+														<h:outputText value="#{c.costCurrencyCodeName}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.costAmount']}"
+														sortBy="#{c.costAmount}">
+														<h:outputText value="#{c.costAmount}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.edit']}">
+														<p:commandButton action="#{bankServiceRule.editRecord(c)}"
+															process="@this" styleClass="edit" value=""
+															rendered="#{c.renderEditButton}"
+															update=":bankServiceForm:datatTablePanel,:bankServiceForm:bankChargesPanel,:bankServiceForm:submitPanel">
+														</p:commandButton>
+													</p:column>
+													<p:column headerText="#{msg['lbl.delete']}"
+														style="text-align:center !important;">
+														<!-- <p:commandButton value="" actionListener="#{bankServiceRule.removeRecord(c)}"   process="@this" styleClass="delete"  update=":bankServiceForm:datatTablePanel"/> -->
+														<p:commandLink
+															action="#{bankServiceRule.checkStatusType(c)}"
+															value="#{c.dynamicLabelForActivateDeactivate}"
+															style="color:blue !important; text-decoration:underline !important;"
+															update=":bankServiceForm:remarks,:bankServiceForm:datatTablePanel,:bankServiceForm:submitPanel"
+															immediate="true" process="@this" />
+													</p:column>
+													<!-- <p:column  headerText="#{msg['lbl.delete']}">
+													<p:commandLink action="#{bankServiceRule.deleteRecordFromDB(c)}"
+															process="@this"  value="#{c.dynamicLabelForActivateDeactivate eq 'Remove' ? '':'Delete'}" 
+															style="color:blue !important; text-decoration:underline !important;"
+															rendered="#{c.renderEditButton}"
+															update=":bankServiceForm:datatTablePanel,:bankServiceForm:bankChargesPanel,:bankServiceForm:submitPanel">
+														</p:commandLink>
+													</p:column> -->
+
+												</p:dataTable>
+											</p:panel>
+										</p:panel>
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel id="submitPanel">
+											<h:panelGroup layout="block" styleClass="shadow_button"
+												rendered="#{bankServiceRule.renderDatatable}">
+												<!-- 	<p:commandButton value="Modify" style="margin-right:10px; "/>	 -->
+												<p:commandButton value="#{msg['lbl.submit']}"
+													action="#{bankServiceRule.save}" immediate="true"
+													update="mainPanel" style="margin-right:10px; "
+													onstart="process.show();" onsuccess="process.hide();" />
+												<p:commandButton value="#{msg['lbl.exit']}"
+													action="#{bankServiceRule.exitpage}" immediate="true"
+													ajax="false" />
+												<!-- <p:commandButton value="#{msg['lbl.clear']}" action="#{bankServiceRule.clearAll}" update="mainPanel" style="margin-right:10px; "/> -->
+												<!-- <p:commandButton value="#{msg['lbl.exit']}" action="#{bankServiceRule.exitpage}" immediate="true" ajax="false"/> -->
+												<h:panelGroup layout="block" class="clearfix" />
+											</h:panelGroup>
+										</p:panel>
+										<p:panel styleClass="left_col">
+											<h:outputText id="mandatory"
+												value=" #{msg['lbl.*filedsAreMandatory']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+									<p:dialog modal="true" showHeader="true" header="Please wait.."
+										widgetVar="process" id="process" width="300" height="50"
+										resizable="false" draggable="false" closable="false"
+										style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+										<div style="text-align: center;">
+											<p:graphicImage value="../images/preloader.gif" />
+										</div>
+									</p:dialog>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

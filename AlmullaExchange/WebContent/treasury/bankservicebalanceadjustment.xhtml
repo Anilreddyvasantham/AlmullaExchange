@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link href="css/style1.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<style>
+.ui-datatable .ui-paginator {
+	padding: 2px;
+	background-color: #FFFFFF !important;
+	border: none !important;
+}
+
+.ui-fieldset {
+	border: solid 1px #51C4CC;
+	background-color: rgba(81, 196, 204, 0.03);
+	border-radius: 3px;
+}
+
+.ui-fieldset-legend {
+	color: #ffffff;
+	font-size: 16px;
+	line-height: 15px;
+	background-color: #51C4CC;
+	padding: 13px 20px !important;
+	border-bottom-right-radius: 2px;
+	border-bottom-left-radius: 2px;
+	border-top-right-radius: 2px;
+	border-top-left-radius: 2px;
+	-webkit-transition: all 0.3s ease;
+	-moz-transition: all 0.3s ease;
+	-ms-transition: all 0.3s ease;
+	-o-transition: all 0.3s ease;
+	transition: all 0.3s ease;
+}
+
+legend.ui-fieldset-legend span {
+	padding: 10px;
+}
+
+.table {
+	display: table;
+}
+
+.table-row {
+	display: table-row;
+}
+
+.table-cell {
+	display: table-cell;
+}
+
+</style>
+	<script type="text/javascript">
+		$(function() {
+			// Set cursor to pointer and add click function
+			$("legend").css("cursor", "pointer").click(function() {
+				var legend = $(this);
+				var value = $(this).children("span").html();
+				if (value == "[-]")
+					value = "[+]";
+				else
+					value = "[-]";
+				$(this).siblings().slideToggle(1000, function() {
+					legend.children("span").html(value);
+				});
+			});
+		});
+
+
+
+		
+
+ 
+	</script>
+</h:head>
+
+<!-- <p:confirmDialog id="proceErr" widgetVar="proceErr" width="500" showHeader="false" resizable="false" header="Warning Message" visible="#{bankServiceBalanceAdjustmentBean.booProcedureDialog}"
+ styleClass="warning" style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="explode" hideEffect="explode" message="#{bankServiceBalanceAdjustmentBean.errmsg}">
+</p:confirmDialog>
+ -->
+
+	<p:confirmDialog id="norecordfound" width="400" 
+										widgetVar="norecordfound" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{msg['lbl.norecordfound']}">
+	</p:confirmDialog>	
+	<p:confirmDialog id="transferbalancecouldnozero" width="400" 
+										widgetVar="transferbalancecouldnozero" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="Please Enter positive values">
+	</p:confirmDialog>	
+		
+	
+	<p:confirmDialog id="amountexceed" width="400" 
+										widgetVar="amountexceed" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="Transfer Balance Exceeded Current Balance">
+	</p:confirmDialog>	
+	<p:confirmDialog id="different" width="400" 
+										widgetVar="different" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="To Type must be other than From Type">
+	</p:confirmDialog>	
+	 
+
+<p:dialog id="complete" widgetVar="complete" width="400"
+										height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="success" header="#{msg['lbl.success']}" closable="false"
+										showEffect="clip" hideEffect="clip">
+										<p:outputLabel
+											value=" #{msg['lbl.recrdSavedSuccessfully']} "
+											style="text-align: center; font-size:15px !important;" />
+										<br/>
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{bankServiceBalanceAdjustmentBean.redirectToSameScreen}"
+											process="@this" style="margin-left: 150px !important;" />
+</p:dialog>
+
+
+<h:body dir="#{facesBean.direction}">
+
+	<f:view locale="#{facesBean.locale}">
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include	src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;" id="HideHandle" name="HideHandle"	src="../images/toggle_plus.png" alt=""	onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:panelGroup layout="block" class="heading1">
+								<h:outputText value="#{msg['lbl.bankservicebalanceajustment']} " />
+							</h:panelGroup>
+							<h:form id="inputForm">
+							
+							
+
+								<p:panel id="mainPanel" styleClass="shadow"	style="margin: 20px 10px !important; background-color:#FFF !important;">
+								
+								    <p:confirmDialog id="alertmsg" widgetVar="alertmsg"
+										header="Alert Message" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" showEffect="clip" hideEffect="clip"
+										closeOnEscape="true" closable="true"
+										message="#{bankServiceBalanceAdjustmentBean.errmsg}">
+									</p:confirmDialog>
+
+																 
+										<p:panel styleClass="panel_border1">
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.country']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+											<!-- 	<p:message for="countryId" display="text" id="msgcountryId" /> -->
+													<p:selectOneMenu id="countryId" value="#{bankServiceBalanceAdjustmentBean.countryId}"  filter="true" filterMatchMode="startsWith"  >
+														<f:selectItem itemLabel="#{msg['lbl.beleselect']}" itemValue="" />
+														<f:selectItems value="#{bankServiceBalanceAdjustmentBean.lstAllCountry}" var="c" itemLabel="#{c.countryName}" itemValue="#{c.fsCountryMaster.countryId}" />
+														<p:ajax update="currencyId,bankId" event="change" listener="#{bankServiceBalanceAdjustmentBean.fetchCurrency}" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+								
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.currency']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:message for="currencyId" display="text" id="msgcurrencyId" />
+													<p:selectOneMenu id="currencyId"  value="#{bankServiceBalanceAdjustmentBean.currencyId}" filter="true" filterMatchMode="startsWith" >
+														<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}" itemValue="" />
+														<f:selectItems value="#{bankServiceBalanceAdjustmentBean.lstAllCurrencyBasedonCountry}" var="c" itemLabel="#{c.currencyId.quoteName} - #{c.currencyId.currencyName}" itemValue="#{c.currencyId.currencyId}" />
+														<p:ajax update="msgcurrencyId" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											
+										<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.bank']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:message for="bankId" display="text" id="msgbankId" />
+													<p:selectOneMenu id="bankId"  value="#{bankServiceBalanceAdjustmentBean.bankId}" filter="true" filterMatchMode="startsWith" >
+														<f:selectItem itemLabel="#{msg['lbl.selectbank']}" itemValue="" />
+														<f:selectItems value="#{bankServiceBalanceAdjustmentBean.lstBank}" var="c" itemLabel="#{c. bankCode} - #{c. bankFullName}" itemValue="#{c. bankId}" />
+														<p:ajax update="msgbankId" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="shadow_button"	style=" background-color:#FFF !important;">
+												
+												<p:commandButton value="#{msg['lbl.search']}"  style="margin-right:10px;" update="mainPanel" process="@this" onstart="process.show();" onsuccess="process.hide();" action="#{bankServiceBalanceAdjustmentBean.searchButton}"/>
+												<p:commandButton value="#{msg['lbl.clear']}"   update="mainPanel" onstart="process.show();" onsuccess="process.hide();" action="#{bankServiceBalanceAdjustmentBean.clearAll}">
+												<p:resetInput target="@form" />
+												</p:commandButton>
+
+											</p:panel>
+
+											<br />
+											
+											<p:dataTable id="dataTable" styleClass="mydatatableclass" value="#{bankServiceBalanceAdjustmentBean.datatableList}"  
+										
+												  var="c" rendered="#{bankServiceBalanceAdjustmentBean.renderDatatable}"  
+												editable="true" editMode="cell" cellpadding="0"
+												cellspacing="0" border="1" rowIndexVar="rowIndex" rows="10" 
+												paginatorPosition="bottom" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="5,10,15"
+												emptyMessage="#{msg['lbl.norecordfound']}" >
+												
+												<p:columnGroup type="header">
+												
+														<p:row>
+															<p:column rowspan="2" headerText="#{msg['lbl.sino']}" />
+															<p:column rowspan="2" headerText="#{msg['lbl.bank']}" />
+															<p:column rowspan="2" headerText="#{msg['lbl.accountno']}" />
+															<p:column rowspan="2" headerText="#{msg['lbl.glslno']}" />
+															<p:column rowspan="2" headerText="#{msg['lbl.bankfcbalance']}" />
+															
+															<p:column colspan="3" headerText="#{msg['lbl.unfundedbalance']}" />
+															<p:column colspan="3" headerText="#{msg['lbl.currentbalance']}" />
+															
+															<p:column rowspan="2" headerText="#{msg['lbl.select']}"  />
+														</p:row>
+													
+														<p:row>
+															<p:column headerText="#{msg['lbl.eft']}"/>
+															<p:column headerText="#{msg['lbl.tt']}"/>
+															<p:column headerText="#{msg['lbl.cash']}"/>
+															
+															<p:column headerText="#{msg['lbl.eft']}"/>
+															<p:column headerText="#{msg['lbl.tt']}"/>
+															<p:column headerText="#{msg['lbl.cash']}"/>
+														</p:row>
+														
+													
+												</p:columnGroup>	
+													 
+														<p:column >
+														<p:outputLabel  style="text-align:center;" value="#{rowIndex+1}" />
+														</p:column>
+														<p:column >
+														<p:outputLabel style="text-align:center;" value="#{c.bankName}"/>
+														</p:column>
+														<p:column >
+														<p:outputLabel style="text-align:center;" value="#{c.accountNumber}"/>
+														</p:column>
+														<p:column >
+														<p:outputLabel style="text-align:center;" value="#{c.glslNumber}"/>
+														</p:column>
+														<p:column >
+														<p:outputLabel style="text-align:center;" value="#{c.bankFcBalance}"/>
+														</p:column>
+														
+														
+														
+														
+														<p:column style="width:6% !important;">
+															<p:outputLabel style="text-align:center;" value="#{c.eftUnfundAmount}"/>
+														</p:column>
+																			 
+														<p:column style="width:6% !important;">
+															<p:outputLabel style="text-align:center;" value="#{c.ttUnfundAmount}"/>
+														</p:column>
+														
+														<p:column style="width:6% !important;">
+															<p:outputLabel style="text-align:center;" value="#{c.cashUnfundAmount}"/>
+														</p:column>
+												 
+													 
+
+														<p:column style="width:6% !important;"> 
+														<p:outputLabel style="text-align:center;" value="#{c.eftCurrenctBalance}"/>
+														</p:column>
+																			
+														<p:column style="width:6% !important;">
+														<p:outputLabel style="text-align:center;" value="#{c.ttCurrentBalance}"/>
+														</p:column>
+														
+														<p:column style="width:6% !important;">
+														<p:outputLabel style="text-align:center;" value="#{c.cashCurrentBalance}"/>
+														</p:column>
+														
+														
+														<p:column headerText="#{msg['lbl.select']}" style="width:8% !important;">
+															<p:selectBooleanCheckbox value="#{c.selectCheck}" id="checkId"> 
+															<p:ajax event="change" 
+																listener="#{bankServiceBalanceAdjustmentBean.selectBankBalance(c)}"  update=":inputForm:mainPanel" />
+															</p:selectBooleanCheckbox> 
+														</p:column> 
+														
+											
+											</p:dataTable>
+
+											<div class="clearfix"></div>
+									 <p:panel id="savepanelid" rendered="#{bankServiceBalanceAdjustmentBean.renderTransferPanel}"> 
+											<h2>
+											<h:outputText value="#{msg['lbl.bankservicebalanceajustment']}"/>
+											 </h2>
+											
+												
+										<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.from']}"/>
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="sendBulk1" display="text" id="sendbulkmsg1" />
+													<p:selectOneMenu id="sendBulk1"
+														value="#{bankServiceBalanceAdjustmentBean.fromTransfer}" filter="true"
+														required="true" filterMatchMode="startsWith" requiredMessage="Please Select From ">
+														<f:selectItem itemLabel="--Selelect --"
+															itemValue="" />
+														<f:selectItem itemLabel="EFT" itemValue="1"/>
+														<f:selectItem itemLabel="TT" itemValue="2"/>
+														<f:selectItem itemLabel="CASH" itemValue="3"/>
+
+														<p:ajax event="change" update="shortdescid2,toid3,shortdescid4" listener="#{bankServiceBalanceAdjustmentBean.fromType}"/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											
+													<p:panel styleClass="left_col">
+											
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currentbalance']}"/>
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												 
+												<p:inputText id="shortdescid2" readonly="true"
+													value="#{bankServiceBalanceAdjustmentBean.currentBalance}"
+													required="true"
+													maxlength="10"   >
+													 						 
+													<p:ajax  />
+												</p:inputText>
+											</p:panel>
+											
+													</p:panel>
+															<div class="clearfix"></div>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.to']}"/>
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="toid3" display="text" id="toid3msg" />
+													<p:selectOneMenu id="toid3"
+														value="#{bankServiceBalanceAdjustmentBean.toTransfer}" filter="true"
+														required="true" filterMatchMode="startsWith" requiredMessage="Please Select To">
+														 
+									 
+														<f:selectItem itemLabel="-- select --" itemValue="" />
+														<f:selectItem itemLabel="EFT" itemValue="1"/>
+														<f:selectItem itemLabel="TT" itemValue="2"/>
+														<f:selectItem itemLabel="CASH" itemValue="3"/>
+
+														<p:ajax event="change" update="savepanelid"  listener="#{bankServiceBalanceAdjustmentBean.toType}"  />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+											
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.transferbal']}"/>
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgshortdescid2" for="shortdescid4"      
+													display="text" />
+												<p:inputText id="shortdescid4"
+													value="#{bankServiceBalanceAdjustmentBean.transferBalalnce}"
+													required="true"
+													requiredMessage="Please Enter  Transfer Balance" validatorMessage="Please Enter positive values"
+													maxlength="10"  >
+													<f:validator validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />				 
+													<p:ajax event="change" update="savepanelid" listener="#{bankServiceBalanceAdjustmentBean.checkBalance}" />
+												</p:inputText>
+											</p:panel>
+												</p:panel>
+										 												
+											<div class="clearfix"></div>
+																			
+								<br />
+									
+									 
+									<p:panel id="buttonApp1" styleClass="shadow_button"	style=" background-color:#FFF !important;"  >
+										<p:commandButton value="#{msg['lbl.save']}" action="#{bankServiceBalanceAdjustmentBean.saveAll}"  style="margin-right:10px;" update="mainPanel,:inputForm,alertmsg" onstart="process.show();" onsuccess="process.hide();"/>
+										<p:commandButton value="#{msg['lbl.exit']}" action="#{bankServiceBalanceAdjustmentBean.exit}"  update="mainPanel" immediate="true" process="@this" />
+									</p:panel>
+		</p:panel>	
+									<div class="clearfix"></div>
+								</p:panel>
+	</p:panel>
+							</h:form>
+
+						</h:panelGroup>
+					</h:panelGroup>
+					<div class="clearfix"></div></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

@@ -1,0 +1,807 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">     
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</h:head>
+
+<h:body>
+	<f:view>
+	<p:dialog id="success" widgetVar="success" width="270" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+            											
+            											<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} "/><br/>
+            								<p:spacer width="15px" />
+            											<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{bankApproval.clickOnOKSave}" process="@this"/>          
+       								 </p:dialog>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<h:form id="bankMasterFrm">
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+				<!-- <ui:include
+						src="../common/fxdeal_menu.xhtml"></ui:include> -->
+						<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+						</td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							
+							<h1>
+								<h:outputText value="#{msg['lbl.bankapproval']}" />
+							</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+								<p:panel rendered="#{bankApproval.booRenderBankMasterPanel}">
+										<h3>
+											<h:outputText value="#{msg['lbl.bankmaster']}" />
+										</h3>
+											<p:panel styleClass="panel_border">
+									
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_bankCode"/>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:message id="msgbankCode" for="bankCode" display="text" />
+													<!-- <p:inputText id="bankCode" value="#{bankApproval.bankCode}" onkeyup="this.value=this.value.toUpperCase()"
+														label="Bank Code">
+														<p:ajax event="blur"
+															listener="#{bankApproval.fetchBankMasterInfo}"
+															update=":bankMasterFrm:mainPanel" />
+															<f:validator validatorId="allowOnlyNumber" />
+													</p:inputText> -->
+													<p:autoComplete value="#{bankApproval.bankCode}" completeMethod="#{bankApproval.autoCompleteBankCode}" id="bankCode" var="obj" itemLabel="#{obj}"
+												itemValue="#{obj}" onkeyup="this.value=this.value.toUpperCase()"  >
+													<p:ajax event="blur" listener="#{bankApproval.fetchBankMasterInfo}" update=":bankMasterFrm:mainPanel" />
+													<p:ajax event="itemSelect" listener="#{bankApproval.fetchBankMasterInfo}" update=":bankMasterFrm:mainPanel" />
+													<!-- <f:validator validatorId="allowOnlyNumber" /> -->
+													</p:autoComplete>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_bankFullName" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="bankFullName" 
+														value="#{bankApproval.fullName}" label="Bank Full Name" readonly="true">
+														<p:ajax update="fullNameMsg" event="blur" />
+														
+														<p:message id="fullNameMsg" for="bankFullName"
+															display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+										<div class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_bankShortName" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="bankShortName"
+														value="#{bankApproval.shortName}" label="Bank Short Name" readonly="true">
+														<p:ajax update="shortnameMsg" event="blur" />
+														<p:message id="shortnameMsg" for="bankShortName"
+															display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_language" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="language" display="text" />
+													<p:selectOneMenu id="language"
+														value="#{bankApproval.languageBank}" label="Bank Language" >
+												<!-- started 30-01-2015 added @Koti  -->
+														<f:selectItem itemLabel="#{msg['lbl.selectLanguage']}" itemValue="" />
+														<!-- ended 30-01-2015 added @Koti  -->
+														<f:selectItem itemLabel="English" itemValue="1" />
+														<f:selectItem itemLabel="Arabic" itemValue="2" />
+														<p:ajax/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_telephone" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="telephone" value="#{bankApproval.telephone}"
+														label="Telephone Number" readonly="true" >
+														<p:ajax update="telephoneMsg" event="blur" />
+														<p:message id="telephoneMsg" for="telephone"
+															display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_fax" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="fax" value="#{bankApproval.fax}" label="Fax"  readonly="true" >
+														<p:ajax update="faxMsg" event="blur" />
+														<f:validator validatorId="allowOnlyNumber" />
+														<p:message id="faxMsg" for="fax" display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_email" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="email" value="#{bankApproval.email}"  label="Email" readonly="true" >
+														<p:ajax update="emailMsg" event="blur" />
+														<p:message id="emailMsg" for="email" display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+							
+
+										<!-- 	<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<p:ajaxStatus id="ajaxStatusPanel">
+														<f:facet name="start">
+															<h:graphicImage value="../images/ajax_loader.gif" />
+														</f:facet>
+														<f:facet name="complete">
+															<h:outputText value="" />
+														</f:facet>
+													</p:ajaxStatus>
+												</p:panel>
+												
+											</p:panel> -->
+											
+											
+										<!-- 	<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="#{msg['lbl.next']}"
+													actionListener="#{bankApproval.bankInfoPanelNext}"
+													update="mainPanel" />
+											</h:panelGroup> -->
+										
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_country" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="country" display="text" />
+													<p:selectOneMenu id="country"
+														value="#{bankApproval.countryId}" filter="true"
+														filterMatchMode="startsWith" label="Country">
+														<f:selectItem itemLabel="#{msg['lbl.selectcountry']}"
+															itemValue="" />
+														<f:selectItems value="#{bankApproval.countryNameList}"
+															var="c" itemLabel="#{c.countryName}"
+															itemValue="#{c.countryMasterId}" />
+														<p:ajax event="change"
+															listener="#{bankApproval.generateStateList}" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											
+											<!-- <p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_bankState" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="bankState" display="text" />
+													<p:selectOneMenu id="bankState" label="State"
+														value="#{bankApproval.stateId}" filter="true"
+														filterMatchMode="startsWith">
+														<f:selectItem itemLabel="#{msg['lbl.selectState']}"
+															itemValue="" />
+														<f:selectItems value="#{bankApproval.lstStateList}" var="c"
+															itemLabel="#{c.stateName}"
+															itemValue="#{c.fsStateMaster.stateId}" />
+														<p:ajax event="change" update="bankDistrict, city"
+															listener="#{bankApproval.generateDistrictList}" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+												
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_bankDistrict" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="bankDistrict" display="text" />
+													<p:selectOneMenu id="bankDistrict"
+														value="#{bankApproval.districtId}" label="District">
+															started 30-01-2015 added @Koti 
+														<f:selectItem itemLabel="#{msg['lbl.selectDistrict']}"
+															itemValue="" />
+															ended 30-01-2015 added @Koti 
+														<f:selectItems value="#{bankApproval.lstDistrictList}"
+															var="c" itemLabel="#{c.district}"
+															itemValue="#{c.fsDistrictMaster.districtId}" />
+														<p:ajax event="change" update="city"
+															listener="#{bankApproval.generateCityList}" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+								
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_city" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="city" display="text" />
+													<p:selectOneMenu id="city" value="#{bankApproval.cityId}"
+														label="City">
+														<f:selectItem itemLabel="#{msg['lbl.selectCity']}"
+															itemValue="" />
+														<f:selectItems value="#{bankApproval.lstCityList}" var="c"
+															itemLabel="#{c.cityName}"
+															itemValue="#{c.fsCityMaster.cityId}" />
+														<p:ajax event="change" listener="#{bankApproval.getCity}" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel> -->
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_zip" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="zip" value="#{bankApproval.zip}" label="zip"  readonly="true">
+														<p:ajax update="zipMsg" event="blur" />
+														<p:message id="zipMsg" for="zip" display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_address1" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="address1" value="#{bankApproval.address1}"
+														label="Bank first address">
+														<p:ajax update="address1Msg" event="blur" />
+														<p:message id="address1Msg" for="address1" display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_address2" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="address2" value="#{bankApproval.address2}"
+														label="Bank second address">
+														<p:ajax update="address2Msg" event="blur" />
+														<p:message id="address2Msg" for="address2" display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+										<!-- 	<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.currency']}"/>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+											
+													<p:selectOneMenu id="currency"
+														value="#{bankApproval.currencyId}" filter="true"
+														filterMatchMode="startsWith" label="Currency">
+														<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}"
+															itemValue="" />
+														<f:selectItems value="#{bankApproval.lstCountryCurrencyList}"
+															var="c" itemLabel="#{c.currencyName}"
+															itemValue="#{c.currencyId}" />
+														<p:ajax />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel> -->
+											
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText id="lbl_bankFullNamel_1" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="bankFullNamel_1"
+																value="#{bankApproval.localFullName}" lang="AR"
+																label="Bank local Full Name" readonly="true" > 
+																<p:ajax update="localfullnameMsg" event="blur" />
+																<p:message id="localfullnameMsg" for="bankFullNamel_1"
+																	display="text" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+
+													<div class="clearfix" />
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText id="lbl_bankShortNamel_1" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="bankShortNamel_1"
+																value="#{bankApproval.localShortname}" lang="AR"
+																label="Bank local Short Name">
+																<p:ajax update="localshortnameMsg" event="blur" />
+																<p:message id="localshortnameMsg" for="bankShortNamel_1"
+																	display="text" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+											
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText id="lbl_addressl1_1" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="addressl1_1"
+																value="#{bankApproval.localAddress1}" lang="AR"
+																label="Bank local first address">
+																<p:ajax update="localfirstAddressMsg" event="blur" />
+																<p:message id="localfirstAddressMsg" for="addressl1_1"
+																	display="text" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+													<div class="clearfix" />
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText id="lbl_addressl2_1" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="addressl2_1"
+																value="#{bankApproval.localAddress2}" lang="AR"
+																label="Bank local second address">
+																<p:ajax update="localsecondAddressMsg" event="blur" />
+																<p:message id="localsecondAddressMsg" for="addressl2_1"
+																	display="text" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+												
+									<!-- 		
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="#{msg['lbl.next']}"
+													actionListener="#{bankApproval.bankAddressInfoPanelNext}"
+													update="mainPanel" style="float:right;" />
+												<p:commandButton value="#{msg['lbl.back']}"
+													actionListener="#{bankApproval.bankAddressInfoPanelBack}"
+													update="mainPanel" process="@this"
+													style="float:right; margin-right:10px;" />
+											</h:panelGroup>
+											<div class="clearfix"></div>
+										 -->
+							
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_ifscLength" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="ifscLength"
+														value="#{bankApproval.IFSCLength}" label="IFSC Length">
+														<p:ajax update="ifscLenMsg" event="blur" />
+														<p:message id="ifscLenMsg" for="ifscLength" display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+														<div class="clearfix" />	
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_reutersBankName" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="reutersBankName"
+														value="#{bankApproval.reutersBankNname}"
+														label="Reuters Bank Name">
+														<p:ajax update="reuterBankNameMsg" event="blur" />
+														<p:message id="reuterBankNameMsg" for="reutersBankName"
+															display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+										
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_fileSpecific" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="fileSpecific" display="text" />
+													<p:selectOneMenu id="fileSpecific"
+														value="#{bankApproval.fileSpecificOrAll}"
+														label="File Specific">
+														<!-- stared koti 30/01/2015 -->
+														<f:selectItem itemLabel="#{msg['lbl.fileSpecificselect']}" itemValue="" />
+														<!-- ended koti 30/01/2015 -->
+														<f:selectItem itemLabel="Specified File" itemValue="S" />
+														<f:selectItem itemLabel="All File" itemValue="A" />
+														<p:ajax/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+												<div class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_fileBranchWise" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="fileBranchWise" display="text" />
+													<p:selectOneMenu id="fileBranchWise"
+														value="#{bankApproval.fileBranchWiseYOrN}"
+														label="File Branch Wise">
+														<!-- stared koti 30/01/2015 -->
+														<f:selectItem itemLabel="#{msg['lbl.fileBranchWiseselect']}" itemValue="" />
+														<!-- ended koti 30/01/2015 -->
+														<f:selectItem itemLabel="Yes" itemValue="Y" />
+														<f:selectItem itemLabel="No" itemValue="N" />
+														<p:ajax/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_remmiterModeWise" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="remmiterModeWise" display="text" />
+													<p:selectOneMenu id="remmiterModeWise"
+														value="#{bankApproval.remmiterModeYOrN}"
+														label="Remmiter Mode">
+														<!-- stared koti 30/01/2015 -->
+														<f:selectItem itemLabel="#{msg['lbl.remittanceMode']}" itemValue="" />
+														<!-- ended koti 30/01/2015 -->
+														<f:selectItem itemLabel="Yes" itemValue="Y" />
+														<f:selectItem itemLabel="No" itemValue="N" />
+														<p:ajax/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											
+												<div class="clearfix" />
+												<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Allow No Bank"   /> <h:outputText value="*" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+											
+													<p:selectOneMenu 
+														value="#{bankApproval.allowNoBank}" filter="true"
+														filterMatchMode="startsWith">
+														<f:selectItem itemLabel="--Select Allow No Bank --"
+															itemValue="" />
+														<f:selectItem itemLabel="Yes" itemValue="Y" />
+														<f:selectItem itemLabel="No" itemValue="N" />
+														<p:ajax />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix" />
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+											
+												<!-- <p:commandButton value="#{msg['lbl.save']}"
+													action="#{bankApproval.save}" ajax="false"  style=" margin-right:10px;" /> -->
+					   								
+												<p:commandButton value="#{msg['lbl.next']}"
+													action="#{bankApproval.nextToContactDetailsPanel}"
+													update=":bankMasterFrm:mainPanel" process="@this" style=" margin-right:10px;"  />
+										<!-- 		<p:commandButton value="#{msg['lbl.cancel']}"
+													action="#{bankApproval.cancel}" immediate="true" ajax="false"
+													style="margin-right:10px;" /> -->
+												<p:commandButton value="#{msg['lbl.clear']}"
+													action="#{bankApproval.clear}" update=":bankMasterFrm:mainPanel"
+													process="@this" />
+												
+												
+												<div class="clearfix" />
+											</h:panelGroup>
+											<div class="clearfix"></div>
+										
+									
+										<p:panel styleClass="left_col" >
+									<h:outputText  id="mandatory" value=" #{msg['lbl.*filedsAreMandatory']}"  style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+								</p:panel>
+						
+							</p:panel>
+							</p:panel>
+							<!-- BANK Contact Details By RAHMATHALI SHAIK  -->
+							<p:panel rendered="#{bankApproval.booRenderContactDeatailsPanel}">
+										<h3>
+											<h:outputText value="#{msg['lbl.contactdetails']}" />
+										</h3>
+		
+								<p:panel styleClass="panel_border">
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Bank Code" /><h:outputText value="*" />
+											</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{bankApproval.contactBankCode}" readonly="true">
+													</p:inputText>
+												</p:panel>
+							<!-- 				
+											<p:panel styleClass="inner_right_col">
+												<p:message for="bank" display="text" />
+												<p:selectOneMenu id="bank" label="Bank Id"
+													value="#{bankApproval.contactBankId}"
+													filter="true" filterMatchMode="startsWith">
+													<f:selectItem itemLabel="#{msg['lbl.selectbank']}"/>
+													<f:selectItems
+														value="#{bankApproval.bankDetails}" var="c"
+														itemLabel="#{c.bankFullName}" itemValue="#{c.bankId}" />
+													<p:ajax event="change"
+														listener="#{bankApproval.fetchBankContactInfo}"
+														update="mainPanel" />
+												</p:selectOneMenu>
+											</p:panel> -->
+										</p:panel>
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_zone" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgZone" for="zone" display="text"/>
+											<p:selectOneMenu id="zone"
+													value="#{bankApproval.contactZone}" label="Zone"
+													filterMatchMode="startsWith" filter="true">
+													<f:selectItem itemLabel="#{msg['lbl.selectZone']}" itemValue="" />
+													<f:selectItems value="#{bankApproval.getZoneLists()}"
+														var="c" itemLabel="#{c.zoneName}"
+														itemValue="#{c.zoneId}" />
+														<p:ajax update="msgZone"/>
+														</p:selectOneMenu>
+											
+											</p:panel>
+										</p:panel>
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_contperson_1" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="contperson_1"
+													value="#{bankApproval.contactPersonForContactDetails}" 
+													label="Contact Person" readonly="true">
+													<p:ajax update="contactPersonMsg" event="blur" />
+													<p:message id="contactPersonMsg" for="contperson_1"
+														display="text" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_department_1" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="department_1"
+													value="#{bankApproval.contactDep}"
+													label="Contact Dep" readonly="true">
+													<p:ajax update="contactDepartmentMsg" event="blur" />
+													<p:message id="contactDepartmentMsg" for="department_1"
+														display="text" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_designation_1" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="designation_1"
+													value="#{bankApproval.contactDesignation}"
+													label="Contact Designation" readonly="true">
+													<p:ajax update="contactDesignationMsg" event="blur" />
+													<p:message id="contactDesignationMsg" for="designation_1"
+														display="text" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_mobile" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="mobile"
+													value="#{bankApproval.contactMobile}"
+													label="Mobile" readonly="true">
+													<p:ajax update="mobileMsg" event="blur" />
+													<p:message id="mobileMsg" for="mobile" display="text" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+
+
+										<p:panel id="localPanel"
+											style="padding:0px!important;border:none !important;">
+											<p:panel
+												style="padding:0px!important;border:none !important;"
+												rendered="#{bankApproval.booLocal}">
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_contpersonl" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="contpersonl"
+															value="#{bankApproval.localContactPersonForContactDetails}" lang="AR"
+															label="Local Contact Person" readonly="true">
+															<p:ajax update="localContactPersonMsg" event="blur" />
+															<p:message id="localContactPersonMsg" for="contpersonl"
+																display="text" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_departmentl"
+															value="#{msg['lbl.departmentl']} #{bankApproval.viewBehaviorBean('Local Contact Dep','MANDATORY')}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="departmentl"
+															value="#{bankApproval.localContactDepartment}" lang="AR"
+															label="Local Contact Dep" readonly="true">
+															<p:ajax update="localContactDepMsg" event="blur" />
+															<p:message id="localContactDepMsg" for="departmentl"
+																display="text" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_designationl" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="designationl"
+															value="#{bankApproval.localContactDesignation}" lang="AR"
+															label="Local Contact Des" readonly="true" >
+															<p:ajax update="localContactDesMsg" event="blur" />
+															<p:message id="localContactDesMsg" for="designationl"
+																display="text" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+											</p:panel>
+										</p:panel>
+										<div class="clearfix"></div>
+
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.back']}"
+													action="#{bankApproval.backToBankMasterPanel}" immediate="true" ajax="false" update=":bankMasterFrm:mainPanel"
+													style="margin-right:10px;" /> 
+											<p:commandButton value="#{msg['lbl.add']}" update=":bankMasterFrm:mainPanel" action="#{bankApproval.addRecordsToDataTable}" />
+											<div class="clearfix"></div>
+										</h:panelGroup>
+										<div class="clearfix"></div>
+<p:spacer height="20px"/>
+<div class="clearfix"></div>
+			<p:panel rendered="#{bankApproval.booRenderDataTable}">
+										<p:dataTable
+											value="#{bankApproval.lstBankMasterContactDetails}"
+											id="datatable" var="o"
+											emptyMessage="#{msg['lbl.norecordfound']}">
+											<p:column headerText="#{msg['lbl.bank']}">
+												<h:outputText value="#{o.bank}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.zone']}">
+												<h:outputText value="#{o.zoneName}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.contperson']}">
+												<h:outputText value="#{o.contactPerson}" />
+											</p:column>
+
+											<p:column
+												headerText="#{msg['lbl.contperson']} #{msg['lbl.department']}">
+												<h:outputText value="#{o.contactDep}" />
+											</p:column>
+
+											<p:column
+												headerText="#{msg['lbl.contperson']} #{msg['lbl.designation']}">
+												<h:outputText value="#{o.contactDesignation}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.mobile']}">
+												<h:outputText value="#{o.mobile}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.contperson']}(L)" >
+												<h:outputText value="#{o.localContactPerson}" />
+											</p:column>
+
+											<p:column
+												headerText="#{msg['lbl.contperson']} #{msg['lbl.departmentl']}" >
+												<h:outputText value="#{o.localContactDepartment}" />
+											</p:column>
+
+											<p:column
+												headerText="#{msg['lbl.contperson']} #{msg['lbl.designationl']}" >
+												<h:outputText value="#{o.localContactDesignation}" />
+											</p:column>
+											
+											<p:column headerText="#{msg['lbl.edit']}">
+													<p:commandButton   styleClass="edit" value="" action="#{bankApproval.editRecord(o)}"  update=":bankMasterFrm:mainPanel" immediate="true" process="@this">
+													</p:commandButton>
+											</p:column>
+											<p:column headerText="#{msg['lbl.delete']}">
+												<p:commandButton styleClass="delete" value=""
+													actionListener="#{bankApproval.remove(o)}"
+													update=":bankMasterFrm:mainPanel" process="@this" immediate="true"/>
+											</p:column>
+
+										</p:dataTable>
+										</p:panel>
+<div class="clearfix"></div>
+<p:spacer height="20px"/>
+<div class="clearfix"></div>
+										<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{bankApproval.booRenderSavePanel}">
+										
+										
+										<p:commandButton value="#{msg['lbl.save']}" style="margin-right:10px;"
+												action="#{bankApproval.saveContactAndBankMaster}" update=":bankMasterFrm:mainPanel"
+												process="@this" />
+											
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												action="#{bankApproval.cancelForContactDetails}" immediate="true"
+												ajax="false" />
+												
+											<!-- <p:commandButton value="#{msg['lbl.clear']}"
+												action="#{bankApproval.clearForContactDetails}"
+												update="mainPanel" /> -->
+												
+												
+											<div class="clearfix"></div>
+										</h:panelGroup>
+										<div class="clearfix"></div>
+							<p:panel styleClass="left_col" >
+									<h:outputText value=" #{msg['lbl.*filedsAreMandatory']}"  style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+								</p:panel>
+							
+							</p:panel>
+							</p:panel>
+							</p:panel>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+					</h:panelGroup>
+					<div class="clearfix"></div></td>
+			</tr>
+		</table>
+		</h:form>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

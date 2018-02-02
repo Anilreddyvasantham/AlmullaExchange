@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link href="css/style1.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+		history.pushState(null, null, 'bankserviceruleunapproval.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'bankserviceruleunapproval.xhtml');
+		});
+	</script>
+</h:head>
+<p:confirmDialog id="norecord" widgetVar="norecord" resizable="false"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="No Records Found">
+</p:confirmDialog>
+
+
+<h:body dir="#{facesBean.direction}">
+
+
+	<f:view locale="#{facesBean.locale}">
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:panelGroup layout="block" class="heading1">
+								<h:outputText value="#{msg['lbl.bankserviceruleapproval']}" />
+							</h:panelGroup>
+							<h:form id="inputForm">
+
+
+
+								<p:panel id="mainPanel" styleClass="shadow"
+									style="margin: 20px 10px !important; background-color:#FFF !important;">
+
+									<p:confirmDialog id="notValidUser" widgetVar="notValidUser"
+										width="370" styleClass="red" showHeader="false"
+										resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{msg['lbl.sameusernotabletoapprove']}">
+									</p:confirmDialog>
+
+
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{bankTransferEnquiryBean.errorMessage}">
+									</p:confirmDialog>
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{bankTransferEnquiryBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+
+
+									<h2>
+										<h:outputText value="#{msg['lbl.bankserviceruleapproval']}" />
+										<p:commandLink action="#{bankTransferEnquiryBean.goHome}"
+											process="@this">
+											<p:graphicImage value="../images/return.jpg" width="25"
+												height="25" id="imgEdit" styleClass="icon_right"
+												style="float:right;" />
+											<p:tooltip for="imgEdit" value="Go to Home" />
+										</p:commandLink>
+									</h2>
+
+									<p:panel styleClass="panel_border" id="panelBorder">
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.country']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+
+												<p:selectOneMenu id="country"
+													value="#{bankServiceRuleUnApprovalBean.countryId}"
+													filterMatchMode="contains"
+													requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.country']}"
+													filter="true" tabindex="1">
+													<f:selectItem itemValue=""
+														itemLabel="#{msg['lbl.beleselect']}" />
+													<f:selectItems
+														value="#{bankServiceRuleUnApprovalBean.countryNameList}"
+														var="c"
+														itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+														itemValue="#{c.fsCountryMaster.countryId}" />
+													<p:ajax event="change"
+														listener="#{bankServiceRuleUnApprovalBean.popBank}"
+														update="mainPanel" onstart="process.show();"
+														onsuccess="process.hide();" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currency']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+
+												<p:selectOneMenu id="currency"
+													value="#{bankServiceRuleUnApprovalBean.currencyId}"
+													filterMatchMode="contains"
+													requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.currency']}"
+													filter="true" tabindex="2">
+													<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{bankServiceRuleUnApprovalBean.currencyList}"
+														var="c"
+														itemLabel=" #{c.currencyId.currencyCode} - #{c.currencyId.quoteName}  - #{c.currencyId.currencyName}"
+														itemValue="#{c.currencyId.currencyId}" />
+													<p:ajax event="change"
+														listener="#{bankServiceRuleUnApprovalBean.popCurrency}"
+														update="mainPanel" onstart="process.show();"
+														onsuccess="process.hide();" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bank']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+
+												<p:selectOneMenu id="bank"
+													value="#{bankServiceRuleUnApprovalBean.bankId}"
+													filterMatchMode="contains" filter="true" tabindex="3">
+													<f:selectItem itemValue=""
+														itemLabel="#{msg['lbl.prehyphen']} #{msg['lbl.select']} #{msg['lbl.bank']} #{msg['lbl.posthyphen']}" />
+													<f:selectItems
+														value="#{bankServiceRuleUnApprovalBean.bankMasterList}"
+														var="c" itemLabel="#{c.bankCode} - #{c.bankFullName}"
+														itemValue="#{c.bankId}" />
+													<p:ajax event="change" update="mainPanel"
+														onstart="process.show();" onsuccess="process.hide();" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										<p:dialog modal="true" showHeader="false" widgetVar="process"
+											id="process" width="300" height="60" resizable="false"
+											draggable="false" closable="false"
+											style=" border: 3px green solid !important;background-color: #FFF !important;">
+											<div
+												style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+												<p:graphicImage value="../images/processImg.gif"
+													style="float: left !important; margin-right: 24px !important; " />
+												<p:outputLabel value="Please wait ........"
+													style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+											</div>
+										</p:dialog>
+
+										<div class="clearfix"></div>
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.view']}"
+												action="#{bankServiceRuleUnApprovalBean.search}"
+												update="tablePanel" onstart="process.show();"
+												onsuccess="process.hide();" />
+											<p:commandButton value="#{msg['lbl.clear']}"
+												action="#{bankServiceRuleUnApprovalBean.clearAll}"
+												update="inputForm" />
+										</h:panelGroup>
+										<div class="clearfix"></div>
+										<p:panel id="tablePanel">
+
+											<p:dataTable id="datatableView" rows="15"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="15,10,5" paginator="true"
+												value="#{bankServiceRuleUnApprovalBean.bankServiceRuleList}"
+												styleClass="mydatatableclass"
+												emptyMessage="#{msg['lbl.norecordfound']}" var="c"
+												rowIndexVar="rowIndex">
+
+												<p:column headerText="#{msg['lbl.sino']}">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.country']}">
+													<h:outputText value="#{c.countryName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.currency']}">
+													<h:outputText value="#{c.currencyName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.bank']}">
+													<h:outputText value="#{c.bankName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.remittance']}">
+													<h:outputText value="#{c.remittanceDesc} " />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.delivery']}">
+													<h:outputText value=" #{c.deliveryDesc}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.view']}"
+													style="width:50px !important; text-align:center !important; ">
+													<p:commandLink value="#{msg['lbl.approve']}"
+														action="#{bankServiceRuleUnApprovalBean.gotoBankServiceRule(c)}"
+														style="color:blue !important; text-decoration:underline !important;"
+														update=":inputForm" immediate="true" process="@this"
+														onstart="process.show();" onsuccess="process.hide();" />
+												</p:column>
+
+											</p:dataTable>
+										</p:panel>
+									</p:panel>
+								</p:panel>
+
+
+							</h:form>
+
+
+						</h:panelGroup>
+					</h:panelGroup>
+					<div class="clearfix"></div></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+
+
+</html>

@@ -1,0 +1,1011 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+
+		history.pushState(null, null, 'CashDeposit.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'CashDeposit.xhtml');
+		});
+	</script>
+	
+	<style>
+	.inputTextcls{
+		text-align: center !important;
+		width:70px;
+		padding:1px !important; 
+		border-color:green !important; 
+		border-width:1px;
+		text-align: center !important;
+	}
+	.inputTextclsTotal{
+		text-align: center !important;
+		width:100px;
+		padding:1px !important; 
+		border-color:green !important; 
+		border-width:1px;
+		text-align: center !important;
+		height: 16px;
+	}
+	.dtcolumn{
+		text-align: center !important;
+		width:80px;
+	}
+	.dttotalcolumn{
+		text-align: center !important;
+		width:150px;
+		height: 300px;
+	}
+	</style>
+</h:head>
+
+<p:confirmDialog id="noStock" widgetVar="noStock" width="400"
+	height="17" resizable="false"
+	style="background-color: white !important;" header="Warning Dailog"
+	styleClass="warning" showEffect="clip" hideEffect="clip"
+	closeOnEscape="true" closable="true"
+	message="#{msg['lbl.noStockFound']}">
+</p:confirmDialog>
+
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<h:form id="cashForm"
+			onkeypress="if (event.keyCode == 13) { document.getElementById('cashForm.reportButId').click(); return false; }">
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;">
+						<!-- <ui:include src="../common/fxdeal_menu.xhtml"></ui:include> -->
+						<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+					</td>
+
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle"
+										src="../images/toggle_plus.png" alt=""
+										onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+								<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+								<h1>
+									<h:outputText value="#{msg['lbl.cashDeposit']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<p:confirmDialog id="proceErr" widgetVar="proceErr"
+										resizable="false" style="background-color: white !important;"
+										header="Warning Dailog" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="#{cashDeposit.warningMessage}">
+									</p:confirmDialog>
+									<h2>
+										<h:outputText value="#{msg['lbl.cashDeposit']}" />
+
+										<p:commandLink action="#{bankBranchDetails.cancel}"
+											process="@this">
+											<p:graphicImage value="../images/return.jpg" width="25"
+												height="25" id="imgEdit" styleClass="icon_right"
+												style="float:right;" />
+											<p:tooltip for="imgEdit" value="#{msg['lbl.gotoHome']}" />
+										</p:commandLink>
+									</h2>
+									<p:confirmDialog id="stockcheck" widgetVar="stockcheck"
+										width="400" height="17" resizable="false"
+										style="background-color: white !important;"
+										header="Warning Dailog" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="#{msg['lbl.pleaseEnterStockLessthanOrEqualTo']}  #{cashDeposit.currentStock}">
+									</p:confirmDialog>
+									
+
+									<p:panel styleClass="panel_border">
+
+
+										<!-- <p:dataTable id="dataTableId" styleClass="mydatatableclass"
+											value="#{cashDeposit.cashTransferDataTableList}" var="obj"
+											editable="true" editMode="cell" editingRow="true"
+											emptyMessage="#{msg['lbl.benifinorecords']}">
+											<f:facet name="header">
+    					#{msg['lbl.cashTallyEntry']}
+   						 </f:facet>
+											<p:column headerText="#{msg['lbl.countryCurrency']}"
+												style="width:20px; text-align:center !important;">
+												<h:outputText value="#{obj.currencyName}" />
+											</p:column>
+											<p:column headerText="Stock / Transfer" style="width:20px; text-align:center !important;">
+                       <p:outputLabel value="Stock" style="width:20px; text-align:center;"style="text-align: center !important;"/>
+                       <p:spacer height="15px" />
+                       <p:outputLabel value="Transfer" style="width:20px; text-align:center;"/>
+                        </p:column>
+											<p:column headerText="1000"
+												style="width:20px; text-align:center !important;">
+												<p:outputLabel value="#{obj.thousands}" style="text-align: center !important;"/>
+												<p:message id="msgThousdId" for="thousand" display="text" />
+												<p:spacer height="15px" />
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{obj.inputThousands}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText value="#{obj.inputThousands}"
+															style="padding:1px !important; border-color:green !important;  text-align: center !important;"
+															id="thousand"
+															converterMessage="#{msg['lbl.enterOnlyNumbers']}">
+															<f:convertNumber integerOnly="true" />
+															<f:validator validatorId="allowOnlyNumber" />
+															<p:ajax event="blur"
+																listener="#{cashDeposit.onCellEditThousands(obj)}"
+																update=":cashForm:mainPanel" />
+														</p:inputText>
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+											<p:column headerText="500"
+												style="width:20px; text-align:center !important;">
+												<p:outputLabel value="#{obj.fiveHundreds}" style="text-align: center !important;"/>
+												<p:message id="msgFiveHundred" for="fiveHundred"
+													display="text" />
+												<p:spacer height="15px" />
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{obj.inputFiveHundreds}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText id="fiveHundred"
+															value="#{obj.inputFiveHundreds}"
+															style="padding:1px !important; border-color:green !important;  text-align: center !important;"
+															converterMessage="#{msg['lbl.enterOnlyNumbers']}">
+															<f:convertNumber integerOnly="true" />
+															<f:validator validatorId="allowOnlyNumber" />
+															<p:ajax event="blur"
+																listener="#{cashDeposit.onCellEditFiveHundreds(obj)}"
+																update=":cashForm:mainPanel" />
+														</p:inputText>
+													</f:facet>
+												</p:cellEditor>
+
+											</p:column>
+
+											<p:column headerText="200"
+												style="width:20px; text-align:center !important;">
+												<p:outputLabel value="#{obj.twoHundreds}" style="text-align: center !important;"/>
+												<p:message id="msgTwoHundred" for="twoHundred"
+													display="text" />
+												<p:spacer height="15px" />
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{obj.inputTwoHundreds}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText id="twoHundred"
+															value="#{obj.inputTwoHundreds}"
+															style="padding:1px !important; border-color:green !important;  text-align: center !important;"
+															converterMessage="#{msg['lbl.enterOnlyNumbers']}">
+															<f:convertNumber integerOnly="true" />
+															<f:validator validatorId="allowOnlyNumber" />
+															<p:ajax event="blur"
+																listener="#{cashDeposit.onCellEditTwoHundreds(obj)}"
+																update=":cashForm:mainPanel" />
+														</p:inputText>
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+											<p:column headerText="100"
+												style="width:20px; text-align:center !important;">
+												<p:outputLabel value="#{obj.hundreds}" style="text-align: center !important;"/>
+												<p:message id="msgHundred" for="hundred" display="text" />
+												<p:spacer height="15px" />
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{obj.inputHundreds}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText id="hundred" value="#{obj.inputHundreds}"
+															style="padding:1px !important; border-color:green !important;  text-align: center !important;"
+															converterMessage="#{msg['lbl.enterOnlyNumbers']}">
+															<f:convertNumber integerOnly="true" />
+															<f:validator validatorId="allowOnlyNumber" />
+															<p:ajax event="blur"
+																listener="#{cashDeposit.onCellEditHundreds(obj)}"
+																update=":cashForm:mainPanel" />
+														</p:inputText>
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+											<p:column headerText="50"
+												style="width:20px; text-align:center !important;">
+												 <p:outputLabel value="#{obj.fifties}" style="text-align: center !important;"/>
+												<p:message id="msgFifty" for="fifty" display="text" />
+												<p:spacer height="15px" />
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{obj.inputFifties}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText id="fifty" value="#{obj.inputFifties}"
+															style="padding:1px !important; border-color:green !important;  text-align: center !important;"
+															converterMessage="#{msg['lbl.enterOnlyNumbers']}">
+															<f:convertNumber integerOnly="true" />
+															<f:validator validatorId="allowOnlyNumber" />
+															<p:ajax event="blur"
+																listener="#{cashDeposit.onCellEditFifties(obj)}"
+																update=":cashForm:mainPanel" />
+														</p:inputText>
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+											<p:column headerText="20"
+												style="width:20px; text-align:center !important;">
+												<p:outputLabel value="#{obj.twenties}" style="text-align: center !important;"/>
+												<p:message id="msgTwenty" for="twenty" display="text" />
+												<p:spacer height="15px" />
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{obj.inputTwenties}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText id="twenty" value="#{obj.inputTwenties}"
+															style="padding:1px !important; border-color:green !important;  text-align: center !important;"
+															converterMessage="#{msg['lbl.enterOnlyNumbers']}">
+															<f:convertNumber integerOnly="true" />
+															<f:validator validatorId="allowOnlyNumber" />
+															<p:ajax event="blur"
+																listener="#{cashDeposit.onCellEditTwenties(obj)}"
+																update=":cashForm:mainPanel" />
+														</p:inputText>
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+											<p:column headerText="10"
+												style="width:20px; text-align:center !important;">
+												 <p:outputLabel value="#{obj.tens}" style="text-align: center !important;"/>
+												<p:message id="msgTen" for="ten" display="text" />
+												<p:spacer height="15px" />
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{obj.inputTens}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText id="ten" value="#{obj.inputTens}"
+															style="padding:1px !important; border-color:green !important;  text-align: center !important;"
+															converterMessage="#{msg['lbl.enterOnlyNumbers']}">
+															<f:convertNumber integerOnly="true" />
+															<f:validator validatorId="allowOnlyNumber" />
+															<p:ajax event="blur"
+																listener="#{cashDeposit.onCellEditTens(obj)}"
+																update=":cashForm:mainPanel" />
+														</p:inputText>
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+											<p:column headerText="5"
+												style="width:20px; text-align:center !important;">
+												 <p:outputLabel  value="#{obj.fives}"style="text-align: center !important;"/>
+												<p:message id="msgFive" for="five" display="text" />
+												<p:spacer height="15px" />
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{obj.inputFives}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText id="five" value="#{obj.inputFives}"
+															style="padding:1px !important; border-color:green !important;  text-align: center !important;"
+															converterMessage="#{msg['lbl.enterOnlyNumbers']}">
+															<f:convertNumber integerOnly="true" />
+															<f:validator validatorId="allowOnlyNumber" />
+															<p:ajax event="blur"
+																listener="#{cashDeposit.onCellEditFives(obj)}"
+																update=":cashForm:mainPanel" />
+														</p:inputText>
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+											<p:column headerText="1"
+												style="width:20px; text-align:center !important;">
+												<p:outputLabel value="#{obj.ones}" style="text-align: center !important;"/>
+												<p:message id="msgOne" for="one" display="text" />
+												<p:spacer height="15px" />
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{obj.inputOnes}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText id="one" value="#{obj.inputOnes}"
+															style="padding:1px !important; border-color:green !important;  text-align: center !important;"
+															converterMessage="#{msg['lbl.enterOnlyNumbers']}">
+															<f:convertNumber integerOnly="true" />
+															<f:validator validatorId="allowOnlyNumber" />
+															<p:ajax event="blur"
+																listener="#{cashDeposit.onCellEditOnes(obj)}"
+																update=":cashForm:mainPanel" />
+														</p:inputText>
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+											<p:column headerText="0.5"
+												style="width:20px; text-align:center !important;">
+												<p:outputLabel  value="#{obj.pointfives}" style="text-align: center !important;"/>
+												<p:message id="msgPointfive" for="pointfive" display="text" />
+												<p:spacer height="15px" />
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{obj.inputPointfives}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText id="pointfive" value="#{obj.inputPointfives}"
+															style="padding:1px !important; border-color:green !important;  text-align: center !important;"
+															converterMessage="#{msg['lbl.enterOnlyNumbers']}">
+															<f:convertNumber integerOnly="true" />
+															<f:validator validatorId="allowOnlyNumber" />
+															<p:ajax event="blur"
+																listener="#{cashDeposit.onCellEditPointfives(obj)}"
+																update=":cashForm:mainPanel" />
+														</p:inputText>
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+											<p:column headerText="0.25"
+												style="width:20px; text-align:center !important;">
+												<p:outputLabel  value="#{obj.pointTwoFives}" style="text-align: center !important;"/>
+												<p:message id="msgPointTwoFive" for="pointTwoFive"
+													display="text" />
+												<p:spacer height="15px" />
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{obj.inputPointTwoFives}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText id="pointTwoFive"
+															value="#{obj.inputPointTwoFives}"
+															style="padding:1px !important; border-color:green !important;  text-align: center !important;"
+															converterMessage="#{msg['lbl.enterOnlyNumbers']}">
+															<f:convertNumber integerOnly="true" />
+															<f:validator validatorId="allowOnlyNumber" />
+															<p:ajax event="blur"
+																listener="#{cashDeposit.onCellEditPointTwoFives(obj)}"
+																update=":cashForm:mainPanel" />
+														</p:inputText>
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+											<p:column headerText="0.1"
+												style="width:20px; text-align:center !important;">
+												<p:outputLabel  value="#{obj.pointOnes}" style="text-align: center !important;"/>
+												<p:message id="msgPointOne" for="pointOne" display="text" />
+												<p:spacer height="15px" />
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{obj.inputPointOnes}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText id="pointOne" value="#{obj.inputPointOnes}"
+															style="padding:1px !important; border-color:green !important;  text-align: center !important;"
+															converterMessage="#{msg['lbl.enterOnlyNumbers']}">
+															<f:convertNumber integerOnly="true" />
+															<f:validator validatorId="allowOnlyNumber" />
+															<p:ajax event="blur"
+																listener="#{cashDeposit.onCellEditPointOnes(obj)}"
+																update=":cashForm:mainPanel" />
+														</p:inputText>
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+											<p:column headerText="0.05"
+												style="width:20px; text-align:center !important;">
+												<p:outputLabel  value="#{obj.pointZeroFives}" style="text-align: center !important;"/>
+												<p:message id="msgPointZerofive" for="pointZerofive"
+													display="text" />
+												<p:spacer height="15px" />
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{obj.inputPointZeroFives}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText id="pointZerofive"
+															value="#{obj.inputPointZeroFives}"
+															style="padding:1px !important; border-color:green !important;  text-align: center !important;"
+															converterMessage="#{msg['lbl.enterOnlyNumbers']}">
+															<f:convertNumber integerOnly="true" />
+															<f:validator validatorId="allowOnlyNumber" />
+															<p:ajax event="blur"
+																listener="#{cashDeposit.onCellEditPointZeroFives(obj)}"
+																update=":cashForm:mainPanel" />
+														</p:inputText>
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+											<p:column headerText="#{msg['lbl.totalTransfer']}"
+												style="width:20px; text-align:center !important;">
+												<p:outputLabel value="#{obj.totalTransfer}" style="text-align: center !important;"> 
+                        <f:convertNumber pattern="#0.000" />
+                        </p:outputLabel>
+                        <p:spacer height="15px" />
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{obj.inputTotalTransfer}">
+															<f:convertNumber pattern="#0.000" />
+														</h:outputText>
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText value="#{obj.inputTotalTransfer}"
+															readonly="true"
+															style="padding:1px !important; border-color:green !important;  text-align: center !important;">
+															<p:ajax event="click" update=":cashForm:mainPanel" />
+															<f:convertNumber pattern="#0.000" />
+														</p:inputText>
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+											<p:ajax event="cellEdit" listener="#{cashDeposit.onCellEdit}" />
+										</p:dataTable>
+										<div class="clearfix"></div> -->
+										
+										
+										
+										
+										
+										
+										<!--  New Logic -->
+										
+										
+										
+										<!-- <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.fromLocation']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText type="text"
+													value="#{cashDeposit.fromLocationFullName}"
+													readonly="true" />
+											</p:panel>
+										</p:panel>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.toLocation']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="toLocid" display="text" id="msgtoLocid" />
+												<p:selectOneMenu id="toLocid"
+													value="#{cashDeposit.toLocation}" filter="true"
+													filterMatchMode="contains" required="true"
+													requiredMessage="#{msg['lbl.plsSelectToLocation']}">
+													<f:selectItem itemLabel="#{msg['lbl.selectToLocation']}" />
+													<f:selectItems
+														value="#{cashDeposit.lstCountryBranchToLocation}"
+														var="c" itemLabel="#{c.branchId} - #{c.branchName}"
+														itemValue="#{c.countryBranchId}" />
+													<p:ajax update="msgtoLocid" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										<div class="clearfix"></div>
+										<p:panel styleClass="left_col" id="fromCashierPanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.fromCashier']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="fromCashierid" display="text"
+													id="msgfromCashierid" />
+												<p:inputText type="text" id="fromCashierid"
+													value="#{cashDeposit.fromCashier}"
+													readonly="true">
+													<p:ajax update="msgfromCashierid" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										<p:panel styleClass="left_col" id="toCashierPanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.toCashier']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="toCashierid" display="text"
+													id="msgtoCashierid" />
+												<p:inputText type="text" id="toCashierid"
+													value="#{cashDeposit.toCashier}"
+													readonly="true">
+													<p:ajax update="msgtoCashierid" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										<div class="clearfix"></div>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.transferOption']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="statusid" display="text" id="msgstatusid" />
+												<p:selectOneMenu id="statusid"
+													value="#{cashDeposit.transferOption}"
+													filter="true" filterMatchMode="contains" required="true"
+													requiredMessage="#{msg['lbl.plsSelectTransferOption']}">
+													<f:selectItem
+														itemLabel="#{msg['lbl.selectTransferOption']}" />
+													<f:selectItem itemValue="ALL" itemLabel="ALL" />
+													<f:selectItem itemValue="SPECIFIC" itemLabel="SPECIFIC" />
+													<p:ajax
+														update=":cashForm:mainPanel,:cashForm:proceErr,denomstock,:cashForm:dataTableId1,:cashForm:dataTableId"
+														event="change"
+														listener="#{cashDeposit.getCurrencyDenominationFromStock}" onstart="process.show();" onsuccess="process.hide();"/>
+		 										</p:selectOneMenu>
+											</p:panel>
+										</p:panel> -->
+										
+										<div class="clearfix"></div>
+										
+										
+										<p:panel id="denomstock" >
+										<p:panel styleClass="left_col3">
+											<p:dataTable id="dataTableId1" var="obj"
+											value="#{cashDeposit.currencyStockDataTableList}"
+											widgetVar="dataTableId1" editable="true" editMode="cell" rowIndexVar="rowIndex"
+											editingRow="true" styleClass="mydatatableclass1" 
+											rendered="#{cashDeposit.renderDataTable}"
+											emptyMessage="#{msg['lbl.benifinorecords']}" 							
+        									>
+        									<p:column headerText="#{msg['lbl.currencydenom']}" styleClass="dttotalcolumn">
+											
+												<p:row>
+											      <p:column>
+											        <h:outputText value="#{obj.currencyName}">
+											        </h:outputText>
+											      </p:column>											     
+											    </p:row>
+											   					
+											</p:column>
+											
+											<p:column headerText="#{msg['lbl.currencytotal']}" styleClass="dttotalcolumn">	
+												
+											    <p:row >
+											      <p:column>
+											        <h:inputText value="#{obj.modRowTotal}" converterMessage="#{msg['lbl.enterOnlyNumbers']}" readonly="true" class="inputTextclsTotal">
+											        <f:convertNumber pattern="###,###.000" integerOnly="true" />
+																<f:validator validatorId="allowOnlyNumber" />
+											       
+													</h:inputText>
+											      </p:column>
+											    </p:row>													
+											</p:column>	
+        								</p:dataTable>
+        								</p:panel>
+        								
+        								<p:panel  styleClass="right_col3">
+										<p:dataTable id="dataTableId" var="obj"
+											value="#{cashDeposit.currencyStockDataTableList}"
+											widgetVar="dataTableId" editable="true" editMode="cell" rowIndexVar="rowIndex"
+											editingRow="true" styleClass="mydatatableclass" 
+											rendered="#{cashDeposit.renderDataTable}"
+											emptyMessage="#{msg['lbl.benifinorecords']}" 
+											scrollable="true" scrollWidth="45%" 
+        									>
+        									
+        									<p:column headerText="100000" styleClass="dtcolumn">											
+												
+											    <p:row >
+											      <p:column>
+											      	<p:message id="msglakhs" for="lakh" display="text" />
+											        <h:inputText id="lakh" value="#{obj.oneLakhs}" class="inputTextcls" converterMessage="#{msg['lbl.enterOnlyNumbers']}"  readonly="#{obj.booOneLakhs}">
+											        <f:convertNumber integerOnly="true" pattern="############"/>
+													<f:validator validatorId="allowOnlyNumber" />
+											        <p:ajax event="change"
+																listener="#{cashDeposit.getModifiedCurrencyValues(obj)}"
+																update=":cashForm:mainPanel,:cashForm:proceErr" />
+													</h:inputText>
+											      </p:column>
+											    </p:row>														
+											</p:column>				
+											
+											<p:column headerText="50000" styleClass="dtcolumn">											
+											
+											    <p:row >
+											      <p:column>
+											      	<p:message id="msgfiftythousand" for="fiftythousand" display="text" />
+											        <h:inputText id="fiftythousand" value="#{obj.fiftyThousands}" class="inputTextcls" converterMessage="#{msg['lbl.enterOnlyNumbers']}" readonly="#{obj.booFiftyThousands}" >
+											        <f:convertNumber integerOnly="true" pattern="############"/>
+													<f:validator validatorId="allowOnlyNumber" />
+											        <p:ajax event="change"
+																listener="#{cashDeposit.getModifiedCurrencyValues(obj)}"
+																update=":cashForm:mainPanel,:cashForm:proceErr" />
+													</h:inputText>
+											      </p:column>
+											    </p:row>														
+											</p:column>
+											
+											<p:column headerText="20000" styleClass="dtcolumn">											
+											
+											    <p:row >
+											      <p:column>
+											      	<p:message id="msgtwentythousand" for="twentythousand" display="text" />
+											        <h:inputText id="twentythousand" value="#{obj.twentyThousands}" class="inputTextcls" converterMessage="#{msg['lbl.enterOnlyNumbers']}" readonly="#{obj.booTwentyThousands}" >
+											        <f:convertNumber integerOnly="true" pattern="############"/>
+													<f:validator validatorId="allowOnlyNumber" />
+											        <p:ajax event="change"
+																listener="#{cashDeposit.getModifiedCurrencyValues(obj)}"
+																update=":cashForm:mainPanel,:cashForm:proceErr" />
+													</h:inputText>
+											      </p:column>
+											    </p:row>														
+											</p:column>
+											<p:column headerText="10000" styleClass="dtcolumn">											
+											
+											    <p:row >
+											      <p:column>
+											      	<p:message id="msgtenthousand" for="tenthousand" display="text" />
+											        <h:inputText id="tenthousand" value="#{obj.tenThousands}" class="inputTextcls" converterMessage="#{msg['lbl.enterOnlyNumbers']}" readonly="#{obj.booTenThousands}" >
+											        <f:convertNumber integerOnly="true" pattern="############"/>
+													<f:validator validatorId="allowOnlyNumber" />
+											        <p:ajax event="change"
+																listener="#{cashDeposit.getModifiedCurrencyValues(obj)}"
+																update=":cashForm:mainPanel,:cashForm:proceErr" />
+													</h:inputText>
+											      </p:column>
+											    </p:row>														
+											</p:column>
+											<p:column headerText="5000" styleClass="dtcolumn">											
+											
+											    <p:row >
+											      <p:column>
+											      	<p:message id="msgfivethousand" for="fivethousand" display="text" />
+											        <h:inputText id="fivethousand" value="#{obj.fiveThousands}" class="inputTextcls" converterMessage="#{msg['lbl.enterOnlyNumbers']}" readonly="#{obj.booFiveThousands}" >
+											        <f:convertNumber integerOnly="true" pattern="############"/>
+													<f:validator validatorId="allowOnlyNumber" />
+											        <p:ajax event="change"
+																listener="#{cashDeposit.getModifiedCurrencyValues(obj)}"
+																update=":cashForm:mainPanel,:cashForm:proceErr" />
+													</h:inputText>
+											      </p:column>
+											    </p:row>														
+											</p:column>
+											<p:column headerText="2000" styleClass="dtcolumn">											
+											
+											    <p:row >
+											      <p:column>
+											      	<p:message id="msgtwothousand" for="twothousand" display="text" />
+											        <h:inputText id="twothousand" value="#{obj.twoThousands}" class="inputTextcls" converterMessage="#{msg['lbl.enterOnlyNumbers']}" readonly="#{obj.booTwoThousands}" >
+											        <f:convertNumber integerOnly="true" pattern="############"/>
+													<f:validator validatorId="allowOnlyNumber" />
+											        <p:ajax event="change"
+																listener="#{cashDeposit.getModifiedCurrencyValues(obj)}"
+																update=":cashForm:mainPanel,:cashForm:proceErr" />
+													</h:inputText>
+											      </p:column>
+											    </p:row>														
+											</p:column>
+											
+											  
+											
+											<p:column headerText="1000" styleClass="dtcolumn">											
+											
+											    <p:row >
+											      <p:column>
+											      	<p:message id="msgThousdId" for="thousand" display="text" />
+											        <h:inputText id="thousand" value="#{obj.thousands}" class="inputTextcls" converterMessage="#{msg['lbl.enterOnlyNumbers']}" readonly="#{obj.booThousands}" >
+											        <f:convertNumber integerOnly="true" pattern="############"/>
+													<f:validator validatorId="allowOnlyNumber" />
+											        <p:ajax event="change"
+																listener="#{cashDeposit.getModifiedCurrencyValues(obj)}"
+																update=":cashForm:mainPanel,:cashForm:proceErr" />
+													</h:inputText>
+											      </p:column>
+											    </p:row>														
+											</p:column>
+											
+											<p:column headerText="500" styleClass="dtcolumn">													
+											
+											    <p:row >
+											      <p:column>
+											      	<p:message id="msgFiveHundredId" for="fivehundred" display="text" />
+											        <h:inputText id="fivehundred" value="#{obj.fiveHundreds}" class="inputTextcls" converterMessage="#{msg['lbl.enterOnlyNumbers']}" readonly="#{obj.booFiveHundreds}">
+											        <f:convertNumber integerOnly="true" pattern="############"/>
+																<f:validator validatorId="allowOnlyNumber" />
+											        <p:ajax event="change"
+																listener="#{cashDeposit.getModifiedCurrencyValues(obj)}"
+																update=":cashForm:mainPanel,:cashForm:proceErr" />
+													</h:inputText>
+											      </p:column>
+											    </p:row>																								
+											</p:column>
+											<p:column headerText="200" styleClass="dtcolumn">													
+										
+											    <p:row >
+											      <p:column>
+											      	<p:message id="msgTwoHundredId" for="twohundred" display="text" />
+											        <h:inputText id="twohundred" value="#{obj.twoHundreds}" class="inputTextcls" converterMessage="#{msg['lbl.enterOnlyNumbers']}" readonly="#{obj.booTwoHundreds}">
+											        <f:convertNumber integerOnly="true" pattern="############"/>
+																<f:validator validatorId="allowOnlyNumber" />
+											        <p:ajax event="change"
+																listener="#{cashTransferForLToLBean.getModifiedCurrencyValues(obj)}"
+																update=":cashForm:mainPanel,:cashForm:proceErr" />
+													</h:inputText>
+											      </p:column>
+											    </p:row>																								
+											</p:column>
+											<p:column headerText="100" styleClass="dtcolumn">	
+										
+											    <p:row >
+											      <p:column>
+											      	<p:message id="msgHundredId" for="hundred" display="text" />
+											        <h:inputText id="hundred" value="#{obj.hundreds}" class="inputTextcls" converterMessage="#{msg['lbl.enterOnlyNumbers']}" readonly="#{obj.booHundreds}">
+											        <f:convertNumber integerOnly="true" pattern="############"/>
+																<f:validator validatorId="allowOnlyNumber" />
+											        <p:ajax event="change"
+																listener="#{cashDeposit.getModifiedCurrencyValues(obj)}"
+																update=":cashForm:mainPanel,:cashForm:proceErr" />
+													</h:inputText>
+											      </p:column>
+											    </p:row>											
+											</p:column>
+											<p:column headerText="50" styleClass="dtcolumn">	
+										
+											    <p:row >
+											      <p:column>
+											      	<p:message id="msgFiftyId" for="fifty" display="text" />
+											        <h:inputText id="fifty" value="#{obj.fiftys}" class="inputTextcls" converterMessage="#{msg['lbl.enterOnlyNumbers']}" readonly="#{obj.booFiftys}">
+											        <f:convertNumber integerOnly="true" pattern="############"/>
+																<f:validator validatorId="allowOnlyNumber" />
+											        <p:ajax event="change"
+																listener="#{cashDeposit.getModifiedCurrencyValues(obj)}"
+																update=":cashForm:mainPanel,:cashForm:proceErr" />
+													</h:inputText>
+											      </p:column>
+											    </p:row>												
+											</p:column>
+											<p:column headerText="20" styleClass="dtcolumn">	
+										
+											    <p:row >
+											      <p:column>
+											      	<p:message id="msgTwentyId" for="twenty" display="text" />
+											        <h:inputText id="twenty" value="#{obj.twentys}" class="inputTextcls" converterMessage="#{msg['lbl.enterOnlyNumbers']}" readonly="#{obj.booTwentys}">
+											        <f:convertNumber integerOnly="true" pattern="############"/>
+																<f:validator validatorId="allowOnlyNumber" />
+											        <p:ajax event="change"
+																listener="#{cashDeposit.getModifiedCurrencyValues(obj)}"
+																update=":cashForm:mainPanel,:cashForm:proceErr" />
+													</h:inputText>
+											      </p:column>
+											    </p:row>												
+											</p:column>
+											<p:column headerText="10" styleClass="dtcolumn">	
+									
+											    <p:row >
+											      <p:column>
+											      	<p:message id="msgTenId" for="ten" display="text" />
+											        <h:inputText id="ten" value="#{obj.tens}" class="inputTextcls" converterMessage="#{msg['lbl.enterOnlyNumbers']}" readonly="#{obj.booTens}">
+											        <f:convertNumber integerOnly="true" pattern="############"/>
+																<f:validator validatorId="allowOnlyNumber" />
+											        <p:ajax event="change"
+																listener="#{cashDeposit.getModifiedCurrencyValues(obj)}"
+																update=":cashForm:mainPanel,:cashForm:proceErr" />
+													</h:inputText>
+											      </p:column>
+											    </p:row>													
+											</p:column>
+											<p:column headerText="5" styleClass="dtcolumn">	
+								
+											    <p:row >
+											      <p:column>
+											      	<p:message id="msgFiveId" for="five" display="text" />
+											        <h:inputText id="five" value="#{obj.fives}" class="inputTextcls"  converterMessage="#{msg['lbl.enterOnlyNumbers']}" readonly="#{obj.booFives}">
+											        <f:convertNumber integerOnly="true" pattern="############"/>
+																<f:validator validatorId="allowOnlyNumber" />
+											        <p:ajax event="change"
+																listener="#{cashDeposit.getModifiedCurrencyValues(obj)}"
+																update=":cashForm:mainPanel,:cashForm:proceErr" />
+													</h:inputText>
+											      </p:column>
+											    </p:row>												
+											</p:column>
+											<p:column headerText="2" styleClass="dtcolumn">	
+							
+											    <p:row >
+											      <p:column>
+											      	<p:message id="msgTwoId" for="two" display="text" />
+											        <h:inputText id="two" value="#{obj.twos}" class="inputTextcls" converterMessage="#{msg['lbl.enterOnlyNumbers']}" readonly="#{obj.booTwos}">
+											        <f:convertNumber integerOnly="true" pattern="############"/>
+																<f:validator validatorId="allowOnlyNumber" />
+											        <p:ajax event="change"
+																listener="#{cashDeposit.getModifiedCurrencyValues(obj)}"
+																update=":cashForm:mainPanel,:cashForm:proceErr" />
+													</h:inputText>
+											      </p:column>
+											    </p:row>												
+											</p:column>
+											<p:column headerText="1" styleClass="dtcolumn">	
+									
+											    <p:row >
+											      <p:column>
+											      	<p:message id="msgOneId" for="one" display="text" />
+											        <h:inputText id="one" value="#{obj.ones}" class="inputTextcls" converterMessage="#{msg['lbl.enterOnlyNumbers']}" readonly="#{obj.booOnes}">
+											        <f:convertNumber integerOnly="true" pattern="############"/>
+																<f:validator validatorId="allowOnlyNumber" />
+											        <p:ajax event="change"
+																listener="#{cashDeposit.getModifiedCurrencyValues(obj)}"
+																update=":cashForm:mainPanel,:cashForm:proceErr" />
+													</h:inputText>
+											      </p:column>
+											    </p:row>												
+											</p:column>
+											<p:column headerText="0.5" styleClass="dtcolumn">	
+								
+											    <p:row >
+											      <p:column>
+											      	<p:message id="msgPointFiveId" for="pointfive" display="text" />
+											        <h:inputText id="pointfive" value="#{obj.pointFives}" class="inputTextcls" converterMessage="#{msg['lbl.enterOnlyNumbers']}" readonly="#{obj.booPointFives}">
+											        <f:convertNumber integerOnly="true" pattern="############"/>
+																<f:validator validatorId="allowOnlyNumber" />
+											        <p:ajax event="change"
+																listener="#{cashDeposit.getModifiedCurrencyValues(obj)}"
+																update=":cashForm:mainPanel,:cashForm:proceErr" />
+													</h:inputText>
+											      </p:column>
+											    </p:row>													
+											</p:column>
+											
+											<p:column headerText="0.25" styleClass="dtcolumn">	
+								
+											    <p:row >
+											      <p:column>
+											      	<p:message id="msgPointTwoFiveId" for="pointtwofive" display="text" />
+											        <h:inputText id="pointtwofive" value="#{obj.pointTwoFives}" class="inputTextcls" converterMessage="#{msg['lbl.enterOnlyNumbers']}" readonly="#{obj.booPointTwoFives}">
+											        <f:convertNumber integerOnly="true" pattern="############"/>
+																<f:validator validatorId="allowOnlyNumber" />
+											        <p:ajax event="change"
+																listener="#{cashDeposit.getModifiedCurrencyValues(obj)}"
+																update=":cashForm:mainPanel,:cashForm:proceErr" />
+													</h:inputText>
+											      </p:column>
+											    </p:row>												
+											</p:column>
+											<p:column headerText="0.1" styleClass="dtcolumn">	
+									
+											    <p:row >
+											      <p:column>
+											      	<p:message id="msgPointOneId" for="pointone" display="text" />
+											        <h:inputText id="pointone" value="#{obj.pointOnes}" class="inputTextcls" converterMessage="#{msg['lbl.enterOnlyNumbers']}" readonly="#{obj.booPointOnes}">
+											        <f:convertNumber integerOnly="true" pattern="############"/>
+																<f:validator validatorId="allowOnlyNumber" />
+											        <p:ajax event="change"
+																listener="#{cashDeposit.getModifiedCurrencyValues(obj)}"
+																update=":cashForm:mainPanel,:cashForm:proceErr" />
+													</h:inputText>
+											      </p:column>
+											    </p:row>												
+											</p:column>
+											<p:column headerText="0.05" styleClass="dtcolumn">										
+											    <p:row >
+											      <p:column>
+											      	<p:message id="msgPointZeroFiveId" for="pointzerofive" display="text" />
+											        <h:inputText id="pointzerofive" value="#{obj.pointZeroFives}" class="inputTextcls" converterMessage="#{msg['lbl.enterOnlyNumbers']}" readonly="#{obj.booPointZeroFives}">
+											        <f:convertNumber integerOnly="true" pattern="############"/>
+																<f:validator validatorId="allowOnlyNumber" />
+											        <p:ajax event="change"
+																listener="#{cashDeposit.getModifiedCurrencyValues(obj)}"
+																update=":cashForm:mainPanel,:cashForm:proceErr" />
+													</h:inputText>
+											      </p:column>
+											    </p:row>													
+											</p:column>
+											<p:column headerText="0.02" styleClass="dtcolumn">									
+											    <p:row >
+											      <p:column>
+											      	<p:message id="msgPointZeroTwoId" for="pointZeroTwo" display="text" />
+											        <h:inputText id="pointZeroTwo" value="#{obj.pointZeroTwos}" class="inputTextcls" converterMessage="#{msg['lbl.enterOnlyNumbers']}" readonly="#{obj.booPointZeroTwos}">
+											        <f:convertNumber integerOnly="true" pattern="############"/>
+																<f:validator validatorId="allowOnlyNumber" />
+											        <p:ajax event="change"
+																listener="#{cashDeposit.getModifiedCurrencyValues(obj)}"
+																update=":cashForm:mainPanel,:cashForm:proceErr" />
+													</h:inputText>
+											      </p:column>
+											    </p:row>													
+											</p:column>
+											<p:column headerText="0.01" styleClass="dtcolumn">											
+											    <p:row >
+											      <p:column>
+											      	<p:message id="msgPointZeroOneId" for="pointZeroOne" display="text" />
+											        <h:inputText id="pointZeroOne" value="#{obj.pointZeroOnes}" class="inputTextcls" converterMessage="#{msg['lbl.enterOnlyNumbers']}" readonly="#{obj.booPointZeroOnes}">
+											        <f:convertNumber integerOnly="true" pattern="############"/>
+																<f:validator validatorId="allowOnlyNumber" />
+											        <p:ajax event="change"
+																listener="#{cashDeposit.getModifiedCurrencyValues(obj)}"
+																update=":cashForm:mainPanel,:cashForm:proceErr" />
+													</h:inputText>
+											      </p:column>
+											    </p:row>													
+											</p:column>
+											
+											<p:column headerText="0.005" styleClass="dtcolumn">										
+											    <p:row >
+											      <p:column>
+											      	<p:message id="msgPointZeroZeroFiveId" for="pointZeroZeroFive" display="text" />
+											        <h:inputText id="pointZeroZeroFive" value="#{obj.pointZeroZeroFives}" class="inputTextcls" converterMessage="#{msg['lbl.enterOnlyNumbers']}" readonly="#{obj.booPointZeroZeroFives}">
+											        <f:convertNumber integerOnly="true" pattern="############"/>
+																<f:validator validatorId="allowOnlyNumber" />
+											        <p:ajax event="change"
+																listener="#{cashDeposit.getModifiedCurrencyValues(obj)}"
+																update=":cashForm:mainPanel,:cashForm:proceErr" />
+													</h:inputText>
+											      </p:column>
+											    </p:row>													
+											</p:column>
+											
+											<p:column headerText="0.001" styleClass="dtcolumn">										
+											    <p:row >
+											      <p:column>
+											      	<p:message id="msgPointZeroZeroOneId" for="pointZeroZeroOne" display="text" />
+											        <h:inputText id="pointZeroZeroOne" value="#{obj.pointZeroZeroOnes}" class="inputTextcls" converterMessage="#{msg['lbl.enterOnlyNumbers']}" readonly="#{obj.booPointZeroZeroOnes}">
+											        <f:convertNumber integerOnly="true" pattern="############"/>
+																<f:validator validatorId="allowOnlyNumber" />
+											        <p:ajax event="change"
+																listener="#{cashDeposit.getModifiedCurrencyValues(obj)}"
+																update=":cashForm:mainPanel,:cashForm:proceErr" />
+													</h:inputText>
+											      </p:column>
+											    </p:row>													
+											</p:column> 
+        									
+        									</p:dataTable>
+        								</p:panel>
+
+									</p:panel>
+									
+									<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+										<p:spacer height="30px" />
+									<h:panelGroup layout="block" styleClass="shadow_button">
+										<p:commandButton value="#{msg['lbl.check']}" id="reportButId"
+											actionListener="#{cashDeposit.generateNewUpdatedReports}"
+											process="@this"  update="proceErr" />
+											
+									</h:panelGroup>
+									<!-- 	<p:commandLink  value="#{msg['lbl.clickHere']} "
+														actionListener="#{cashDeposit.generateNewUpdatedReports}"
+														style="font-weight: bold; font-size:16px !important; color:blue !important; text-decoration:underline !important;"
+														process="@this" immediate="true" ajax="false" /> -->
+
+
+								</p:panel>
+								</p:panel>
+								<div class="clearfix"></div>
+							</h:panelGroup>
+						</h:panelGroup></td>
+				</tr>
+			</table>
+		</h:form>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

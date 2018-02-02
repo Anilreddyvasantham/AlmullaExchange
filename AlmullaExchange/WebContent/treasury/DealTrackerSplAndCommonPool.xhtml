@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+		history.pushState(null, null, 'DealTrackerSplAndCommonPool.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'DealTrackerSplAndCommonPool.xhtml');
+	    });
+	</script>
+</h:head>
+
+
+<h:body dir="#{facesBean.direction}">
+
+        
+	<f:view locale="#{facesBean.locale}">
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<h:form id="inputForm">
+		<table align="left" width="100%" style="height:100%;">
+    <tr>
+    <td align="left" valign="top" style="height:100%;" ><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+    <td  class="rightColumn" valign="top">
+		<h:panelGroup layout="block" class="container">
+			<h:panelGroup layout="block" class="main_div">
+			<div class="menu_button"><img style="cursor: pointer;  position:relative; left:15px;" id="HideHandle" name="HideHandle" src="../images/toggle_plus.png" alt="" onclick='hideLeftCol("leftCol");closeMenus();'/></div>
+				<h1>
+						
+			<h:outputText value="#{msg['lbl.dealTracker']}" />
+				</h1>
+				
+					<p:panel id="mainPanel" styleClass="shadow" >
+					
+									<p:confirmDialog id="docZero" widgetVar="docZero"   
+												resizable="false" style="background-color: white !important;" header="#{mag['lbl.warningDailog']}" styleClass="warning"
+													showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.docZero']}">
+													
+													<br />
+										<p:commandButton value="OK"	actionListener="#{dealTrackerSplAndCommonPool.fetchAllViewTickets}" update="mainPanel" process="@this" style="margin-left: 150px !important;" onstart="process.show();" onsuccess="process.hide();"/>
+									</p:confirmDialog>
+									
+					
+											<p:confirmDialog id="proceErr" widgetVar="proceErr"  width="500" showHeader="false" resizable="false" header="Warning Message" 
+														styleClass="warning" style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="explode" hideEffect="explode" message="#{dealTrackerSplAndCommonPool.errmsg}">
+											</p:confirmDialog>
+											
+						<p:confirmDialog id="dealidexist" widgetVar="dealidexist" width="300" height="20"  
+										resizable="false" style="background-color: white !important;" header="#{mag['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.dealidexist']}">
+		
+										<br />
+										<p:commandButton value="OK"	actionListener="#{dealTrackerSplAndCommonPool.fetchAllViewTickets}" update="mainPanel" process="@this" style="margin-left: 150px !important;" onstart="process.show();" onsuccess="process.hide();"/>
+									</p:confirmDialog>
+									<p:confirmDialog id="greatersales" widgetVar="greatersales"   
+												resizable="false" style="background-color: white !important;" header="#{mag['lbl.warningDailog']}" styleClass="warning"
+													showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.thisLocalBankHaveInsufficientBankBalance']}">
+									</p:confirmDialog>
+									
+									<p:confirmDialog id="InsufficientBalance" widgetVar="InsufficientBalance"  
+									resizable="false" style="background-color: white !important;" header="#{mag['lbl.warningDailog']}" styleClass="warning"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.selectedBankHaveInsufficientBankBalance']}">
+									<br />
+									<p:commandButton value="OK"	actionListener="#{dealTrackerSplAndCommonPool.fetchAllViewTickets}" update="mainPanel" process="@this" style="margin-left: 150px !important;" onstart="process.show();" onsuccess="process.hide();"/>
+								</p:confirmDialog>
+									
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+
+									<p:dialog id="saveerror" widgetVar="saveerror" width="600"
+										height="70" resizable="false"
+										style="background-color: white !important;"
+										styleClass="success" header="#{msg['lbl.success']}"
+										closable="false" showEffect="clip" hideEffect="clip">
+										<p:outputLabel value="#{msg['lbl.errorWhileSavingFxDealBank']}" style="text-align: center; font-size:16px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.exit']}" actionListener="#{dealTrackerSplAndCommonPool.dealTrackerSplAndCommonPageNavigation}" process="@this" update="mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+									</p:dialog>
+
+									<p:dialog id="complete" widgetVar="complete" width="400"
+										height="70" resizable="false"
+										style="background-color: white !important;"
+										styleClass="success" header="#{msg['lbl.success']}"
+										closable="false" showEffect="clip" hideEffect="clip">
+										<p:outputLabel value="#{msg['lbl.dataissuccessfullysaved']}" style="text-align: center; font-size:16px !important;" />
+										<br />
+										<p:commandButton value="OK"	actionListener="#{dealTrackerSplAndCommonPool.fetchAllViewTickets}" update="mainPanel" process="@this" style="margin-left: 150px !important;" onstart="process.show();" onsuccess="process.hide();"/>
+									</p:dialog>
+									
+									<p:dialog id="alreadyApprove" widgetVar="alreadyApprove" width="400"
+										height="70" resizable="false"
+										style="background-color: white !important;"
+										styleClass="success" header="#{msg['lbl.warningMessage']}"
+										closable="false" showEffect="clip" hideEffect="clip">
+										<p:outputLabel value="#{msg['lbl.alreadyApprove']}" style="text-align: center; font-size:16px !important;" />
+										<br />
+										<p:commandButton value="OK"	actionListener="#{dealTrackerSplAndCommonPool.fetchAllViewTickets}" update="mainPanel" process="@this" style="margin-left: 150px !important;" onstart="process.show();" onsuccess="process.hide();"/>
+									</p:dialog>
+									
+									<p:dialog id="duplicateApprove" widgetVar="duplicateApprove" width="400"
+										height="70" resizable="false"
+										style="background-color: white !important;"
+										styleClass="success" header="#{msg['lbl.warningMessage']}"
+										closable="false" showEffect="clip" hideEffect="clip">
+										<p:outputLabel value="#{msg['lbl.duplicateApprove']}" style="text-align: center; font-size:16px !important;" />
+										<br />
+										<p:commandButton value="OK"	actionListener="#{dealTrackerSplAndCommonPool.fetchAllViewTickets}" update="mainPanel" process="@this" style="margin-left: 150px !important;" onstart="process.show();" onsuccess="process.hide();"/>
+									</p:dialog>
+									
+									<p:dialog id="otherExceptionApprove" widgetVar="otherExceptionApprove" width="400"
+										height="70" resizable="false"
+										style="background-color: white !important;"
+										styleClass="success" header="#{msg['lbl.warningMessage']}"
+										closable="false" showEffect="clip" hideEffect="clip">
+										<p:outputLabel value="#{msg['lbl.otherExceptionApprove']}" style="text-align: center; font-size:16px !important;" />
+										<br />
+										<p:commandButton value="OK"	actionListener="#{dealTrackerSplAndCommonPool.fetchAllViewTickets}" update="mainPanel" process="@this" style="margin-left: 150px !important;" onstart="process.show();" onsuccess="process.hide();"/>
+									</p:dialog>
+
+									<p:confirmDialog id="warningDailogId"
+										widgetVar="warningDailogId" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{dealTrackerSplAndCommonPool.warningMessage}">
+									</p:confirmDialog>
+			
+							<p:panel styleClass="panel_border1">
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.dealdate']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:message for="dateId" display="text" id="msgdateId" />
+												<p:calendar id="dateId" value="#{dealTrackerSplAndCommonPool.currentDate}" mode="popup" pattern="dd/MM/yyyy"  maxdate="#{dealTrackerSplAndCommonPool.effectiveMinDate}" navigator="true" readonlyInput="true" required="true" requiredMessage="Enter Deal Date" tabindex="1">
+        													<p:ajax event="dateSelect" update="msgdateId" />
+    											</p:calendar>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.country']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:message for="countryId" display="text" id="msgcountryId" />
+													<p:selectOneMenu id="countryId" value="#{dealTrackerSplAndCommonPool.countryId}" filter="true" filterMatchMode="contains" >
+														<f:selectItem itemLabel="#{msg['lbl.beleselect']}" itemValue="" />
+														<f:selectItems value="#{dealTrackerSplAndCommonPool.lstAllCountry}" var="c" itemLabel="#{c.bankCountryCode}- #{c.countryName}" itemValue="#{c.bankCountryId}" />
+														<p:ajax update="msgcountryId,currencyId,bankId" event="change" listener="#{dealTrackerSplAndCommonPool.fetchCurrencyAndBanksBasedCountryId}" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.currency']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:message for="currencyId" display="text" id="msgcurrencyId" />
+													<p:selectOneMenu id="currencyId" value="#{dealTrackerSplAndCommonPool.currencyId}" filter="true" filterMatchMode="contains" >
+														<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}" itemValue="" />
+														<f:selectItems value="#{dealTrackerSplAndCommonPool.lstAllCountryCurrencyPopulationBean}" var="c" itemLabel="#{c.currencyCode}  - #{c.currencyName}" itemValue="#{c.currencyId}" />
+														<p:ajax update="msgcurrencyId" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.bank']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:message for="bankId" display="text" id="msgbankId" />
+													<p:selectOneMenu id="bankId" value="#{dealTrackerSplAndCommonPool.bankId}" filter="true" filterMatchMode="contains" >
+														<f:selectItem itemLabel="#{msg['lbl.selectbank']}" itemValue="" />
+														<f:selectItems value="#{dealTrackerSplAndCommonPool.lstAllbankBasedOnCntry}" var="c" itemLabel="#{c.bankMaster.bankCode} - #{c.bankMaster.bankFullName}" itemValue="#{c.bankMaster.bankId}" />
+														<p:ajax update="msgbankId" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="shadow_button"	style=" background-color:#FFF !important;">
+												
+												<p:commandButton value="#{msg['lbl.search']}" action="#{dealTrackerSplAndCommonPool.fetchAllViewTickets}" style="margin-right:10px;" update="mainPanel" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+												<p:commandButton value="#{msg['lbl.clear']}" action="#{dealTrackerSplAndCommonPool.dealTrackerSplAndCommonPageNavigation}" process="@this" update="mainPanel" onstart="process.show();" onsuccess="process.hide();">
+													<p:resetInput target="@form" />
+												</p:commandButton>
+
+											</p:panel>
+
+											<br />
+											
+											<p:dataTable id="dataTable" styleClass="mydatatableclass"
+												value="#{dealTrackerSplAndCommonPool.lstViewTickets}" var="c"
+												editable="true" editMode="cell" cellpadding="0"
+												cellspacing="0" border="1" rowIndexVar="rowIndex" rows="10"
+												paginatorPosition="bottom" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="5,10,15"
+												emptyMessage="#{msg['lbl.norecordfound']}" rendered="#{dealTrackerSplAndCommonPool.booRenderDataTableApp}">
+												
+												<p:column headerText="#{msg['lbl.sino']}" >
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.dealId']}">
+													<p:outputLabel style="text-align:center;" value="#{c.dealId}"/>
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.SaleBank']}">
+													<p:outputLabel style="text-align:center;" value="#{c.sdAMXBankCode}"/>
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.saleCurrency']}">
+													<p:outputLabel style="text-align:center;" value="#{c.sdCurrencyCode}"/>
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.fxsaleAmount']}">
+													<p:outputLabel style="text-align:center;" value="#{c.saleAmount}"/>
+												</p:column>
+												
+												
+												<p:column headerText="#{msg['lbl.saleAccountNo']}">
+													<p:selectOneMenu id="accid" value="#{c.accountDetId}" filter="true" filterMatchMode="contains" >
+													<f:selectItem itemLabel="--select--" itemValue=""/>
+													<f:selectItems value="#{c.lstBankAccountDetails}" var="d" itemLabel="#{d.bankAcctNo}" itemValue="#{d.bankAcctDetId}"/>
+													<p:ajax event="change" listener="#{dealTrackerSplAndCommonPool.checkStandardInstrnData(c)}" update="dataTable,:inputForm:warningDailogId,:inputForm:proceErr,:inputForm:docZero"/>
+													</p:selectOneMenu>
+												</p:column>
+												
+												
+												<p:column headerText="#{msg['lbl.Rate']}">
+													<p:outputLabel style="text-align:center;" value="#{c.pdExchangerate}"/>
+												</p:column>
+												
+												<!-- <p:column headerText="#{msg['lbl.SLNO']}">
+													<p:outputLabel style="text-align:center;" value="#{c.slNo}"/>
+												</p:column> -->
+
+												<p:column headerText="#{msg['lbl.purchasebank']}">
+													<p:outputLabel style="text-align:center;" value="#{c.pdAMXBankCode}"/>
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.purchaseCurrency']}">
+													<p:outputLabel style="text-align:center;" value="#{c.pdCurrencyCode}"/>
+												</p:column>
+												<p:column headerText="#{msg['lbl.pdValuedate']}">
+													<p:outputLabel style="text-align:center;" value="#{c.pdValueDateForDisplay}"/>
+												</p:column>
+												
+
+												<p:column headerText="#{msg['lbl.purchaseAmount']}">
+													<p:outputLabel style="text-align:center;" value="#{c.pdFCAmountForDisplay}"/>
+												</p:column>
+
+												
+												
+												<p:column headerText="#{msg['lbl.highvaldealref']}">
+													<p:outputLabel style="text-align:center;" value="#{c.highValueComb}"/>
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.eft']}" style="width:7%">
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{c.eftval}" />
+														</f:facet>
+														<f:facet name="input">
+														<p:message id="msgeftId" for="eftId" display="text" />
+															<p:inputText id="eftId" value="#{c.eftval}" type="text" onclick="this.select();" disabled="#{c.disableCol}">
+																<p:ajax event="blur" listener="#{dealTrackerSplAndCommonPool.cellEditForEFTVal(c)}" update="dataTable,:inputForm:warningDailogId" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+																<f:validator validatorId="allowOnlyNumber" />
+															</p:inputText>
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.tt']}" style="width:7%">
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{c.ttVal}" />
+														</f:facet>
+														<f:facet name="input">
+														<p:message id="msgttId" for="ttId" display="text" />
+															<p:inputText id="ttId" value="#{c.ttVal}" type="text" onclick="this.select();" disabled="#{c.disableCol}">
+																<p:ajax event="blur" listener="#{dealTrackerSplAndCommonPool.cellEditForTTVal(c)}" update="dataTable,:inputForm:warningDailogId" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+																<f:validator validatorId="allowOnlyNumber" />
+															</p:inputText>
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.cash']}" style="width:7%">
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{c.cashVal}" />
+														</f:facet>
+														<f:facet name="input">
+														<p:message id="msgcashId" for="cashId" display="text" />
+															<p:inputText id="cashId" value="#{c.cashVal}" type="text" onclick="this.select();" disabled="#{c.disableCol}">
+																<p:ajax event="blur" listener="#{dealTrackerSplAndCommonPool.cellEditForCASHVal(c)}" update="dataTable,:inputForm:warningDailogId" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+																<f:validator validatorId="allowOnlyNumber" />
+															</p:inputText>
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+
+												<p:column style="width:5%" headerText="#{msg['lbl.select']}">
+													<p:selectBooleanCheckbox value="#{c.selectCheck}" disabled="#{c.booEnableselectCheck}">
+													<p:ajax event="change" listener="#{dealTrackerSplAndCommonPool.highValueDealSelectBox(c)}" update="dataTable,:inputForm:warningDailogId" onstart="process.show();" onsuccess="process.hide();"/>
+												</p:selectBooleanCheckbox>
+												</p:column>
+												
+											</p:dataTable>
+
+											<div class="clearfix"></div>
+
+
+									<p:panel id="buttonApp" styleClass="shadow_button"	style=" background-color:#FFF !important;" rendered="#{dealTrackerSplAndCommonPool.booRenderDataTableApp}">
+										<p:commandButton value="#{msg['lbl.submit']}" action="#{dealTrackerSplAndCommonPool.mainSaveApprove}"  style="margin-right:10px;" update="mainPanel,:inputForm:warningDailogId" onstart="process.show();" onsuccess="process.hide();"/>
+										<p:commandButton value="#{msg['lbl.exit']}" action="#{dealTrackerSplAndCommonPool.exit}" update="mainPanel" immediate="true" process="@this" />
+									</p:panel>
+										</p:panel>
+					</p:panel>
+				
+			</h:panelGroup>
+		</h:panelGroup>
+		<div class="clearfix"></div>
+    				
+    				</td>
+    </tr>
+    </table>
+    	</h:form>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+
+
+</html>

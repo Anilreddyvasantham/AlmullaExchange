@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script>
+	function clearForm(){
+		
+		var dat1 = document.getElementById("countryForm:englishId");
+		dat1.value='';
+		var dat2 = document.getElementById("countryForm:localId");
+		dat2.value='';
+		//alert("HELLO"+dat.value);
+		
+	}
+	
+	</script>
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+	</script>
+</h:head>
+<h:body>
+
+<p:confirmDialog id="failure" widgetVar="failure" header="Warning Message" width="500" height="17" resizable="false"
+	style=" border:2px solid #007f30 !important; padding:0px !important;  color:#007f30 !important; background:url('../images/warning.png') 10px 43px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"
+	message="Data not saved"
+>
+</p:confirmDialog>
+
+
+<p:dialog id="succsses" widgetVar="succsses" width="270" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"
+>
+	<p:outputLabel value="#{msg['lbl.benisuccessfull']}" />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{countrymasterupload.saveUploadClick}" process="@this" />
+</p:dialog>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;" id="HideHandle" name="HideHandle" src="../images/toggle_plus.png" alt="" onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="countryUploadForm">
+								<h1>
+									<h:outputText value="Country Master" />
+								</h1>
+								
+							
+								
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h3>
+										<h:outputText value="Country Master File Upload" />
+									</h3>
+									 
+										<p:confirmDialog id="csp" widgetVar="csp" width="700" showHeader="false" resizable="false" header="Warning Message" height="10"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip"
+											message="#{countrymasterupload.errorMessage}"
+										>
+										</p:confirmDialog>
+										
+										
+										<p:confirmDialog id="sssave" widgetVar="sssave" width="1000" showHeader="false" resizable="false" header="Warning Message" height="70"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip"
+											message="#{countrymasterupload.errorMessage}">
+										</p:confirmDialog>
+									
+									<p:panel styleClass="panel_border">
+										<p:panel id="headerPanel">
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="File Upload(XLS,XLXS)" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<!-- <p:dialog id="imageupload" styleClass="dialogsuccess" widgetVar="imageUpload" resizable="false" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true">
+														<p:outputLabel value="Country File Successfully Uploaded" />
+													</p:dialog>
+													 -->
+													<p:dialog id="imageUpload" widgetVar="imageUpload" width="270" height="70" showHeader="false" resizable="false"
+														style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"
+													>
+														<p:outputLabel value="Country File Successfully Uploaded" />
+														<br />
+														<p:spacer width="15px" />
+														<p:commandButton value="#{msg['lbl.ok']}" process="@this" oncomplete="PF('imageUpload').hide();"  />
+													</p:dialog>
+													<p:fileUpload id="fileUplod" fileUploadListener="#{countrymasterupload.exportExceltoDataTable}" mode="advanced" fileLimit="1" fileLimitMessage="#{msg['lbl.onefileallowed']}" update="messages" label="Choose a file" sizeLimit="1048576"
+														allowTypes="/(\.|\/)(xls|xlsx)$/" required="true" requiredMessage="#{msg['lbl.uploadfile']}" invalidSizeMessage="#{msg['lbl.filemaxsize']}" invalidFileMessage="You are allowed to upload xls/xlsx file only !"
+														oncomplete="PF('imageUpload').show()"
+													>
+														<p:message id="messages" for="fileUplod" value="#{msg['lbl.fileNotSelected']}" style="color:red;" />
+													</p:fileUpload>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.save']}" action="#{countrymasterupload.uploadtoDatatable}" update=":countryUploadForm" immediate="true" process="@this"/>
+											<p:commandButton value="#{msg['lbl.exit']}" action="#{countrymasterupload.clickOExit}" immediate="true" />
+										</h:panelGroup>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:dataTable id="dataTable" value="#{countrymasterupload.uploadrDataTableList}" var="d" rowIndexVar="rowIndex" emptyMessage="No records Found" rendered="#{countrymasterupload.booDtEnabled}" rows="25" paginator="true"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  paginatorPosition="bottom"  rowsPerPageTemplate="15,20,25" sortMode="multiple"
+										>
+											<p:column headerText="#{msg['lbl.sino']}" style="width:30px;">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+											<p:column headerText="Country Code" sortBy="#{d.countryCode}">
+												<h:outputText value="#{d.countryCode}" />
+											</p:column>
+											<p:column headerText="English Country Name" sortBy="#{d.englishDescption}">
+												<h:outputText value="#{d.englishDescption}" />
+											</p:column>
+											<p:column headerText="English Nationality" sortBy="#{d.englishNationality}">
+												<h:outputText value="#{d.englishNationality}" />
+											</p:column>
+											<p:column headerText="Local Country  Name" sortBy="#{d.localDescption}">
+												<h:outputText value="#{d.localDescption}" />
+											</p:column>
+											<p:column headerText="Local Nationality" sortBy="#{d.localNationality}">
+												<h:outputText value="#{d.localNationality}" />
+											</p:column>
+											<p:column headerText="Alpha2 Code" sortBy="#{d.countryAlpha2Code}">
+												<h:outputText value="#{d.countryAlpha2Code}" />
+											</p:column>
+											<p:column headerText="Alpha3 Code" sortBy="#{d.countryAlpha3Code}">
+												<h:outputText value="#{d.countryAlpha3Code}" />
+											</p:column>
+											<p:column headerText="Country Telephone Code" sortBy="#{d.telCode}">
+												<h:outputText value="#{d.telCode}" />
+											</p:column>
+											<p:column headerText="Business Country" sortBy="#{d.businessCountry}">
+												<h:outputText value="#{d.businessCountry}" />
+											</p:column>
+											<p:column headerText="State status" sortBy="#{d.stateStatus}">
+												<h:outputText value="#{d.stateStatus}" />
+											</p:column>
+											
+											<p:column headerText="Record Status" sortBy="#{d.duplicate}">
+												<h:outputText value="#{d.duplicate}" />
+											</p:column>
+										</p:dataTable>
+										
+										
+										
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{countrymasterupload.booDtEnabled}" id="submitPanel">
+											<p:commandButton id="save" value="#{msg['lbl.submit']}" style="margin-right:10px;" action="#{countrymasterupload.save}" immediate="true" />
+											<p:commandButton value="#{msg['lbl.exit']}" action="#{countrymasterupload.clickOExit}" process="@this" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+										
+										
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+									</p:panel>
+									<p:panel></p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+	<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

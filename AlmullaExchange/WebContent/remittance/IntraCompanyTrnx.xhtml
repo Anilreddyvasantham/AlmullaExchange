@@ -1,0 +1,961 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script type="text/javascript">
+		document.onkeydown = function(e) {
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+		history.pushState(null, null, 'IntraCompanyTrnx.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'IntraCompanyTrnx.xhtml');
+	    });
+	</script>
+</h:head>
+
+<h:body>
+
+	<f:view>
+
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+
+							<h:form id="form1">
+
+								<p:confirmDialog id="alertmsg" widgetVar="alertmsg"
+									header="Alert Message" resizable="false"
+									style="background-color: white !important;"
+									styleClass="warning" showEffect="clip" hideEffect="clip"
+									closeOnEscape="true" closable="true"
+									message="#{intraCompanyTrnxBean.errmsg}">
+								</p:confirmDialog>
+
+								<p:confirmDialog id="expiredCustomer"
+									widgetVar="expiredCustomer" resizable="false"
+									style="background-color: white !important;"
+									header="#{msg['lbl.warningDailog']}" styleClass="warning"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" message="#{intraCompanyTrnxBean.errmsg}">
+
+									<p:outputLabel value="Do you want to go Customer Registration" />
+									<br />
+
+									<p:commandButton value="#{msg['lbl.yes']}"
+										oncomplete="expiredCustomer.hide()" process="@this"
+										onstart="process.show();" onsuccess="process.hide();"
+										action="#{intraCompanyTrnxBean.redirectToCustomerFirstPage}" />
+									<p:commandButton value="#{msg['lbl.no']}"
+										oncomplete="expiredCustomer.hide()" process="@this" />
+
+								</p:confirmDialog>
+
+								<p:dialog id="intraAppSave" widgetVar="intraAppSave"
+									width="400" height="80" resizable="false"
+									style="background-color: white !important;"
+									styleClass="success" header="#{msg['lbl.success']}"
+									closable="false" showEffect="clip" hideEffect="clip">
+									<p:outputLabel
+										value="Intra Application Successfully Saved"
+										style="text-align: center; font-size:15px !important;" />
+									<br />
+									<p:commandButton value="#{msg['lbl.ok']}"
+										actionListener="#{intraCompanyTrnxBean.completedtrnx}"
+										update="mainPanel" process="@this"
+										style="margin-left: 150px !important;"
+										onstart="process.show();" onsuccess="process.hide();" oncomplete="intraAppSave.hide()"/>
+								</p:dialog>
+
+								<p:dialog id="activatecustomer" widgetVar="activatecustomer"
+									showHeader="false" resizable="false"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+
+									<p:outputLabel value="#{msg['lbl.customerIdstatus']}" />
+									<br />
+
+									<p:commandButton value="#{msg['lbl.yes']}"
+										oncomplete="activatecustomer.hide()" process="@this"
+										action="#{intraCompanyTrnxBean.redirectToCustomerFirstPage}" />
+									<p:commandButton value="#{msg['lbl.no']}"
+										oncomplete="activatecustomer.hide()" process="@this" />
+								</p:dialog>
+
+								<p:dialog id="customerregproceed" widgetVar="customerregproceed"
+									showHeader="false" resizable="false"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+
+									<p:outputLabel
+										value="This Customer Partially Registered Do You want to Continue Registration" />
+									<br />
+
+									<p:commandButton value="#{msg['lbl.yes']}"
+										oncomplete="customerregproceed.hide()" process="@this"
+										action="#{intraCompanyTrnxBean.redirectToCustomerPage}" />
+									<p:commandButton value="#{msg['lbl.no']}"
+										oncomplete="customerregproceed.hide()" process="@this" />
+								</p:dialog>
+
+								<p:dialog modal="true" showHeader="false" widgetVar="process"
+									id="process" width="300" height="60" resizable="false"
+									draggable="false" closable="false"
+									style=" border: 2px green solid !important;background-color: #FFF !important;">
+									<div
+										style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+										<p:graphicImage value="../images/processImg.gif"
+											style="float: left !important; margin-right: 24px !important; " />
+										<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+											style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+									</div>
+								</p:dialog>
+
+								<p:dialog id="dldInserCard" widgetVar="dldInserCard" width="200"
+									showHeader="false" resizable="false"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+
+									<p:outputLabel value="#{msg['lbl.insertsmartcard']}" />
+									<br />
+
+									<p:commandButton value="#{msg['lbl.ok']}"
+										oncomplete="dldInserCard.hide()" process="@this" />
+								</p:dialog>
+
+								<p:dialog id="idNotFound" widgetVar="idNotFound"
+									showHeader="false" resizable="false"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+
+									<p:outputLabel value="#{msg['lbl.custnotregistereddoyou']}" />
+									<br />
+
+									<p:commandButton value="#{msg['lbl.yes']}"
+										oncomplete="idNotFound.hide()" process="@this"
+										action="#{intraCompanyTrnxBean.redirectToCustomerFirstPage}"
+										onstart="process.show();" onsuccess="process.hide();" />
+									<p:commandButton value="#{msg['lbl.no']}"
+										oncomplete="idNotFound.hide()" process="@this" />
+								</p:dialog>
+
+								<p:dialog id="cleardenominationexceed"
+									widgetVar="cleardenominationexceed" modal="true"
+									width="350" height="70" resizable="false"
+									style="background-color: white !important;"
+									styleClass="warning" header="#{msg['lbl.warningDailog']}"
+									closable="false" showEffect="clip" hideEffect="clip">
+									<p:outputLabel
+										value="#{msg['lbl.totCollAmtExceedThanCollAmt']}" />
+									<br />
+									<h:panelGroup style="display:block; text-align:center">
+										<p:commandButton value="#{msg['lbl.ok']}"
+											onclick="PF('cleardenominationexceed').hide();"
+											process="@this" />
+									</h:panelGroup>
+								</p:dialog>
+
+								<p:confirmDialog id="stockNotAvailable"
+									widgetVar="stockNotAvailable" height="20" resizable="false"
+									style="background-color: white !important;"
+									header="#{msg['lbl.warningDailog']}" styleClass="warning"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" message="#{msg['lbl.stockNotAvailable']}">
+								</p:confirmDialog>
+
+								<h1>
+									<h:outputText
+										value="INTRA COUNTRY - COMPANY TRANSFERS AND SETTLEMENTS" />
+								</h1>
+
+								<p:panel styleClass="shadow" id="mainPanel">
+
+									<!-- start first panel - manual / smart card -->
+
+									<p:panel id="panel1"
+										style="padding:50px 100px 50px 100px !important;"
+										rendered="#{intraCompanyTrnxBean.booRenderIdDetails}">
+										<fieldset class="ui-fieldset">
+											<legend class="ui-fieldset-legend"
+												style="font-size: 15px; font-weight: bold; color: #037712;"
+												align="top">&nbsp;INTRA COUNTRY - COMPANY TRANSFERS
+												AND SETTLEMENTS&nbsp;</legend>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+												</p:panel>
+												<p:panel style="margin-left:30px;">
+													<p:message for="cardId" display="text" id="msgCard" />
+													<h:selectOneRadio id="cardId"
+														value="#{intraCompanyTrnxBean.selectCardType}"
+														required="true"
+														requiredMessage="Please Select Any One Option">
+														<f:selectItem
+															itemLabel="&nbsp;&nbsp; #{msg['lbl.ordinarycard']} &nbsp;&nbsp;"
+															itemValue="2" />
+														<f:selectItem
+															itemLabel="&nbsp;&nbsp; #{msg['lbl.smartCardNew']} &nbsp;&nbsp;"
+															itemValue="1" />
+														<p:ajax event="change"
+															listener="#{intraCompanyTrnxBean.showCardTypePanel}"
+															update="mainPanel" process="@this"
+															onstart="process.show();" onsuccess="process.hide();" />
+													</h:selectOneRadio>
+												</p:panel>
+												<div class="clearfix"></div>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel
+												rendered="#{intraCompanyTrnxBean.booRenderOldSmartCardPanel}"
+												id="oldSmartCardpanel">
+
+												<p:panel id="cardDetails">
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.idType']}" />
+															<h:outputText value="*" style="color:red !important;" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message for="cardtype" display="text" id="msgcardtype" />
+															<p:selectOneMenu id="cardtype"
+																value="#{intraCompanyTrnxBean.selectCard}"
+																required="true"
+																requiredMessage="Please Select Any One Option">
+																<f:selectItem itemLabel="#{msg['lbl.selectidtype']}" />
+																<f:selectItems
+																	value="#{intraCompanyTrnxBean.mapcomIdentityType.entrySet()}"
+																	var="entry" itemValue="#{entry.key}"
+																	itemLabel="#{entry.value}" />
+																<p:ajax event="change" update="cardtype,mainPanel" />
+															</p:selectOneMenu>
+														</p:panel>
+													</p:panel>
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.idNumber']}" />
+															<h:outputText value="*" style="color:red !important;" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:panelGrid style="width:100%;">
+																<p:row>
+																	<p:column style="width:95%; padding:0px !important;">
+																		<p:message for="idNo" id="msgIdNo" display="text" />
+																		<p:inputText id="idNo"
+																			validatorMessage="Enter Only Alphanumeric Characters"
+																			value="#{intraCompanyTrnxBean.idNumber}"
+																			required="true"
+																			requiredMessage="Please Enter ID Number"
+																			maxlength="12" style="text-transform: uppercase">
+																			<f:validateRegex pattern="^[0-9a-zA-Z]+$" />
+																			<p:ajax update="msgIdNo" />
+																		</p:inputText>
+																	</p:column>
+																	<p:column
+																		style="width:20%; text-align:right !important;padding:4px 0px 0px 8px !important;">
+																		<p:commandButton id="customerSearchButton" value=""
+																			styleClass="search_icon"
+																			action="#{intraCompanyTrnxBean.searchClicked}"
+																			process="@this">
+																			<p:tooltip for="customerSearchButton"
+																				value="#{msg['lbl.clickToSearch']}" />
+																		</p:commandButton>
+																	</p:column>
+																</p:row>
+															</p:panelGrid>
+														</p:panel>
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<div class="clearfix"></div>
+
+											</p:panel>
+
+											<h:panelGroup class="clearfix" />
+
+											<p:spacer height="20px" />
+
+											<h:panelGroup layout="block" styleClass="shadow_button"
+												id="goexitId" style="color:green;">
+												<p:commandButton value="#{msg['lbl.go']}"
+													action="#{intraCompanyTrnxBean.onClickGoButton}"
+													update=":form1" onstart="process.show();"
+													onsuccess="process.hide();" style="margin-right:10px;" />
+												<p:commandButton value="#{msg['lbl.exit']}"
+													action="#{bankBranchDetails.cancel}" update="mainPanel"
+													onstart="process.show();" onsuccess="process.hide();"
+													immediate="true" />
+											</h:panelGroup>
+
+											<h:panelGroup class="clearfix" />
+										</fieldset>
+									</p:panel>
+
+									<!-- End first panel - manual / smart card -->
+									<!-- start second panel - pin details and customer details -->
+
+									<p:panel id="panel2"
+										rendered="#{intraCompanyTrnxBean.booRenderPinDetails}">
+
+										<h2>
+											<h:outputText value="Customer Details" />
+										</h2>
+
+										<p:panel styleClass="panel_border">
+
+											<p:panel styleClass="left_col user_select">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Customer" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+															<p:column
+																style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText
+																	value="#{intraCompanyTrnxBean.customerrefno}"
+																	readonly="true" styleClass="ui-state-disabled"
+																	style="width:70px">
+																</p:inputText>
+															</p:column>
+															<p:column
+																style="width:70%; padding:0px 5px 0px 10px !important;">
+																<p:inputText
+																	value="#{intraCompanyTrnxBean.customerFullName}"
+																	readonly="true" styleClass="ui-state-disabled"
+																	style="width:400px" />
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Pin No" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgarticleId" for="articleId" display="text" />
+													<p:inputText id="articleId"
+														value="#{intraCompanyTrnxBean.pinNo}" required="true"
+														requiredMessage="Please Enter Pin No" tabindex="1">
+														<p:ajax event="blur"
+															listener="#{intraCompanyTrnxBean.populateRemittanceDetails}"
+															process="@this" update="mainPanel,alertmsg" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Document Date" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="documentdate"
+														styleClass="ui-state-disabled"
+														value="#{intraCompanyTrnxBean.documentDate}"
+														readonly="true" />
+												</p:panel>
+											</p:panel>
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.benificaryName']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText styleClass="ui-state-disabled"
+														value="#{intraCompanyTrnxBean.beneficiaryName}"
+														readonly="true" />
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.country']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText styleClass="ui-state-disabled"
+														value="#{intraCompanyTrnxBean.beneCountryName}"
+														readonly="true" />
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.benestate']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText styleClass="ui-state-disabled"
+														value="#{intraCompanyTrnxBean.beneStateName}"
+														readonly="true" />
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.benedist']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText styleClass="ui-state-disabled"
+														value="#{intraCompanyTrnxBean.beneDistrictName}"
+														readonly="true" />
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.benecity']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText styleClass="ui-state-disabled"
+														value="#{intraCompanyTrnxBean.beneCityName}"
+														readonly="true" />
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col" id="countryCodePanel">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText
+														value="#{msg['lbl.countryCodeOrTelephoneNo']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+															<p:column
+																style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText
+																	value="#{intraCompanyTrnxBean.countryTelCode}"
+																	maxlength="22" readonly="true"
+																	styleClass="ui-state-disabled">
+																	<p:ajax />
+																</p:inputText>
+															</p:column>
+															<p:column
+																style="width:70%; padding:0px 5px 0px 10px !important;">
+																<p:inputText
+																	value="#{intraCompanyTrnxBean.telephoneNumber}"
+																	maxlength="22" readonly="true"
+																	styleClass="ui-state-disabled">
+																	<p:ajax />
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col" id="mobileCodePanel">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText
+														value="#{msg['lbl.countryCodeOrTelephoneNo']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+															<p:column
+																style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText
+																	value="#{intraCompanyTrnxBean.countryTelCode}"
+																	maxlength="22" readonly="true"
+																	styleClass="ui-state-disabled">
+																	<p:ajax />
+																</p:inputText>
+															</p:column>
+															<p:column
+																style="width:70%; padding:0px 5px 0px 10px !important;">
+																<p:inputText
+																	value="#{intraCompanyTrnxBean.mobileNumber}"
+																	maxlength="22" readonly="true"
+																	styleClass="ui-state-disabled">
+																	<p:ajax />
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col user_select">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.amount']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+															<p:column
+																style="width:60%; text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText
+																	value="#{intraCompanyTrnxBean.currencyName}"
+																	readonly="true" styleClass="ui-state-disabled">
+																</p:inputText>
+															</p:column>
+															<p:column
+																style="width:40%; padding:0px 5px 0px 10px !important;">
+																<p:inputText value="#{intraCompanyTrnxBean.amount}"
+																	readonly="true" styleClass="ui-state-disabled" />
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Sender #{msg['lbl.country']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText styleClass="ui-state-disabled"
+														value="#{intraCompanyTrnxBean.senderCountryName}"
+														readonly="true" />
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Sender Name" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText styleClass="ui-state-disabled"
+														value="#{intraCompanyTrnxBean.senderName}" readonly="true" />
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="remarks" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{intraCompanyTrnxBean.remarks}"
+														tabindex="2" />
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="10px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="#{msg['lbl.back']}"
+													action="#{intraCompanyTrnxBean.backButtonToIddetails}"
+													style="margin-right:10px; " immediate="true"
+													update="mainPanel" />
+												<p:commandButton value="#{msg['lbl.next']}"
+													action="#{intraCompanyTrnxBean.nextButtonToPayDenomination}"
+													style="margin-right:10px;" update="mainPanel" />
+												<h:panelGroup layout="block" class="clearfix" />
+											</h:panelGroup>
+
+										</p:panel>
+										<div class="clearfix" />
+
+									</p:panel>
+
+									<!-- end second panel - pin details and customer details -->
+									<!-- start third panel - denomination details -->
+
+									<p:panel id="panel3" styleClass="shadow"
+										style=" background-color:#FFF !important;"
+										rendered="#{intraCompanyTrnxBean.booRenderPaymentDetails}">
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h2>
+											<h:outputText value="#{msg['lbl.customerDetails']}" />
+										</h2>
+										<p:panel styleClass="panel_border"
+											style="padding-bottom:0px !important;border:1px solid #000 !important;">
+
+											<p:panel styleClass="full_col">
+												<p:panelGrid style="width:100%;">
+													<p:row>
+
+														<p:column
+															style="width:12%; padding:0px 5px 0px 10px !important;">
+															<h:outputText value="#{msg['lbl.customerrefno']}" />
+														</p:column>
+
+														<p:column
+															style="width:9%; padding:0px 5px 0px 10px !important;">
+															<p:inputText styleClass="ui-state-disabled"
+																value="#{intraCompanyTrnxBean.customerrefno}"
+																readonly="true" />
+														</p:column>
+
+														<p:column
+															style="width:15%; padding:0px 5px 0px 10px !important;">
+															<h:outputLabel value="#{msg['lbl.customerName']}"
+																style="color:#05000a;" />
+															<h:outputText />
+														</p:column>
+
+														<p:column
+															style="width:22%; padding:0px 5px 0px 10px !important;">
+															<p:inputText styleClass="ui-state-disabled"
+																value="#{intraCompanyTrnxBean.customerFullName}"
+																readonly="true" style="font-size:11px !important;">
+															</p:inputText>
+														</p:column>
+
+														<p:column
+															style="width:15%; padding:0px 5px 0px 10px !important;">
+															<h:outputLabel value="#{msg['lbl.CustomerLocalName']}"
+																style="color:#05000a;" />
+															<h:outputText />
+														</p:column>
+
+														<p:column
+															style="width:22%; padding:0px 5px 0px 10px !important;">
+															<p:inputText styleClass="ui-state-disabled"
+																value="#{intraCompanyTrnxBean.customerLocalFullName}"
+																readonly="true"
+																style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;font-size:15px !important;"
+																dir="RTL">
+															</p:inputText>
+														</p:column>
+
+													</p:row>
+												</p:panelGrid>
+
+											</p:panel>
+											<br />
+											<h:panelGroup layout="block" class="clearfix" />
+
+										</p:panel>
+										
+										<!-- start panel for paying for customer -->
+
+										<p:panel
+											rendered="#{intraCompanyTrnxBean.booRefundPaymentDetails}">
+
+											<h2
+												style="font-size: 15px; font-weight: bold; color: #037712;"
+												align="top">&nbsp; #{msg['lbl.refundDenomination']}
+												&nbsp;</h2>
+
+											<p:panel styleClass="panel_border" id="refunddenomId">
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<h3>#{intraCompanyTrnxBean.denominationchecking}</h3>
+
+												<table cellpadding="0" cellspacing="0" border="0"
+													width="100%" class="mytable">
+													<tr>
+														<th>#{msg['lbl.fclocalpurchaseserialno']}</th>
+														<th>#{msg['lbl.fclocalpurchasedenominationname']}</th>
+														<th>#{msg['lbl.fclocalpurchasecurrentstock']}</th>
+														<th>#{msg['lbl.fclocalpurchasenoofnotes']}</th>
+														<th>#{msg['lbl.fclocalpurchasecashamount']}</th>
+
+													</tr>
+													<ui:repeat value="#{intraCompanyTrnxBean.lstRefundData}"
+														var="o">
+
+														<tr>
+															<td style="width: 15% ! important;"><h:outputText
+																	value="#{o.serial}." /></td>
+															<td style="width: 15% ! important;"><h:outputText
+																	value="#{o.denominationDesc}" /></td>
+
+															<td style="width: 15% ! important;"><h:outputText
+																	value="#{o.stock}" /></td>
+															<td style="width: 15% ! important;"><p:message
+																	for="q1" display="text" /> <p:inputText id="q1"
+																	value="#{o.qty}" tabindex="3">
+																	<p:ajax event="change" onstart="process.show();"
+																		onsuccess="process.hide();"
+																		listener="#{intraCompanyTrnxBean.onRefundCellEdit(o)}"
+																		update=":form1:mainPanel,refundprice,q1" />
+																</p:inputText></td>
+
+															<td style="width: 15% ! important;"><h:outputText
+																	value="#{o.price}" id="refundprice" /></td>
+														</tr>
+													</ui:repeat>
+
+
+												</table>
+
+												<p:spacer height="20px" />
+												<h:panelGroup layout="block" class="clearfix" />
+
+											</p:panel>
+
+											<p:panel id="refundDetailsId">
+
+												<p:spacer height="20px" />
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panelGrid style="width:80%;margin-left:100px;">
+													<p:row>
+
+														<p:column style="width:20% !important ;">
+															<h:outputText value="Amount To Pay" />
+														</p:column>
+														<p:column style="width:20% !important ;">
+															<p:inputText id="refundamountid"
+																styleClass="ui-state-disabled"
+																value="#{intraCompanyTrnxBean.amountToPay}"
+																readonly="true">
+																<p:ajax />
+															</p:inputText>
+														</p:column>
+
+														<p:column style="width:20% !important ;">
+															<h:outputText value="Total Amount Paid" />
+														</p:column>
+														<p:column style="width:20% !important ;">
+															<p:inputText id="collectrefundid"
+																styleClass="ui-state-disabled"
+																value="#{intraCompanyTrnxBean.totalAmountPaid}"
+																readonly="true">
+																<p:ajax />
+															</p:inputText>
+														</p:column>
+
+													</p:row>
+												</p:panelGrid>
+
+											</p:panel>
+
+										</p:panel>
+										
+										<!-- end panel for paying to customer -->
+										<!-- start panel for collection from customer -->
+										
+										<p:panel
+											rendered="#{intraCompanyTrnxBean.booRenderCollectionDetails}">
+											
+											<h2
+												style="font-size: 15px; font-weight: bold; color: #037712;"
+												align="top">&nbsp;
+												#{msg['lbl.remtdenominationdetails']} &nbsp;</h2>
+
+											<p:panel styleClass="panel_border" id="denominationid">
+
+												<h3>#{intraCompanyTrnxBean.denominationchecking}</h3>
+
+												<table cellpadding="0" cellspacing="0" border="0"
+													width="100%" class="mytable">
+													<tr>
+														<th>#{msg['lbl.fclocalpurchaseserialno']}</th>
+														<th>#{msg['lbl.fclocalpurchasedenominationname']}</th>
+														<th>#{msg['lbl.fclocalpurchasenoofnotes']}</th>
+														<th>#{msg['lbl.fclocalpurchasecashamount']}</th>
+
+													</tr>
+
+													<ui:repeat value="#{intraCompanyTrnxBean.lstData}"
+														var="ooo" id="uirepeat">
+
+														<tr>
+															<td style="width: 15% ! important;"><h:outputText
+																	value="#{ooo.serial}." /></td>
+															<td style="width: 15% ! important;"><h:outputText
+																	value="#{ooo.denominationDesc}" /></td>
+
+															<td style="width: 15% ! important;"><p:message
+																	for="q" display="text"
+																	style="text-shadow:none !important;" id="msg" /> <p:inputText
+																	id="q" value="#{ooo.qty}">
+
+																	<p:ajax event="change" onstart="process.show();"
+																		onsuccess="process.hide()" onerror="alert('error')"
+																		listener="#{intraCompanyTrnxBean.onCellEdit(ooo)}"
+																		update=":form1:mainPanel,price,q,uirepeat" />
+																	<!-- <f:validator
+																validatorId="com.amg.exchange.validator.FcQValidator" /> -->
+																</p:inputText></td>
+															<td style="width: 15% ! important;"><h:outputText
+																	value="#{ooo.price==0?'':ooo.price}" id="price" /></td>
+														</tr>
+													</ui:repeat>
+
+												</table>
+
+												<h:panelGroup layout="block" class="clearfix" />
+												<p:spacer height="10px" />
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panelGrid style="width:80%;margin-left:100px;">
+													<p:row>
+
+														<p:column style="width:20% !important ;">
+															<h:outputText value="Collected Amount" />
+														</p:column>
+														<p:column style="width:20% !important ;">
+															<p:inputText id="totalcashrecid"
+																styleClass="ui-state-disabled"
+																value="#{intraCompanyTrnxBean.collectedAmount}"
+																readonly="true">
+																<p:ajax />
+															</p:inputText>
+														</p:column>
+
+														<p:column style="width:20% !important ;">
+															<h:outputText value="Total Collected Amount" />
+														</p:column>
+														<p:column style="width:20% !important ;">
+															<p:inputText id="totalcashid"
+																styleClass="ui-state-disabled"
+																value="#{intraCompanyTrnxBean.totalcollectedAmount}"
+																readonly="true">
+																<p:ajax />
+															</p:inputText>
+														</p:column>
+
+													</p:row>
+												</p:panelGrid>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+											</p:panel>
+										</p:panel>
+										
+										<!-- end panel for collection from customer -->
+										<!-- start panel for payment Details -->
+										
+										<p:panel>
+
+											<h2
+												style="font-size: 15px; font-weight: bold; color: #037712;"
+												align="top">&nbsp; #{msg['lbl.pymntdetails']} &nbsp;</h2>
+
+											<p:panel styleClass="panel_border" id="paymentPanel">
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.remarks']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText
+															value="#{intraCompanyTrnxBean.paymentDetailsremark}">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Paid Amount" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText styleClass="ui-state-disabled"
+															value="#{intraCompanyTrnxBean.paidAmount}"
+															readonly="true">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.netpaydamnt']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText styleClass="ui-state-disabled"
+															value="#{intraCompanyTrnxBean.payNetPaidAmount}"
+															readonly="true">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Amount To Be Collected" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText
+															value="#{intraCompanyTrnxBean.collectedAmount}"
+															styleClass="ui-state-disabled" readonly="true">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<!-- <p:spacer height="10px"/> -->
+												<h:panelGroup layout="block" styleClass="shadow_button">
+													<p:commandButton value="#{msg['lbl.back']}"
+														onstart="process.show();" onsuccess="process.hide()"
+														action="#{intraCompanyTrnxBean.backButtonToPinDetails}"
+														process="@this" update="mainPanel"
+														style="margin-right:10px; " />
+													<p:commandButton value="#{intraCompanyTrnxBean.saveOrnext}"
+														action="#{intraCompanyTrnxBean.checkSaveCondition}"
+														update=":form1" style="margin-right:10px; "
+														onstart="process.show();" onsuccess="process.hide();" />
+													<p:commandButton value="#{msg['lbl.exit']}"
+														onstart="process.show();" onsuccess="process.hide()"
+														action="#{intraCompanyTrnxBean.exitButton}"
+														update="mainPanel" process="@this" />
+													<h:panelGroup layout="block" class="clearfix" />
+												</h:panelGroup>
+
+												<h:panelGroup layout="block" class="clearfix" />
+												<p:spacer height="20px" />
+												<h:panelGroup layout="block" class="clearfix" />
+
+											</p:panel>
+										</p:panel>
+									</p:panel>
+
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

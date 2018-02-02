@@ -1,0 +1,676 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+	</script>
+	<script src="../js/script.js"></script>
+</h:head>
+
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="refundRequestForm">
+								<h1>
+									<h:outputText value="Refund Inquiry" />
+								</h1>
+
+								<p:panel styleClass="shadow" id="mainPanel">
+
+									<p:confirmDialog id="noRecord" widgetVar="noRecord" width="400"
+										resizable="false" style="background-color: white !important;"
+										header="Warning Dailog" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="No Record Found !!!!!!">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="notApproved" widgetVar="notApproved"
+										width="400" resizable="false"
+										style="background-color: white !important;"
+										header="Warning Dailog" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="#{msg['lbl.sameUserNotApproved']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="csp" widgetVar="csp" showHeader="false"
+										resizable="false" header="Warning Message"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{requestInquiryBean.errMsg}">
+									</p:confirmDialog>
+
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+
+									<p:panel>
+										<p:panel id="headerPanel">
+
+											<p:panel styleClass="panel_border" id="one">
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Refund No" />
+														<h:outputText value="*"
+															style="color:red;font-weight:bold;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:panelGrid style="width:100%;">
+															<p:row>
+																<p:message for="documentSerialId1" display="text"
+																	id="msgdocnum" />
+																<p:column
+																	style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																	<p:inputText id="docYear"
+																		value="#{requestInquiryBean.documentYear}"
+																		readonly="true">
+																		<p:ajax />
+																	</p:inputText>
+																</p:column>
+
+																<p:column
+																	style="width:70%; padding:0px 5px 0px 10px !important;">
+																	<p:inputText id="documentSerialId1"
+																		value="#{requestInquiryBean.documentNo}" tabindex="1">
+																		<p:ajax event="change" onstart="process.show();"
+																			onsuccess="process.hide();"
+																			listener="#{requestInquiryBean.fetchRecFromViewRefund}"
+																			update="documentSerialId1,mainPanel,csp,msgdocnum" />
+																	</p:inputText>
+																</p:column>
+															</p:row>
+														</p:panelGrid>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Transfer No" />
+														<h:outputText value="*"
+															style="color:red;font-weight:bold;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:panelGrid style="width:100%;">
+															<p:row>
+																<p:column
+																	style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																	<p:inputText
+																		value="#{requestInquiryBean.remittanceYear}"
+																		readonly="true" styleClass="ui-state-disabled">
+																		<p:ajax />
+																	</p:inputText>
+																</p:column>
+
+																<p:column
+																	style="width:70%; padding:0px 5px 0px 10px !important;">
+																	<p:inputText value="#{requestInquiryBean.transferNo}"
+																		readonly="true" styleClass="ui-state-disabled">
+																		<p:ajax />
+																	</p:inputText>
+																</p:column>
+															</p:row>
+														</p:panelGrid>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Status"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{requestInquiryBean.status}"
+															readonly="true" styleClass="ui-state-disabled">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.branchname']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{requestInquiryBean.branchName}"
+															readonly="true" styleClass="ui-state-disabled">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.customername']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:panelGrid style="width:100%;">
+															<p:row>
+																<p:column
+																	style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																	<p:inputText
+																		value="#{requestInquiryBean.customerRefNo}"
+																		readonly="true" styleClass="ui-state-disabled">
+																		<p:ajax />
+																	</p:inputText>
+																</p:column>
+																<p:column
+																	style="width:70%; padding:0px 5px 0px 10px !important;">
+																	<p:inputText value="#{requestInquiryBean.customerName}"
+																		readonly="true" styleClass="ui-state-disabled"
+																		style="font-size:10px !important;">
+																		<p:ajax />
+																	</p:inputText>
+																</p:column>
+															</p:row>
+														</p:panelGrid>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.telephone']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="telephoneNo"
+															value="#{requestInquiryBean.telephoneNo}" readonly="true"
+															styleClass="ui-state-disabled">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<div class="clearfix"></div>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+											<p:spacer height="15px" />
+
+											<p:panel styleClass="panel_border" id="CustPanel">
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.transferDate']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:calendar value="#{requestInquiryBean.transferDate}"
+															disabled="true" pattern="dd/MM/yyyy" readonly="true"
+															styleClass="ui-state-disabled">
+														</p:calendar>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.payablebank']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{requestInquiryBean.payableBank}"
+															readonly="true" styleClass="ui-state-disabled">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<!-- <p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.validuntill']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText 
+															value="#{requestInquiryBean.validUntill}"
+															readonly="true" styleClass="ui-state-disabled">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel> -->
+
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.payablebranch']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{requestInquiryBean.payableBranch}"
+															readonly="true" styleClass="ui-state-disabled">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.benificiary']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col"
+														style="height:65% !important;">
+														<h:inputTextarea value="#{requestInquiryBean.benificiary}"
+															readonly="true" styleClass="ui-state-disabled" rows="10"
+															cols="20" />
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.transferamount']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:panelGrid style="width:100%;">
+															<p:row>
+																<p:column
+																	style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																	<p:inputText
+																		value="#{requestInquiryBean.transferAmountCurrency}"
+																		readonly="true" styleClass="ui-state-disabled">
+																		<p:ajax />
+																	</p:inputText>
+																</p:column>
+																<p:column
+																	style="width:70%; padding:0px 5px 0px 10px !important;">
+																	<p:inputText
+																		value="#{requestInquiryBean.transferAmount}"
+																		readonly="true" styleClass="ui-state-disabled">
+																		<p:ajax />
+																	</p:inputText>
+																</p:column>
+															</p:row>
+														</p:panelGrid>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Payment No" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:panelGrid style="width:100%;">
+															<p:row>
+																<p:column
+																	style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																	<p:inputText value="#{requestInquiryBean.paymentYear}"
+																		readonly="true" styleClass="ui-state-disabled">
+																		<p:ajax />
+																	</p:inputText>
+																</p:column>
+
+																<p:column
+																	style="width:70%; padding:0px 5px 0px 10px !important;">
+																	<p:inputText value="#{requestInquiryBean.paymentNo}"
+																		readonly="true" styleClass="ui-state-disabled">
+																		<p:ajax />
+																	</p:inputText>
+																</p:column>
+															</p:row>
+														</p:panelGrid>
+													</p:panel>
+												</p:panel>
+
+
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.date']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:calendar value="#{requestInquiryBean.date}"
+															disabled="true" pattern="dd/MM/yyyy" readonly="true"
+															styleClass="ui-state-disabled">
+														</p:calendar>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Pay By" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:panelGrid style="width:100%;">
+															<p:row>
+																<p:column
+																	style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																	<p:inputText value="#{requestInquiryBean.paymentMode}"
+																		readonly="true" styleClass="ui-state-disabled">
+																		<p:ajax />
+																	</p:inputText>
+																</p:column>
+																<p:column
+																	style="width:70%; padding:0px 5px 0px 10px !important;">
+																	<p:inputText value="#{requestInquiryBean.payBy}"
+																		readonly="true" styleClass="ui-state-disabled">
+																		<p:ajax />
+																	</p:inputText>
+																</p:column>
+															</p:row>
+														</p:panelGrid>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Bank"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{requestInquiryBean.payBank}"
+															readonly="true" styleClass="ui-state-disabled">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Cheque Date"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:calendar id="chequedate"
+															value="#{requestInquiryBean.chequedate}" disabled="true"
+															pattern="dd/MM/yyyy" readonly="true"
+															styleClass="ui-state-disabled">
+														</p:calendar>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Approval No"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{requestInquiryBean.approvalNo}"
+															readonly="true" styleClass="ui-state-disabled">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.remarks']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{requestInquiryBean.remark}"
+															readonly="true" styleClass="ui-state-disabled">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+												<div class="clearfix"></div>
+
+											</p:panel>
+
+											<p:spacer height="15px" />
+
+											<p:panel styleClass="panel_border" id="TPanel">
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.refundfor']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:panelGrid style="width:100%;">
+															<p:row>
+																<p:column
+																	style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																	<p:inputText
+																		value="#{requestInquiryBean.transferAmountCurrency}"
+																		readonly="true" styleClass="ui-state-disabled">
+																		<p:ajax />
+																	</p:inputText>
+																</p:column>
+																<p:column
+																	style="width:70%; padding:0px 5px 0px 10px !important;">
+																	<p:inputText value="#{requestInquiryBean.refundFor}"
+																		readonly="true" styleClass="ui-state-disabled">
+																		<p:ajax />
+																	</p:inputText>
+																</p:column>
+															</p:row>
+														</p:panelGrid>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.exchangerate']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:panelGrid style="width:100%;">
+															<p:row>
+																<p:column
+																	style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																	<p:inputText
+																		value="#{requestInquiryBean.exchangeRateCurrency}"
+																		readonly="true" styleClass="ui-state-disabled">
+																		<p:ajax />
+																	</p:inputText>
+																</p:column>
+																<p:column
+																	style="width:70%; padding:0px 5px 0px 10px !important;">
+																	<p:inputText
+																		value="#{requestInquiryBean.trnxActualRate}"
+																		readonly="true" styleClass="ui-state-disabled">
+																		<p:ajax />
+																	</p:inputText>
+																</p:column>
+															</p:row>
+														</p:panelGrid>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Refund Amount"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:panelGrid style="width:100%;">
+															<p:row>
+																<p:column
+																	style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																	<p:inputText
+																		value="#{requestInquiryBean.localCurrencyCode}"
+																		readonly="true" styleClass="ui-state-disabled">
+																		<p:ajax />
+																	</p:inputText>
+																</p:column>
+																<p:column
+																	style="width:70%; padding:0px 5px 0px 10px !important;">
+																	<p:inputText
+																		value="#{requestInquiryBean.localTrnxAmount}"
+																		readonly="true" styleClass="ui-state-disabled">
+																		<p:ajax />
+																	</p:inputText>
+																</p:column>
+															</p:row>
+														</p:panelGrid>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.commission']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{requestInquiryBean.commission}"
+															readonly="true" styleClass="ui-state-disabled">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.charges']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+
+														<p:inputText value="#{requestInquiryBean.charges}"
+															readonly="true" styleClass="ui-state-disabled">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.deliverycharges']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{requestInquiryBean.deliveryCharges}"
+															readonly="true" styleClass="ui-state-disabled">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.rateadjust']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{requestInquiryBean.rateAdjust}"
+															readonly="true" styleClass="ui-state-disabled">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.otheradjust']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{requestInquiryBean.otherAdjust}"
+															readonly="true" styleClass="ui-state-disabled">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.netrefund']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{requestInquiryBean.netRefund}"
+															readonly="true" styleClass="ui-state-disabled">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<p:spacer height="20px"></p:spacer>
+											</p:panel>
+
+											<p:spacer height="15px" />
+
+											<p:panel styleClass="panel_border" id="RPanel">
+
+												<p:outputLabel
+													value="#{msg['lbl.doYouWantPrintRReport']}(office Copy)    "
+													style=" font-weight: bold; color: #037712; padding:30px 0px 0px 0px !important;">
+													<h:commandLink value="#{msg['lbl.clickHere']} " disabled="#{requestInquiryBean.disableReport}"
+														actionListener="#{requestInquiryBean.genarateRefundRequestOfficeCopyReports}"
+														style="font-weight: bold; font-size: 12px !important; color:blue !important; text-decoration:underline !important;"
+														process="@this" />
+
+												</p:outputLabel>
+												<p:outputLabel
+													value="#{msg['lbl.doYouWantPrintRReport']} (Customer Copy)   "
+													style=" font-weight: bold; color: #037712; padding:30px 0px 0px 0px !important;">
+													<h:commandLink value="#{msg['lbl.clickHere']} " disabled="#{requestInquiryBean.disableReport}"
+														actionListener="#{requestInquiryBean.genarateRefundRequestCustomerCopyReports}"
+														style="font-weight: bold; font-size: 12px !important; color:blue !important; text-decoration:underline !important;"
+														process="@this" />
+												</p:outputLabel>
+
+											</p:panel>
+
+											<p:spacer height="10px"></p:spacer>
+
+											<p:panel>
+												<h:panelGroup layout="block" class="clearfix" />
+												<h:panelGroup layout="block" styleClass="shadow_button">
+													<!-- <p:commandButton value="Generate Office Report"
+														action="#{requestInquiryBean.genarateRefundRequestOfficeCopyReports}" process="@this"
+														update="mainPanel" style="margin-right:10px; " immediate="true"
+														tabindex="2" /> -->
+													<p:commandButton value="#{msg['lbl.clear']}"
+														action="#{requestInquiryBean.clear}" process="@this"
+														update="mainPanel" style="margin-right:10px; "
+														tabindex="2" />
+													<p:commandButton value="#{msg['lbl.exit']}"
+														action="#{requestInquiryBean.clickOnExit}"
+														update="mainPanel" immediate="true" tabindex="3" />
+												</h:panelGroup>
+											</p:panel>
+										</p:panel>
+									</p:panel>
+
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

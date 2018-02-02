@@ -1,0 +1,928 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+
+
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+
+		$(function() {
+			/*
+			 * this swallows backspace keys on any non-input element.
+			 * stops backspace -> back
+			 */
+			var rx = /INPUT|SELECT|TEXTAREA/i;
+
+			$(document).bind(
+					"keydown keypress",
+					function(e) {
+						if (e.which == 8) { // 8 == backspace
+							if (!rx.test(e.target.tagName) || e.target.disabled
+									|| e.target.readOnly) {
+								e.preventDefault();
+							}
+						}
+					});
+		});
+	</script>
+
+	<script type="text/javascript">
+		//	var baseUri = makeUri();
+		history
+				.pushState(null, null,
+						'editbeneficiarybankaccountdetails.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null,
+					'editbeneficiarybankaccountdetails.xhtml');
+		});
+	</script>
+
+	<script type="text/javascript">
+		function onLoadCallback(data) {
+			if (data.status == "begin") {
+				processIcon.show();
+			} else {
+				processIcon.hide();
+			}
+		}
+	</script>
+
+</h:head>
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<!-- <f:event
+			listener="#{beneficiaryCreationBean.populateBenificaryAccountDetails}"
+			type="preRenderView" /> -->
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form1">
+
+								<h1>
+									<h:outputText value="#{msg['lbl.benetypeOfService']}" />
+								</h1>
+
+								<p:confirmDialog id="dself" widgetVar="dself" width="500"
+									showHeader="false" resizable="false" header="Warning Message"
+									styleClass="warning"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="explode" hideEffect="explode"
+									message="#{beneficiaryCreationBean.errmsg}">
+								</p:confirmDialog>
+
+								<p:confirmDialog id="accountcheck" widgetVar="accountcheck"
+									width="300" showHeader="false" resizable="false"
+									header="Warning Message" styleClass="warning"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="explode" hideEffect="explode"
+									message="Account no Already Exist">
+									<br />
+									<p:commandButton value="OK" oncomplete="accountcheck.hide()"
+										process="@this" update="mainPanel"
+										actionListener="#{beneficiaryCreationBean.clearAccountField}"
+										style="margin-left: 150px !important;" />
+								</p:confirmDialog>
+
+								<p:confirmDialog id="acclengtherr" widgetVar="acclengtherr"
+									height="17" resizable="false" width="500"
+									style="background-color: white !important;"
+									header="Warning Dailog" styleClass="warning" showEffect="clip"
+									hideEffect="clip" closeOnEscape="true" closable="true"
+									message="Account Number Length Not Available For This Bank">
+								</p:confirmDialog>
+
+								<p:panel styleClass="shadow" id="mainPanel"
+									style=" background-color:#FFF !important;">
+
+									<p:confirmDialog id="csp" widgetVar="csp"
+										showHeader="false" resizable="false" header="Warning Message"
+										styleClass="warning"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="explode" hideEffect="explode"
+										message="#{beneficiaryCreationBean.errmsg}">
+									</p:confirmDialog>
+
+									<p:dialog id="beneficarycomplete"
+										widgetVar="beneficarycomplete" width="600" height="130"
+										modal="true" resizable="false"
+										style="background-color: white !important;" header="Success"
+										closable="false" showEffect="clip" hideEffect="clip">
+										<p:outputLabel
+											value="#{msg['lbl.bebificaiarycreatedsuccessfully']}. "
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.ok']}"
+												actionListener="#{beneficiaryCreationBean.gotoRemittanceserviceUpdate}"
+												update="mainPanel" process="@this" immediate="true"
+												oncomplete="beneficarycomplete.hide()">
+												<f:ajax onevent="onLoadCallback" />
+											</p:commandButton>
+										</h:panelGroup>
+									</p:dialog>
+
+									<p:dialog id="localLanaguageMisssing"
+										widgetVar="localLanaguageMisssing" width="500" height="70"
+										styleClass="warning" header="#{msg['lbl.warningDailog']}"
+										draggable="flase" closable="false" showHeader="true"
+										resizable="false"
+										style=" border:3px solid #00a53e !important;  font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="puff" modal="true">
+										<p:outputLabel value="#{beneficiaryCreationBean.errmsg}" />
+										<p:spacer height="10px" />
+										<p:panel>
+											<p:commandButton value="#{msg['lbl.ok']}"
+												action="#{beneficiaryCreationBean.backTobeneficiaryDetails}"
+												immediate="true" style="margin-left: 150px !important;" />
+										</p:panel>
+									</p:dialog>
+
+
+									<p:confirmDialog id="acclengthmismatch"
+										widgetVar="acclengthmismatch" height="20" resizable="false"
+										width="700" style="background-color: white !important;"
+										header="Warning Dailog" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="Account Length Should Match With #{beneficiaryCreationBean.bankAccountLength}">
+									</p:confirmDialog>
+
+									<p:dialog id="backcheckforRemit" widgetVar="backcheckforRemit"
+										width="300" height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="success" header="Alert Message" closable="false"
+										showEffect="clip" hideEffect="clip">
+										<p:outputLabel value="#{msg['lbl.backtoremittance']}"
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.yes']}"
+											actionListener="#{beneficiaryCreationBean.backtoPersonalRemit}"
+											onstart="processIcon.show();" onsuccess="processIcon.hide();"
+											process="@this" oncomplete="backcheckforBeneCreation.hide();"
+											immediate="true" />
+										<p:commandButton value="#{msg['lbl.no']}"
+											oncomplete="backcheckforBeneCreation.hide();" process="@this" />
+									</p:dialog>
+
+									<p:panel style=" background-color:#FFF !important;"
+										id="benificaryStatusPanel">
+
+										<p:dialog modal="true" showHeader="true"
+											header="Please wait.." widgetVar="processIcon"
+											id="processIcon" width="300" height="50" resizable="false"
+											draggable="false" closable="false"
+											style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+											<div style="text-align: center;">
+												<p:graphicImage value="../images/preloader.gif" />
+											</div>
+										</p:dialog>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel style="padding:0px 00px 0px 00px !important;">
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.customerrefno']}"
+														style="color:#05000a;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText
+														value="#{beneficiaryCreationBean.customerrefno}"
+														styleClass="ui-state-disabled" readonly="true">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+												<div class="clearfix"></div>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.customerName']}"
+														style="color:#05000a;" />
+													<h:outputText />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText styleClass="ui-state-disabled"
+														value="#{beneficiaryCreationBean.customerFullName}"
+														readonly="true" style="font-size:12px !important;">
+													</p:inputText>
+												</p:panel>
+												<div class="clearfix"></div>
+											</p:panel>
+
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel style="padding-bottom:0px !important;"
+											styleClass="panel_border">
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.country']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgCountry" for="country" display="text" />
+													<p:selectOneMenu id="country"
+														value="#{beneficiaryCreationBean.benifisCountryId}"
+														filterMatchMode="contains" filter="true" required="true"
+														requiredMessage="Please Select Beneficiary Country">
+														<f:selectItem itemLabel="#{msg['lbl.selectCountry']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{beneficiaryCreationBean.lstCountry}" var="c"
+															itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+															itemValue="#{c.fsCountryMaster.countryId}" />
+														<p:ajax event="change"
+															listener="#{beneficiaryCreationBean.enableServiceProvider}"
+															update="mainPanel" onstart="processIcon.show();"
+															onsuccess="processIcon.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.benegroupservice']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgService" for="service" display="text" />
+													<p:selectOneMenu id="service"
+														value="#{beneficiaryCreationBean.serviceGroupId}"
+														required="true" requiredMessage="Please Select Service"
+														disabled="#{beneficiaryCreationBean.disabledServiceGroup}">
+														<f:selectItem itemLabel="#{msg['lbl.selectService']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{beneficiaryCreationBean.serviceGroupMasterDescList}"
+															var="c"
+															itemLabel="#{c.serviceGroupMasterId.serviceGroupCode} - #{c.serviceGroupDesc}"
+															itemValue="#{c.serviceGroupMasterId.serviceGroupId}" />
+														<p:ajax
+															update="msgService,mainPanel,BankChannelPanel,savebutton"
+															onstart="processIcon.show();"
+															onsuccess="processIcon.hide();"
+															listener="#{beneficiaryCreationBean.enableServiceProvider}" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<!-- Banking Channel product panel -->
+
+											<p:panel
+												rendered="#{beneficiaryCreationBean.booEnableBankChannelPanel}"
+												id="BankChannelPanel">
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.beneficiaryBank']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgBank" for="bank" display="text" />
+														<p:selectOneMenu id="bank"
+															value="#{beneficiaryCreationBean.benifisBankId}"
+															style="width:150px;" filterMatchMode="contains"
+															filter="true" required="true"
+															requiredMessage="Please Select Bank" filterFunction="">
+															<f:selectItem itemLabel="#{msg['lbl.selectBank']}"
+																itemValue="" />
+															<f:selectItems
+																value="#{beneficiaryCreationBean.lstBankFromView}"
+																var="c" itemLabel="#{c.bankCode} - #{c.bankFullName}"
+																itemValue="#{c.bankId}" />
+															<p:ajax event="change"
+																listener="#{beneficiaryCreationBean.popStatelistfromBank}"
+																update="currency,mainPanel,searchButton"
+																onstart="processIcon.show();"
+																onsuccess="processIcon.hide();" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.benebankbranch']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:panelGrid style="width:100%;">
+															<p:row>
+																<p:column style="width:90%; padding:0px !important;">
+																	<p:inputText id="bbankbranch" readonly="true"
+																		value=" #{beneficiaryCreationBean.servicebankBranchId} -  #{beneficiaryCreationBean.bankBranchFullName}">
+																	</p:inputText>
+
+																</p:column>
+
+																<p:column
+																	style="width:10%; padding:4px 0px 0px 8px !important;">
+																	<p:commandButton id="searchButton" value=""
+																		styleClass="search_icon"
+																		action="#{beneficiaryCreationBean.searchClickedEdiBeneAccount}"
+																		disabled="#{beneficiaryCreationBean.booDisbleChoseeBranchButton}"
+																		process="@this" onstart="processIcon.show();"
+																		onsuccess="processIcon.hide();">
+																		<p:tooltip for="searchButton"
+																			value="#{msg['lbl.clickToSearchbranch']}" />
+																	</p:commandButton>
+																</p:column>
+															</p:row>
+														</p:panelGrid>
+
+													</p:panel>
+												</p:panel>
+
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.currency']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgCurrency" for="currency" display="text" />
+														<p:selectOneMenu id="currency"
+															value="#{beneficiaryCreationBean.benifisCurrencyId}"
+															filterMatchMode="contains" filter="true" required="true"
+															requiredMessage="Please Select Currency">
+															<f:selectItem
+																itemLabel="#{msg['lbl.benecurruncyselect']}"
+																itemValue="" />
+															<f:selectItems
+																value="#{beneficiaryCreationBean.beneServiceCurrencyList}"
+																var="c"
+																itemLabel="#{c.currencyCode} - #{c.currencyName}"
+																itemValue="#{c.currencyId}" />
+															<p:ajax event="change" update="bank,msgCurrency" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.accounttype']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgaccounttype" for="accounttype"
+															display="text" />
+														<p:selectOneMenu id="accounttype"
+															value="#{beneficiaryCreationBean.bankAccountType}"
+															filterMatchMode="contains" filter="true" required="true"
+															requiredMessage="Please Select Currency">
+															<f:selectItem itemLabel="#{msg['lbl.selectAccountType']}"
+																itemValue="" />
+															<f:selectItems
+																value="#{beneficiaryCreationBean.lstBankAccountTypeFromView}"
+																var="c" itemLabel="#{c.amiecCode} - #{c.amiecDesc}"
+																itemValue="#{c.additionalAmiecId}" />
+															<p:ajax event="change" update="msgaccounttype,mainPanel" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.swift']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col" id="swiftCode">
+														<p:inputText
+															value="#{beneficiaryCreationBean.beneSwiftCode}"
+															disabled="true" readonly="true">
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.accountNumber']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgAccountNo" for="accountNo"
+															display="text" />
+														<p:inputText id="accountNo"
+															value="#{beneficiaryCreationBean.bankAccountNumber}"
+															required="true"
+															requiredMessage="Please Enter Account Number">
+
+															<f:validateRegex pattern="[a-zA-Z0-9]+" />
+															<p:ajax
+																update="msgAccountNo,acclengthmismatch,accountNo,dself,csp"
+																event="blur"
+																listener="#{beneficiaryCreationBean.bankAccountNumberExistInDB}"
+																process="@this" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panel rendered="#{beneficiaryCreationBean.booAotherLang}"
+													id="englishP">
+
+													<p:panel styleClass="right_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.aliasFirstName']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col" id="apan">
+															<p:message id="msgAliasFirst" for="aliasFirst"
+																display="text" />
+															<p:inputText id="aliasFirst"
+																value="#{beneficiaryCreationBean.aliasFirstName}"
+																maxlength="38"
+																onkeyup="this.value=this.value.toUpperCase()">
+																<f:validator validatorId="AllowCharectorswithSpace" />
+																<p:ajax event="blur" update="msgAliasFirst" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.aliasSecondName']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message id="msgAliasSecond" for="aliasSecond"
+																display="text" />
+															<p:inputText id="aliasSecond"
+																value="#{beneficiaryCreationBean.aliasSecondName}"
+																maxlength="38"
+																onkeyup="this.value=this.value.toUpperCase()">
+																<f:validator validatorId="AllowCharectorswithSpace" />
+																<p:ajax event="blur" update="msgAliasSecond" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+
+													<h:panelGroup layout="block" class="clearfix" />
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.aliasThirdName']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message id="msgAliasThird" for="aliasThird"
+																display="text" />
+															<p:inputText id="aliasThird"
+																value="#{beneficiaryCreationBean.aliasThirdName}"
+																maxlength="38"
+																onkeyup="this.value=this.value.toUpperCase()">
+																<f:validator validatorId="AllowCharectorswithSpace" />
+																<p:ajax event="blur" update="msgAliasThird" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.aliasFourthName']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message id="msgAliasFourth" for="aliasFourth"
+																display="text" />
+															<p:inputText id="aliasFourth"
+																value="#{beneficiaryCreationBean.aliasFourthName}"
+																maxlength="38"
+																onkeyup="this.value=this.value.toUpperCase()">
+																<f:validator validatorId="AllowCharectorswithSpace" />
+																<p:ajax event="blur" update="msgAliasFourth" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+
+												</p:panel>
+
+												<p:panel
+													rendered="#{!beneficiaryCreationBean.booAotherLang}"
+													id="arabicP">
+
+													<p:panel styleClass="right_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.laliasFirstName']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col" id="localapan">
+															<p:message id="msglocalAliasFirst" for="aliaslocalFirst"
+																display="text" />
+															<p:inputText id="aliaslocalFirst"
+																value="#{beneficiaryCreationBean.aliasFirstName}"
+																maxlength="38"
+																style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;"
+																dir="RTL">
+																<f:validator validatorId="arabicValidator" />
+																<p:ajax event="blur" update="msglocalAliasFirst" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.laliasSecondName']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message id="msglocalAliasSecond"
+																for="aliaslocalSecond" display="text" />
+															<p:inputText id="aliaslocalSecond"
+																value="#{beneficiaryCreationBean.aliasSecondName}"
+																maxlength="38"
+																style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;"
+																dir="RTL">
+																<f:validator validatorId="arabicValidator" />
+																<p:ajax event="blur" update="msglocalAliasSecond" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+
+													<h:panelGroup layout="block" class="clearfix" />
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.laliasThirdName']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message id="msglocalAliasThird" for="localaliasThird"
+																display="text" />
+															<p:inputText id="localaliasThird"
+																value="#{beneficiaryCreationBean.aliasThirdName}"
+																maxlength="38"
+																style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;"
+																dir="RTL">
+																<f:validator validatorId="arabicValidator" />
+																<p:ajax event="blur" update="msglocalAliasThird" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.laliasFourthName']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message id="msglocalAliasFourth"
+																for="localaliasFourth" display="text" />
+															<p:inputText id="localaliasFourth"
+																value="#{beneficiaryCreationBean.aliasFourthName}"
+																maxlength="38"
+																style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;"
+																dir="RTL">
+																<f:validator validatorId="arabicValidator" />
+																<p:ajax event="blur" update="msglocalAliasFourth" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.benebankstate']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="benebankstate"
+															value="#{beneficiaryCreationBean.beneficaryBankState}"
+															readonly="true" />
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.benebankdist']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="benebankdist"
+															value="#{beneficiaryCreationBean.beneficaryBankDistrict}"
+															readonly="true" />
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.benebankcity']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="benebankcity"
+															value="#{beneficiaryCreationBean.beneficaryBankCity}"
+															readonly="true" />
+													</p:panel>
+												</p:panel>
+
+											</p:panel>
+
+											<!-- cash product panel -->
+
+											<p:panel
+												rendered="#{beneficiaryCreationBean.booenableAgentPanel}"
+												id="cashPanel">
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText
+															value="#{msg['lbl.bank']} / #{msg['lbl.serviceProvider']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgServiceType" for="servicetype"
+															display="text" />
+														<p:selectOneMenu id="servicetype"
+															value="#{beneficiaryCreationBean.serviceTypeId}"
+															filter="true" filterMatchMode="contains" required="true"
+															requiredMessage="Please Select Service Provider">
+															<f:selectItem
+																itemLabel="-- #{msg['lbl.select']} #{msg['lbl.bank']} / #{msg['lbl.serviceProvider']} --"
+																itemValue="" />
+															<f:selectItems
+																value="#{beneficiaryCreationBean.serviceProviderAndCorrespondingBankslst}"
+																var="c" itemLabel="#{c.code} - #{c.name}"
+																itemValue="#{c.id}" />
+															<p:ajax
+																update="msgServiceType,agentMaster,agentBranch,ccurrency"
+																onstart="processIcon.show();"
+																onsuccess="processIcon.hide();"
+																listener="#{beneficiaryCreationBean.clearApplicableField}" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.currency']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgCcurrency" for="ccurrency"
+															display="text" />
+														<p:selectOneMenu id="ccurrency"
+															value="#{beneficiaryCreationBean.benifisCurrencyId}"
+															filterMatchMode="contains" filter="true" required="true"
+															requiredMessage="Please Select Currency">
+															<f:selectItem
+																itemLabel="#{msg['lbl.benecurruncyselect']}"
+																itemValue="" />
+															<f:selectItems
+																value="#{beneficiaryCreationBean.beneServiceCurrencyList}"
+																var="c"
+																itemLabel="#{c.currencyCode} - #{c.currencyName}"
+																itemValue="#{c.currencyId}" />
+															<p:ajax
+																update="msgCcurrency,agentMaster,agentBranch,csp,mainPanel"
+																onstart="processIcon.show();"
+																onsuccess="processIcon.hide();"
+																listener="#{beneficiaryCreationBean.enableAgentMaster}" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col"
+													rendered="#{beneficiaryCreationBean.booRenderAgentMaster}"
+													id="agentMaster">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.agentMaster']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:row>
+															<p:column
+																style="width:100%; text-align:left;padding:0px !important;"
+																rendered="#{beneficiaryCreationBean.booMultipleService}">
+																<p:message id="msgagentMaster" for="agentMasterId"
+																	display="text" />
+																<p:selectOneMenu id="agentMasterId"
+																	value="#{beneficiaryCreationBean.agentMaster}"
+																	filter="true" filterMatchMode="contains"
+																	required="true" requiredMessage="Please Select Agents">
+																	<f:selectItem itemLabel="-- Select Agents --"
+																		itemValue="" />
+																	<f:selectItems
+																		value="#{beneficiaryCreationBean.agentAndCorrespondingBankslst}"
+																		var="c" itemLabel="#{c.code} - #{c.name}"
+																		itemValue="#{c.id}" />
+																	<p:ajax event="change"
+																		listener="#{beneficiaryCreationBean.popAgentBranch}"
+																		onstart="processIcon.show();"
+																		onsuccess="processIcon.hide();"
+																		update="msgagentMaster,agentBranch,mainPanel" />
+																</p:selectOneMenu>
+															</p:column>
+															<p:column
+																style="width:100%; text-align:left;padding:0px !important;"
+																rendered="#{beneficiaryCreationBean.booSingleService}">
+																<p:message for="sigServcie" display="text"
+																	id="msgsigServcie" />
+																<p:inputText id="sigServcie"
+																	styleClass="ui-state-disabled"
+																	value="#{beneficiaryCreationBean.agentMasterBankName}"
+																	readonly="true">
+																	<p:ajax update="msgsigServcie" />
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.agentBranch']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgagentBranch" for="agentBranch"
+															display="text" />
+														<p:selectOneMenu id="agentBranch"
+															value="#{beneficiaryCreationBean.agentBranch}"
+															filter="true" filterMatchMode="contains" required="true"
+															requiredMessage="Please Select Service Provider">
+															<f:selectItem itemLabel="#{msg['lbl.selectBankBranch']}"
+																itemValue="" />
+															<f:selectItems
+																value="#{beneficiaryCreationBean.agentAndCorrespondingBankBranchlst}"
+																var="c" itemLabel="#{c.code} - #{c.name}"
+																itemValue="#{c.id}" />
+															<p:ajax event="change"
+																listener="#{beneficiaryCreationBean.checkingDuplicatesForDiffServiceandAccount}"
+																onstart="processIcon.show();"
+																onsuccess="processIcon.hide();"
+																update="msgagentBranch,agentBranch,mainPanel" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+
+												<p:panel id="agentlocationpanel"
+													rendered="#{beneficiaryCreationBean.booRenderAgentLocationPanel}">
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.agentstate']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="agentstate"
+																value="#{beneficiaryCreationBean.beneficaryBankState}"
+																readonly="true" />
+														</p:panel>
+													</p:panel>
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.agentDistrict']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="agentDistrict"
+																value="#{beneficiaryCreationBean.beneficaryBankDistrict}"
+																readonly="true" />
+														</p:panel>
+													</p:panel>
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.agentcity']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="agentcity"
+																value="#{beneficiaryCreationBean.beneficaryBankCity}"
+																readonly="true" />
+														</p:panel>
+													</p:panel>
+
+												</p:panel>
+
+											</p:panel>
+
+											<p:panel id="westernUnionPanel"
+												rendered="#{beneficiaryCreationBean.westernunionPanel}">
+
+												<p:panel styleClass="left_col" id="wuBank">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.bank']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="wubankId" display="text" id="msgwubankId" />
+														<p:inputText id="wubankId" styleClass="ui-state-disabled"
+															value="#{beneficiaryCreationBean.westernunionBank}"
+															readonly="true">
+															<p:ajax update="msgwubankId" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.currency']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgwucurrency" for="wucurrency"
+															display="text" />
+														<p:selectOneMenu id="wucurrency"
+															value="#{beneficiaryCreationBean.benifisCurrencyId}"
+															filterMatchMode="contains" filter="true" required="true"
+															requiredMessage="Please Select Currency">
+															<f:selectItem
+																itemLabel="#{msg['lbl.benecurruncyselect']}"
+																itemValue="" />
+															<f:selectItems
+																value="#{beneficiaryCreationBean.beneServiceCurrencyList}"
+																var="c"
+																itemLabel="#{c.currencyCode} - #{c.currencyName}"
+																itemValue="#{c.currencyId}" />
+															<p:ajax update="msgwucurrency" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col" id="wuBankBranch">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.bankbranch']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="wubankbranchId" display="text"
+															id="msgwubankbranchId" />
+														<p:inputText id="wubankbranchId"
+															styleClass="ui-state-disabled"
+															value="#{beneficiaryCreationBean.westernunionBranch}"
+															readonly="true">
+															<p:ajax update="msgwubankbranchId" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" styleClass="shadow_button">
+
+												<p:commandButton value="#{msg['lbl.back']}"
+													style="margin-right:10px;"
+													action="#{beneficiaryCreationBean.checkingEditBacktoRemittance}"
+													process="@this" update="mainPanel"
+													disabled="#{beneficiaryCreationBean.disableSaveBack}" />
+
+												<!-- <p:commandButton id="savebutton" value="#{msg['lbl.save']}"
+													rendered="#{beneficiaryCreationBean.disableSaveButton}"
+													style="margin-right:10px;"
+													action="#{beneficiaryCreationBean.differentBankDetailsSave}"
+													update=":form1" process="form1"
+													onstart="processIcon.show();"
+													onsuccess="processIcon.hide();"
+													disabled="#{beneficiaryCreationBean.disableSaveBack}" /> -->
+													
+												<p:commandButton id="savebutton" value="#{msg['lbl.next']}"
+													style="margin-right:10px;"
+													action="#{beneficiaryCreationBean.gotoBeneficaryAccountDetails}"
+													update="mainPanel,csp" />
+
+												<p:commandButton value="#{msg['lbl.exit']}"
+													action="#{beneficiaryCreationBean.backToBenificaryListScreen}"
+													immediate="true" update="mainPanel" />
+
+												<h:panelGroup layout="block" class="clearfix" />
+											</h:panelGroup>
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:outputText id="mandatores"
+												value=" #{msg['lbl.*filedsAreMandatory']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+									</p:panel>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

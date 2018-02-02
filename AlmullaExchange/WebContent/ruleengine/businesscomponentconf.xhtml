@@ -1,0 +1,352 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+	<h:head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link href="css/style1.css" rel="stylesheet" type="text/css" />
+	  </h:head>
+<h:body dir="#{facesBean.direction}">
+	<f:view locale="#{facesBean.locale}">
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height:100%;">
+    <tr>
+    <td align="left" valign="top" style="height:100%;" ><ui:include src="#{facesBean.fxdeal_menu}"></ui:include></td>
+    		
+    	<td  class="rightColumn" valign="top">
+		<h:panelGroup layout="block" class="container">
+			<h:panelGroup layout="block" class="main_div">
+				<div id="common">
+				<div class="menu_button"><img style="cursor: pointer;  position:relative; left:15px;" id="HideHandle" name="HideHandle" src="../images/toggle_plus.png" alt="" onclick='hideLeftCol("leftCol");closeMenus();'/></div>
+					<h1>#{msg['lbl.businesscomponentsetup']}</h1>
+					<h:panelGroup layout="block" class="table_bg">
+						<p:panel id="mainPanel" style="padding:10px!important;">
+							<h:form title="Business Component Setup" id="businesscomponentconffrm">
+								<h2>#{msg['lbl.businesscomponentsetupmsg']}</h2>
+								<p:panelGrid id="bcgrid" rendered="#{businesscomponentconf.gridInput}" cellpadding="25" cellspacing="25" style="margin-left:30px; width:50% !important;">
+									<p:row>
+										<p:column style="width:33%;">
+											<h:outputText value="#{msg['lbl.bc']} *" />
+										</p:column>
+										<p:column>
+											<p:selectOneMenu id="bcComponentId" value="#{businesscomponentconf.componentId}" filter="true" style="width:225px !important;float:left;margin-right:10px;" required="true" requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.bc']}">
+												<f:selectItem itemLabel="#{msg['lbl.select']}" itemValue=""/>
+												<f:selectItems value="#{businesscomponentconf.allBusinessComponent}" var="c" itemLabel="#{c.componentName}" itemValue="#{c.componentId}" />
+												<p:ajax event="change" update="businesscomponentconffrm" listener="#{businesscomponentconf.getAllPatterns}" />
+											</p:selectOneMenu>
+											<p:commandButton widgetVar="popupview" type="button" styleClass="view" value="" onclick="PF('avaiCombinations').show()" />
+											<p:message for="bcComponentId" showDetail="true" display="text"/>
+											
+											<p:dialog id="avaiCombinationsId" widgetVar="avaiCombinations" >
+												<p:dataTable id="levelData" paginator="true" rows="5" style="width:100%"
+													var="c" value="#{businesscomponentconf.lstLevelBean}"
+													selectionMode="single" rowKey="#{c.componentConfId}"
+													paginatorTemplate="{FirstPageLink} {PreviousPageLink} {NextPageLink} {LastPageLink}">
+													<p:ajax event="rowSelect" listener="#{businesscomponentconf.applySelection}" 
+													process="@this" update=":businesscomponentconffrm:bcgrid" />
+													<f:facet name="header">Available Combinations</f:facet>
+													<p:column>
+														<f:facet name="header">
+															<h:outputText value="Application"/>
+														</f:facet>
+														<h:outputText value="#{c.applicationName}"/>
+													</p:column>
+													<p:column>
+														<f:facet name="header">
+															<h:outputText value="Company"/>
+														</f:facet>
+														<h:outputText value="#{c.companyName}"/>
+													</p:column>
+													<p:column>
+														<f:facet name="header">
+															<h:outputText value="Country"/>
+														</f:facet>
+														<h:outputText value="#{c.countryName}"/>
+													</p:column>
+													<p:column>
+														<f:facet name="header">
+															<h:outputText value="Page"/>
+														</f:facet>
+														
+														<h:outputText value="#{c.pageName}"/>
+													
+													</p:column>
+												</p:dataTable>
+											</p:dialog>
+										</p:column>
+									</p:row>
+									<p:row>
+										<p:column>
+											<h:outputText value="#{msg['lbl.bcapplication']} *" />
+										</p:column>
+										<p:column>
+											<p:selectOneMenu id="bcApplicationId" value="#{businesscomponentconf.applicationId}" filter="true" style="width:185px;">
+												<f:selectItem itemLabel="#{msg['lbl.select']}" itemValue=""/>
+												<f:selectItems value="#{businesscomponentconf.allApplicationList}" var="c" itemLabel="#{c.applicationName}" itemValue="#{c.applicationId}" />
+											</p:selectOneMenu>
+										</p:column>
+									</p:row>
+									<p:row>
+										<p:column>
+											<h:outputText value="#{msg['lbl.bccompany']} *" />
+										</p:column>
+										<p:column>
+											<p:selectOneMenu id="bcCompanyId" value="#{businesscomponentconf.companyId}" filter="true" style="width:185px;">
+												<f:selectItem itemLabel="#{msg['lbl.select']}" itemValue=""/>
+												<f:selectItems value="#{businesscomponentconf.allCompanyList}" var="c" itemLabel="#{c.companyName}" itemValue="#{c.fsCompanyMaster.companyId}" />
+											</p:selectOneMenu>
+										</p:column>
+									</p:row>
+									<p:row>
+										<p:column>
+											<h:outputText value="#{msg['lbl.bccountry']} *" />
+										</p:column>
+										<p:column>
+											<p:selectOneMenu id="bcCountryId" value="#{businesscomponentconf.countryId}" filter="true" style="width:185px;">
+												<f:selectItem itemLabel="#{msg['lbl.select']}" itemValue=""/>
+												<f:selectItems value="#{businesscomponentconf.allCountryList}" var="c" itemLabel="#{c.countryName}" itemValue="#{c.fsCountryMaster.countryId}" />
+											</p:selectOneMenu>
+										</p:column>
+									</p:row>
+									<p:row>
+										<p:column>
+											<h:outputText value="#{msg['lbl.bcpage']} *" />
+										</p:column>
+										<p:column>
+											<p:selectOneMenu id="bcPageId" value="#{businesscomponentconf.pageId}" filter="true" style="width:185px;">
+												<f:selectItem itemLabel="#{msg['lbl.select']}" itemValue=""/>
+												<f:selectItems value="#{businesscomponentconf.allPageList}" var="c" itemLabel="#{c.pageName}" itemValue="#{c.pageId}" />
+											</p:selectOneMenu>
+										</p:column>
+									</p:row>
+									<p:row>
+										<p:column>
+											<p:spacer/>
+										</p:column>
+										<p:column>
+											<p:commandButton onstart="PF('ajaxStatus').show()" oncomplete="PF('ajaxStatus').hide()" update="businesscomponentconffrm" value="#{msg['lbl.search']}" process="bcgrid" actionListener="#{businesscomponentconf.getBusinessComponentDetail}" async="true"/>
+										</p:column>
+										<p:column>
+											<p:dialog widgetVar="ajaxStatus" header="Please Wait" draggable="false" resizable="false" modal="true" closable="false" >
+												<h:graphicImage value="../images/ajax_loader.gif"/>
+											</p:dialog>
+										</p:column>
+									</p:row>
+								</p:panelGrid>
+
+								<!-- Business Component default behaviour --> 
+								<p:panelGrid id="bcdetailgridnewhead" rendered="#{businesscomponentconf.gridBehavior}" style="width:100%" >
+									<p:row>
+										<p:column>
+											 <h2>#{msg['lbl.businesscomponentconfsetupmsg']}</h2>
+										</p:column>
+									</p:row>
+								</p:panelGrid>
+								<p:panelGrid id="bcdetailgridnew" rendered="#{businesscomponentconf.gridBehavior}" cellpadding="25" cellspacing="25" style="margin-left:50px;">
+									<p:row rendered="#{businesscomponentconf.rowVisible}">
+										<p:column>
+											<h:outputText value="Is Visible *" />
+										</p:column>
+										<p:column>
+											<p:selectOneRadio id="bcVisible" value="#{businesscomponentconf.isVisible}" required="true" requiredMessage="#{msg['lbl.validselectt']} Is Visible">
+												<f:selectItem itemLabel="#{msg['lbl.yes']}" itemValue="Y" />
+												<f:selectItem itemLabel="#{msg['lbl.no']}" itemValue="N" />
+											</p:selectOneRadio>
+										</p:column>
+										<p:column>
+											<p:message for="bcVisible" showDetail="true" display="text"/>
+										</p:column>
+									</p:row>
+									<p:row rendered="#{businesscomponentconf.rowMinLength}">
+										<p:column>
+											<h:outputText value="#{msg['lbl.bcminvalue']} *" />
+										</p:column>
+										<p:column>
+											<p:inputText id="bcMinValue" value="#{businesscomponentconf.minValue}" maxlength="2" required="true" requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.bcminvalue']}">
+												<!-- <f:convertNumber  integerOnly="true"/> -->
+												<f:validator
+																validatorId="allowOnlyNumber" />
+																<p:message for="bcMinValue" display="text" id="bcMinValuemsg"/>
+																<p:ajax update="bcMinValuemsg"/>
+											</p:inputText>
+										</p:column>
+										<p:column>
+											<p:message for="bcMinValue" showDetail="true" display="text"/>
+										</p:column>
+									</p:row>
+									
+									<p:row rendered="#{businesscomponentconf.rowMaxLength}">
+										<p:column>
+											<h:outputText value="#{msg['lbl.bcmaxvalue']} *" />
+										</p:column>
+										<p:column>
+											<p:inputText id="bcMaxValue" value="#{businesscomponentconf.maxValue}" maxlength="2" required="true" requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.bcmaxvalue']}">
+												<!-- <f:convertNumber integerOnly="true"/> -->
+												<f:validator
+																validatorId="allowOnlyNumber" />
+																<p:message for="bcMaxValue" display="text" id="bcMaxValuemsg"/>
+																<p:ajax update="bcMaxValuemsg"/>
+											</p:inputText>
+										</p:column>
+										<p:column>
+											<p:message for="bcMaxValue" showDetail="true" display="text"/>
+										</p:column>
+									</p:row>
+									
+									<p:row rendered="#{businesscomponentconf.rowNumeric}">
+										<p:column>
+											<h:outputText value="#{msg['lbl.bcisnumeric']} *" />
+										</p:column>
+										<p:column>
+											<p:selectOneRadio id="bcNumeric" value="#{businesscomponentconf.isNumeric}" required="true" requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.bcisnumeric']}">
+												<f:selectItem itemLabel="#{msg['lbl.yes']}" itemValue="Y" />
+												<f:selectItem itemLabel="#{msg['lbl.no']}" itemValue="N" />
+											</p:selectOneRadio>
+										</p:column>
+										<p:column>
+											<p:message for="bcNumeric" showDetail="true" display="text"/>
+										</p:column>
+									</p:row>
+									
+									<p:row rendered="#{businesscomponentconf.rowAlpha}">
+										<p:column>
+											<h:outputText value="#{msg['lbl.bcisalphabet']} *" />
+										</p:column>
+										<p:column>
+											<p:selectOneRadio id="bcAlphabet" value="#{businesscomponentconf.isAlphabet}" required="true" requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.bcisalphabet']}">
+												<f:selectItem itemLabel="#{msg['lbl.yes']}" itemValue="Y" />
+												<f:selectItem itemLabel="#{msg['lbl.no']}" itemValue="N" />
+											</p:selectOneRadio>
+										</p:column>
+										<p:column>
+											<p:message for="bcAlphabet" showDetail="true" display="text"/>
+										</p:column>
+									</p:row>
+									
+									<p:row rendered="#{businesscomponentconf.rowSpecial}">
+										<p:column>
+											<h:outputText value="#{msg['lbl.bcisspecial']} *" />
+										</p:column>
+										<p:column>
+											<p:selectOneRadio id="bcSpecial" value="#{businesscomponentconf.isSpecial}" required="true" requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.bcisspecial']}">
+												<f:selectItem itemLabel="#{msg['lbl.yes']}" itemValue="Y" />
+												<f:selectItem itemLabel="#{msg['lbl.no']}" itemValue="N" />
+											</p:selectOneRadio>
+										</p:column>
+										<p:column>
+											<p:message for="bcSpecial" showDetail="true" display="text"/>
+										</p:column>
+									</p:row>
+									
+									<p:row rendered="#{businesscomponentconf.rowRequired}">
+										<p:column>
+											<h:outputText value="#{msg['lbl.bcisrequired']} *" />
+										</p:column>
+										<p:column>
+											<p:selectOneRadio id="bcRequired" value="#{businesscomponentconf.isRequired}" required="true" requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.bcisrequired']}">
+												<f:selectItem itemLabel="#{msg['lbl.yes']}" itemValue="Y" />
+												<f:selectItem itemLabel="#{msg['lbl.no']}" itemValue="N" />
+											</p:selectOneRadio>
+										</p:column>
+										<p:column>
+											<p:message for="bcRequired" showDetail="true" display="text"/>
+										</p:column>
+									</p:row>
+									
+									<p:row rendered="#{businesscomponentconf.rowReadOnly}">
+										<p:column>
+											<h:outputText value="#{msg['lbl.bcisreadonly']} *" />
+										</p:column>
+										<p:column>
+											<p:selectOneRadio id="bcReadonly" value="#{businesscomponentconf.isReadOnly}" required="true" requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.bcisreadonly']}">
+												<f:selectItem itemLabel="#{msg['lbl.yes']}" itemValue="Y" />
+												<f:selectItem itemLabel="#{msg['lbl.no']}" itemValue="N" />
+											</p:selectOneRadio>
+										</p:column>
+										<p:column>
+											<p:message for="bcReadonly" showDetail="true" display="text"/>
+										</p:column>
+									</p:row>
+									
+									<p:row rendered="#{businesscomponentconf.rowEnable}">
+										<p:column>
+											<h:outputText value="#{msg['lbl.bcisenable']} *" />
+										</p:column>
+										<p:column>
+											<p:selectOneRadio id="bcEnable" value="#{businesscomponentconf.isEnable}" required="true" requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.bcisenable']}">
+												<f:selectItem itemLabel="#{msg['lbl.yes']}" itemValue="Y" />
+												<f:selectItem itemLabel="#{msg['lbl.no']}" itemValue="N" />
+											</p:selectOneRadio>
+										</p:column>
+										<p:column>
+											<p:message for="bcEnable" showDetail="true" display="text"/>
+										</p:column>
+									</p:row>
+									
+									
+									
+								</p:panelGrid>
+								<br/><br/>
+								
+								<p:panelGrid id="headerbcdatagrid" rendered="#{businesscomponentconf.bcdatagridStatus}" style="width:100%" >
+									<p:row>
+										<p:column>
+											 <h2>#{msg['lbl.businesscomponentdatamsg']}</h2>
+										</p:column>
+									</p:row>
+								</p:panelGrid>
+								
+								<p:panelGrid id="bcdatagrid" rendered="#{businesscomponentconf.bcdatagridStatus}" cellpadding="25" cellspacing="25" style="margin-left:50px;">
+									
+									<p:row>
+										<p:column>
+											<p:pickList id="dropdownPickedList" value="#{businesscomponentconf.dualCompData}" 
+											var="data" itemLabel="#{data}" itemValue="#{data}"
+											showSourceFilter="true" showTargetFilter="true" 
+											>
+												<f:facet name="sourceCaption">Available</f:facet>
+												<f:facet name="targetCaption">Selected</f:facet>
+											</p:pickList>
+										</p:column>
+									</p:row>
+								</p:panelGrid>
+								
+								<p:panelGrid id="bcbuttongrid" rendered="#{businesscomponentconf.gridSubmit}" cellpadding="25" cellspacing="25" style="margin:0 auto;">
+									<p:row>
+										<p:column>
+											<p:spacer/>
+										</p:column>
+										<p:column>
+										<p:commandButton value="#{msg['lbl.submit']}" action="#{businesscomponentconf.saveData}" ajax="false"/>
+										<p:spacer width="30" />
+											<p:commandButton action="#{businesscomponentconf.reset}" value="#{msg['lbl.reset']}" ajax="false"/>
+											
+											
+										</p:column>
+										<p:column>
+											<p:spacer/>
+										</p:column>
+									</p:row>
+								</p:panelGrid>
+							</h:form>
+						</p:panel>
+					</h:panelGroup>
+				</div>
+			</h:panelGroup>
+		</h:panelGroup>
+		<div class="clearfix"></div>
+    				
+    				</td>
+    </tr>
+    </table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+
+
+</html>

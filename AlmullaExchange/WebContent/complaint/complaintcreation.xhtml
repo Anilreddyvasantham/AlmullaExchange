@@ -1,0 +1,578 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<style type="text/css">
+    .animated .ui-progressbar-value { 
+        background-image: url("./images/preloader.gif"); 
+    }
+</style>
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+
+		 history.pushState(null, null, 'complaintcreation.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'complaintcreation.xhtml');
+		    });
+	</script>
+</h:head>
+<p:confirmDialog id="remitDealRefAlreayExist" widgetVar="remitDealRefAlreayExist" width="400" resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}"
+ styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.complaintAlreadyRegistered']}">
+</p:confirmDialog>
+
+<!-- <p:confirmDialog id="noRecords" widgetVar="noRecords" width="300"  resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" 
+styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{complaintCreation.documentNoForNoRecord} - #{msg['lbl.noRecordFound']}">
+</p:confirmDialog> -->
+
+<p:dialog id="alreadyTagged" widgetVar="alreadyTagged" width="400" height="80" resizable="false" style="background-color: white !important;"
+styleClass="warning" header="#{msg['lbl.warningDailog']}" closable="false" showEffect="clip" hideEffect="clip">
+<p:outputLabel value="REMITTANCE IS ALREADY TAGGED" style="text-align: center; font-size:15px !important;"  />
+<br />
+<p:commandButton value="#{msg['lbl.ok']}" onclick="PF('alreadyTagged').hide();" immediate="true" style="margin-left: 150px !important;" />
+</p:dialog>
+<h:body>
+
+	
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+					<!-- <ui:include
+						src="../common/common_menu.xhtml"></ui:include> --> <ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include>
+				</td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h1>
+								<h:outputText value="#{msg['lbl.complaintCreation']}" />
+							</h1>
+						 	
+							<h:panelGroup layout="block" class="table_bg">
+								<h:form id="form1" style="padding:0!important; background:none !important;">
+								<p:panel styleClass="shadow" id="mainPanel">								
+								<h2>
+									<h:outputText value="#{msg['lbl.complaintCreation']}" />
+								</h2>
+								<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{complaintCreation.errorMessage}">
+									</p:confirmDialog>
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{complaintCreation.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+								<p:confirmDialog id="recordAlreadyExist" widgetVar="recordAlreadyExist" width="400" resizable="false" style="background-color: white !important;"
+									header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.recrdAlreadyExisted']}">
+								</p:confirmDialog>
+								<p:confirmDialog id="proceErr" widgetVar="proceErr"
+	width="400" resizable="false" visible="#{complaintCreation.booProcedureDialog}"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true"
+	message="#{complaintCreation.errMsg}"></p:confirmDialog>
+									<p:dialog id="complete" widgetVar="complete" width="400" height="80" resizable="false" style="background-color: white !important;"
+										styleClass="success" header="#{msg['lbl.success']}" closable="false" showEffect="clip" hideEffect="clip">
+										<p:outputLabel value="#{msg['lbl.complaintCreationSavedSucceddfully']}" style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{complaintCreation.clickOnOKSave}" process="@this" style="margin-left: 150px !important;" />
+									</p:dialog>
+									
+									<p:dialog id="noRecords" widgetVar="noRecords" width="400" height="80" resizable="false" style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.warningDailog']}" closable="false" showEffect="clip" hideEffect="clip">
+										<p:outputLabel value="#{complaintCreation.documentNoForNoRecord} - #{msg['lbl.givenNumberRemittanceNotExisted']}" style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}" onclick="PF('pending').hide();" immediate="true" style="margin-left: 150px !important;" />
+									</p:dialog>
+									
+									<fieldset>
+									<legend></legend>
+									
+									<p:panel layout="block" >
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bccompany']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">											
+														<!-- <p:selectOneMenu 
+															value="#{complaintCreation.companyId}" filter="true"
+															filterMatchMode="startsWith" label="complaintCreation Type">
+															<f:selectItem itemLabel="#{msg['lbl.selectcompany']}" itemValue="" />
+													    <f:selectItems
+														value="#{complaintCreation.lstCompanyNamesFromCompanyMaster}"
+														var="c" itemLabel="#{c.companyName}"
+														itemValue="#{c.fsCompanyMaster.companyId}" />		
+														<p:ajax />											
+														</p:selectOneMenu> -->
+														<p:inputText id="company" value="#{complaintCreation.companyName}"  readonly="true"/>
+											</p:panel>
+												
+										</p:panel>
+									</p:panel>
+									
+									<p:panel layout="block" >
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.remitYearOrNumber']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:panelGrid style="width:100%;">
+															<p:row>
+																<p:column
+																	style="width:50% !important; padding:0px 13px 0px 0px !important;">
+																	<p:selectOneMenu value="#{complaintCreation.remitdealYearId}"
+																		filter="true" filterMatchMode="startsWith">
+																		<f:selectItem itemLabel="#{msg['lbl.selectDealYear']}" itemValue="" />
+																		<f:selectItems value="#{complaintCreation.dealYearList}" var="c" itemLabel="#{c.financialYear}" itemValue="#{c.financialYearID}" />
+																		<p:ajax />
+																	</p:selectOneMenu>
+																</p:column>
+																<p:column style="width:50% !important; padding:0px 13px 0px 0px !important;">
+																<p:message for="dealDocNo" display="text" id="msgdealDocNo" />
+																	<p:inputText id="dealDocNo" value="#{complaintCreation.remitdealReference}" readonly="#{complaintCreation.booReadOnly}" required="true" requiredMessage="Please Enter Document Number" tabindex="1">
+																		<p:ajax update="msgdealDocNo,remitDetails,:form1" listener="#{complaintCreation.fetchComplaintremittanceDetails}" process="@this"/>
+																	</p:inputText>
+																</p:column>
+															</p:row>
+														</p:panelGrid>
+													</p:panel>
+												</p:panel>
+									</p:panel>
+									
+									<div class="clearfix"></div>
+									
+									<p:panel layout="block" >
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.complaintYearOrNumber']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:panelGrid style="width:100%;">
+												<p:row>
+													<p:column style="width:50% !important; padding:0px 13px 0px 0px !important;">
+														<p:inputText id="complaintYearId" value="#{complaintCreation.complaintdealYear}" readonly="true">
+															<p:ajax />
+														</p:inputText>
+													</p:column>
+													<p:column style="width:50% !important; padding:0px 13px 0px 0px !important;" rendered="#{complaintCreation.booRenderEditfalse}">
+														<p:inputText id="complaintDocNo" value="#{complaintCreation.complaintdealReference}" readonly="true">
+															<p:ajax />
+														</p:inputText>
+													</p:column>
+													<p:column style="width:50% !important; padding:0px 13px 0px 0px !important;" rendered="#{complaintCreation.booRenderEdit}">
+														<p:inputText id="complaintDocumentNo" value="#{complaintCreation.complaintlogDealReference}" readonly="true">
+															<p:ajax />
+														</p:inputText>
+													</p:column>
+												</p:row>
+											</p:panelGrid>											
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.logDate']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message for="calid" display="text" id="msgcalid"/>																								
+											<!-- <p:calendar id="calid" mode="popup" pattern="dd/MM/yyyy" value="#{complaintCreation.complaintLogDate}" maxdate="#{complaintCreation.effectiveMaxDate}" navigator="true" readonlyInput="true" required="true" requiredMessage="Enter Deal Date">
+        									    <p:ajax event="dateSelect"  update="msgcalid"/>
+    										</p:calendar>  -->
+    										<p:inputText id="calid" value="#{complaintCreation.complaintLogDate}" readonly="true" >
+															<f:convertDateTime pattern="dd-MM-yyyy" timeZone="GMT+7" />
+															<p:ajax />
+														</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+									</p:panel>									
+									
+									</fieldset>
+									
+									<p:panel id="remitDetails" >
+									
+										<h2>
+											<h:outputText value="#{msg['lbl.remitDetails']}" />										
+										</h2>
+										<fieldset>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.country']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />	
+											</p:panel>
+											<p:panel styleClass="inner_right_col"	>
+												<p:inputText id="country" value="#{complaintCreation.countryName}" readonly="true">
+													<p:ajax />
+												</p:inputText>																			
+											</p:panel>
+											
+										</p:panel>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bank']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />	
+											</p:panel>
+											<p:panel styleClass="inner_right_col"	>
+												<p:inputText id="bank" value="#{complaintCreation.bankName}" readonly="true">
+													<p:ajax />
+												</p:inputText>																		
+											</p:panel>
+											
+										</p:panel>
+										
+										<div class="clearfix"></div>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.remitDate']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />	
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											    <p:inputText id="remitDate" value="#{complaintCreation.remittanceDate}" readonly="true">
+											    <f:convertDateTime pattern="dd-MM-yyyy" />
+													<p:ajax />
+												</p:inputText>
+    										</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.branch']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />	
+											</p:panel>
+											<p:panel styleClass="inner_right_col"	>
+												<p:inputText id="branch" value="#{complaintCreation.branchName}" readonly="true">
+													<p:ajax />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+										<div class="clearfix"></div>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.service']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />	
+											</p:panel>
+											<p:panel styleClass="inner_right_col"	>											
+												<p:inputText id="service" value="#{complaintCreation.serviceName}" readonly="true">
+													<p:ajax />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.customer']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />	
+											</p:panel>
+											<p:panel styleClass="inner_right_col">											
+												<p:inputText id="customer" value="#{complaintCreation.customerName}" readonly="true">
+													<p:ajax />
+												</p:inputText>																			
+											</p:panel>
+										</p:panel>
+										
+										<div class="clearfix"></div>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.mobileNumber']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />	
+											</p:panel>
+											<p:panel styleClass="inner_right_col"	>
+												<p:inputText id="mobile" value="#{complaintCreation.mobileNumber}" readonly="true">
+													<p:ajax />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+										<!-- <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.amount']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />	
+											</p:panel>
+											<p:panel styleClass="inner_right_col"	>
+												<p:inputText id="amount" value="#{complaintCreation.remitAmount}" readonly="true">
+													<p:ajax />
+												</p:inputText>
+											</p:panel>
+										</p:panel> -->
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currencyNameOrAmount']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:panelGrid style="width:100%;">
+															<p:row>
+																<p:column
+																	style="width:50% !important; padding:0px 13px 0px 0px !important;">
+																	<p:inputText id="currencyNameId" value="#{complaintCreation.currencyName}"  readonly="true"/>
+																</p:column>
+																<p:column style="width:50% !important; padding:0px 13px 0px 0px !important;">
+																	<p:inputText id="remitAmountId" value="#{complaintCreation.remitAmount}" readonly="true">
+																		
+																				
+																	</p:inputText>
+																</p:column>
+															</p:row>
+														</p:panelGrid>
+													</p:panel>
+												</p:panel>
+									
+										<div class="clearfix"></div>
+										
+										<p:panel styleClass="left_col" >
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.beneficiary']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />	
+											</p:panel>
+											<p:panel styleClass="inner_right_col"	>
+												<p:inputText id="beneficiary" value="#{complaintCreation.beneficiaryName}" readonly="true">
+													<p:ajax />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.accNumber']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />	
+											</p:panel>
+											<p:panel styleClass="inner_right_col"	>
+												<p:inputText id="accnumber" value="#{complaintCreation.accountNumber}" readonly="true">
+													<p:ajax />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										</fieldset>
+											<div class="clearfix"></div>
+										
+									</p:panel>
+									
+									
+									<p:panel id="remarksDetails" >
+										<h2>
+									<h:outputText value="#{msg['lbl.complaintTypeAndRemarksInfo']}" />
+								</h2>
+								<fieldset>
+										<p:panel styleClass="left_col">
+											<p:panel layout="block" >
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.location']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />	
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											 <p:inputText value="#{complaintCreation.complaintLocationName}" readonly="true">
+											     <p:ajax/>
+											 </p:inputText>
+											</p:panel>
+										</p:panel>
+									</p:panel>
+									
+									<p:panel layout="block" >
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.complaintForm']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />	
+											</p:panel>
+											<p:panel styleClass="inner_right_col"	>
+											<p:message id="msgComplaintFromId"  for="complaintFrom" display="text" />
+												<p:selectOneMenu id="complaintFrom" value="#{complaintCreation.complaintFromId}" filter="true" filterMatchMode="startsWith" required="true" requiredMessage="Please Select Complaint From" tabindex="2">
+													<f:selectItem itemLabel="#{msg['lbl.selectComplaintFrom']}" itemValue="" />
+													<f:selectItems value="#{complaintCreation.lstComplaintFromCompAssTable}" var="c" itemLabel="#{c.complaintAssigned.complaintAssignedCode} - #{c.fullDescription}" itemValue="#{c.complaintAssigned.complaintAssignedId}" />
+													<p:ajax event="change" listener="#{complaintCreation.disableSubmitButton}" update="msgComplaintFromId"/>
+												</p:selectOneMenu>													
+											</p:panel>
+										</p:panel>
+									</p:panel>
+									
+									<div class="clearfix"></div>
+									
+									<p:panel layout="block" >
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.complainttypemaster']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />	
+											</p:panel>
+											<p:panel styleClass="inner_right_col"	>
+											<p:message id="msgcomplaintTypeId"  for="complaintType" display="text" />
+											    <p:selectOneMenu id="complaintType" value="#{complaintCreation.complaintTypeId}" filter="true" filterMatchMode="startsWith" required="true" requiredMessage="Please Select Complaint Type" tabindex="3">
+													<f:selectItem itemLabel="#{msg['lbl.selectComplaintType']}" itemValue="" />
+													<f:selectItems value="#{complaintCreation.lstComplaintTypeFromComplaintType}" var="c" itemLabel="#{c.complaintType.complaintTypeCode} - #{c.fullDesc}" itemValue="#{c.complaintType.complaintTypeId}" />
+													<p:ajax update="msgcomplaintTypeId"/>
+												</p:selectOneMenu>								
+											</p:panel>
+										</p:panel>
+									</p:panel>
+									<p:panel layout="block">
+										<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.remarkscode']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />	
+											</p:panel>
+											<p:panel styleClass="inner_right_col"	>
+											<p:message id="msgcomplaintRemarksCode"  for="complaintRemarksCode" display="text" />
+												<p:selectOneMenu id="complaintRemarksCode"  value="#{complaintCreation.complaintRemarksCodeId}" filter="true" filterMatchMode="startsWith" required="true" requiredMessage="Please Select Complaint Remarks" tabindex="4">
+													<f:selectItem itemLabel="#{msg['lbl.selectComplaintRemarks']}" itemValue="" />
+													<f:selectItems value="#{complaintCreation.lstComplaintRemarksFromComplaintRemarks}" var="c" itemLabel="#{c.complaintRemarks.complaintRemarksCode} - #{c.fullDesc}" itemValue="#{c.complaintRemarks.complaintRemarksId}" />
+													<p:ajax update="complaintRemarksCode" event="change" listener="#{complaintCreation.checkRemarksStatus}"/>
+												</p:selectOneMenu>	
+											</p:panel>
+										</p:panel>
+									</p:panel>
+									
+									<div class="clearfix"></div>
+									
+									<p:panel layout="block">
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.remarks']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col"	>
+												<h:inputTextarea id="remarks" value="#{complaintCreation.complaintRemarks}" rows="4" cols="30" tabindex="5">
+												<p:ajax/>
+												</h:inputTextarea>
+											</p:panel>
+										</p:panel>	
+									</p:panel>
+									</fieldset>
+									</p:panel>
+									
+									<div class="clearfix"></div>
+									<p:panel styleClass="left_col" >
+										<h:outputText  id="mandatory" value=" #{msg['lbl.*filedsAreMandatory']}"  style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										<h:panelGroup layout="block" class="clearfix"/>
+										</p:panel>
+										<div class="clearfix"></div>
+									<h:panelGroup layout="block" styleClass="shadow_button" >
+										<p:commandButton value="#{msg['lbl.add']}" style="margin-right:10px;" action="#{complaintCreation.duplicateCheckForDataTable}" update="mainPanel" tabindex="6"/>
+										<p:commandButton value="#{msg['lbl.clear']}" style="margin-right:10px;" action="#{complaintCreation.clearAllFields}" update="mainPanel" immediate="true" process="@this" tabindex="7"/>							
+							      		<div class="clearfix"></div>
+									</h:panelGroup>
+									
+									<p:panel id="complaintpanel" >
+											<p:dataTable sortMode="multiple" styleClass="mydatatableclass" id="complaintttbl" value="#{complaintCreation.complaimtCreationDtList}" var="d" rows="10" rowIndexVar="rowIndex" emptyMessage="#{msg['lbl.noRecordFound']}"
+											paginatorPosition="bottom" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="5,10,15"
+											rendered="#{complaintCreation.booRenderDataTable}">									
+												<p:column headerText="#{msg['lbl.sino']}" >
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.documentNo']}" >
+													<h:outputText value="#{d.complaintNo}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.country']}" >
+													<h:outputText value="#{d.countryName}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.bank']}" >
+													<h:outputText value="#{d.bankName}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.remitDate']}" >
+													<h:outputText value="#{d.remitDate}">
+													<f:convertDateTime pattern="dd-MM-yyyy" />
+													</h:outputText>
+												</p:column>
+												<p:column headerText="#{msg['lbl.branch']}" >
+													<h:outputText value="#{d.branchName}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.customer']}" >
+													<h:outputText value="#{d.customerName}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.currencyname']}" >
+													<h:outputText value="#{d.currencyName}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.amount']}" >
+													<h:outputText value="#{d.amount}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.beneficiary']}" >
+													<h:outputText value="#{d.beneficiary}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.accNumber']}" >
+													<h:outputText value="#{d.accountNumber}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.complaintForm']}" >
+													<h:outputText value="#{d.complaintFrom}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.complainttypemaster']}" >
+													<h:outputText value="#{d.complaintTypeName}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.remarkscode']}" >
+													<h:outputText value="#{d.remarksCode}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.edit']}">
+											<p:commandButton id="imgEdit" styleClass="edit" value="" action="#{complaintCreation.edit(d)}" update="complaintttbl,:form1" process="@this"/>
+										</p:column> 
+												
+										</p:dataTable>
+									</p:panel>
+									
+									
+									
+									
+									
+									
+									
+									<div class="clearfix"></div>
+									<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{complaintCreation.booRenderSaveOrExit}" id="booSubmitPanel">
+												<p:commandButton id="submitPanel" value="#{msg['lbl.submit']}" action="#{complaintCreation.saveComplaintAndSendingEmailToAssignedTo}" disabled="#{complaintCreation.booSubmitPanel}" style="margin-right:10px;" immediate="true" update="mainPanel" tabindex="8"/>
+												<p:commandButton value="#{msg['lbl.exit']}"  action="#{complaintCreation.exit}" style="margin-right:10px;" update="mainPanel" immediate="true" tabindex="9"/>
+											
+									      <div class="clearfix"></div>
+											</h:panelGroup>	
+									
+									<p:dialog modal="true" showHeader="true" header="Please wait.." widgetVar="process"  id="process"   width="400" height="100" resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+							    	</p:dialog> 								
+								</p:panel>
+				
+								</h:form>
+							</h:panelGroup>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+					</h:panelGroup></td>
+			</tr>
+		</table>
+		<div class="clearfix"></div>
+
+	<ui:include src="#{facesBean.footer}"></ui:include>
+
+	</f:view>
+</h:body>
+</html>

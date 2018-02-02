@@ -1,0 +1,630 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</h:head>
+
+<h:body>
+
+	<p:dialog id="complete" widgetVar="complete" width="260" height="70"
+		showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+
+		<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']}" />
+		<br />
+
+		<p:commandButton value="#{msg['lbl.ok']}"
+			action="#{beneficiarySerivcesExceptionBean.clickOk()}"
+			update=":mainform:modeNotSelect" style="margin-right:10px; " />
+
+	</p:dialog>
+
+	<p:dialog id="maxgreater" widgetVar="maxgreater" width="260"
+		height="70" showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+
+		<p:outputLabel value="#{msg['lbl.greatertthanmin']}" />
+		<br />
+
+		<p:commandButton value="#{msg['lbl.ok']}"
+			oncomplete="maxgreater.hide()" />
+	</p:dialog>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="mainform">
+								<p:dialog id="modeNotSelect" widgetVar="modeNotSelect"
+									width="550" resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background: 224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+									<p:outputLabel value="Please Select Mode of Operation...!" />
+								</p:dialog>
+								<p:dialog id="viewData" widgetVar="viewData"
+									header="Beneficiary Exception Setup DataTable" width="550"
+									resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background: 224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+									<p:outputLabel value="#{msg['lbl.recordnotfound']}" />
+									<p:commandButton value="#{msg['lbl.ok']}"
+										onclick="PF('viewData').hide();" process="@this" />
+								</p:dialog>
+								<p:dialog id="noRecord" widgetVar="noRecord" width="550"
+									resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background: 224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+									<p:outputLabel value="#{msg['lbl.recordnotfound']}" />
+									<p:commandButton value="#{msg['lbl.ok']}"
+										onclick="PF('noRecord').hide();" process="@this" />
+								</p:dialog>
+
+								<p:dialog id="idExist" widgetVar="idExist" width="550"
+									resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background: 224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+									<p:outputLabel value="#{msg['lbl.servicealreadyexist']}" />
+									<p:commandButton value="#{msg['lbl.ok']}"
+										onclick="PF('idExist').hide();" process="@this" />
+								</p:dialog>
+								<p:dialog id="activateRecord" widgetVar="activateRecord"
+									width="300" height="70" showHeader="false" resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+									<p:outputLabel value="#{msg['lbl.doyouactivaterecord']}" />
+									<p:spacer height="10px" />
+									<p:panel>
+										<p:commandButton value="#{msg['lbl.ok']}"
+											style="margin-right:10px; "
+											actionListener="#{beneficiarySerivcesExceptionBean.activateRecord}"
+											process="@this" oncomplete="PF('activateRecord').hide();"
+											update=":mainform" />
+										<p:commandButton value="#{msg['lbl.cancel']}"
+											onclick="PF('activateRecord').hide();" immediate="true" />
+									</p:panel>
+								</p:dialog>
+								<!--  Remarks dialog -->
+
+								<p:confirmDialog id="remarksEmpty" widgetVar="remarksEmpty"
+									width="350" height="17" resizable="false"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" message="#{msg['lbl.enterremarks']}">
+								</p:confirmDialog>
+
+								<p:dialog id="remarks" widgetVar="remarks" width="550"
+									height="205" showHeader="false" resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+									<p:panel styleClass="shadow">
+										<p:panel>
+											<h:outputText value="#{msg['lbl.activatedby']}" />
+											<h:outputText
+												value="#{beneficiarySerivcesExceptionBean.activateBy}" />&nbsp;&nbsp;&nbsp;
+            							<h:outputText value="#{msg['lbl.activateddate']}" />
+											<h:outputText
+												value="#{beneficiarySerivcesExceptionBean.activateBy}" />
+										</p:panel>
+										<div class="clearfix" />
+										<hr></hr>
+										<p:panel>
+											<h:outputText value="#{msg['lbl.pleaseenterremarks']}" />
+										</p:panel>
+										<p:panel>
+
+											<h:inputTextarea
+												value="#{beneficiarySerivcesExceptionBean.remarks}" rows="5"
+												cols="50">
+												<p:ajax />
+											</h:inputTextarea>
+										</p:panel>
+										<p:spacer width="15px" />
+										<div class="clearfix" />
+										<h:panelGroup styleClass="shadow">
+											<div class="clearfix" />
+											<p:commandButton value="#{msg['lbl.ok']}"
+												actionListener="#{beneficiarySerivcesExceptionBean.remarkSelectedRecord}"
+												immediate="true" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												onclick="PF('remarks').hide();" process="@this" />
+										</h:panelGroup>
+									</p:panel>
+								</p:dialog>
+
+								<p:confirmDialog id="viewSearch" widgetVar="viewSearch"
+									width="400" styleClass="red" showHeader="false"
+									resizable="false"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip"
+									message="Please Select Country and Bank ...!">
+								</p:confirmDialog>
+
+								<p:dialog id="deactivate" widgetVar="deactivate" width="300"
+									height="70" showHeader="false" resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+
+									<p:outputLabel value="#{msg['lbl.successfullydeactivated']}" />
+									<br />
+									<p:spacer width="15px" />
+									<p:commandButton value="#{msg['lbl.ok']}"
+										actionListener="#{beneficiarySerivcesExceptionBean.clickOk}"
+										process="@this" />
+								</p:dialog>
+								
+								<p:dialog id="availableservice" widgetVar="availableservice"
+									header="Available Services" width="900" showHeader="false"
+									resizable="false"
+									style="color:#FF0000 !important; border:2px solid #F33535 !important; padding:0px !important;  font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+									<p:dataTable id="datadatatable" rowIndexVar="rowIndex"
+										editable="true" editMode="cell" scrollable="true"
+										emptyMessage="#{msg['lbl.norecordfound']}" var="c"
+										value="#{beneficiarySerivcesExceptionBean.exceptionServiceList}"
+										scrollHeight="300" styleClass="mydatatableclass">
+
+										<p:column headerText="#{msg['lbl.sino']}" style="width:2%;">
+											<h:outputText value="#{rowIndex+1}" style="float:left;margin-left:5px;margin-right:5px;"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.currencyname']}" style="width:12%;" sortBy="#{c.currencyName}">
+											<h:outputText value="#{c.currencyName}" style="float:left;margin-left:5px;margin-right:5px;"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.remittancedescription']}" style="width:12%;" sortBy="#{c.remittanceMode}">
+											<h:outputText value="#{c.remittanceMode}" style="float:left;margin-left:5px;margin-right:5px;"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.deliverydescription']}" style="width:12%;" sortBy="#{c.deliveryMode}">
+											<h:outputText value="#{c.deliveryMode}" style="float:left;margin-left:5px;margin-right:5px;"/>
+										</p:column>
+
+										<p:column headerText="#{msg['lbl.select']}" style="width:4%;">
+											<p:selectBooleanCheckbox value="#{c.selectedrecord}" style="float:left;margin-left:5px;margin-right:5px;">
+												<p:ajax event="change"
+													listener="#{beneficiarySerivcesExceptionBean.getSelectedServiceExceptionSetup(c)}" />
+											</p:selectBooleanCheckbox>
+										</p:column>
+
+									</p:dataTable>
+									
+									<p:panel>
+										<p:commandButton value="#{msg['lbl.add']}"
+											action="#{beneficiarySerivcesExceptionBean.save(c)}"
+											process="@this" update=":mainform:modeNotSelect,csp"
+											style="margin-right:10px; " />
+										<p:commandButton value="#{msg['lbl.cancel']}"
+											action="#{beneficiarySerivcesExceptionBean.dialogCancel}"
+											process="@this" update=":mainform:modeNotSelect"
+											style="margin-right:10px; " />
+										<!-- <p:commandButton value="#{msg['lbl.cancel']}"  onclick="PF('availableservice').hide();" process="@this"/> dialogCancel-->
+									</p:panel>
+								</p:dialog>
+								
+								<h1>
+									<h:outputText
+										value="#{msg['lbl.beneficiaryservicesexceptionsetup']}" />
+								</h1>
+
+								<p:panel styleClass="shadow" id="mainPanel">
+									<p:confirmDialog id="csp" widgetVar="csp" showHeader="false"
+										resizable="false" header="Warning Message"
+										styleClass="warning"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="explode" hideEffect="explode"
+										message="#{beneficiarySerivcesExceptionBean.errorMessage}">
+									</p:confirmDialog>
+									<p:confirmDialog id="nullPoiterId" widgetVar="nullPoiterId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{beneficiarySerivcesExceptionBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+
+
+
+
+									<h3>
+										<h:outputText
+											value="#{msg['lbl.beneficiaryservicesexceptionsetup']}" />
+									</h3>
+
+									<p:panel styleClass="panel_border">
+
+										<p:panel id="headerPanel">
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.country']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgCountry" for="country" display="text" />
+													<p:selectOneMenu id="country"
+														value="#{beneficiarySerivcesExceptionBean.country}"
+														filterMatchMode="contains" filter="true" required="true"
+														requiredMessage="Please Select Country">
+														<f:selectItem itemLabel="#{msg['lbl.beleselect']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{beneficiarySerivcesExceptionBean.lstCountry}"
+															var="c"
+															itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+															itemValue="#{c.fsCountryMaster.countryId}" />
+														<p:ajax event="change"
+															listener="#{beneficiarySerivcesExceptionBean.popbanklist}"
+															update="bank,msgCountry,mainPanel"
+															onstart="process.show();" onsuccess="process.hide();" />
+
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											<!-- <p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.bankState']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgState" for="state" display="text" />
+													<p:selectOneMenu id="state"
+														value="#{beneficiarySerivcesExceptionBean.state}"
+														filterMatchMode="contains" filter="true" required="true"
+														requiredMessage="Please Select State">
+														<f:selectItem itemLabel=" Select State " itemValue="" />
+														<f:selectItem itemLabel="#{msg['lbl.selectState']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{beneficiarySerivcesExceptionBean.lststate}"
+															var="c" itemLabel="#{c.stateName}"
+															itemValue="#{c.fsStateMaster.stateId}" />
+														<p:ajax event="change"
+															listener="#{beneficiarySerivcesExceptionBean.popDistict}"
+															update="district,city,msgState" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.district']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgDistrict" for="district" display="text" />
+													<p:selectOneMenu id="district"
+														value="#{beneficiarySerivcesExceptionBean.district}"
+														filterMatchMode="startsWith" filter="true" required="true"
+														requiredMessage="Please Select District">
+
+														<f:selectItem itemLabel="#{msg['lbl.selectDistrict']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{beneficiarySerivcesExceptionBean.lstDistict}"
+															var="c" itemLabel="#{c.district}"
+															itemValue="#{c.fsDistrictMaster.districtId}" />
+														<p:ajax event="change"
+															listener="#{beneficiarySerivcesExceptionBean.popCitylist}"
+															update="city,msgDistrict" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.city']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgCity" for="city" display="text" />
+													<p:selectOneMenu id="city"
+														value="#{beneficiarySerivcesExceptionBean.city}"
+														filterMatchMode="startsWith" filter="true"
+														requiredMessage="Please Select City">
+														<f:selectItem itemLabel="#{msg['lbl.selectCity']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{beneficiarySerivcesExceptionBean.lstCity}"
+															var="c" itemLabel="#{c.cityName}"
+															itemValue="#{c.fsCityMaster.cityId}" />
+														<p:ajax event="change"
+															listener="#{beneficiarySerivcesExceptionBean.cityNameset}"
+															update="msgCity" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel> -->
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.bank']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgBank" for="bank" display="text" />
+													<p:selectOneMenu id="bank"
+														value="#{beneficiarySerivcesExceptionBean.bank}"
+														filterMatchMode="contains" filter="true" required="true"
+														requiredMessage="Please Select Bank">
+														<f:selectItem itemLabel="#{msg['lbl.selectBank']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{beneficiarySerivcesExceptionBean.lstBank}"
+															var="c" itemLabel="#{c.bankCode} - #{c.bankFullName}"
+															itemValue="#{c.bankId}" />
+														<p:ajax event="change"
+															listener="#{beneficiarySerivcesExceptionBean.popbranchlist}"
+															update="bank,currency,msgBank" onstart="process.show();"
+															onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.currency']}" />
+													<!-- <h:outputText value="*" style="color:red !important;" /> -->
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgCurrency" for="currency" display="text" />
+													<p:selectOneMenu id="currency"
+														value="#{beneficiarySerivcesExceptionBean.currency}"
+														filterMatchMode="contains" filter="true"
+														requiredMessage="Please Select Currency">
+														<f:selectItem itemLabel="#{msg['lbl.benecurruncyselect']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{beneficiarySerivcesExceptionBean.listCurrencyAccountDetails}"
+															var="c"
+															itemLabel="#{c.fsCurrencyMaster.currencyCode} - #{c.fsCurrencyMaster.currencyName}"
+															itemValue="#{c.fsCurrencyMaster.currencyId}" />
+														<p:ajax event="change"
+															listener="#{beneficiarySerivcesExceptionBean.popbanklist}"
+															update="bank,msgCurrency" onstart="process.show();"
+															onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.fromBankbranch']}" />
+													<!-- <h:outputText value="*" style="color:red !important;" /> -->
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgfromBranchId" for="fromBranch"
+														display="text" />
+													<p:inputText id="fromBranch"
+														value="#{beneficiarySerivcesExceptionBean.fromBankBranch}"
+														maxlength="10"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.min']}"
+														validatorMessage="Please Enter Number Only">
+
+														<f:validator
+															validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+
+														<p:ajax event="blur" update="mainPanel,msgfromBranchId"
+															listener="#{beneficiarySerivcesExceptionBean.checkMin}"
+															onstart="process.show();" onsuccess="process.hide();" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.toBankbranch']}" />
+													<!-- <h:outputText value="*" style="color:red !important;" /> -->
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgtoBranchId" for="tobranch" display="text" />
+													<p:inputText id="tobranch"
+														value="#{beneficiarySerivcesExceptionBean.toBankBranch}"
+														required="false" maxlength="10"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.max']}"
+														validatorMessage="Please Enter Number Only">
+														<f:validator
+															validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+														<p:ajax event="blur" update="mainPanel,msgtoBranchId"
+															listener="#{beneficiarySerivcesExceptionBean.checkMax}" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.modeOfBranch']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgModeOfBranch" for="modeOfBranch"
+														display="text" />
+													<p:selectOneMenu id="modeOfBranch"
+														value="#{beneficiarySerivcesExceptionBean.modeOfBranch}"
+														required="true"
+														requiredMessage="Please Select Mode Of Branch ">
+														<f:selectItem itemLabel="#{msg['lbl.selectmodeOfBranch']}" />
+														<f:selectItem itemLabel="#{msg['lbl.newbranches']}"
+															itemValue="1" />
+														<f:selectItem itemLabel="#{msg['lbl.livebranch']}"
+															itemValue="2" />
+														<f:selectItem itemLabel="#{msg['lbl.deletedbranches']}"
+															itemValue="3" />
+														<!-- <p:ajax  event="change" update="msgModeOfBranch,mainPanel" listener="#{beneficiarySerivcesExceptionBean.cellEdit}"/>  -->
+													</p:selectOneMenu>
+
+												</p:panel>
+											</p:panel>
+
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="#{msg['lbl.search']}"
+													action="#{beneficiarySerivcesExceptionBean.search}"
+													update="mainPanel"
+													style="font-size: 12px; font-weight: bold;float:center;"
+													onstart="process.show();" onsuccess="process.hide();" />
+												<p:commandButton value="#{msg['lbl.view']}"
+													action="#{beneficiarySerivcesExceptionBean.view}"
+													process="@this" update="mainPanel"
+													style="font-size: 12px; font-weight: bold;float:center;"
+													onstart="process.show();" onsuccess="process.hide();" />
+												<p:commandButton value="#{msg['lbl.clear']}"
+													action="#{beneficiarySerivcesExceptionBean.clear}"
+													process="@this" update="mainPanel" immediate="true"
+													ajax="false" />
+											</h:panelGroup>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel id="datatTablePanel"
+												rendered="#{beneficiarySerivcesExceptionBean.boodatatTablePanel}">
+												<p:dataTable id="datatable" styleClass="mydatatableclass"
+													emptyMessage="#{msg['lbl.norecordfound']}"
+													rowIndexVar="rowIndex" var="d" rows="50"
+													paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+													rowsPerPageTemplate="5,10,15" paginator="true"
+													paginatorPosition="bottom"
+													value="#{beneficiarySerivcesExceptionBean.beneficiarySerivcesExceptionBeansList}">
+
+													<p:column headerText="#{msg['lbl.sino']}">
+														<h:outputText value="#{rowIndex+1}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.bankbranchcode']}">
+														<p:panel>
+
+															<p:commandLink value="#{d.bankBranchCode}"
+																action="#{beneficiarySerivcesExceptionBean.onCellEdit(d)}"
+																process="@this" update=":mainform:datadatatable"
+																style="color:blue !important; text-decoration:underline !important;" />
+														</p:panel>
+
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.bankbranchname']}">
+														<h:outputText value="#{d.bankBranchName}" />
+													</p:column>
+
+
+												</p:dataTable>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel id="viewDdatatTablePanel"
+												rendered="#{beneficiarySerivcesExceptionBean.booViewdatatTablePanel}">
+												<p:dataTable id="dataTableId" var="d" sortMode="multiple"
+													styleClass="mydatatableclass" rows="10" paginator="true"
+													paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+													rowsPerPageTemplate="5,10,15"
+													value="#{beneficiarySerivcesExceptionBean.beneServiceList}"
+													rowIndexVar="rowIndex" emptyMessage="No records Found"
+													rowStyleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+													paginatorPosition="bottom">
+
+													<p:column headerText="#{msg['lbl.sino']}">
+														<h:outputText value="#{rowIndex+1}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.country']}"
+														sortBy="#{d.countryName}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{d.countryName}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.bankName']}"
+														sortBy="#{d.bankCode}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{d.bankCode}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.branch']}"
+														sortBy="#{d.branchName}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{d.branchName}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.remittancedescription']}"
+														sortBy="#{d.remittanceDescription}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{d.remittanceDescription}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.deliverydescription']} "
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{d.deliveryDescription}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.activatedeactivate']}"
+														sortBy="" style="text-align:center !important;">
+														<p:commandLink
+															value="#{d.dynamicLabelForActivateDeactivate}"
+															update=":mainform"
+															action="#{beneficiarySerivcesExceptionBean.checkStatusType(d)}"
+															style="color:blue !important; text-decoration:underline !important;"
+															immediate="true" tabindex="9" />
+													</p:column>
+												</p:dataTable>
+											</p:panel>
+
+											<!--  </p:panel> -->
+
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<h:outputText id="mandatory"
+													value=" #{msg['lbl.*filedsAreMandatory']}"
+													style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+											</p:panel>
+
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+									</p:panel>
+									<p:dialog modal="true" showHeader="true" header="Please wait.."
+										widgetVar="process" id="process" width="300" height="50"
+										resizable="false" draggable="false" closable="false"
+										style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+										<div style="text-align: center;">
+											<p:graphicImage value="../images/preloader.gif" />
+										</div>
+									</p:dialog>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

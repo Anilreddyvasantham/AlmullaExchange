@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	  <link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+<script>
+ function clear() {
+	 var element=document.getElementById("complaintAssignedForm");
+	 element.value();
+}
+	/* $(document).clickInputs(function(){
+	    $(":form:mainPanel").empty();
+	}); */
+	history.pushState(null, null, 'complaintassigned.xhtml');
+	window.addEventListener('popstate', function(event) {
+	history.pushState(null, null, 'complaintassigned.xhtml');
+	});
+</script>
+</h:head>
+
+<p:confirmDialog id="remarksEmpty" widgetVar="remarksEmpty" width="400" height="17" resizable="false" style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+					showEffect="clip" header="#{msg['lbl.warningDailog']}" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.remarksShouldNotBeEmpty']}" >
+				</p:confirmDialog>	
+	
+<p:dialog id="notSaved" widgetVar="notSaved" width="310" height="70" showHeader="false" resizable="false" style=" border:2px solid green !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+                      showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"  >
+            <p:outputLabel value="#{msg['lbl.complaintAssignedDetailsNotSaved']}"/><br/>
+            <p:spacer width="15px" />
+            <p:commandButton value="#{msg['lbl.ok']}" actionListener="#{complaintAssignedBean.ComplaintAssignedNotSaved}" process="@this"/>          
+</p:dialog>			
+
+<p:confirmDialog id="noRecords" widgetVar="noRecords"
+										width="300"  resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="#{msg['lbl.noRecordFound']}">
+									</p:confirmDialog>
+<p:confirmDialog id="datatable"
+										widgetVar="datatable" width="400" 
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="#{msg['lbl.recrdAlreadyExisted']}">
+									</p:confirmDialog>
+<p:confirmDialog id="assignedToAlreadyExist"
+										widgetVar="assignedToAlreadyExist" width="400" 
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="#{msg['lbl.assignedToAlreadyExist']}">
+									</p:confirmDialog>									
+<p:dialog id="alreadyapprov" widgetVar="alreadyapprov" width="310" height="70" showHeader="false" resizable="false" style=" border:2px solid green !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+                      showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"  >
+            <p:outputLabel value="#{msg['lbl.thisrecordalreadyapprovedby']}"/><br/>
+            <p:spacer width="15px" />
+            <p:commandButton value="#{msg['lbl.ok']}" actionListener="#{complaintAssignedBean.ComplaintAssignedApprovedByOhterPerson}" process="@this"/>          
+</p:dialog>
+<h:body>
+	
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		
+			<h:form id="form">
+		
+				<table align="left" width="100%" style="height: 100%;">
+					<tr>
+						<td align="left" valign="top" style="height: 100%;">
+								<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+								</td>
+		
+						<td class="rightColumn" valign="top">
+						<h:panelGroup	layout="block" class="container">
+								<h:panelGroup layout="block" class="main_div">
+									<div class="menu_button">
+										<img style="cursor: pointer; position: relative; left: 15px;"
+											id="HideHandle" name="HideHandle"
+											src="../images/toggle_plus.png" alt=""
+											onclick='hideLeftCol("leftCol");closeMenus();' />
+									</div>
+									<h1>
+										<h:outputText value="#{msg['lbl.complaintAssigned']}" />
+									</h1>
+		
+		
+									<p:panel styleClass="shadow" id="mainPanel"
+										style="background-color:#FFF !important; " >
+										
+											
+		
+										<h2>
+											<h:outputText value="#{msg['lbl.complaintAssigned']}" />
+										</h2>
+										<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{complaintAssignedBean.errorMessage}">
+									</p:confirmDialog>
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{complaintAssignedBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+										<p:dialog id="pending" widgetVar="pending"
+										width="400" height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.warningDailog']}" closable="false"
+										showEffect="clip" hideEffect="clip">
+										<p:outputLabel
+											value="#{msg['lbl.plsApproveRecord']}"
+											 style="text-align: center; font-size:15px !important;"  />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											onclick="PF('pending').hide();" immediate="true"
+											style="margin-left: 150px !important;" />
+									</p:dialog>
+										
+<p:dialog id="complete" widgetVar="complete" width="400"
+										height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="success" header="#{msg['lbl.success']}" closable="false"
+										showEffect="clip" hideEffect="clip" modal="true">
+										<p:outputLabel
+											value="#{msg['lbl.complaintAssignedSaved']}  "
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{complaintAssignedBean.clickOnOKSave}"
+											process="@this" style="margin-left: 150px !important;" />
+									</p:dialog>
+										<p:dialog id="permanentDelete" widgetVar="permanentDelete" width="400" height="80" resizable="false" style="background-color: white !important;" styleClass="warning" header="#{msg['lbl.deleteRecrd']}" closable="false" showEffect="clip" hideEffect="clip">
+<p:outputLabel value="#{msg['lbl.douWantDeleteRecordPermentely']}" style="text-align: center; font-size:15px !important;" /><br />
+<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{complaintAssignedBean.CompleteAssignedConfirmPermanentDelete}" process="@this" oncomplete="PF('permanentDelete').hide();" update="mainPanel" style="margin-left: 150px !important;" />
+<p:commandButton value="#{msg['lbl.cancel']}" onclick="PF('permanentDelete').hide();" immediate="true" style="margin-left:10px;" />
+</p:dialog>
+										<p:dialog id="activateRecord" widgetVar="activateRecord" width="400" height="80" resizable="false" style="background-color: white !important;" styleClass="warning" header="#{msg['lbl.activateRecrd']}" closable="false" showEffect="clip" hideEffect="clip">
+					<p:outputLabel value="#{msg['lbl.doyouactivaterecord']}" style="text-align: center; font-size:15px !important;" /><br />
+					<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{complaintAssignedBean.activateRecord}" process="@this" oncomplete="PF('activateRecord').hide();" update="mainPanel" style="margin-left: 150px !important;" />
+					<p:commandButton value="#{msg['lbl.cancel']}" onclick="PF('activateRecord').hide();" immediate="true" style="margin-left:10px;" />
+			</p:dialog>	
+                             		<p:dialog id="remarks" widgetVar="remarks" width="480" resizable="false" style="background-color: white !important;" styleClass="info" header="Remarks" closable="false" showEffect="clip" hideEffect="clip" modal="true">
+                             		<p:panel>
+                             		<table>
+                             		<tr>
+                             		<td> <h:outputText value="#{msg['lbl.approvedDate']}" /></td>
+                             		<td><h:outputText value="#{complaintAssignedBean.approvedDate}" style="color:red !important;"/> </td>
+                             		</tr>
+                             		<tr>
+                             		<td> <h:outputText value="#{msg['lbl.approvedBy']}" /> </td>
+                             		<td>	<h:outputText  value="#{complaintAssignedBean.approvedBy}"  style="color:red !important;"/> </td>
+                             		</tr>
+                             		</table>
+                             		</p:panel>
+                             		<p:spacer height="10px"/>
+                             		<p:panel>
+                             		<h:outputText value="#{msg['lbl.enterremarks']}" /><h:outputText value="*" style="color:red !important;" />
+                             		</p:panel>
+                             		<p:spacer height="5px"/>
+                             		<p:panel>
+                             		<h:inputTextarea id="remarksId" value="#{complaintAssignedBean.remarks}" validatorMessage="Maximum 255 charectors allowed" >
+                                           <f:validateLength maximum="255"/>
+                                            <p:ajax/>
+                                     </h:inputTextarea>
+                                    </p:panel>
+                                    <p:spacer height="5px"/>
+                                   	<p:panel style="padding-left:160px;">
+                                        <p:commandButton value="#{msg['lbl.ok']}" actionListener="#{complaintAssignedBean.clickOkRemarks}" process="@this" /> 
+            							<p:commandButton value="#{msg['lbl.cancel']}" actionListener="#{complaintAssignedBean.cancelRemarks}" process="@this"/> 
+                             </p:panel>
+                               </p:dialog>
+		
+									<p:panel styleClass="panel_border" id="complaintAssignedForm">
+												
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.assignedTo']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgComplaintAssignedCode"  for="complaintAssignedCodeId" display="text" />
+												<p:message id="msgComplaint"  for="complaintAssignedCodeId" display="text" />
+												<p:autoComplete id="complaintAssignedCodeId"  value="#{complaintAssignedBean.complaintAssignedTo}" onkeyup="this.value=this.value.toUpperCase()"  completeMethod="#{complaintAssignedBean.autoComplete}" maxResults="10" required="true" requiredMessage="Please Enter Complaint Assigned Code" maxlength="10" readonly="#{complaintAssignedBean.booReadOnly}" tabindex="1">
+												<p:ajax update="msgComplaintAssignedCode,logCompalintId,complaintEnglishFullDescriptionId,complaintArabicFullDescriptionId,complaintEnglishShortDescriptionId,complaintArabicShortDescriptionId" event="itemSelect"  listener="#{complaintAssignedBean.itemSelectPopulate}"   />
+												<p:ajax update="msgComplaintAssignedCode,logCompalintId,complaintEnglishFullDescriptionId,complaintArabicFullDescriptionId,complaintEnglishShortDescriptionId,complaintArabicShortDescriptionId" event="blur"  listener="#{complaintAssignedBean.itemSelectPopulate}"   process="@this"/>
+											</p:autoComplete>
+												</p:panel>
+												</p:panel>
+												<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.logComplaint']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msglogCompalint"  for="logCompalintId" display="text" />
+												<!-- <p:inputText id="logCompalintId" value="#{complaintAssignedBean.logCompalint}" onkeyup="this.value=this.value.toUpperCase()" required="true" requiredMessage="Please Enter LogComplaint" maxlength="40" readonly="#{complaintAssignedBean.booReadOnly}">
+												<p:ajax update="msglogCompalint"/></p:inputText> -->
+												<p:selectOneMenu id="logCompalintId" value="#{complaintAssignedBean.logCompalint}" required="true" requiredMessage="Please Select Log Complaint" filter="startWith" tabindex="2">
+													<f:selectItem itemLabel="#{msg['lbl.selectLogComplaint']}" />
+													<f:selectItem itemLabel="#{msg['lbl.yes']}" itemValue="Y" />
+													<f:selectItem itemLabel="#{msg['lbl.no']}" itemValue="N" />
+													<p:ajax update="msglogCompalint"/>
+													</p:selectOneMenu>
+												
+												</p:panel>
+												</p:panel>
+													<!-- <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.assignedCode']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgcomplaintAssignedTo"  for="ComplaintAssignedToId" display="text" />
+												<p:inputText id="ComplaintAssignedToId" value="#{complaintAssignedBean.complaintAssignedTo}" onkeyup="this.value=this.value.toUpperCase()"  required="true" requiredMessage="Please Enter Complaint Assigned To" maxlength="40" readonly="#{complaintAssignedBean.booReadOnly}" validatorMessage="Please Enter English Language" >
+													<f:validateRegex pattern="[a-zA-Z ]+" />
+													<p:inputText id="ComplaintAssignedToId" value="#{complaintAssignedBean.complaintAssignedTo}" onkeyup="this.value=this.value.toUpperCase()"  required="true" requiredMessage="Please Enter Complaint Assigned To" maxlength="40" readonly="#{complaintAssignedBean.booReadOnly}">
+												<p:ajax event="blur" update="msgcomplaintAssignedTo,ComplaintAssignedToId" listener="#{complaintAssignedBean.disableSubmit}"/>
+												</p:inputText>
+												</p:panel>
+												</p:panel> -->
+												
+											<h:panelGroup layout="block" class="clearfix"/>
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.fulldescription']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgComplaintEnglishFullDescription"  for="complaintEnglishFullDescriptionId" display="text" />
+												<p:inputTextarea id="complaintEnglishFullDescriptionId" value="#{complaintAssignedBean.complaintEnglishFullDescription}" required="true" requiredMessage="Please Enter Complaint English Full Description" style="height:30px !important;" maxlength="80" validatorMessage="Please Enter English Language" readonly="#{complaintAssignedBean.booReadOnly}" tabindex="3">
+												<f:validateRegex pattern="[a-zA-Z ]+"/>
+												<p:ajax event="blur" update="msgComplaintEnglishFullDescription"/>
+												</p:inputTextarea>
+												</p:panel>
+												</p:panel>
+											
+											
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.shortdescription']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgComplaintEnglishShortDescription"  for="complaintEnglishShortDescriptionId" display="text" />
+												<p:inputText id="complaintEnglishShortDescriptionId" value="#{complaintAssignedBean.complaintEnglishShortDescription}" onkeyup="this.value=this.value.toUpperCase()" required="true" requiredMessage="Please Enter Complaint English Short Description" maxlength="10" validatorMessage="Please Enter English Language" readonly="#{complaintAssignedBean.booReadOnly}" tabindex="4">
+												<f:validateRegex pattern="[a-zA-Z ]+"/>
+												<p:ajax event="blur" update="msgComplaintEnglishShortDescription" listener="#{complaintAssignedBean.disableSubmit}"/>
+												</p:inputText>
+												</p:panel>
+												</p:panel>
+												
+												
+										<h:panelGroup layout="block" class="clearfix"/>
+										<p:panel styleClass="left_col" >
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.localfulldescription']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgComplaintArabicFullDescription"  for="complaintArabicFullDescriptionId" display="text" />
+												<p:inputTextarea id="complaintArabicFullDescriptionId" value="#{complaintAssignedBean.complaintArabicFullDescription}" required="true" requiredMessage="Please Enter Complaint Arabic Full Description" style="height:30px !important;text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;" readonly="#{complaintAssignedBean.booReadOnly}" tabindex="5"
+													dir="RTL" maxlength="80">
+												<f:validator validatorId="arabicValidator" />
+													<p:ajax event="blur" update="msgComplaintArabicFullDescription"/>
+												</p:inputTextarea>
+												</p:panel>
+												</p:panel>
+												
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.localshortdescription']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgComplaintArabicShortDescription"  for="complaintArabicShortDescriptionId" display="text" />
+												<p:inputText id="complaintArabicShortDescriptionId" value="#{complaintAssignedBean.complaintArabicShortDescription}" style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;" dir="RTL" onkeyup="this.value=this.value.toUpperCase()" required="true" requiredMessage="Please Enter Complaint Arabic Short Description" maxlength="10" readonly="#{complaintAssignedBean.booReadOnly}" tabindex="6">
+												<f:validator validatorId="arabicValidator" />
+												<p:ajax event="blur" update="msgComplaintArabicShortDescription"/>
+												</p:inputText>
+												</p:panel>
+												</p:panel>
+												
+													<h:panelGroup layout="block" class="clearfix"/>
+												
+												<h:panelGroup layout="block" class="clearfix"/>
+												<p:panel styleClass="left_col" >
+										<h:outputText  id="mandatory" value=" #{msg['lbl.*filedsAreMandatory']}"  style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										<h:panelGroup layout="block" class="clearfix"/>
+										<h:outputText value="#{msg['lbl.arbicLanguaue']}"
+											style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+										<div class="clearfix"></div>
+										<div class="clearfix"></div>
+										<h:panelGroup layout="block" class="clearfix"/>
+									<h:panelGroup layout="block" styleClass="shadow_button" id="booClearPanel" rendered="#{complaintAssignedBean.booAdd}">						
+										<p:commandButton value="#{msg['lbl.add']}" action="#{complaintAssignedBean.duplicateChekingComplaintAssignedCode}" style="margin-right:10px;" update="mainPanel" tabindex="7"/>
+										<p:commandButton value="#{msg['lbl.view']}" action="#{complaintAssignedBean.viewAllComplaintAssigned}" style="margin-right:10px;" disabled="#{complaintAssignedBean.booClearPanel}" update="mainPanel" process="@this" onstart="process.show();" onsuccess="process.hide();" tabindex="8"/>
+										<p:commandButton value="#{msg['lbl.clear']}" action="#{complaintAssignedBean.clearAllFields}" style="margin-right:10px;" disabled="#{complaintAssignedBean.booClearPanel}" immediate="true" process="@this" update="mainPanel" tabindex="9"/> 
+										<!-- <p:commandButton value="#{msg['lbl.clear']}" onclick="clear(this)" disabled="#{complaintAssignedBean.booClearPanel}" immediate="true" process="@this" update="mainPanel"/>  -->
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+									
+									<h:panelGroup layout="block" class="clearfix"/>
+									<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{complaintAssignedBean.booApproval}">						
+										<p:commandButton value="#{msg['lbl.approve']}" action="#{complaintAssignedApproveBean.complaintAssignedApproveRecord}" style="margin-right:10px;" process="@this" immediate="true"/>
+										<p:commandButton value="#{msg['lbl.cancel']}" action="#{complaintAssignedApproveBean.complaintAssignedCancel}" style="margin-right:10px;" update="mainPanel" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+										
+									<p:panel id="dataPanel">
+									<p:dataTable id="dataTable" styleClass="mydatatableclass" value="#{complaintAssignedBean.complaintAssignedDTList}" 
+									rows="10" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="5,10,15" var="d" 
+									rowIndexVar="rowIndex" emptyMessage="#{msg['lbl.noRecordFound']}" paginatorPosition="bottom" rendered="#{complaintAssignedBean.booRenderDataTable}" >
+										
+										<p:column headerText="#{msg['lbl.sino']}" style="width:30px;">
+											<h:outputText value="#{rowIndex+1}" />
+										</p:column>
+
+										<!-- 	<p:column headerText="#{msg['lbl.assignedTo']}"  >
+											 <h:outputText value="#{d.complaintAssignedCode}"/>
+										</p:column> -->
+										
+										<p:column headerText="#{msg['lbl.assignedTo']}"  >
+											 <h:outputText value="#{d.complaintAssignedTo}"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.logComplaint']}"  >
+											 <h:outputText value="#{d.logCompalintId}"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.fulldescription']}"  >
+											<h:outputText value="#{d.complaintEnglishFullDescription}"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.shortdescription']}"  >
+											<h:outputText value="#{d.complaintEnglishShortDescription}"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.localfulldescription']}">
+											<h:outputText value="#{d.complaintArabicFullDescription}"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.localshortdescription']}">
+											<h:outputText value="#{d.complaintArabicShortDescription}"/>
+										</p:column>
+										
+       									 <p:column headerText="#{msg['lbl.edit']}">
+											<p:commandButton id="imgEdit" styleClass="edit" value="" rendered="#{d.renderEditButton}" action="#{complaintAssignedBean.edit(d)}" disabled="#{complaintAssignedBean.booEditButton}" update="dataTable,:form" process="@this"/>
+										</p:column> 
+										
+										<p:column headerText="#{msg['lbl.active/deactive']}" style="text-align:center !important;">
+			                              <p:commandLink action="#{complaintAssignedBean.checkStatus(d)}" value="#{d.dynamicLabelForActivateDeactivate}" style="color:blue !important; text-decoration:underline !important;" update=":form:mainPanel,dataTable" immediate="true" process="@this" />
+		                                 </p:column>  
+										</p:dataTable> 							
+											</p:panel>
+											<div class="clearfix"></div>
+										<p:spacer height="10px"/>
+										<div class="clearfix"></div>
+										<h:panelGroup layout="block" class="clearfix"/>
+									<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{complaintAssignedBean.booSaveOrExit}" id="booSubmitPanel">						
+										<p:commandButton id="submitPanel" value="#{msg['lbl.submit']}" action="#{complaintAssignedBean.saveAllComplaintAssigned}" disabled="#{complaintAssignedBean.booSubmitPanel}" immediate="true" update="mainPanel" style="margin-right:10px;" tabindex="10" partialSubmit="true"/>
+										<p:commandButton value="#{msg['lbl.exit']}"  style="margin-right:10px;" action="#{complaintAssignedBean.exit}" process="@this" immediate="true" tabindex="11"/>
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+											<h:panelGroup layout="block" class="clearfix"/>
+										
+										<p:dialog modal="true" showHeader="true" header="#{msg['lbl.bco.plswait']}"  widgetVar="process"  id="process"   width="300" height="50" resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+							    	</p:dialog>			
+										</p:panel>
+										<div class="clearfix"></div>
+											</p:panel>
+										
+								</h:panelGroup>
+								
+							</h:panelGroup>
+						</td>
+					</tr>
+				</table>
+			</h:form>	
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

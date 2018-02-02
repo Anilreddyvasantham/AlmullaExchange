@@ -1,0 +1,933 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+
+	<script type="text/javascript">
+		var baseUri = makeUri();
+		history.pushState(null, null, 'cbkreportsinfo.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'cbkreportsinfo.xhtml');
+		});
+
+		$(document).ready(function() {
+			$(window).scroll(function() {
+				if ($(this).scrollTop() > 100) {
+					$('#goTop').stop().animate({
+						bottom : '30px'
+					}, 300);
+				} else {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				}
+			});
+			$('#goTop').click(function() {
+				$('html, body').stop().animate({
+					scrollTop : 0
+				}, 500, function() {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				});
+			});
+		});
+	</script>
+	<style>
+.centeralign {
+	margin-left: auto;
+	margin-right: auto;
+	width: 6em
+}
+
+.ui-datatable .ui-state-highlight {
+	background-color: red;
+}
+</style>
+	<style>
+.table-no-select-all .ui-chkbox-all {
+	display: none !important;
+}
+</style>
+</h:head>
+
+
+<p:confirmDialog id="selectLineType" widgetVar="selectLineType"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all" message="Please Select Line Type!">
+</p:confirmDialog>
+
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+		<h:form id="form1">
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;"><ui:include
+							src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle"
+										src="../images/toggle_plus.png" alt=""
+										onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+								<h1>
+									<h:outputText value="CBK Reports" />
+								</h1>
+
+								<p:panel styleClass="shadow" id="mainPanel"
+									style="background-color:#FFF !important; ">
+
+									<p:dialog id="dailogPage" widgetVar="dailogPage" width="100%"
+										closable="false" height="400px" showHeader="false"
+										resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" modal="true">
+										<p:spacer height="10px" />
+										<p:panel id="detailPanleDailogid">
+											<p:dataTable styleClass="mydatatableclass" var="cbk"
+												id="detailTableId"
+												value="#{cbkReportsBean.lineDetailsDataTable}"
+												paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10,20,50,100,200" rows="5"
+												emptyMessage="#{msg['lbl.noRecordFound']}"
+												paginatorPosition="bottom">
+												<f:facet name="header">
+               CBK reports details info
+            </f:facet>
+												<p:columnGroup type="header">
+													<p:row>
+														<p:column rowspan="2" headerText="Company code" />
+														<p:column colspan="4" headerText="Activity Code" />
+														<p:column rowspan="2" headerText="Activity Center" />
+														<p:column rowspan="2" headerText="Account Class" />
+														<p:column rowspan="2" headerText="Account Category" />
+														<p:column rowspan="2" headerText="Description" />
+														<p:column rowspan="2" headerText="Add"
+															style="width:13% !important; text-align:center !important; margin-left:10px;"
+															styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" />
+														<p:column rowspan="2" headerText="Delete"
+															style="width:2% !important; text-align:center !important; margin-left:10px;"
+															styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" />
+													</p:row>
+
+												</p:columnGroup>
+
+												<p:column>
+													<h:outputLabel value="#{cbk.companyCode}"></h:outputLabel>
+												</p:column>
+
+												<p:column>
+													<p:selectOneMenu id="mainActivity"
+														value="#{cbk.selectedValev1Code}" filter="true"
+														filterMatchMode="contains">
+														<f:selectItem itemLabel="---Select---" itemValue="" />
+														<f:selectItems value="#{cbk.valev1}" var="v1"
+															itemLabel="#{v1.al1Cod} - #{v1.al1Des}"
+															itemValue="#{v1.al1Cod}" />
+														<p:ajax event="change"
+															update="mainActivity,busiOper,franchise,products"
+															listener="#{cbkReportsBean.loadAle2Code(cbk)}"
+															onstart="process.show();" onsuccess="process.hide();"></p:ajax>
+													</p:selectOneMenu>
+												</p:column>
+
+												<p:column>
+													<p:selectOneMenu id="busiOper"
+														value="#{cbk.selectedValev2Code}" filter="true"
+														filterMatchMode="contains">
+														<f:selectItem itemLabel="---Select---" itemValue="" />
+														<f:selectItems value="#{cbk.valev2}" var="v2"
+															itemLabel="#{v2.al2Cod} - #{v2.al2Des}"
+															itemValue="#{v2.al2Cod}" />
+														<p:ajax event="change"
+															update="busiOper,franchise,products"
+															listener="#{cbkReportsBean.loadAle3Code(cbk)}"
+															onstart="process.show();" onsuccess="process.hide();"></p:ajax>
+													</p:selectOneMenu>
+												</p:column>
+
+												<p:column>
+													<p:selectOneMenu id="franchise"
+														value="#{cbk.selectedValev3Code}" filter="true"
+														filterMatchMode="contains">
+														<f:selectItem itemLabel="---Select---" itemValue="" />
+														<f:selectItems value="#{cbk.valev3}" var="v3"
+															itemLabel="#{v3.al3Cod} - #{v3.al3Des}"
+															itemValue="#{v3.al3Cod}" />
+														<p:ajax event="change" update="franchise,products"
+															listener="#{cbkReportsBean.loadAle4Code(cbk)}"
+															onstart="process.show();" onsuccess="process.hide();"></p:ajax>
+													</p:selectOneMenu>
+												</p:column>
+
+												<p:column>
+													<p:selectOneMenu id="products"
+														value="#{cbk.selectedValev4Code}" filter="true"
+														filterMatchMode="contains">
+														<f:selectItem itemLabel="---Select---" itemValue="" />
+														<f:selectItems value="#{cbk.valev4}" var="v4"
+															itemLabel="#{v4.al4Cod} - #{v4.al4Des}"
+															itemValue="#{v4.al4Cod}" />
+														<p:ajax event="change" update="products"
+															onstart="process.show();" onsuccess="process.hide();"></p:ajax>
+													</p:selectOneMenu>
+												</p:column>
+
+												<p:column>
+													<p:selectOneMenu id="actCenter"
+														value="#{cbk.selectedActCenter}" filter="true"
+														filterMatchMode="contains">
+														<f:selectItem itemLabel="---Select---" itemValue="" />
+														<f:selectItems value="#{cbk.viewActivitycenterAcnt}"
+															var="acc" itemLabel="#{acc.acntcod} - #{acc.fudesc}"
+															itemValue="#{acc.acntcod}" />
+														<p:ajax event="change" update="actCenter"
+															onstart="process.show();" onsuccess="process.hide();"></p:ajax>
+													</p:selectOneMenu>
+												</p:column>
+
+												<p:column>
+													<p:selectOneMenu id="accClass"
+														value="#{cbk.selectedAccClass}" filter="true"
+														filterMatchMode="contains">
+														<f:selectItem itemLabel="---Select---" itemValue="" />
+														<f:selectItems value="#{cbk.lstViewAccountClass}"
+															var="accCla"
+															itemLabel="#{accCla.aclscod} - #{accCla.aclsdes}"
+															itemValue="#{accCla.aclscod}" />
+														<p:ajax event="change" update="accClass,accCate"
+															listener="#{cbkReportsBean.loadAccountClass(cbk)}"
+															onstart="process.show();" onsuccess="process.hide();"></p:ajax>
+													</p:selectOneMenu>
+												</p:column>
+
+												<p:column>
+													<p:selectOneMenu id="accCate"
+														value="#{cbk.selectedAccCategory}" filter="true"
+														filterMatchMode="contains">
+														<f:selectItem itemLabel="---Select---" itemValue="" />
+														<f:selectItems value="#{cbk.lstViewAccountCategory}"
+															var="accCate"
+															itemLabel="#{accCate.acacod} - #{accCate.acades}"
+															itemValue="#{accCate.acacod}" />
+														<p:ajax event="change" update="accCate,accClass"
+															listener="#{cbkReportsBean.loadAccountCategory(cbk)}"
+															onstart="process.show();" onsuccess="process.hide();"></p:ajax>
+													</p:selectOneMenu>
+												</p:column>
+
+												<p:column>
+													<h:outputLabel value="#{cbk.description}"></h:outputLabel>
+												</p:column>
+
+												<p:column>
+													<h:panelGrid columns="2">
+														<p:commandButton value="Insert Down" onstart="process.show();"
+															onsuccess="process.hide()"
+															action="#{cbkReportsBean.getLineDetailsList(cbk)}"
+															process="@this" update="detailTableId" immediate="true"></p:commandButton>
+														<p:commandButton value="Insert Up"
+															rendered="#{cbk.lineIndex eq '0'}"
+															onstart="process.show();" onsuccess="process.hide()"
+															actionListener="#{cbkReportsBean.addCBKDetailsFirstRow(cbk)}"
+															process="@this" update="detailTableId" immediate="true"></p:commandButton>
+													</h:panelGrid>
+												</p:column>
+
+												<p:column>
+													<p:commandButton value="" styleClass="delete"
+														action="#{cbkReportsBean.deleteCbkDetails(cbk)}"
+														process="@this"
+														update="detailTableId,:form1:detailPanleDailogid"
+														immediate="true">
+													</p:commandButton>
+												</p:column>
+
+											</p:dataTable>
+
+											<div class="clearfix"></div>
+											<h:panelGroup layout="block"
+												style="width:100%; text-align:right; padding-top:10px !important;">
+												<p:spacer height="40px" />
+												<p:commandLink id="addCbkDetailsmorefield"
+													style=" font-size: 15px !important;"
+													value="Add New CBK Details" styleClass="link1"
+													rendered="#{empty cbkReportsBean.lineDetailsDataTable}"
+													action="#{cbkReportsBean.addCBKDetailsEmptyLines}"
+													immediate="true" process="@this"
+													update="detailTableId,detailPanleDailogid"
+													onstart="process.show();" onsuccess="process.hide();" />
+											</h:panelGroup>
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton id="back" value="#{msg['lbl.save']}"
+													action="#{cbkReportsBean.saveCbkDetails}"
+													update="detailPanleDailogid" onstart="process.show();"
+													onsuccess="process.hide();"  process="@this" />
+												<p:commandButton value="#{msg['lbl.exit']}"
+													action="#{cbkReportsBean.exitCbkDetails}"
+													update="dailogPage,dataTable"
+													oncomplete="PF('dailogPage').hide();" process="@this"
+													onstart="process.show();" onsuccess="process.hide();" />
+											</h:panelGroup>
+										</p:panel>
+									</p:dialog>
+
+									<p:dialog id="dailogCbkTotal" widgetVar="dailogCbkTotal"
+										width="90%" height="400px" showHeader="false"
+										resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" modal="true">
+										<p:spacer height="10px" />
+										<p:panel id="cbkTotalDalogId">
+											<p:dataTable
+												styleClass="mydatatableclass table-no-select-all"
+												var="cbkTotal" id="cbkTotdataTable"
+												widgetVar="cbkTotdataTable"
+												value="#{cbkReportsBean.cbkInfoTotalList}"
+												rowIndexVar="rowIndex"
+												emptyMessage="#{msg['lbl.norecordfound']}" paginator="true"
+												scrollable="yes"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10,15" paginatorPosition="bottom"
+												style="width:100%">
+												<f:facet name="header">
+               CBK Total info
+            </f:facet>
+												<!-- <p:column headerText="Line Description">
+													<h:outputLabel value="#{cbkTotal.lineIndex}"></h:outputLabel>
+												</p:column>
+												 -->
+												<p:column headerText="Total line no">
+													<p:inputText value="#{cbkTotal.totalLineNo}"
+														styleClass="ui-state-disabled" readonly="true">
+														<p:ajax />
+													</p:inputText>
+												</p:column>
+
+												<p:column headerText="Line Description">
+													<h:outputLabel value="#{cbkTotal.lineDescription}"></h:outputLabel>
+												</p:column>
+
+												<p:column headerText="Computation">
+													<p:selectOneMenu id="computationid"
+														filterMatchMode="contains" filter="true"
+														value="#{cbkTotal.computation}">
+														<f:selectItem itemLabel="-- Select --" itemValue="" />
+														<f:selectItem itemLabel="+" itemValue="+" />
+														<f:selectItem itemLabel="-" itemValue="-" />
+
+														<p:ajax event="change" />
+														<!-- listener="#{cbkReportsBean.exitcbk}" -->
+													</p:selectOneMenu>
+												</p:column>
+
+												<p:column headerText="Line no">
+													<p:selectOneMenu id="totLineNo"
+														value="#{cbkTotal.selectedLineNo}" filter="true"
+														filterMatchMode="contains">
+														<f:selectItem itemLabel="---Select---" itemValue="" />
+														<f:selectItems value="#{cbkTotal.lstLineNo}" var="linNo"
+															itemLabel="#{linNo.cbkLineNo} - #{linNo.lineDesc}"
+															itemValue="#{linNo.cbkLineSeqId}" />
+														<p:ajax event="change" update="totLineNo"
+															listener="#{cbkReportsBean.checkLineNoDuplicate(cbkTotal)}"
+															onstart="process.show();" onsuccess="process.hide();"></p:ajax>
+													</p:selectOneMenu>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.add']}"
+													style="width:15% !important; text-align:center !important; margin-left:10px;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+
+													<h:panelGrid columns="2">
+														<p:commandButton value="Insert Down" onstart="process.show();"
+															onsuccess="process.hide()"
+															action="#{cbkReportsBean.addCbkTotalsRow(cbkTotal)}"
+															process="@this" update="cbkTotdataTable" immediate="true"></p:commandButton>
+														<p:commandButton value="Insert Up"
+															rendered="#{cbkTotal.lineIndex eq '0'}"
+															onstart="process.show();" onsuccess="process.hide()"
+															actionListener="#{cbkReportsBean.addCbkTotalFirstRow(cbkTotal)}"
+															process="@this" update="cbkTotdataTable" immediate="true"></p:commandButton>
+													</h:panelGrid>
+
+												</p:column>
+												<p:column headerText="#{msg['lbl.delete']}"
+													style="width:2% !important; text-align:center !important; margin-left:10px;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:commandButton value="" styleClass="delete"
+														action="#{cbkReportsBean.deleteCbkTotals(cbkTotal)}"
+														process="@this"
+														update="cbkTotdataTable,:form1:cbkTotalDalogId"
+														immediate="true">
+													</p:commandButton>
+												</p:column>
+
+
+											</p:dataTable>
+											<p:spacer height="10px"></p:spacer>
+
+											<div class="clearfix"></div>
+											<h:panelGroup layout="block"
+												style="width:100%; text-align:right; padding-top:10px !important;">
+												<p:spacer height="40px" />
+												<p:commandLink id="addCbktotalsmorefield"
+													style=" font-size: 15px !important;"
+													value="Add New CBK Total" styleClass="link1"
+													rendered="#{empty cbkReportsBean.cbkInfoTotalList}"
+													action="#{cbkReportsBean.addCBKTotalEmptyRow}"
+													immediate="true" process="@this"
+													update="cbkTotdataTable,cbkTotalDalogId"
+													onstart="process.show();" onsuccess="process.hide();" />
+											</h:panelGroup>
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton id="bkTotal" value="#{msg['lbl.save']}"
+													action="#{cbkReportsBean.saveCbkTotalMain}" onstart="process.show();" onsuccess="process.hide();"/>
+												<p:commandButton value="#{msg['lbl.exit']}"
+													action="#{cbkReportsBean.exitCbkDetails}"
+													update="dataTable"
+													oncomplete="PF('dailogCbkTotal').hide();" onstart="process.show();" onsuccess="process.hide();"/>
+											</h:panelGroup>
+										</p:panel>
+									</p:dialog>
+
+									<!--  Process Dialog Box -->
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+
+									<p:confirmDialog id="cbkCodeDuplicate"
+										widgetVar="cbkCodeDuplicate" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="Duplicate CBK references are not allowed">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="printOrderDuplicate"
+										widgetVar="printOrderDuplicate" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="Duplicate print orders are not allowed">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="lineDescription"
+										widgetVar="lineDescription" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Please enter line description">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="lineType" widgetVar="lineType"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Please select line type">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="printStatus" widgetVar="printStatus"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Please select print status">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="printOrder" widgetVar="printOrder"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Please enter print order">
+									</p:confirmDialog>
+
+
+									<p:confirmDialog id="reportid" widgetVar="reportid"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Please select report id">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="reportName" widgetVar="reportName"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Please select report name">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="frequency" widgetVar="frequency"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Please select frequency">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="printOrderZero" widgetVar="printOrderZero"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Print order must be grater than zero">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{cbkReportsBean.errorMessage}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{cbkReportsBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="totalLevel" widgetVar="totalLevel"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="Total level is mandatory for line type of Totals ">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="totRecordExist" widgetVar="totRecordExist"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="CBK Total records existed for selected line type ">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="detailsRecordExist"
+										widgetVar="detailsRecordExist" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="CBK Details records existed for selected line type ">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="checkHigertotLevel"
+										widgetVar="checkHigertotLevel" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="Can not be able to delete ,While higher total level exist">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="checkComputation"
+										widgetVar="checkComputation" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Please select computation">
+									</p:confirmDialog>
+									<p:confirmDialog id="checkLineNo" widgetVar="checkLineNo"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Please select line number">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="norecord" widgetVar="norecord"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="No records to save">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="duplicateTotalLineNo"
+										widgetVar="duplicateTotalLineNo" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="Duplicate line numbers are not allowed">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="checkTotalLevelValue"
+										widgetVar="checkTotalLevelValue" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="Please select less than one of previouse Totals Level">
+									</p:confirmDialog>
+
+
+
+									<p:dialog id="confirmExit" widgetVar="confirmExit"
+										showHeader="false" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+
+										<p:outputLabel value="Do you wnat to exit without saving the data ?" />
+										<br />
+
+										<p:commandButton value="#{msg['lbl.yes']}"
+											oncomplete="confirmExit.hide()" process="@this"
+											action="#{cbkReportsBean.mainExit}" />
+										<p:commandButton value="#{msg['lbl.no']}"
+											oncomplete="confirmExit.hide()" process="@this" />
+
+									</p:dialog>
+
+
+
+
+									<p:dialog id="complete" widgetVar="complete" width="270"
+										height="70" showHeader="false" resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} " />
+										<br />
+										<p:spacer width="15px" />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{cbkReportsBean.clearMain}" process="@this"
+											oncomplete="complete.hide()" />
+									</p:dialog>
+
+									<p:dialog id="completeCbkDetails"
+										widgetVar="completeCbkDetails" showHeader="false"
+										resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} " />
+										<br />
+										<p:spacer width="15px" />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{cbkReportsBean.exitCbkDetails}"
+											process="@this" update="mainPanel" />
+									</p:dialog>
+
+
+									<p:dialog id="completeCbkTotals" widgetVar="completeCbkTotals"
+										showHeader="false" resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} " />
+										<br />
+										<p:spacer width="15px" />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{cbkReportsBean.exitCbkDetails}"
+											process="@this" update="mainPanel" />
+									</p:dialog>
+
+								<p:dialog id="confirmDelete" widgetVar="confirmDelete"
+										showHeader="false" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+
+										<p:outputLabel value="Selected line number already assgined ,Do you wnat to delete ?" />
+										<br />
+
+										<p:commandButton value="#{msg['lbl.yes']}"
+											oncomplete="confirmDelete.hide()" process="@this"
+											action="#{cbkReportsBean.deleteCbkAllChils}" update="mainPanel" />
+										<p:commandButton value="#{msg['lbl.no']}"
+											oncomplete="confirmDelete.hide()" process="@this" />
+
+									</p:dialog>
+									
+									<fieldset
+										style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+										<legend
+											style="font-size: 15px; font-weight: bold; color: #037712;"
+											align="top">&nbsp;CBK Report&nbsp;</legend>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel value="Report Id *" style="color:#05000a;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:selectOneMenu id="dreportid" filterMatchMode="contains"
+													filter="true" value="#{cbkReportsBean.reportId}"
+													required="true" requiredMessage="Select report id">
+													<f:selectItem itemLabel="--Select Report Id--"
+														itemValue="0" />
+													<f:selectItem itemLabel="EXC1A" itemValue="EXC1A" />
+													<f:selectItem itemLabel="EXC1B" itemValue="EXC1B" />
+													<f:selectItem itemLabel="EXC1B1" itemValue="EXC1B1" />
+													<f:selectItem itemLabel="EXC2" itemValue="EXC2" />
+													<f:selectItem itemLabel="EXC3-W" itemValue="EXC3-W" />
+													<f:selectItem itemLabel="EXC4A" itemValue="EXC4A" />
+													<f:selectItem itemLabel="EXC4B" itemValue="EXC4B" />
+													<f:selectItem itemLabel="EXC4A1" itemValue="EXC4A1" />
+													<p:ajax event="change"
+														listener="#{cbkReportsBean.fetchCBKInfoHead}"
+														update="mainPanel,dataTable" />
+												</p:selectOneMenu>
+											</p:panel>
+											<div class="clearfix"></div>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel value="Report Name *" style="color:#05000a;" />
+											</p:panel>
+
+											<p:panel styleClass="inner_right_col">
+												<p:inputText value="#{cbkReportsBean.reportName}"
+													required="true" requiredMessage="Select report name">
+													<p:ajax />
+												</p:inputText>
+											</p:panel>
+											<div class="clearfix"></div>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel value="Frequency *" style="color:#05000a;" />
+											</p:panel>
+
+											<p:panel styleClass="inner_right_col">
+												<p:selectOneMenu id="dfrequency" filterMatchMode="contains"
+													filter="true" value="#{cbkReportsBean.reportFrequency}"
+													required="true" requiredMessage="Select frequency">
+													<f:selectItem itemLabel="--Select Frequency--" itemValue="" />
+													<f:selectItem itemLabel="Quarterly" itemValue="Q" />
+													<f:selectItem itemLabel="Monthly" itemValue="M" />
+													<f:selectItem itemLabel="Yearly" itemValue="Y" />
+													<p:ajax />
+												</p:selectOneMenu>
+											</p:panel>
+											<div class="clearfix"></div>
+										</p:panel>
+									</fieldset>
+
+									<div class="clearfix"></div>
+									<p:panel id="cbkinfpfopanel">
+										<p:dataTable id="dataTable" widgetVar="dataTable"
+											styleClass="mydatatableclass table-no-select-all"
+											value="#{cbkReportsBean.cbkInfoList}" var="d"
+											rowIndexVar="rowIndex" rowKey="#{d.lineNo}"
+											selection="#{cbkReportsBean.selectedCbkInfoList}"
+											emptyMessage="#{msg['lbl.norecordfound']}" paginator="true"
+											scrollable="yes"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="5,10,15" paginatorPosition="bottom">
+											<!-- <f:facet name="header">
+										            CBK Info Detail
+										    </f:facet> -->
+
+
+											<!-- <p:column headerText="#{msg['lbl.sNo']}" style="width:5%;" rowspan="2">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column> -->
+
+											<p:ajax event="rowSelectCheckbox"
+												listener="#{cbkReportsBean.checkBoxSelected}"
+												update=":form1:mainPanel" style="width:5%;text-align:center"
+												onstart="process.show();" onsuccess="process.hide()" />
+
+											<p:column headerText="Line Number" style="width:5%;">
+												<p:inputText value="#{d.lineNo}"
+													styleClass="ui-state-disabled" readonly="true">
+													<p:ajax />
+												</p:inputText>
+											</p:column>
+											<p:column headerText="Line Description" style="width:25%;">
+												<p:inputText value="#{d.lineDescription}">
+													<p:ajax />
+												</p:inputText>
+											</p:column>
+											<p:column headerText="Line Type" style="width:10%;">
+												<p:selectOneMenu id="linetype" filterMatchMode="contains"
+													filter="true" value="#{d.lineType}">
+													<f:selectItem itemLabel="--Select Line Type--" itemValue="" />
+													<f:selectItem itemLabel="Description" itemValue="DES" />
+													<f:selectItem itemLabel="Details" itemValue="DET" />
+													<f:selectItem itemLabel="Total" itemValue="TOT" />
+													<p:ajax event="change" update="totalLevPanel"
+														listener="#{cbkReportsBean.chrckTotalLevel(d)}" />
+													<!-- listener="#{cbkReportsBean.exitcbk}" -->
+												</p:selectOneMenu>
+											</p:column>
+
+
+											<p:column headerText="Totals Level" style="width:10%;">
+												<h:panelGroup id="totalLevPanel">
+													<p:inputText value="#{d.totalLevel}"
+														rendered="#{d.lineType ne 'TOT'}"
+														styleClass="#{d.lineType ne 'TOT'?'ui-state-disabled':''}"
+														readonly="true">
+														<p:ajax />
+													</p:inputText>
+													<p:selectOneMenu id="TotalsLevel"
+														filterMatchMode="contains"
+														rendered="#{d.lineType eq 'TOT'}" filter="true"
+														value="#{d.totalLevel}"
+														styleClass="#{d.lineType ne 'TOT'?'ui-state-disabled':''}"
+														readonly="#{d.lineType ne 'TOT'?'true':'false'}">
+														<f:selectItem itemLabel="--Select Totals Level--"
+															itemValue="" />
+														<f:selectItem itemLabel="1" itemValue="1" />
+														<f:selectItem itemLabel="2" itemValue="2" />
+														<f:selectItem itemLabel="3" itemValue="3" />
+														<f:selectItem itemLabel="4" itemValue="4" />
+														<f:selectItem itemLabel="5" itemValue="5" />
+														<f:selectItem itemLabel="6" itemValue="6" />
+														<f:selectItem itemLabel="7" itemValue="7" />
+														<f:selectItem itemLabel="8" itemValue="8" />
+														<f:selectItem itemLabel="9" itemValue="9" />
+														<p:ajax event="change"
+															listener="#{cbkReportsBean.checkTotalLevel(d)}"
+															update="TotalsLevel" />
+														<!-- listener="#{cbkReportsBean.exitcbk}" -->
+													</p:selectOneMenu>
+												</h:panelGroup>
+											</p:column>
+
+											<p:column headerText="Print (Y/N)" style="width:7%;">
+												<p:selectOneMenu id="printStatusr"
+													filterMatchMode="contains" filter="true"
+													value="#{d.printStatus}">
+													<f:selectItem itemLabel="--Select Print Status--"
+														itemValue="" />
+													<f:selectItem itemLabel="Yes" itemValue="Y" />
+													<f:selectItem itemLabel="No" itemValue="N" />
+													<p:ajax />
+												</p:selectOneMenu>
+											</p:column>
+											<p:column headerText="Print Order No" style="width:6%;">
+												<p:inputText value="#{d.printOrder}" maxlength="7"
+													id="printOrderId"
+													onkeypress="if( (event.which &lt; 48 || event.which &gt; 57) ) return false;">
+
+													<p:ajax event="blur"
+														listener="#{cbkReportsBean.checkPrintOrder(d)}"
+														update="printOrderId" />
+												</p:inputText>
+											</p:column>
+											<p:column headerText="CBK Reference Code" style="width:10%;">
+												<p:message for="cbkCodeId" display="text" id="cbkcodemsg" />
+												<p:inputText value="#{d.cbkCode}" id="cbkCodeId"
+													maxlength="15"
+													onkeypress="if( (event.which &lt; 48 || event.which &gt; 57) ) return false;">
+
+													<p:ajax event="blur"
+														listener="#{cbkReportsBean.checkCbkCode(d)}"
+														update="cbkCodeId" />
+												</p:inputText>
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.add']}" style="width:13%"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:panelGrid columns="2">
+													<p:commandButton value="Insert Down" onstart="process.show();"
+														onsuccess="process.hide()"
+														actionListener="#{cbkReportsBean.addCBKLines(d)}"
+														process="@this" update=":form1:dataTable" immediate="true"></p:commandButton>
+													<p:commandButton value="Insert Up"
+														rendered="#{d.lineIndex eq '0'}" onstart="process.show();"
+														onsuccess="process.hide()"
+														actionListener="#{cbkReportsBean.addCBKLinesFirstRow(d)}"
+														process="@this" update=":form1:dataTable" immediate="true"></p:commandButton>
+												</h:panelGrid>
+											</p:column>
+											<p:column headerText="#{msg['lbl.delete']}"
+												style="width:2% !important; text-align:center !important; margin-left:10px;"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<p:commandButton value="" styleClass="delete"
+													onstart="process.show();" onsuccess="process.hide()"
+													actionListener="#{cbkReportsBean.deleteCbkLine(d)}"
+													process="@this" update=":form1:dataTable,:form1:mainPanel" immediate="true"></p:commandButton>
+												<!--  rendered="#{c.deleteStatus}" -->
+											</p:column>
+											<p:column headerText="Zoom-in" style="width:5%">
+												<p:commandButton value="Zoom-in" onstart="process.show();"
+													onsuccess="process.hide()"
+													actionListener="#{cbkReportsBean.checkBoxSelected(d)}"
+													update=":form1:detailPanleDailogid,:form1:cbkTotalDalogId,:form1:mainPanel" process="@this"
+													immediate="true"></p:commandButton>
+											</p:column>
+
+										</p:dataTable>
+
+										<div class="clearfix"></div>
+										<h:panelGroup layout="block"
+											style="width:100%; text-align:right; padding-top:10px !important;">
+											<p:spacer height="40px" />
+											<p:commandLink id="addmorefield"
+												rendered="#{cbkReportsBean.cbkInfoList eq null}"
+												style=" font-size: 15px !important;" value="Add New Line"
+												styleClass="link1"
+												action="#{cbkReportsBean.addCBKEmptyLines}" immediate="true"
+												process="@this" update="mainPanel,dataTable"
+												onstart="process.show();" onsuccess="process.hide();" />
+										</h:panelGroup>
+
+									</p:panel>
+									<!-- <p:commandButton value="add" actionListener="#{cbkReportsBean.addNewRow}" process="@this"/>
+ -->
+									<h:panelGroup layout="block" class="clearfix" />
+									<h:panelGroup layout="block" styleClass="shadow_button">
+										<p:commandButton value="CLEAR" update="mainPanel,dataTable"
+											immediate="true" onstart="process.show();"
+											onsuccess="process.hide();" style="margin-right:10px;"
+											process="@this" action="#{cbkReportsBean.clearMain}" />
+										<p:commandButton value="SUBMIT" onstart="process.show();"
+											style="margin-right:10px;" onsuccess="process.hide()"
+											action="#{cbkReportsBean.saveAll}" process="@this"
+											update="mainPanel" />
+										<p:commandButton value="EXIT" onstart="process.show();"
+											onsuccess="process.hide()" process="@this" update="mainPanel"
+											action="#{cbkReportsBean.confirmExit}" />
+
+										<h:panelGroup layout="block" class="clearfix" />
+									</h:panelGroup>
+									<div class="clearfix"></div>
+
+								</p:panel>
+							</h:panelGroup>
+							<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+						</h:panelGroup></td>
+				</tr>
+			</table>
+		</h:form>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

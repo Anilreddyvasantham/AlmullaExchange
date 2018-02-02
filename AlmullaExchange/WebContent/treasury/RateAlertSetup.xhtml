@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	
+	<!-- 	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+	</script> -->
+</h:head>
+
+
+<h:body>
+
+
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<h:form id="rateAlert" enctype="multipart/form-data"
+									style="padding:0!important;">
+							
+          		<p:confirmDialog id="dataNotFund" widgetVar="dataNotFund" width="400" height="17" resizable="false" style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+					showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="Exchnage rate not found for this country">
+				</p:confirmDialog>
+
+
+				<p:confirmDialog id="chooseAnyOne" widgetVar="chooseAnyOne" width="400" height="17" resizable="false" style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+					showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="Atleast choose Mobile or Email Option">
+				</p:confirmDialog>
+				
+				
+				<p:confirmDialog id="duplicate" widgetVar="duplicate" width="400" height="17" resizable="false" style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+					showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="Duplicate Record Found">
+				</p:confirmDialog>
+				
+				<p:confirmDialog id="zero" widgetVar="zero" width="400" height="17" resizable="false" style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+					showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="Trigger rate should not be zero">
+				</p:confirmDialog>
+				
+					<p:confirmDialog id="negative" widgetVar="negative" width="400" height="17" resizable="false" style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+					showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="Trigger rate should not be negative">
+				</p:confirmDialog>
+				
+				
+				<p:confirmDialog id="duplicatedb" widgetVar="duplicate" width="400" height="17" resizable="false" style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+					showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="Already Record Exist ">
+				</p:confirmDialog>
+
+
+			<p:dialog id="saveRateAlert" widgetVar="saveRateAlert" width="270" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip"
+				closeOnEscape="true" closable="true" modal="true">
+				<p:outputLabel value="#{msg['lbl.benisuccessfull']}" />
+				<br />
+				<p:spacer width="15px" />
+				<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{rateAlertBean.rateAlertNavigation}" process="@this" />
+			</p:dialog>
+
+
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+					 <ui:include src="../common/onlinecustoimermenu.xhtml"></ui:include>  
+			<!-- <ui:include src="#{facesBean.fxdeal_menu}"></ui:include> -->
+				</td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h1>
+								<h:outputText value="#{msg['lbl.ratealertsetup']}" />
+							</h1>
+							<h:panelGroup layout="block" class="table_bg">
+								
+					<p:panel styleClass="shadow" id="mainPanel">
+								<h2>
+									<h:outputText value="#{msg['lbl.ratealertsetup']}" />
+								</h2>
+							
+							<p:panel styleClass="panel_border">
+
+								<p:panel styleClass="right_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currency']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message for="currency" id="msgCurrency" display="text"/>
+												<p:selectOneMenu id="currency" value="#{rateAlertBean.currencyId}" filter="true" filterMatchMode="startsWith" required="true" requiredMessage="#{msg['lbl.pleaseSelectBankCountry']}">
+													<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}" itemValue="" />
+													<f:selectItems value="#{rateAlertBean.currencyList}" var="c" itemLabel="#{c.currencyName}" itemValue="#{c.currencyId}" />
+													<p:ajax event="change" listener="#{rateAlertBean.PopUp}" update=":rateAlert:exchangeRatePanel,:rateAlert:msgCurrency" />
+												</p:selectOneMenu>
+											</p:panel>
+								</p:panel>
+										
+			
+								<p:panel styleClass="left_col" id="exchangeRatePanel">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.exchangerate']}" />
+											<h:outputText value="*" style="color:red !important;" />
+										
+									</p:panel>
+									<p:panel styleClass="inner_right_col">
+										<p:message id="msgexchangeCurrentRate"  for="exchangeCurrentRateId" display="text" />
+										<p:inputText id="exchangeCurrentRateId" value="#{rateAlertBean.exchangeCurrentRate}" readonly="true"  >
+										<p:ajax update="exchangeCurrentRateId" />
+										</p:inputText>
+										
+									</p:panel>
+									
+								</p:panel>
+								<h:panelGroup layout="block" class="clearfix"/>
+								<p:panel styleClass="left_col">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.howften']}" />
+										<h:outputText value="*" style="color:red !important;" />
+									</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="howOftenId" id="MsgOftenId" display="text" />
+												<p:selectOneMenu id="howOftenId" label="Bank" value="#{rateAlertBean.howoftenId}" filter="true" filterMatchMode="startsWith" required="true" requiredMessage="Please select Frequnecy">
+													<f:selectItem itemLabel="#{msg['lbl.selecthowoften']}" itemValue="" />
+													<f:selectItems value="#{rateAlertBean.howoftenList}" var="d" itemLabel="#{d.frequencyDescription}" itemValue="#{d.onlineRateAlertId}" />
+													<p:ajax event="change"  update="MsgOftenId,howOftenId"  />
+												</p:selectOneMenu>
+
+
+											</p:panel>
+										</p:panel>
+
+
+								<p:panel styleClass="left_col">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.triggerrate']}" />
+										<h:outputText value="*" style="color:red !important;" />
+									</p:panel>
+									<p:panel styleClass="inner_right_col">
+									<p:message for="triggerRate" id="MsgtriggerRate" display="text" />
+										<p:inputText  value="#{rateAlertBean.triggerRate}"  id="triggerRate" required="true" requiredMessage="Please enter Trigger Rate">
+											<p:ajax update="triggerRate,MsgtriggerRate"/>
+											
+										</p:inputText>
+									</p:panel>
+									
+								</p:panel>
+							<h:panelGroup layout="block" class="clearfix"/>
+							
+							<p:panel >
+							
+							<p:panelGrid >
+							<p:row>
+																	<p:column		>
+																		<h:outputText value="#{msg['lbl.emailaddressendingwith']} :" /> <h:outputText value="#{rateAlertBean.emailDisplay}" style="color:red; font-weight: bold;"/>
+																	</p:column>
+																	
+																	<p:column
+																		>
+																		<p:selectBooleanCheckbox value="#{rateAlertBean.emailCheck}"
+													id="emailCheck">
+													<p:ajax listener="#{rateAlertBean.checkEmail}" />
+												</p:selectBooleanCheckbox>
+																	</p:column>
+																	
+																	<p:column
+																		>
+																		<h:outputText value="#{msg['lbl.emailaddressendingwith']} :" /> <h:outputText value="#{rateAlertBean.mobileDisplay}" style="color:red; font-weight: bold;"/>
+																	</p:column>
+																	
+																	<p:column
+																		>
+																		<p:selectBooleanCheckbox
+													value="#{rateAlertBean.mobileCheck}" id="mobileCheck">
+													<p:ajax listener="#{rateAlertBean.checkMobile}" />
+												</p:selectBooleanCheckbox>
+																	</p:column>
+																	
+																</p:row>
+							
+							
+							</p:panelGrid>
+							
+							
+							
+							
+							<!-- 
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.emailaddressendingwith']}: #{rateAlertBean.emailDisplay}" />
+												<h:outputText value="#{rateAlertBean.emailDisplay}" />
+
+
+											</p:panel>
+											<p:panel id="emailPanel" styleClass="inner_right_col">
+												<p:selectBooleanCheckbox value="#{rateAlertBean.emailCheck}"
+													id="emailCheck">
+													<p:ajax listener="#{rateAlertBean.checkEmail}" />
+												</p:selectBooleanCheckbox>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.mblnoendingwith']}:#{rateAlertBean.mobileDisplay}" />
+										<h:outputText value="#{rateAlertBean.mobileDisplay}" />
+									
+									</p:panel>
+											<p:panel id="mobilePanel" styleClass="inner_right_col">
+												<p:selectBooleanCheckbox
+													value="#{rateAlertBean.mobileCheck}" id="mobileCheck">
+													<p:ajax listener="#{rateAlertBean.checkMobile}" />
+												</p:selectBooleanCheckbox>
+
+											</p:panel> -->
+										</p:panel>
+								
+								<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="10px" />
+											
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<!-- <p:commandButton value="#{msg['lbl.back']}" style="margin-right:10px;"  /> -->
+												<p:commandButton value="#{msg['lbl.add']}" action="#{rateAlertBean.addRecordsToDataTable}" astyle="margin-right:10px; "  update=":rateAlert:dataTablePanel,:rateAlert:savePanel,:rateAlert:mainPanel" />
+												<h:panelGroup layout="block" class="clearfix" />
+											</h:panelGroup>
+
+
+
+
+								<p:spacer height="20px" />
+									<p:panel id="dataTablePanel">
+									<p:dataTable id="dataTableId" var="d" value="#{rateAlertBean.rateAlertSetupDTList}" rowIndexVar="rowIndex" emptyMessage="No records Found" rendered="#{rateAlertBean.booRenderDataTable}">
+
+										<p:column headerText="#{msg['lbl.sNo']}" style="width:30px;">
+											<h:outputText value="#{rowIndex+1}" />
+										</p:column>
+
+										<p:column headerText="#{msg['lbl.currency']}">
+											<h:outputText value="#{d.currencyName}" />
+										</p:column>
+
+										
+
+										<p:column headerText="#{msg['lbl.exchangerate']}">
+											<h:outputText value="#{d.exchnageCurrentRate}" />
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.triggerrate']}">
+											<h:outputText value="#{d.triggerRate}" />
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.effectivefrom']}">
+											<h:outputText value="#{d.effectoveFrom}" >
+											<f:convertDateTime pattern="dd-MM-yyyy" />
+											</h:outputText>
+										</p:column>
+										
+										
+										<p:column headerText="#{msg['lbl.effectiveto']}">
+											<h:outputText value="#{d.effectoveTo}" >
+											<f:convertDateTime pattern="dd-MM-yyyy" />
+											</h:outputText>
+										</p:column>
+										
+										
+										<p:column headerText="#{msg['lbl.howften']}">
+											<h:outputText value="#{d.howOften}" />
+										</p:column>
+										<p:column headerText="#{msg['lbl.edit']}">
+												<p:commandButton id="imgEdit" styleClass="edit" value="" action="#{rateAlertBean.editRecord(d)}" disabled="#{rateAlertBean.hideEdit}" update=":rateAlert:mainPanel" process="@this">
+													<!-- <p:graphicImage value="../images/edit.png" /> -->
+													<p:tooltip for="imgEdit" value="#{msg['lbl.edit']}" />
+												</p:commandButton>
+											</p:column>
+											<p:column headerText="#{msg['lbl.delete']}">
+												<p:commandButton value="" actionListener="#{rateAlertBean.removeRecord(d)}" ajax="false" immediate="true" styleClass="delete" update="rateAlert:mainPanel" />
+											</p:column>
+
+										</p:dataTable>
+								</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel id="savePanel">
+										<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{rateAlertBean.booRenderDataTable}" >
+											<p:commandButton value="#{msg['lbl.save']}" action="#{rateAlertBean.saveDataTableRecods}" style="margin-right:10px; "  immediate="true" disabled="#{rateAlertBean.booSubmit}" />
+											<p:commandButton value="#{msg['lbl.exit']}" action="#{rateAlertBean.exit}" immediate="true" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+										</p:panel>
+										
+											<p:panel styleClass="left_col">
+											<h:outputText id="mandatory" value=" #{msg['lbl.*filedsAreMandatory']}" style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+									</p:panel>
+							</p:panel>
+								
+							</h:panelGroup>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+					</h:panelGroup></td>
+			</tr>
+		</table>
+		</h:form>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	
+</h:head>
+
+<h:body> 
+ <p:dialog id="notAuth" widgetVar="notAuth" width="300" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+            											
+            											<p:outputLabel value="#{msg['lbl.sameUserNot']}"/><br/>
+            								<p:spacer width="15px" />
+            											<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{articleLevelApproval.articleLevelApprovalNavigation}" process="@this"/>          
+       								 </p:dialog>	
+       								 				
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+							<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+						</td>
+
+				<td class="rightColumn" valign="top">
+				<h:panelGroup layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form1">
+								<h5>
+									<h:outputText
+										value="#{msg['lbl.artiLevelApprovel']}" />
+								</h5>				
+		  				
+							<p:panel styleClass="shadow" id="mainPanel">
+								<h2>
+								<h:outputText
+											value="#{msg['lbl.artiLevelApprovel']}" />
+											<p:commandLink action="#{articleLevelApproval.exit}"
+														 process="@this">
+														<p:graphicImage value="../images/return.jpg" width="25" height="25" id="imgEdit" styleClass="icon_right" style="float:right;" />
+														<p:tooltip for="imgEdit" value="Go to Home" />
+													</p:commandLink>
+								</h2>
+								<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+								<p:panel id="articleLevelApproval">											
+												
+												<p:dataTable id="dataTableId" var="o"  sortMode="multiple" styleClass="mydatatableclass"
+												rows="10" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  rowsPerPageTemplate="5,10,15"
+												value="#{articleLevelApproval.articleLevelApprovalList}" rowIndexVar="rowIndex" emptyMessage="#{msg['lbl.noRecordFound']}"    rowStyleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" paginatorPosition="bottom">
+												
+
+												<p:column headerText="#{msg['lbl.sino']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.art.artdesc.col']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{o.articleName}" />
+													</p:column>
+
+												 <p:column headerText="Article Detail Code" sortBy="#{o.articleDetailCode}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.articleDetailCode}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.art.desc']}" sortBy="#{o.articleDesc}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.articleDesc}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.art.locdesc']}" sortBy="#{o.articleLocalDesc}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.articleLocalDesc}" />
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.approve']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:commandLink action="#{articleLevelApproval.gotoApproval(o)}"
+														 process="@this" onstart="process.show();" onsuccess="process.hide();">
+														<p:graphicImage value="../images/approve.jpg" width="25" height="25" id="imgEdit" style="float:center;"/>
+														<p:tooltip for="imgEdit" value="Approve" />
+													</p:commandLink>
+												</p:column>
+												<!--
+												<p:column headerText="Bank Full Name" sortBy="#{o.fullName}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.fullName}" />
+												</p:column>
+
+												<p:column headerText="Short Name" sortBy="#{o.shortName}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.shortName}" />
+												</p:column>
+												
+												<p:column headerText="Reuter Bank Name" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.reutersBankNname}" />
+												</p:column>
+												<p:column headerText="Email" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.email}" />
+												</p:column>
+											
+												
+												<p:column headerText="Approve" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:commandLink action="#{bankMaster.gotoBankMasterApproval(o)}"
+														 process="@this">
+														<p:graphicImage value="../images/approve.jpg" width="25" height="25" id="imgEdit" style="float:center;"/>
+														<p:tooltip for="imgEdit" value="Approve" />
+													</p:commandLink>
+												</p:column>
+ -->
+											</p:dataTable>
+										</p:panel>
+								
+							</p:panel>
+						</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"/>
+					</h:panelGroup>
+					<h:panelGroup layout="block" class="clearfix"/>
+					</td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	  <link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	  <script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+
+		 history.pushState(null, null, 'CommunicationMethodApproval.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'CommunicationMethodApproval.xhtml');
+		    });
+	</script>
+</h:head>
+<h:body>
+	<!-- <p:confirmDialog id="notApproved" widgetVar="notApproved" width="370" styleClass="red"  showHeader="false" resizable="false" 	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" message="#{msg['lbl.sameUserNotApproved']}">
+      </p:confirmDialog> -->
+      <p:confirmDialog id="notApproved" widgetVar="notApproved" width="400"  resizable="false" 
+      style="background-color: white !important;" header="Warning Dailog" styleClass="warning"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="#{msg['lbl.sameUserNotApproved']}">
+      </p:confirmDialog>
+      
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		
+			<h:form id="form">
+		
+				<table align="left" width="100%" style="height: 100%;">
+					<tr>
+						<td align="left" valign="top" style="height: 100%;">
+								<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+								</td>
+		
+						<td class="rightColumn" valign="top">
+						<h:panelGroup	layout="block" class="container">
+								<h:panelGroup layout="block" class="main_div">
+									<div class="menu_button">
+										<img style="cursor: pointer; position: relative; left: 15px;"
+											id="HideHandle" name="HideHandle"
+											src="../images/toggle_plus.png" alt=""
+											onclick='hideLeftCol("leftCol");closeMenus();' />
+									</div>
+									<h1>
+										<h:outputText value="#{msg['lbl.communicationMethodApproval']}" />
+									</h1>
+		
+		
+									<p:panel styleClass="shadow" id="mainPanel"
+										style="background-color:#FFF !important; " >
+										
+											
+		
+										<h2>
+											<h:outputText value="#{msg['lbl.communicationMethodApproval']}" />
+											<p:commandLink action="#{bankBranchDetails.cancel}"
+														 process="@this">
+														<p:graphicImage value="../images/return.jpg" width="25" height="25" id="imgEdit" styleClass="icon_right" style="float:right;" />
+														<p:tooltip for="imgEdit" value="Go to Home" />
+													</p:commandLink>
+										</h2>
+							
+										
+									<p:panel id="dataPanel">
+									<p:dataTable id="dataTable" styleClass="mydatatableclass" value="#{communicationMethod.communicationMethodList}" 
+									rows="10" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="5,10,15" var="d" 
+									rowIndexVar="rowIndex" emptyMessage="#{msg['lbl.noRecordFound']}" paginatorPosition="bottom" >
+										
+										<p:column headerText="#{msg['lbl.sNo']}" style="width:30px;">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.methodCode']}">
+												<h:outputText value="#{d.communicationMethodCode}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.email']}">
+												<h:outputText value="#{d.emailId}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.fulldescription']}">
+												<h:outputText value="#{d.communicationFullDesc}" />
+											</p:column>
+											
+											<p:column headerText="#{msg['lbl.shortdescription']}">
+												<h:outputText value="#{d.communicationShortDesc}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.localfulldescription']}">
+												<h:outputText value="#{d.communicationFullDescLocal}" />
+											</p:column>
+											
+											
+											<p:column headerText="#{msg['lbl.localshortdescription']}">
+												<h:outputText value="#{d.communicationShortDescLocal}" />
+											</p:column>
+											
+										<p:column headerText="#{msg['lbl.approve']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<p:commandLink
+													action="#{communicationMethod.approvelCheckForCommunicationMethodUser(d)}" 
+													style="color:blue !important; text-decoration:underline !important;"
+													process="@this" onstart="process.show();" onsuccess="process.hide();">
+													<p:graphicImage value="../images/approve.jpg" width="25"
+														height="25" id="imgEdit" />
+													<p:tooltip for="imgEdit" value="#{msg['lbl.approve']}" />
+												</p:commandLink>
+											</p:column>  
+										</p:dataTable> 							
+											</p:panel>
+											<div class="clearfix"></div>
+										<p:spacer height="10px"/>
+										<div class="clearfix"></div>
+										<h:panelGroup layout="block" class="clearfix"/>
+									<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{complaintAssignedBean.booSaveOrExit}">						
+										<p:commandButton id="submitPanel" value="#{msg['lbl.submit']}" style="margin-right:10px;" onstart="process.show();" onsuccess="process.hide();"/>
+										<p:commandButton value="#{msg['lbl.exit']}"  style="margin-right:10px;" action="#{complaintAssignedBean.exit}" process="@this" immediate="true"/>
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+											<h:panelGroup layout="block" class="clearfix"/>
+										
+										<p:dialog modal="true" showHeader="true" header="Please wait.."  widgetVar="process"  id="process"   width="300" height="50" resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+							    	</p:dialog>			
+										</p:panel>
+										<div class="clearfix"></div>
+											
+										
+								</h:panelGroup>
+								
+							</h:panelGroup>
+						</td>
+					</tr>
+				</table>
+			</h:form>	
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

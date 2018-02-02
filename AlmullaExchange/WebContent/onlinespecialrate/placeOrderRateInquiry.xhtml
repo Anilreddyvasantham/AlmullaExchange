@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript">
+		$(document).on("keypress", ".dropdown", function(event) {
+			if (event.keyCode == 32) {
+				$('.ui-selectonemenu-trigger', this).click();
+			}
+		});
+	</script>
+</h:head>
+<h:body>
+	<f:view>
+
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form">
+								<h1>
+									<h:outputText value="Place Order Rate Inquiry" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+
+
+									<h2>
+										<h:outputText value="Place Order Rate Inquiry" />
+									</h2>
+
+									<p:confirmDialog id="error" widgetVar="error"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" update="@all"
+										message="#{placeOnOrderInquireBean.errorMsg}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="noRecords" widgetVar="noRecords"
+										width="300" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{msg['lbl.noRecordFound']}">
+									</p:confirmDialog>
+
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="Please wait ........"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+
+									<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['lbl.fromdate']}" />
+											<h:outputText value="*" style="color:red !important;" />
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:message for="transactionDate1" display="text"
+												id="msgTransactionDate1" />
+											<p:calendar id="transactionDate1"
+												value="#{placeOnOrderInquireBean.placeOrderDate1}"
+												pattern="dd/MM/yyyy" required="true" mode="popup"
+												requiredMessage="Enter Transaction Date" tabindex="0"
+												maxdate="#{placeOnOrderInquireBean.currentDate}">
+												<p:ajax update="msgTransactionDate1,transactionDate1"
+													event="dateSelect"
+													listener="#{placeOnOrderInquireBean.onDateSelectFrom}" />
+											</p:calendar>
+
+										</p:panel>
+									</p:panel>
+									
+									<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['lbl.todate']}" />
+											<h:outputText value="*" style="color:red !important;" />
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:message for="transactionDate2" display="text"
+												id="msgTransactionDate2" />
+											<p:calendar id="transactionDate2"
+												value="#{placeOnOrderInquireBean.placeOrderDate2}"
+												pattern="dd/MM/yyyy" required="true" mode="popup"
+												requiredMessage="Enter Transaction Date" tabindex="0"
+												maxdate="#{placeOnOrderInquireBean.currentDate}">
+												<p:ajax update="msgTransactionDate2,transactionDate2"
+													event="dateSelect"
+													listener="#{placeOnOrderInquireBean.onDateSelectTo}" />
+											</p:calendar>
+
+										</p:panel>
+									</p:panel>
+									
+									<div class="clearfix"></div>
+
+									<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['stock.location']}" />
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+
+											<p:message for="location" display="text" id="msgLocation" />
+											<p:selectOneMenu id="location" styleClass="dropdown"
+												value="#{placeOnOrderInquireBean.countryBranchId}"
+												required="false" requiredMessage="Please Select Location"
+												filter="true" filterMatchMode="contains">
+												<f:selectItem itemLabel="--Select Location--" />
+												<f:selectItems
+													value="#{placeOnOrderInquireBean.lstCountryBranchForLocation}"
+													var="c" itemLabel="#{c.branchId} - #{c.branchName}"
+													itemValue="#{c.countryBranchId}" />
+												<p:ajax update="location,msgLocation,error"
+													listener="#{placeOnOrderInquireBean.getAllCasheirs}"
+													event="change" />
+											</p:selectOneMenu>
+										</p:panel>
+									</p:panel>
+
+									<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['stock.user']}" />
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:message for="userid" display="text" id="msguserid" />
+											<p:selectOneMenu id="userid" styleClass="dropdown"
+												value="#{placeOnOrderInquireBean.username}"
+												filter="true" filterMatchMode="contains" required="true"
+												requiredMessage="Please select user">
+												<f:selectItem itemLabel="--Select User--" />
+												<f:selectItems
+													value="#{placeOnOrderInquireBean.cashierList}" var="c"
+													itemLabel="#{c.employeeNumber} - #{c.employeeName}"
+													itemValue="#{c.userName}" />
+												<p:ajax update="msguserid,userid,error" event="change"
+													onstart="process.show();" onsuccess="process.hide();" />
+											</p:selectOneMenu>
+										</p:panel>
+									</p:panel>
+
+
+
+									<div class="clearfix"></div>
+
+									<h:panelGroup layout="block" id="exit"
+										styleClass="shadow_button">
+										<p:commandButton value="#{msg['lbl.search']}"
+											action="#{placeOnOrderInquireBean.search}" process="@this"
+											onstart="process.show();" onsuccess="process.hide();"
+											update="mainPanel" style="margin-right:10px;" />
+										<p:commandButton value="#{msg['lbl.clear']}"
+											action="#{placeOnOrderInquireBean.clearPO}" process="@this"
+											onstart="process.show();" onsuccess="process.hide();"
+											update="mainPanel" style="margin-right:10px;" />
+										<p:commandButton value="#{msg['lbl.exit']}" process="@this"
+											action="#{placeOnOrderInquireBean.exitBranch}"
+											style="margin-right:10px;" />
+										<div class="clearfix"></div>
+									</h:panelGroup>
+
+									<p:spacer height="5px" />
+
+									<p:dataTable id="dataTablePlaceOrderInqId" var="d"
+										styleClass="mydatatableclass"
+										widgetVar="dataTablePlaceOrderInqId"
+										value="#{placeOnOrderInquireBean.lstRatePlaceOrderByBranch}"
+										sortMode="multiple" rowIndexVar="rowIndex"
+										emptyMessage="#{msg['lbl.norecordfound']}" editable="true"
+										editMode="cell" paginator="true" rows="10"
+										paginatorPosition="bottom"
+										paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+										rowsPerPageTemplate="10,20,30">
+
+										<p:columnGroup type="header">
+											<p:row>
+												<p:column rowspan="2" headerText="#{msg['lbl.sNo']}"
+													style="text-align:center !important;width:2%;" />
+												<p:column colspan="2" headerText="Staff Name"
+													style="text-align:center !important;width:5%;" />
+												<p:column colspan="2" headerText="Document Details"
+													style="text-align:center !important;width:5%;" />
+												<p:column colspan="2" headerText="Customer Details"
+													style="text-align:center !important;width:10%;" />
+												<p:column rowspan="2" headerText="Customer Name"
+													style="text-align:center !important;width:10%;" />
+												<p:column rowspan="2" headerText="Beneficiary Name"
+													style="text-align:center !important;width:10%;" />
+												<p:column colspan="2" headerText="Bank Details"
+													style="text-align:center !important;width:10%;" />
+												<p:column rowspan="2" headerText="Beneficiary Acc"
+													style="text-align:center !important;width:8%;" />
+												<p:column colspan="3" headerText="Transaction Amount"
+													style="text-align:center !important;width:5%;" />
+												<p:column rowspan="2" headerText="Rate Offered"
+													style="text-align:center !important;width:3%;" />
+												<p:column rowspan="2" headerText="Date"
+													style="text-align:center !important;width:3%;"
+													sortBy="#{d.status}" />
+												<p:column colspan="2" headerText="Trnx Details"
+													style="text-align:center !important;width:5%;" />
+												<p:column rowspan="2" headerText="Status"
+													style="text-align:center !important;width:3%;"
+													sortBy="#{d.status}" />
+											</p:row>
+											<p:row>
+											    <p:column rowspan="1" headerText="Created"
+													style="text-align:center !important;" />
+												<p:column rowspan="1" headerText="Approved"
+													style="text-align:center !important;" />
+												<p:column rowspan="1" headerText="Doc Year"
+													style="text-align:center !important;" />
+												<p:column rowspan="1" headerText="Doc No"
+													style="text-align:center !important;" />
+												<p:column rowspan="1" headerText="Customer Id Type"
+													style="text-align:center !important;" />
+												<p:column rowspan="1" headerText="Customer No"
+													style="text-align:center !important;" />
+												<p:column rowspan="1" headerText="Bank Name"
+													style="text-align:center !important;" />
+												<p:column rowspan="1" headerText="Branch Name"
+													style="text-align:center !important;" />
+												<p:column rowspan="1" headerText="Currency Quote"
+													style="text-align:center !important;" />
+												<p:column rowspan="1" headerText="Created Amount"
+													style="text-align:center !important;" />
+												<p:column rowspan="1" headerText="Trnx Amount"
+													style="text-align:center !important;" />
+												<p:column rowspan="1" headerText="Doc Year"
+													style="text-align:center !important;" />
+												<p:column rowspan="1" headerText="Doc No"
+													style="text-align:center !important;" />
+											</p:row>
+										</p:columnGroup>
+
+										<p:column
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputText value="#{rowIndex+1}" />
+										</p:column>
+
+										<p:column
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputLabel value="#{d.createdBy}"
+												style="float:left;margin-left:5px;margin-right:5px;" />
+										</p:column>
+									
+									    <p:column
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputLabel value="#{d.approvedBy}"
+												style="float:left;margin-left:5px;margin-right:5px;" />
+										</p:column>
+										
+										<p:column
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputLabel value="#{d.documentYear}"
+												style="float:left;margin-left:5px;margin-right:5px;" />
+										</p:column>
+									
+									    <p:column
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputLabel value="#{d.documentNo}"
+												style="float:left;margin-left:5px;margin-right:5px;" />
+										</p:column>
+
+										<p:column
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputLabel value="#{d.customerIdType}"
+												style="float:left;margin-left:5px;margin-right:5px;" />
+										</p:column>
+
+										<p:column
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputLabel value="#{d.customerNumber}"
+												style="float:left;margin-left:5px;margin-right:5px;" />
+										</p:column>
+
+										<p:column
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputLabel value="#{d.customerFullName}"
+												style="float:left;margin-left:5px;margin-right:5px;" />
+										</p:column>
+
+										<p:column
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputLabel value="#{d.beneficiaryFullName}"
+												style="float:left;margin-left:5px;margin-right:5px;" />
+										</p:column>
+
+										<p:column
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputLabel value="#{d.beneficiaryBankName}"
+												style="float:left;margin-left:5px;margin-right:5px;" />
+										</p:column>
+
+										<p:column
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputLabel value="#{d.beneficiaryBankBranchName}"
+												style="float:left;margin-left:5px;margin-right:5px;" />
+										</p:column>
+
+										<p:column
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputLabel value="#{d.beneficiaryAccountNumber}"
+												style="float:left;margin-left:5px;margin-right:5px;" />
+										</p:column>
+
+										<p:column
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputLabel value="#{d.currencyQuote}"
+												style="float:left;margin-left:5px;margin-right:5px;" />
+										</p:column>
+
+										<p:column
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputLabel value="#{d.transactionAmount}"
+												style="float:left;margin-left:5px;margin-right:5px;" />
+										</p:column>
+										
+										<p:column
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputLabel value="#{d.transactionAmountPaid}"
+												style="float:left;margin-left:5px;margin-right:5px;" />
+										</p:column>
+
+										<p:column
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputLabel value="#{d.rateOffered}"
+												style="float:left;margin-left:5px;margin-right:5px;font-weight: bold;font-size: 100%;" />
+										</p:column>
+										
+										<p:column
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputLabel value="#{d.valueDate}"
+												style="float:left;margin-left:5px;margin-right:5px;">
+												<f:convertDateTime pattern="dd/MM/yyyy"/>
+											</h:outputLabel>
+										</p:column>
+										
+										<p:column
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputLabel value="#{d.trnxdocumentYear}"
+												style="float:left;margin-left:5px;margin-right:5px;" />
+										</p:column>
+									
+									    <p:column
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputLabel value="#{d.trnxdocumentNo}"
+												style="float:left;margin-left:5px;margin-right:5px;" />
+										</p:column>
+
+										<p:column
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputLabel value="#{d.status}"
+												style="float:left;margin-left:5px;margin-right:5px;" />
+										</p:column>
+
+									</p:dataTable>
+
+
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

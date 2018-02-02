@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script >
+		 history.pushState(null, null, 'sourceofincomeapproval.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'sourceofincomeapproval.xhtml'); 
+		    });
+</script>
+</h:head>
+<p:confirmDialog id="username" widgetVar="username" width="370"
+	styleClass="red" showHeader="false" resizable="false"
+	style="background-color: white !important;" showEffect="clip"
+	hideEffect="clip" message="#{msg['lbl.sameUserNotApproved']}"
+	header="#{msg['lbl.warningDailog']}">
+</p:confirmDialog>
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="sourceofincomeMasterForm">
+
+
+								<h1>
+									<h:outputText value="#{msg['lbl.sourceofincomeapproval']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h3>
+										<h:outputText value="#{msg['lbl.sourceofincomeapproval']}" />
+										<p:commandLink action="#{sourceOfIncomeApprovalBean.goHome}"
+											process="@this">
+											<p:graphicImage value="../images/return.jpg" width="25"
+												height="25" id="imgEdit" styleClass="icon_right"
+												style="float:right;" />
+											<p:tooltip for="imgEdit" value="Go to Home" />
+										</p:commandLink>
+									</h3>
+
+									<p:panel styleClass="panel_border">
+
+										<p:panel id="headerPanel">
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+
+												<p:confirmDialog id="error" widgetVar="error" width="600" visible="#{sourceOfIncomeApprovalBean.booVisible}"
+										showHeader="true" resizable="false" header="Warning Message"
+										styleClass="ui-confirmdialog-yes"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:green; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{sourceOfIncomeApprovalBean.errorMessage}">
+									</p:confirmDialog>
+
+
+											<p:dataTable id="dataTable"
+												value="#{sourceOfIncomeApprovalBean.approvalList}" var="d"
+												rowIndexVar="rowIndex"
+												emptyMessage="#{msg['lbl.noRecordFound']}" rows="10"
+												paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												paginatorPosition="bottom" rowsPerPageTemplate="5,10,15"
+												sortMode="multiple" styleClass="mydatatableclass">
+
+
+												<p:column headerText="#{msg['lbl.sino']}"
+													style="width:30px;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.sourceofincomecode']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{d.sourceOfIncomeCode}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.sourceofincomefulldesc']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{d.sourceOfIncomeEngFullDesc} " />
+												</p:column>
+												<p:column headerText="#{msg['lbl.sourceofincomeshortdesc']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{d.sourceOfIncomeEngShortDesc} " />
+												</p:column>
+
+												<p:column
+													headerText="#{msg['lbl.sourceofincomefulldesclocal']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{d.sourceOfIncomeArabicFullDesc}" />
+												</p:column>
+												<p:column
+													headerText="#{msg['lbl.sourceofincomeshortdesclocal']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{d.sourceOfIncomeArabicShortDesc}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.approve']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:commandLink
+														style="color:blue !important; text-decoration:underline !important;"
+														process="@this"
+														action="#{sourceOfIncomeApprovalBean.gotoApproval(d)}" update=":sourceofincomeMasterForm">
+														<p:graphicImage value="../images/approve.jpg" width="25"
+															height="25" id="imgEdit" />
+														<p:tooltip for="imgEdit" value="#{msg['lbl.approve']}" />
+													</p:commandLink>
+												</p:column>
+
+											</p:dataTable>
+
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+									</p:panel>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

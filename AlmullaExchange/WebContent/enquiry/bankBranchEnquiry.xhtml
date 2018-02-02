@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script src="../js/SigWeb.js" type="text/javascript"></script>
+	<script src="../js/digitalsignature.js"></script>
+	<script type="text/javascript">
+		//var baseUri = "http://localhost:47289/SigWeb/";
+		var baseUri = makeUri();
+		$(function(){
+		    /*
+		     * this swallows backspace keys on any non-input element.
+		     * stops backspace -> back
+		     */
+		    var rx = /INPUT|SELECT|TEXTAREA/i;
+
+		    $(document).bind("keydown keypress", function(e){
+		        if( e.which == 8 ){ // 8 == backspace
+		            if(!rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly ){
+		                e.preventDefault();
+		            }
+		        }
+		    });
+		});
+		history.pushState(null, null, 'bankBranchEnquiry.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'bankBranchEnquiry.xhtml');
+	    });
+	</script>
+</h:head>
+
+<h:body>
+
+	<f:view>
+	
+	<p:confirmDialog id="noRecords" widgetVar="noRecords" width="200" height="17" resizable="false" style=" border:2px solid green !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      								header="#{msg['lbl.warningDailog']}" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="#{msg['lbl.noRecordFound']}" >
+   </p:confirmDialog>
+	
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top">
+				
+					<h:panelGroup layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;" id="HideHandle" name="HideHandle" src="../images/toggle_plus.png" alt="" onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="bankEnqForm">
+							
+								<h1>
+									<h:outputText value="#{msg['lbl.bankBranchEnquiry']}" />
+								</h1>
+								
+								<p:panel styleClass="shadow" id="mainPanel">
+								
+								
+								<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{bankBranchEnquiry} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+
+
+									<p:confirmDialog id="exception" header="#{msg['lbl.warning']}"
+										widgetVar="exception" width="600" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{bankBranchEnquiry.errorMessage}">
+
+										<p:commandButton value="#{msg['lbl.ok']}"
+											onclick="exception.hide()" process="@this" update="mainPanel" />
+
+									</p:confirmDialog>
+								
+									<h2>
+										<h:outputText value="#{msg['lbl.bankBranchEnquiry']}" />
+									<p:commandLink action="#{bankBranchDetails.cancel}"
+														 process="@this">
+														<p:graphicImage value="../images/return.jpg" width="25" height="25" id="imgEdit" styleClass="icon_right" style="float:right;" />
+														<p:tooltip for="imgEdit" value="Go to Home" />
+													</p:commandLink>
+									</h2>
+			
+									
+									<p:panel styleClass="panel_border">
+									
+										<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.bankCountry']}"/><h:outputText value="*"  style="color:red;font-weight:bold;"/>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="bankCountry" display="text"  id="msgBankCountry"/>
+													<p:selectOneMenu id="bankCountry" value="#{bankBranchEnquiry.bankCountryId}" filter="true" filterMatchMode="contains" required="true" requiredMessage="Please Select Bank Country">
+													<f:selectItem itemLabel="#{msg['lbl.selectbankcountry']}" itemValue="" />
+													<f:selectItems value="#{bankBranchEnquiry.bankCountryList}" var="c"  itemLabel="#{c.bankCountryCode} - #{c.bankCountryName} " itemValue="#{c.bankCountryId}"/>
+														<p:ajax event="change" listener="#{bankBranchEnquiry.bankCountryChange}" update=":bankEnqForm:mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+									
+											
+												<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.bank']}"/><h:outputText value="*"  style="color:red;font-weight:bold;"/>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="bankInd" display="text"  id="msgBankIndicator"/>
+													<p:selectOneMenu id="bankInd" value="#{bankBranchEnquiry.bankId}"  required="true" filter="true" filterMatchMode="contains" requiredMessage="Please Select Bank ">
+												<f:selectItem itemLabel="#{msg['lbl.selectBank']}" itemValue="" />
+												<f:selectItems value="#{bankBranchEnquiry.bankList}" var="c"  itemLabel="#{c.bankCode} - #{c.bankFullName}" itemValue="#{c.bankId}"/>
+														<p:ajax event="change" listener="#{bankBranchEnquiry.bankChange}" update=":bankEnqForm:mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+									<h:panelGroup layout="block" styleClass="shadow_button" >
+										<p:commandButton value="#{msg['lbl.enquiry']}" action="#{bankBranchEnquiry.searchRecords}"  update=":bankEnqForm:mainPanel" onstart="process.show();" onsuccess="process.hide();"/>		
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+									
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel>
+											<p:dataTable 
+												value="#{bankBranchEnquiry.bankBranchEnquiryList}" rendered="#{bankBranchEnquiry.renderDataTable}"
+												paginatorPosition="bottom" rows="10" paginator="true" 
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10,15" var="o"
+												rowIndexVar="rowIndex" editable="true" id="datatable"
+												emptyMessage="#{msg['lbl.norecordfound']}">
+
+												<p:column headerText="#{msg['lbl.sino']}" style="height:30px;text-align: center !important;">
+													<h:outputText value="#{rowIndex+1} " />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.branchcode']}" style="height:30px;text-align: center !important;" sortBy="#{o.bankCode}">
+													<h:outputText value="#{o.branchCode}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.branch']}" style="height:30px;text-align: center !important;" sortBy="#{o.bankName}">
+													<h:outputText value="#{o.branchName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.branchIFSCCode']}" style="height:30px;text-align: center !important;" sortBy="#{o.bankIndicator}">
+													<h:outputText value="#{o.ifscCode}" />
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.country']}" style="height:30px;text-align: center !important;" sortBy="#{o.countryName}">
+													<h:outputText value="#{o.countryName}" />
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.city']}" style="height:30px;text-align: center !important;" sortBy="#{o.cityName}">
+													<h:outputText value="#{o.cityName}" />
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.district']}" style="height:30px;text-align: center !important;" sortBy="#{o.distictName}">
+													<h:outputText value="#{o.distictName}" />
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.state']}" style="height:30px;text-align: center !important;" sortBy="#{o.stateName}">
+													<h:outputText value="#{o.stateName}" />
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.zipCode']}" style="height:30px;text-align: center !important;" sortBy="#{o.zipCode}">
+													<h:outputText value="#{o.zipCode}" />
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.telephoneNo']}" style="height:30px;text-align: center !important;" sortBy="#{o.telephoneNumnber}">
+													<h:outputText value="#{o.telephoneNumnber}" />
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.contperson']}" style="height:30px;text-align: center !important;" sortBy="#{o.contactPerson}">
+													<h:outputText value="#{o.contactPerson}" />
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.enqStatus']}" style="height:30px;text-align: center !important;">
+													<h:outputText value="#{o.status}" />
+												</p:column>
+												
+												
+											</p:dataTable>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+									<p:dialog modal="true" showHeader="true" header="#{msg['lbl.bco.plswait']}"  widgetVar="process"  id="process"   width="300" height="50" resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+							    	</p:dialog>	
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> 
+					<h:panelGroup layout="block" class="clearfix" />
+				</td>
+			</tr>
+		</table>
+<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

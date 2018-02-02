@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script type="text/javascript" language="javascript">
+		history.pushState(null, null, 'bulkDealTrackApproval.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'bulkDealTrackApproval.xhtml');
+		});
+	</script>
+</h:head>
+
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form">
+								<h1>
+									<h:outputText value="Bulk FX Deal Approval" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h3>
+										<h:outputText value="Bulk FX Deal Approval" />
+									</h3>
+									
+									<p:confirmDialog id="warningDailogId"
+										widgetVar="warningDailogId" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{bulkDealTrackApprovalMBean.warningMessage}">
+									</p:confirmDialog>
+									
+									<p:dialog id="alreadyApprove" widgetVar="alreadyApprove" width="450"
+										height="100" resizable="false"
+										style="background-color: white !important;"
+										styleClass="success" header="#{msg['lbl.warningMessage']}"
+										closable="false" showEffect="clip" hideEffect="clip">
+										<p:outputLabel value="#{msg['lbl.alreadyApprove']}" style="text-align: center; font-size:16px !important;" />
+										<br />
+										<p:commandButton value="OK"	actionListener="#{bulkDealTrackApprovalMBean.searchrecords}" update="mainPanel,dataTable" style="margin-left: 150px !important;" onstart="process.show();" onsuccess="process.hide();"/>
+									</p:dialog>
+									
+									<p:confirmDialog id="noRecord" widgetVar="noRecord" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="No records Found">
+									</p:confirmDialog>
+									
+									<p:confirmDialog id="slectOneRecord" widgetVar="slectOneRecord" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Please select atleast one record">
+									</p:confirmDialog>
+									
+									<p:confirmDialog id="noRecordApproval" widgetVar="noRecordApproval" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="There is no records to approve">
+									</p:confirmDialog>
+									<p:confirmDialog id="noRecordDelete" widgetVar="noRecordDelete" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="There is no records to delete">
+									</p:confirmDialog>
+									<p:confirmDialog id="notApproved" widgetVar="notApproved"
+										width="400" resizable="false"
+										style="background-color: white !important;"
+										header="Warning Dailog" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="#{msg['lbl.sameusernotabletoapprove']}">
+									</p:confirmDialog>
+									<p:dialog modal="true" showHeader="true"
+										header="#{msg['lbl.pleasewait']}" widgetVar="process"
+										id="process" width="300" height="50" resizable="false"
+										draggable="false" closable="false"
+										style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+										<div style="text-align: center;">
+											<p:graphicImage value="../images/preloader.gif" />
+										</div>
+									</p:dialog>
+									<p:dialog id="succesApprove" widgetVar="succesApprove"
+										width="270" height="70" showHeader="false" resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel value="Successfully Approved!" />
+										<br />
+										<p:spacer width="15px" />
+										<p:commandButton value="#{msg['lbl.ok']}" process="@this"
+											action="#{bulkDealTrackApprovalMBean.okSelected}" update="mainPanel"
+											oncomplete="succesApprove.hide()" />
+									</p:dialog>
+									
+									<p:dialog id="recordsDelete" widgetVar="recordsDelete"
+										width="270" height="70" showHeader="false" resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel value="Successfully Deleted!" />
+										<br />
+										<p:spacer width="15px" />
+										<p:commandButton value="#{msg['lbl.ok']}" process="@this"
+											action="#{bulkDealTrackApprovalMBean.okSelected}" update="mainPanel"
+											oncomplete="recordsDelete.hide()" />										
+									</p:dialog>
+
+									<p:panel styleClass="panel_border">
+										<p:panel id="headerPanel">
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.country']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:message for="countryId" display="text" id="msgcountryId" />
+													<p:selectOneMenu id="countryId" value="#{bulkDealTrackApprovalMBean.countryId}" filter="true" filterMatchMode="contains" >
+														<f:selectItem itemLabel="#{msg['lbl.beleselect']}" itemValue="" />
+														<f:selectItems value="#{bulkDealTrackApprovalMBean.lstAllCountry}" var="c" itemLabel="#{c.bankCountryCode}- #{c.countryName}" itemValue="#{c.bankCountryId}" />
+														<p:ajax update="msgcountryId,bankId" event="change" listener="#{bulkDealTrackApprovalMBean.fetchCurrencyAndBanksBasedCountryId}" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<!-- <p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.currency']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:message for="currencyId" display="text" id="msgcurrencyId" />
+													<p:selectOneMenu id="currencyId" value="#{bulkDealTrackApprovalMBean.currencyId}" filter="true" filterMatchMode="contains" >
+														<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}" itemValue="" />
+														<f:selectItems value="#{bulkDealTrackApprovalMBean.lstAllCountryCurrencyPopulationBean}" var="c" itemLabel="#{c.currencyCode}  - #{c.currencyName}" itemValue="#{c.currencyId}" />
+														<p:ajax update="msgcurrencyId" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel> -->
+
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.bank']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:message for="bankId" display="text" id="msgbankId" />
+													<p:selectOneMenu id="bankId" value="#{bulkDealTrackApprovalMBean.bankId}" filter="true" filterMatchMode="contains" >
+														<f:selectItem itemLabel="#{msg['lbl.selectbank']}" itemValue="" />
+														<f:selectItems value="#{bulkDealTrackApprovalMBean.lstAllbankBasedOnCntry}" var="c" itemLabel="#{c.bankMaster.bankCode} - #{c.bankMaster.bankFullName}" itemValue="#{c.bankMaster.bankId}" />
+														<p:ajax update="msgbankId" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" styleClass="shadow_button">
+
+												<p:commandButton value="#{msg['lbl.search']}" action="#{bulkDealTrackApprovalMBean.searchrecords}" style="margin-right:10px;" update="mainPanel" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+												<p:commandButton value="#{msg['lbl.clear']}" action="#{bulkDealTrackApprovalMBean.clearAll}" process="@this" update="mainPanel" onstart="process.show();" onsuccess="process.hide();">
+													<p:resetInput target="@form" />
+												</p:commandButton>
+
+												<h:panelGroup layout="block" class="clearfix" />
+											</h:panelGroup>
+											<p:spacer height="20px" />
+
+											<p:panel id="dataTablePanel">
+												<p:dataTable id="dataTable" value="#{bulkDealTrackApprovalMBean.lstBulkDealApprovalDataTable}" var="d"
+													rowIndexVar="rowIndex" rendered="#{bulkDealTrackApprovalMBean.tableDisplay}"
+													emptyMessage="#{msg['lbl.noRecordFound']}" rows="10"
+													paginator="true"
+													paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+													paginatorPosition="bottom" rowsPerPageTemplate="5,10,20,50"
+													styleClass="mydatatableclass">
+
+													<p:column headerText="#{msg['lbl.sino']}" >
+														<h:outputText value="#{rowIndex+1}" />
+													</p:column>
+													<p:column headerText="Deal Year" sortBy="#{d.dealYear}" filterBy="#{d.dealYear}"
+													filterMatchMode="contains">
+														<h:outputText value="#{d.dealYear}"  />
+													</p:column>
+													<p:column headerText="Deal Number" sortBy="#{d.dealNo}" filterBy="#{d.dealNo}"
+													filterMatchMode="contains">
+														<h:outputText value="#{d.dealNo}" />
+													</p:column>
+													<p:column headerText="Value Date" sortBy="#{d.dealDate}" filterBy="#{d.dealDate}"
+													filterMatchMode="contains">
+														<h:outputText value="#{d.dealDate}" >
+														<f:convertDateTime pattern="dd/MM/yyyy"> </f:convertDateTime>
+														</h:outputText>
+													</p:column>
+													<!-- <p:column headerText="Reuters / Manual" sortBy="#{d.autoManual}" filterBy="#{d.autoManual}"
+													filterMatchMode="contains">
+														<h:outputText value="#{d.autoManual}" />
+													</p:column> -->
+													<p:column headerText="Deal with Bank/Sale Bank" sortBy="#{d.dealBankName}" filterBy="#{d.dealBankName}"
+													filterMatchMode="contains">
+														<h:outputText value="#{d.dealBankName}" />
+													</p:column>
+
+													<p:column headerText="Sale Currency" sortBy="#{d.sdCurrencyName}" filterBy="#{d.sdCurrencyName}"
+													filterMatchMode="contains">
+														<h:outputText value="#{d.sdCurrencyName}" />
+													</p:column>
+													
+													<p:column headerText="Sale Amount" sortBy="#{d.saleAmount}" filterBy="#{d.saleAmount}"
+													filterMatchMode="contains">
+														<h:outputText value="#{d.saleAmount}" >
+														 <f:convertNumber pattern="##,###,###"/>
+														</h:outputText>
+													</p:column>
+													
+													<p:column headerText="Rate" sortBy="#{d.exchangeRate}" filterBy="#{d.exchangeRate}"
+													filterMatchMode="contains">
+														<h:outputText value="#{d.exchangeRate}" />
+													</p:column>
+													
+													<p:column headerText="Purchase Amount" sortBy="#{d.purchaseAmount}" filterBy="#{d.purchaseAmount}"
+													filterMatchMode="contains">
+														<h:outputText value="#{d.purchaseAmount}">
+														 <f:convertNumber pattern="##,###,###"/>
+														</h:outputText>
+													</p:column>
+
+													<p:column headerText="Purchase Currency" sortBy="#{d.pdCurrencyName}" filterBy="#{d.pdCurrencyName}"
+													filterMatchMode="contains">
+														<h:outputText value="#{d.pdCurrencyName}" />
+													</p:column>
+													
+													<p:column headerText="Purchase Bank" sortBy="#{d.pdbankFullName}" filterBy="#{d.pdbankFullName}"
+													filterMatchMode="contains">
+														<h:outputText value="#{d.pdbankFullName}" />
+													</p:column>
+	
+												<p:column style="width:5%" headerText="#{msg['lbl.select']}">
+													<p:selectBooleanCheckbox value="#{d.selectCheck}" id="check">
+													<p:ajax event="change" listener="#{bulkDealTrackApprovalMBean.dealRecordSelectBox(d)}" update="dataTable,check" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectBooleanCheckbox>
+												</p:column>>
+
+												</p:dataTable>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" rendered="#{bulkDealTrackApprovalMBean.tableDisplay}" styleClass="shadow_button">
+
+												<p:commandButton id="approve" value="Approve"
+													style="margin-right:10px;" immediate="true" action="#{bulkDealTrackApprovalMBean.approveRecords}"
+													onstart="process.show();" onsuccess="process.hide();"  update="warningDailogId"/>
+
+												<p:commandButton id="delete" value="Delete"
+													style="margin-right:10px;" immediate="true" action="#{bulkDealTrackApprovalMBean.deleteRecords}"
+													onstart="process.show();" onsuccess="process.hide();" update="warningDailogId" />
+
+												<p:commandButton value="#{msg['lbl.exit']}" process="@this"  action="#{bulkDealTrackApprovalMBean.exit}"
+													onstart="process.show();" onsuccess="process.hide();" />
+
+												<h:panelGroup layout="block" class="clearfix" />
+											</h:panelGroup>
+											
+											
+
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+									</p:panel>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

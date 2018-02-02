@@ -1,0 +1,689 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</h:head>
+
+<h:body>
+
+	<p:dialog id="complete" widgetVar="complete" width="260" height="70"
+		showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+
+		<p:outputLabel value="#{msg['lbl.dataissuccessfullysaved']}" />
+		<br />
+
+		<p:commandButton value="#{msg['lbl.ok']}"
+			actionListener="#{bankServiceRule.exit}" />
+	</p:dialog>
+
+
+	<p:confirmDialog id="bankcharges" widgetVar="bankcharges" width="400"
+		header="Warning DialogBox" height="17" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.bankchargesChecking']}">
+	</p:confirmDialog>
+
+
+	<p:confirmDialog id="currencyNotExist" widgetVar="currencyNotExist"
+		width="500" header="Warning DialogBox" height="24" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.currencyNotExist']}">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="bnkchargesUstatus" widgetVar="bnkchargesUstatus"
+		header="Warning DialogBox" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true"
+		message="This combination already existed with not approved status">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="bankchargesDstatus" widgetVar="bankchargesDstatus"
+		header="Warning DialogBox" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true"
+		message="This combination already existed with deactive status">
+	</p:confirmDialog>
+	<p:confirmDialog id="NoDataFound" widgetVar="NoDataFound" width="370"
+		styleClass="red" showHeader="false" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" message="No data found">
+	</p:confirmDialog>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+				<ui:include src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top">
+				<h:panelGroup layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form">
+								<h1>
+									<h:outputText value="Parameter Details" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h3>
+										<h:outputText value="Parameter Details" />
+									</h3>
+
+									<p:panel styleClass="panel_border">
+
+										<p:panel id="headerPanel">
+										
+										
+										   <p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Parameter Definition" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgparameterdefid" for="parameterdefid" display="text" />
+													<p:selectOneMenu id="parameterdefid" value="#{parameterDetailsBean.parameterDefinitionId}" filterMatchMode="startsWith" filter="true" required="true"
+														requiredMessage="Please Select Parameter Definition">
+														<f:selectItem itemLabel="#{msg['lbl.selectcode']}" itemValue="" />
+														<!-- <f:selectItems value="#{parameterDetailsBean.lstParameterMaster}" var="c" itemLabel="#{c.quoteName}" itemValue="#{c.currencyId}" /> -->
+														<p:ajax update="parameterdefid" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Parameter Master" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgparameterid" for="parameterid" display="text" />
+													<p:selectOneMenu id="parameterid" value="#{parameterDetailsBean.parameterMasterId}" filterMatchMode="startsWith" filter="true" required="true"
+														requiredMessage="Please Select Parameter Master">
+														<f:selectItem itemLabel="#{msg['lbl.selectcode']}" itemValue="" />
+														<!-- <f:selectItems value="#{parameterDetailsBean.lstParameterMaster}" var="c" itemLabel="#{c.quoteName}" itemValue="#{c.currencyId}" /> -->
+														<p:ajax update="msgparameterid" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Record ID" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgrecordid" for="recordid" display="text" />
+													<p:inputText id="recordid"
+														value="#{parameterDetailsBean.recordId}" required="true"
+														requiredMessage="Please Enter Record Id">
+														<p:ajax update="msgrecordid" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Param Code Definition" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgparamcodeid" for="paramcodeid" display="text" />
+													<p:inputText id="paramcodeid"
+														value="#{parameterDetailsBean.paramcodedefintion}" required="true"
+														requiredMessage="Please Enter Parameter Code Definition">
+														<p:ajax update="msgparamcodeid" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Full Description" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgfullid" for="fullid" display="text" />
+													<p:inputText id="fullid"
+														value="#{parameterDetailsBean.parameterFullDesc}" required="true"
+														requiredMessage="Please Enter Parameter Full Description">
+														<p:ajax update="msgfullid" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Short Description" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgshortid" for="shortid" display="text" />
+													<p:inputText id="shortid"
+														value="#{parameterDetailsBean.parameterShortDesc}" required="true"
+														requiredMessage="Please Enter Parameter Short Description">
+														<p:ajax update="msgshortid" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Arabic Full Description" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgarfullid" for="arfullid" display="text" />
+													<p:inputText id="arfullid"
+														value="#{parameterDetailsBean.arabicFullDesc}" required="true"
+														requiredMessage="Please Enter Arabic Full Description">
+														<p:ajax update="msgarfullid" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Arabic Short Description" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgarshortid" for="arshortid" display="text" />
+													<p:inputText id="arshortid"
+														value="#{parameterDetailsBean.arabicShortDesc}" required="true"
+														requiredMessage="Please Enter Arabic Short Description">
+														<p:ajax update="msgarshortid" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Numeric Field 1" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid1" for="numfieldid1" display="text" />
+													<p:inputText id="numfieldid1"
+														value="#{parameterDetailsBeannumericfield1}" required="true"
+														requiredMessage="Please Enter Numeric Field">
+														<p:ajax update="msgnumfieldid1" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Numeric Field 2" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid2" for="numfieldid2" display="text" />
+													<p:inputText id="numfieldid2"
+														value="#{parameterDetailsBeannumericfield1}" required="true"
+														requiredMessage="Please Enter Numeric Field">
+														<p:ajax update="msgnumfieldid2" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Numeric Field 3" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid3" for="numfieldid3" display="text" />
+													<p:inputText id="numfieldid3"
+														value="#{parameterDetailsBeannumericfield1}" required="true"
+														requiredMessage="Please Enter Numeric Field">
+														<p:ajax update="msgnumfieldid3" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Numeric Field 4" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid4" for="numfieldid4" display="text" />
+													<p:inputText id="numfieldid4"
+														value="#{parameterDetailsBeannumericfield1}" required="true"
+														requiredMessage="Please Enter Numeric Field">
+														<p:ajax update="msgnumfieldid4" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Numeric Field 5" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid5" for="numfieldid5" display="text" />
+													<p:inputText id="numfieldid5"
+														value="#{parameterDetailsBeannumericfield1}" required="true"
+														requiredMessage="Please Enter Numeric Field">
+														<p:ajax update="msgnumfieldid5" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Numeric Field 6" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid6" for="numfieldid6" display="text" />
+													<p:inputText id="numfieldid6"
+														value="#{parameterDetailsBeannumericfield1}" required="true"
+														requiredMessage="Please Enter Numeric Field">
+														<p:ajax update="msgnumfieldid6" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Numeric Field 7" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid7" for="numfieldid7" display="text" />
+													<p:inputText id="numfieldid7"
+														value="#{parameterDetailsBeannumericfield1}" required="true"
+														requiredMessage="Please Enter Numeric Field">
+														<p:ajax update="msgnumfieldid7" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Numeric Field 8" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid8" for="numfieldid8" display="text" />
+													<p:inputText id="numfieldid8"
+														value="#{parameterDetailsBeannumericfield1}" required="true"
+														requiredMessage="Please Enter Numeric Field">
+														<p:ajax update="msgnumfieldid8" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Numeric Field 9" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid9" for="numfieldid9" display="text" />
+													<p:inputText id="numfieldid9"
+														value="#{parameterDetailsBeannumericfield1}" required="true"
+														requiredMessage="Please Enter Numeric Field">
+														<p:ajax update="msgnumfieldid9" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Char Field 1" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid1" for="charfieldid1" display="text" />
+													<p:inputText id="charfieldid1"
+														value="#{parameterDetailsBeancharfield1}" required="true"
+														requiredMessage="Please Enter Char Field">
+														<p:ajax update="msgcharfieldid1" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Char Field 2" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid2" for="charfieldid2" display="text" />
+													<p:inputText id="charfieldid2"
+														value="#{parameterDetailsBeancharfield1}" required="true"
+														requiredMessage="Please Enter Char Field">
+														<p:ajax update="msgcharfieldid2" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Char Field 3" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid3" for="charfieldid3" display="text" />
+													<p:inputText id="charfieldid3"
+														value="#{parameterDetailsBeancharfield1}" required="true"
+														requiredMessage="Please Enter Char Field">
+														<p:ajax update="msgcharfieldid3" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Char Field 4" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid4" for="charfieldid4" display="text" />
+													<p:inputText id="charfieldid4"
+														value="#{parameterDetailsBeancharfield1}" required="true"
+														requiredMessage="Please Enter Char Field">
+														<p:ajax update="msgcharfieldid4" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Char Field 5" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid5" for="charfieldid5" display="text" />
+													<p:inputText id="charfieldid5"
+														value="#{parameterDetailsBeancharfield1}" required="true"
+														requiredMessage="Please Enter Char Field">
+														<p:ajax update="msgcharfieldid5" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Char Field 6" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid6" for="charfieldid6" display="text" />
+													<p:inputText id="charfieldid6"
+														value="#{parameterDetailsBeancharfield1}" required="true"
+														requiredMessage="Please Enter Char Field">
+														<p:ajax update="msgcharfieldid6" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Char Field 7" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid7" for="charfieldid7" display="text" />
+													<p:inputText id="charfieldid7"
+														value="#{parameterDetailsBeancharfield1}" required="true"
+														requiredMessage="Please Enter Char Field">
+														<p:ajax update="msgcharfieldid7" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Char Field 8" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid8" for="charfieldid8" display="text" />
+													<p:inputText id="charfieldid8"
+														value="#{parameterDetailsBeancharfield1}" required="true"
+														requiredMessage="Please Enter Char Field">
+														<p:ajax update="msgcharfieldid8" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Char Field 9" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid9" for="charfieldid9" display="text" />
+													<p:inputText id="charfieldid9"
+														value="#{parameterDetailsBeancharfield1}" required="true"
+														requiredMessage="Please Enter Char Field">
+														<p:ajax update="msgcharfieldid9" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Date Field 1" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdatefieldid1" for="datefieldid1" display="text" />
+													<p:inputText id="datefieldid1"
+														value="#{parameterDetailsBeandatefield1}" required="true"
+														requiredMessage="Please Enter Date Field">
+														<p:ajax update="msgdatefieldid1" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Date Field 2" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdatefieldid2" for="datefieldid2" display="text" />
+													<p:inputText id="datefieldid2"
+														value="#{parameterDetailsBeandatefield1}" required="true"
+														requiredMessage="Please Enter Date Field">
+														<p:ajax update="msgdatefieldid2" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+																						
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Date Field 3" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdatefieldid3" for="datefieldid3" display="text" />
+													<p:inputText id="datefieldid3"
+														value="#{parameterDetailsBeandatefield1}" required="true"
+														requiredMessage="Please Enter Date Field">
+														<p:ajax update="msgdatefieldid3" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Date Field 4" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdatefieldid4" for="datefieldid4" display="text" />
+													<p:inputText id="datefieldid4"
+														value="#{parameterDetailsBeandatefield1}" required="true"
+														requiredMessage="Please Enter Date Field">
+														<p:ajax update="msgdatefieldid4" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+																						
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Date Field 5" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdatefieldid5" for="datefieldid5" display="text" />
+													<p:inputText id="datefieldid5"
+														value="#{parameterDetailsBeandatefield1}" required="true"
+														requiredMessage="Please Enter Date Field">
+														<p:ajax update="msgdatefieldid5" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Date Field 6" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdatefieldid6" for="datefieldid6" display="text" />
+													<p:inputText id="datefieldid6"
+														value="#{parameterDetailsBeandatefield1}" required="true"
+														requiredMessage="Please Enter Date Field">
+														<p:ajax update="msgdatefieldid6" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+																						
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Date Field 7" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdatefieldid7" for="datefieldid7" display="text" />
+													<p:inputText id="datefieldid7"
+														value="#{parameterDetailsBeandatefield1}" required="true"
+														requiredMessage="Please Enter Date Field">
+														<p:ajax update="msgdatefieldid7" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Date Field 8" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdatefieldid8" for="datefieldid8" display="text" />
+													<p:inputText id="datefieldid8"
+														value="#{parameterDetailsBeandatefield1}" required="true"
+														requiredMessage="Please Enter Date Field">
+														<p:ajax update="msgdatefieldid8" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+																						
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Date Field 9" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdatefieldid9" for="datefieldid9" display="text" />
+													<p:inputText id="datefieldid9"
+														value="#{parameterDetailsBeandatefield1}" required="true"
+														requiredMessage="Please Enter Date Field">
+														<p:ajax update="msgdatefieldid9" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+																						
+											<h:panelGroup layout="block" class="clearfix" />
+
+										</p:panel>
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel id="submitPanel">
+											<h:panelGroup layout="block" styleClass="shadow_button" >
+												<p:commandButton value="Save" action="#{parameterDefinitionBean.save}" immediate="true" update="mainPanel" style="margin-right:10px; " />
+												<p:commandButton value="#{msg['lbl.clear']}" update="mainPanel" style="margin-right:10px; "/>
+											</h:panelGroup>
+										</p:panel>
+										<p:panel styleClass="left_col">
+											<h:outputText id="mandatory"
+												value=" #{msg['lbl.*filedsAreMandatory']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

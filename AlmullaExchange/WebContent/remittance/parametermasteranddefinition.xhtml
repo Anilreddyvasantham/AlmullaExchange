@@ -1,0 +1,830 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<!-- <script type="text/javascript" language="javascript">
+	function clearForm(){
+		
+		var dat1 = document.getElementById("form:fullid");
+		dat1.value='';
+		var dat2 = document.getElementById("form:shortid");
+		dat2.value='';
+	}
+	</script> -->
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+	</script>
+
+
+	<style>
+#goTop {
+	padding: 6px 25px 42px 23px !important;
+	position: fixed;
+	right: 10px;
+	margin: left !important;
+	margin-top: 350px !important;
+	margin-right: 40px !important;
+	background-image: url('../images/topscroll.png');
+}
+
+.centeralign {
+	margin-left: auto;
+	margin-right: auto;
+	width: 6em
+}
+</style>
+</h:head>
+<h:body>
+	<p:dialog id="success" widgetVar="success" width="270" height="70"
+		showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+		<p:outputLabel value="#{msg['lbl.benisuccessfull']}" />
+		<br />
+		<p:spacer width="15px" />
+		<p:commandButton value="#{msg['lbl.ok']}"
+			actionListener="#{parameterMasterandDefinitionBean.pageNavigation}"
+			process="@this" />
+	</p:dialog>
+	<p:dialog id="complete" widgetVar="complete" width="260" height="70"
+		showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+		<p:outputLabel value="#{msg['lbl.dataissuccessfullysaved']}" />
+		<br />
+		<!-- <p:commandButton value="#{msg['lbl.ok']}"
+			actionListener="#{bankServiceRule.exit}" /> -->
+	</p:dialog>
+	<p:confirmDialog id="duplicateRecord" widgetVar="duplicateRecord"
+		width="400" height="17" resizable="false" header="Warning Message"
+		style=" border:2px solid pink !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message=" #{msg['lbl.recrdIdAlreadyExist']}">
+	</p:confirmDialog>
+	<p:confirmDialog id="duplicateRecordWithDB"
+		widgetVar="duplicateRecordWithDB" width="400" height="17"
+		resizable="false" header="#{msg['lbl.warningDailog']}"
+		style=" border:2px solid pink !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true"
+		message=" #{msg['lbl.recrdIdAlreadyExistIndatabase']} ">
+	</p:confirmDialog>
+	<p:confirmDialog id="noupdate" widgetVar="noupdate" width="400"
+		height="17" resizable="false" header="#{msg['lbl.warningDailog']}"
+		style=" border:2px solid pink !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true"
+		message=" #{msg['lbl.noNewRecrdsOrUpdatedRecordsToSave']}">
+	</p:confirmDialog>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form">
+								<h1>
+									<h:outputText
+										value="#{msg['lbl.parameterMasterAndDefination']}" />
+								</h1>
+
+								<p:dialog modal="true" showHeader="false" widgetVar="process"
+									id="process" width="300" height="60" resizable="false"
+									draggable="false" closable="false"
+									style=" border: 2px green solid !important;background-color: #FFF !important;">
+									<div
+										style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+										<p:graphicImage value="../images/processImg.gif"
+											style="float: left !important; margin-right: 24px !important; " />
+										<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+											style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+									</div>
+								</p:dialog>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<p:confirmDialog id="csp" widgetVar="csp" width="600"
+										showHeader="true" resizable="false" header="Warning Message"
+										styleClass="ui-confirmdialog-yes"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:green; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{parameterMasterandDefinitionBean.errorMessage}">
+									</p:confirmDialog>
+									<p:panel styleClass="panel_border">
+										<h2>
+											<h:outputText value="#{msg['lbl.parameterMasterDetails']}" />
+										</h2>
+										<p:panel id="headerPanel">
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.recrdId']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:98%;">
+														<p:row>
+														
+														    <p:column style="width:95% !important; padding:0px !important;" rendered="#{parameterMasterandDefinitionBean.renderRecDropDown}">
+																<p:message id="msgdroprecordid" for="droprecordid" display="text" />
+																<p:selectOneMenu id="droprecordid" value="#{parameterMasterandDefinitionBean.recordId}" filter="true" filterMatchMode="contains" required="true" requiredMessage="Please Select Record Id">
+																	<f:selectItem itemLabel="#{msg['lbl.select']}" itemValue="0" />
+																	<f:selectItems value="#{parameterMasterandDefinitionBean.parameterRecordIdList}" var="c" itemLabel="#{c.recordId} - #{c.fullDesc}" itemValue="#{c.recordId}" />
+																	<p:ajax event="change" update="mainPanel,droprecordid,msgdroprecordid" listener="#{parameterMasterandDefinitionBean.populateParameterMaster}" onstart="process.show();" onsuccess="process.hide();" />
+																</p:selectOneMenu>
+															</p:column>
+														
+															<p:column style="width:95% !important; padding:0px 13px 0px 0px !important;" rendered="#{parameterMasterandDefinitionBean.renderRecEditable}">
+																<p:message id="msgrecordid" for="recordid" display="text" />
+																<p:autoComplete id="recordid" value="#{parameterMasterandDefinitionBean.recordId}" completeMethod="#{parameterMasterandDefinitionBean.autoCompleteData}"
+																	readonly="#{parameterMasterandDefinitionBean.booRecordIdOnly}" maxlength="4" maxResults="10" onchange="clearForm(this);" onkeyup="this.value=this.value.toUpperCase()"
+																	required="true" requiredMessage="Please Enter Record Id" validatorMessage="Chars only allowed and record length should be 4">
+																	<f:validateLength minimum="4" maximum="4" />
+																	<f:validateRegex pattern="^[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)*$" />
+																	<p:ajax event="blur" update="mainPanel,recordid,msgrecordid" listener="#{parameterMasterandDefinitionBean.populateParameterMaster}"  onstart="process.show();" onsuccess="process.hide();"/>
+																	<p:ajax event="itemSelect" update="mainPanel,recordid,msgrecordid" listener="#{parameterMasterandDefinitionBean.populateParameterMaster}"  onstart="process.show();" onsuccess="process.hide();" />
+																	<p:ajax event="change" update="mainPanel,recordid,msgrecordid" listener="#{parameterMasterandDefinitionBean.populateParameterMaster}" onstart="process.show();" onsuccess="process.hide();"/>
+																</p:autoComplete>
+															</p:column>
+															
+															<p:column style="width:5% !important; padding:0px !important;text-align:right !important;" rendered="#{parameterMasterandDefinitionBean.renderedit}">
+																<p:commandButton value=" " styleClass="edit" action="#{parameterMasterandDefinitionBean.editableRecordId}" update="mainPanel" process="@this" />
+															</p:column>
+
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<!-- <p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.recrdId']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgrecordid" for="recordid" display="text" />
+													<p:autoComplete id="recordid"
+														value="#{parameterMasterandDefinitionBean.recordId}"
+														completeMethod="#{parameterMasterandDefinitionBean.autoCompleteData}"
+														readonly="#{parameterMasterandDefinitionBean.booRecordIdOnly}"
+														maxlength="4" maxResults="10" onchange="clearForm(this);"
+														onkeyup="this.value=this.value.toUpperCase()"
+														required="true" requiredMessage="Please Enter Record Id"
+														validatorMessage="Chars only allowed and  record length should be 4">
+														<f:validateLength minimum="4" maximum="4" />
+														<f:validateRegex
+															pattern="^[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)*$" />
+														<p:ajax event="blur" update="mainPanel,recordid,msgrecordid" listener="#{parameterMasterandDefinitionBean.populateParameterMaster}" />
+														<p:ajax event="itemSelect"
+															update="mainPanel,recordid,msgrecordid"
+															listener="#{parameterMasterandDefinitionBean.populateParameterMaster}" />
+														<p:ajax event="change"
+															update="mainPanel,recordid,msgrecordid"
+															listener="#{parameterMasterandDefinitionBean.populateParameterMaster}" />
+													</p:autoComplete>
+												</p:panel>
+											</p:panel> -->
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.fullDesc']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgfullid" for="fullid" display="text" />
+													<p:inputText id="fullid"
+														value="#{parameterMasterandDefinitionBean.parameterFullDesc}"
+														required="true"
+														requiredMessage="Please Enter Parameter Full Description"
+														maxlength="55"
+														readonly="#{parameterMasterandDefinitionBean.booRecordIdOnly}">
+														<f:validator validatorId="AllowCharectorswithSpace" />
+														<p:ajax event="blur" update="msgfullid" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.shortDesc']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgshortid" for="shortid" display="text" />
+													<p:inputText id="shortid"
+														value="#{parameterMasterandDefinitionBean.parameterShortDesc}"
+														required="true"
+														requiredMessage="Please Enter Parameter Short Description"
+														maxlength="9"
+														readonly="#{parameterMasterandDefinitionBean.booRecordIdOnly}">
+														<!-- <f:validator validatorId="com.amg.exchange.validator.AlphaNumericValidator"/> -->
+														<f:validateRegex pattern="[a-zA-Z0-9 ]+" />
+														<p:ajax event="blur" update="msgshortid" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.localFullDesc']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgllfullid" for="lfullid" display="text" />
+													<p:inputText
+														value="#{parameterMasterandDefinitionBean.lparameterFullDesc}"
+														id="lfullid" required="true"
+														requiredMessage="Please Enter Parameter Full Description"
+														readonly="#{parameterMasterandDefinitionBean.booRecordIdOnly}"
+														style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;"
+														dir="RTL" maxlength="29">
+														<p:ajax event="blur" update="msgllfullid" />
+														<f:validator validatorId="arabicValidator" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.localShortDesc']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msglshortid" for="lshortid" display="text" />
+													<p:inputText
+														value="#{parameterMasterandDefinitionBean.lparameterShortDesc}"
+														id="lshortid" required="true"
+														requiredMessage="Please Enter Parameter Short Description"
+														readonly="#{parameterMasterandDefinitionBean.booRecordIdOnly}"
+														style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;"
+														dir="RTL" maxlength="9">
+														<p:ajax event="blur" update="msglshortid" />
+														<f:validator validatorId="arabicValidator" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.codeLength']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcodelenid" for="codelenid" display="text" />
+													<p:inputText id="codelenid"
+														value="#{parameterMasterandDefinitionBean.codeLen}"
+														required="true"
+														validatorMessage="Code Length should be between 1 and 9"
+														readonly="#{parameterMasterandDefinitionBean.booRecordIdOnly}"
+														requiredMessage="Please Enter Code Length" maxlength="1"
+														converterMessage="Please Enter Only Numbers">
+														<p:ajax update="msgcodelenid" />
+														<f:validateLongRange maximum="9" minimum="1" />
+														<f:convertNumber type="number" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.codeType']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcodetypeid" for="codetypeid"
+														display="text" />
+													<p:selectOneMenu id="codetypeid"
+														value="#{parameterMasterandDefinitionBean.codeType}"
+														required="true" requiredMessage="Please Enter Code Type"
+														filter="startWith"
+														disabled="#{parameterMasterandDefinitionBean.booRecordIdOnly}">
+														<f:selectItem
+															itemLabel="#{msg['lbl.pleaseEnterCodeType']}" />
+														<f:selectItem itemLabel="A" itemValue="A" />
+														<f:selectItem itemLabel="N" itemValue="N" />
+														<p:ajax event="change" update="msgcodetypeid" />
+														<p:ajax event="blur" update="msgcodetypeid" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<h2>
+												<h:outputText value="#{msg['lbl.parameterDefiDetails']}" />
+											</h2>
+											<p:spacer height="20px" />
+											<p:panel id="definition">
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.flexiFieldName']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgparameterid" for="parameterid"
+															display="text" />
+														<p:selectOneMenu id="parameterid"
+															value="#{parameterMasterandDefinitionBean.flexFieldName}"
+															filterMatchMode="startsWith" filter="true">
+															<f:selectItem
+																itemLabel="#{msg['lbl.pleaseSelectParameter']}"
+																itemValue="" />
+															<f:selectItems
+																value="#{parameterMasterandDefinitionBean.flexFieldList}"
+																var="c" itemLabel="#{c.columnName}"
+																itemValue="#{c.columnName}" />
+															<p:ajax event="change"
+																update="msgparameterid,csp,parameterid,definition"
+																listener="#{parameterMasterandDefinitionBean.enableDefintionFields}" onstart="process.show();" onsuccess="process.hide();"/>
+															<p:ajax event="blur"
+																update="msgparameterid,csp,parameterid,definition"
+																listener="#{parameterMasterandDefinitionBean.enableDefintionFields}" onstart="process.show();" onsuccess="process.hide();" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.displayOrder']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgdisplayordid" for="displayordid"
+															display="text" />
+														<p:inputText id="displayordid"
+															value="#{parameterMasterandDefinitionBean.displayOrder}"
+															required="true"
+															validatorMessage="#{msg['lbl.displayOrder']} should be between 1 and 99"
+															requiredMessage="Please Enter Display Order"
+															maxlength="2"
+															disabled="#{parameterMasterandDefinitionBean.booEnableDefinitionTableFields}">
+															<p:ajax event="blur" update="msgdisplayordid" />
+															<f:validateLongRange maximum="99" minimum="1" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<h:panelGroup layout="block" class="clearfix" />
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.fullDesc']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgfulllid" for="fulllid" display="text" />
+														<p:inputText id="fulllid"
+															value="#{parameterMasterandDefinitionBean.definitionFullDesc}"
+															required="true"
+															requiredMessage="Please Enter Parameter Full Description"
+															maxlength="55"
+															disabled="#{parameterMasterandDefinitionBean.booEnableDefinitionTableFields}">
+															<f:validator validatorId="AllowCharectorswithSpace" />
+															<p:ajax event="blur" update="msgfulllid" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.shortDesc']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgshorttid" for="shorttid" display="text" />
+														<p:inputText id="shorttid"
+															value="#{parameterMasterandDefinitionBean.definitionShortDesc}"
+															required="true"
+															requiredMessage="Please Enter Parameter Short Description"
+															maxlength="9"
+															disabled="#{parameterMasterandDefinitionBean.booEnableDefinitionTableFields}">
+															<f:validateRegex pattern="[a-zA-Z0-9 ]+" />
+															<p:ajax event="blur" update="msgshorttid" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<h:panelGroup layout="block" class="clearfix" />
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.localFullDesc']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgdlfullid" for="localId" display="text" />
+														<p:inputText
+															value="#{parameterMasterandDefinitionBean.ldefinitionFullDesc}"
+															id="localId" required="true"
+															requiredMessage="Please Enter Local Parameter Full Description"
+															style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;"
+															dir="RTL" maxlength="29"
+															disabled="#{parameterMasterandDefinitionBean.booEnableDefinitionTableFields}">
+															<p:ajax event="blur" update="msgdlfullid" />
+															<f:validator validatorId="arabicValidator" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.localShortDes']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgdlshortid" for="dlshortid"
+															display="text" />
+														<p:inputText
+															value="#{parameterMasterandDefinitionBean.ldefinitionShortDesc}"
+															id="dlshortid" required="true"
+															requiredMessage="Please Enter Parameter Short Description"
+															style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;"
+															dir="RTL" maxlength="9"
+															disabled="#{parameterMasterandDefinitionBean.booEnableDefinitionTableFields}">
+															<p:ajax event="blur" update="msgdlshortid" />
+															<f:validator validatorId="arabicValidator" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<h:panelGroup layout="block" class="clearfix" />
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.fiedLength']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgfieldlenid" for="fieldlenid"
+															display="text" />
+														<p:inputText id="fieldlenid"
+															value="#{parameterMasterandDefinitionBean.fieldLength}"
+															validatorMessage="#{msg['lbl.fiedLength']} should be between 1 and 99"
+															required="true" maxlength="2"
+															requiredMessage="Please Enter Field Length"
+															disabled="#{parameterMasterandDefinitionBean.booEnableDefinitionTableFields}">
+															<f:validateLongRange maximum="99" minimum="1" />
+															<p:ajax event="blur" update="msgfieldlenid" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.nullIndicator']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgfieldnameid" for="fieldnameid"
+															display="text" />
+														<p:selectOneMenu id="fieldnameid"
+															value="#{parameterMasterandDefinitionBean.nullIndicator}"
+															required="true"
+															requiredMessage="Please Select Null Indicator"
+															filter="startWith"
+															disabled="#{parameterMasterandDefinitionBean.booEnableDefinitionTableFields}">
+															<f:selectItem
+																itemLabel="#{msg['lbl.pleaseSelectNullIndicator']}" />
+															<f:selectItem itemLabel="#{msg['lbl.yes']}" itemValue="Y" />
+															<f:selectItem itemLabel="#{msg['lbl.no']}" itemValue="N" />
+															<p:ajax event="change"
+																update="fieldnameid,msgfieldnameid" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+												<h:panelGroup layout="block" class="clearfix" />
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.validation']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgvalid" for="valid" display="text" />
+														<p:selectOneMenu id="valid"
+															value="#{parameterMasterandDefinitionBean.validation}"
+															required="true"
+															requiredMessage="Please Select Null Indicator"
+															filter="startWith"
+															disabled="#{parameterMasterandDefinitionBean.booEnableDefinitionTableFields}">
+															<f:selectItem
+																itemLabel="#{msg['lbl.pleaseSelectValidationType']}" />
+															<f:selectItem itemLabel="D" itemValue="#{msg['lbl.d']}" />
+															<f:selectItem itemLabel="N" itemValue="#{msg['lbl.n']}" />
+															<f:selectItem itemLabel="R" itemValue="#{msg['lbl.r']}" />
+															<p:ajax event="change"
+																listener="#{parameterMasterandDefinitionBean.validationCheck}" onstart="process.show();" onsuccess="process.hide();"
+																update="msgvalid,test,csp,valid" />
+															<p:ajax event="blur"
+																listener="#{parameterMasterandDefinitionBean.validationCheck}" onstart="process.show();" onsuccess="process.hide();"
+																update="msgvalid,test,csp,valid" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+												<h:panelGroup id="test">
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.valueFrm']}" />
+															<h:outputText value="*" style="color:red !important;" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message id="msgvaluefromid" for="valuefromid"
+																display="text" />
+															<p:inputText id="valuefromid"
+																value="#{parameterMasterandDefinitionBean.valueFrom}"
+																validatorMessage="Integers only allowed" required="true"
+																requiredMessage="Please Enter Value From"
+																disabled="#{parameterMasterandDefinitionBean.booEnableValueFields}">
+																<p:ajax event="blur" update="msgvaluefromid" />
+																<f:convertNumber integerOnly="true" />
+																<f:validateLongRange minimum="1" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.valueTo']}" />
+															<h:outputText value="*" style="color:red !important;" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message id="msgvaluetoid" for="valuetoid"
+																display="text" />
+															<p:inputText id="valuetoid"
+																value="#{parameterMasterandDefinitionBean.valueTo}"
+																required="true" requiredMessage="Please Enter Value To"
+																disabled="#{parameterMasterandDefinitionBean.booEnableValueFields}">
+																<p:ajax event="blur" update="msgvaluetoid" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+
+													<h:panelGroup layout="block" class="clearfix" />
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.TableName']}" />
+															<h:outputText value="*" style="color:red !important;" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message id="msgtablenameid" for="tablenameid"
+																display="text" />
+															<!-- <p:inputText id="tablenameid" value="#{parameterMasterandDefinitionBean.tableName}" required="true" requiredMessage="Please Enter Table Name" validatorMessage="Enter Database standard" disabled="#{parameterMasterandDefinitionBean.booEnableTableFields}" maxlength="29">
+															<f:validateRegex pattern="^[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)*$" />
+															<p:ajax event="blur" update="msgtablenameid" />
+														</p:inputText> -->
+
+															<p:selectOneMenu id="tablenameid"
+																value="#{parameterMasterandDefinitionBean.tableName}"
+																filterMatchMode="startsWith" filter="true"
+																disabled="#{parameterMasterandDefinitionBean.booEnableTableFields}">
+																<f:selectItem
+																	itemLabel="#{msg['lbl.pleaseSelectTableName']}"
+																	itemValue="" />
+																<f:selectItems
+																	value="#{parameterMasterandDefinitionBean.lstDatabaseObjects}"
+																	var="c" itemLabel="#{c.objectName}"
+																	itemValue="#{c.objectName}" />
+																<p:ajax event="change"
+																	update="msgtablenameid,tablefieldid,csp,tablenameid"
+																	listener="#{parameterMasterandDefinitionBean.enableTableField}" onstart="process.show();" onsuccess="process.hide();" />
+																<p:ajax event="blur"
+																	update="msgtablenameid,tablefieldid,csp,tablenameid"
+																	listener="#{parameterMasterandDefinitionBean.enableTableField}" onstart="process.show();" onsuccess="process.hide();" />
+															</p:selectOneMenu>
+
+														</p:panel>
+													</p:panel>
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.tableFields']}" />
+															<h:outputText value="*" style="color:red !important;" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message id="msgtablefieldid" for="tablefieldid"
+																display="text" />
+															<!-- <p:inputText id="tablefieldid" value="#{parameterMasterandDefinitionBean.tableField}" required="true" requiredMessage="Please Enter Table Field" validatorMessage="Enter Database standard" disabled="#{parameterMasterandDefinitionBean.booEnableTableFields}" maxlength="29">
+															<f:validateRegex pattern="^[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)*$" />
+															<p:ajax event="blur" update="msgtablefieldid" />
+														</p:inputText> -->
+															<p:selectOneMenu id="tablefieldid"
+																value="#{parameterMasterandDefinitionBean.tableField}"
+																filterMatchMode="startsWith" filter="true"
+																disabled="#{parameterMasterandDefinitionBean.booEnableTableFields}">
+																<f:selectItem
+																	itemLabel="#{msg['lbl.pleaseSelectTableName']}"
+																	itemValue="" />
+																<f:selectItems
+																	value="#{parameterMasterandDefinitionBean.lstTablecolumns}"
+																	var="c" itemLabel="#{c.columnName}"
+																	itemValue="#{c.columnName}" />
+																<p:ajax event="change" update="msgtablefieldid" />
+																<p:ajax event="blur" update="msgtablefieldid" />
+															</p:selectOneMenu>
+														</p:panel>
+													</p:panel>
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.parameterCode']}" />
+															<h:outputText value="*" style="color:red !important;" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message id="msgparamid" for="paramid" display="text" />
+															<p:inputText id="paramid"
+																value="#{parameterMasterandDefinitionBean.parameterId}"
+																onkeyup="this.value=this.value.toUpperCase()"
+																required="true" maxlength="4"
+																requiredMessage="Please Enter Parameter Code"
+																disabled="#{parameterMasterandDefinitionBean.booEnableTableFields}">
+																<f:validator
+																	validatorId="com.amg.exchange.validator.AlphaNumericValidator" />
+																<p:ajax update="msgparamid" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+												</h:panelGroup>
+												<h:panelGroup layout="block" class="clearfix" />
+											</p:panel>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel id="addPanel">
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="#{msg['lbl.add']}"
+													action="#{parameterMasterandDefinitionBean.addtoDataTable}"
+													update="headerPanel,dataTablePanel,savePanel,csp"
+													style="margin-right:10px; " onstart="process.show();"
+													onsuccess="process.hide();" />
+												<p:commandButton value="#{msg['lbl.view']}"
+													action="#{parameterMasterandDefinitionBean.view}"
+													immediate="true"
+													update="headerPanel,dataTablePanel,savePanel,csp" 
+													style="margin-right:10px; " process="@this"
+													onstart="process.show();" onsuccess="process.hide();" />
+												<p:commandButton value="#{msg['lbl.clear']}"
+													action="#{parameterMasterandDefinitionBean.clearAll}"
+													process="@this" update="form" immediate="true" />
+											</h:panelGroup>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<p:panel id="dataTablePanel">
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:dataTable styleClass="mydatatableclass" id="dataTableId"
+												var="d" sortMode="multiple" rows="10" paginator="true"
+												paginatorPosition="bottom"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10,15"
+												value="#{parameterMasterandDefinitionBean.lstFinalListForDataTable}"
+												rowIndexVar="rowIndex"
+												emptyMessage="#{msg['lbl.noRecordFound']}"
+												rendered="#{parameterMasterandDefinitionBean.booRenderDataTable}">
+												<p:column headerText="#{msg['lbl.sNo']}" style="width:30px;">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.recrdId']}"
+													sortBy="#{d.recordId}">
+													<h:outputText value="#{d.recordId}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.fieldname']}"
+													sortBy="#{d.flexFieldName}">
+													<h:outputText value="#{d.flexFieldName}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.displayOrder']}"
+													sortBy="#{d.displayOrder}">
+													<h:outputText value="#{d.displayOrder}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.fullDesc']}"
+													sortBy="#{d.parameterFullDesc}">
+													<h:outputText value="#{d.parameterFullDesc}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.shortDesc']}"
+													sortBy="#{d.parameterShortDesc}">
+													<h:outputText value="#{d.parameterShortDesc}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.localFullDesc']}"
+													sortBy="#{d.parameterFullDesc}">
+													<h:outputText value="#{d.lparameterFullDesc}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.localShortDes']}"
+													sortBy="#{d.lparameterShortDesc}">
+													<h:outputText value="#{d.lparameterShortDesc}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.fiedLength']}"
+													sortBy="#{d.fieldLength}">
+													<h:outputText value="#{d.fieldLength}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.nullIndicator']}"
+													sortBy="#{d.parameterFullDesc}">
+													<h:outputText value="#{d.nullIndicator}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.valueFrm']}"
+													sortBy="#{d.valueFrom}">
+													<h:outputText value="#{d.valueFrom}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.valueTo']}"
+													sortBy="#{d.valueTo}">
+													<h:outputText value="#{d.valueTo}" />
+												</p:column>
+												<p:column headerText="Table Name" sortBy="#{d.tableName}">
+													<h:outputText value="#{d.tableName}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.TableName']}"
+													sortBy="#{d.tableField}">
+													<h:outputText value="#{d.tableField}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.parameterCode']}"
+													sortBy="#{d.parameterId}">
+													<h:outputText value="#{d.parameterId}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.edit']}">
+													<p:commandButton id="imgEdit" styleClass="edit" value=""
+														action="#{parameterMasterandDefinitionBean.editRecord(d)}"
+														update=":form,:form:mainPanel,:form:csp"
+														disabled="#{parameterMasterandDefinitionBean.hideEdit}"
+														immediate="true" process="@this" />
+												</p:column>
+												<!-- <p:column headerText="Activate / Deactivate" style="text-align:center !important;" sortBy="#{d.dynamicLabelForActivateDeactivate}">
+													<p:commandLink action="#{parameterMasterandDefinitionBean.removefromDataTable(d)}" value="#{d.dynamicLabelForActivateDeactivate}" style="color:blue !important; text-decoration:underline !important;" update=":form:mainPanel" immediate="true" process="@this" />
+												</p:column> -->
+											</p:dataTable>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel id="savePanel">
+											<h:panelGroup layout="block" styleClass="shadow_button"
+												rendered="#{parameterMasterandDefinitionBean.booRenderDataTable}">
+												<p:commandButton value="#{msg['lbl.submit']}"
+													action="#{parameterMasterandDefinitionBean.saveToDataBase}"
+													immediate="true"
+													update="savePanel,headerPanel,dataTablePanel,mainPanel"
+													style="margin-right:10px; " onstart="process.show();"
+													onsuccess="process.hide();" />
+												<p:commandButton value="#{msg['lbl.exit']}"
+													update="mainPanel" style="margin-right:10px; "
+													immediate="true"
+													action="#{parameterMasterandDefinitionBean.clickOnExit}" />
+											</h:panelGroup>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col">
+											<h:outputText id="mandatory"
+												value=" #{msg['lbl.*filedsAreMandatory']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+		<a id="goTop" />
+	</f:view>
+	<script type="text/javascript">
+		history.pushState(null, null, 'parametermasteranddefinition.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'parametermasteranddefinition.xhtml');
+		});
+		
+		
+		$(document).ready(function() {
+		    $(window).scroll(function() {
+		        if($(this).scrollTop() > 100){
+		            $('#goTop').stop().animate({
+		                bottom: '30px'    
+		                }, 300);
+		        }
+		        else{
+		            $('#goTop').stop().animate({
+		               bottom: '-100px'    
+		            }, 300);
+		        }
+		    });
+		    $('#goTop').click(function() {
+		        $('html, body').stop().animate({
+		           scrollTop: 0
+		        }, 500, function() {
+		           $('#goTop').stop().animate({
+		               bottom: '-100px'    
+		           }, 300);
+		        });
+		    });
+		}); 
+	</script>
+</h:body>
+</html>

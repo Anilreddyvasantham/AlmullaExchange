@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</h:head>
+
+<h:body> 
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		 
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+							<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+						</td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+								<h:form id="form">
+							<h1>
+								<h:outputText value="#{msg['lbl.highValAmlAuthFc']}" />
+							</h1>
+							<p:panel styleClass="shadow" id="mainPanel">
+					 
+							 <p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>  
+									
+							 <p:confirmDialog id="showDailog" widgetVar="showDailog" width="400"
+									resizable="false" style="background-color: white !important;"
+									header="Warning Dailog" styleClass="warning" showEffect="clip"
+									hideEffect="clip" closeOnEscape="true" closable="true"
+									message="#{highValueAmlAuthFCurrencyBean.errorMessage}">
+								</p:confirmDialog>
+								
+								<p:dialog id="complete" widgetVar="complete" width="400" height="80"
+									resizable="false" style="background-color: white !important;"
+									styleClass="success" header="Success" closable="false"
+									showEffect="clip" hideEffect="clip" modal="true">
+									<p:outputLabel value="#{msg['lbl.dataissuccessfullysaved']}" style="text-align: center; font-size:15px !important;" />
+									<br />
+									<p:commandButton value="#{msg['lbl.ok']}"
+										action="#{highValueAmlAuthFCurrencyBean.gotoHighValueAmlAuthFCurrencyPage}" immediate="true" process="@this" update="@form"
+										style="margin-left: 150px !important;" />
+								</p:dialog>
+		
+								<p:panel styleClass="panel_border">
+								 
+											<p:spacer height="30"/>
+											<h:panelGroup layout="block" class="clearfix"/>
+											
+											 <p:dataTable id="dataTable" styleClass="mydatatableclass"  rowKey="#{d.idNo}"
+												value="#{highValueAmlAuthFCurrencyBean.highvalueAmlFcList}"
+												var="d" rowIndexVar="rowIndex" editable="true"
+												emptyMessage="#{msg['lbl.norecordfound']}" rows="10"
+												paginator="true" selection="#{highValueAmlAuthFCurrencyBean.highvalueAmlFcSelectedList}"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="10,15" paginatorPosition="bottom">
+													
+												<p:column headerText="#{msg['lbl.sNo']}" style="width:5%;">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.rem.trnxref']}"
+													style="width:10% !important;" filterBy="#{d.documentNo}" filterMatchMode="contains">
+													<p:commandLink
+														value="#{d.documentFinanceYear} / #{d.documentNo}"
+														style="font-weight: bold; font-size: 12px !important; color:blue !important; text-decoration:underline !important;float:left;margin-left:5px;margin-right:5px;"
+														action="#{highValueAmlAuthFCurrencyBean.gotoCustonmerInquiry(d)}"
+														onstart="process.show();" onsuccess="process.hide()"
+														process="@this" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.bankCode']}" style="width:10%;" filterBy="#{d.bankCode}" filterMatchMode="contains">
+													<h:outputLabel value="#{d.bankCode}" style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.branchname']}" style="width:10%;" filterBy="#{d.baranchName}" filterMatchMode="contains">
+													<h:outputLabel value="#{d.baranchName}" style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.canceldate']}" style="width:10%;">
+													<h:outputLabel value="#{d.documentDate}" style="float:left;margin-left:5px;margin-right:5px;" >
+													<f:convertDateTime pattern="dd/MM/yyyy"/>
+													</h:outputLabel>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.customerRef']}" style="width:10%;" filterBy="#{d.customerReference}" filterMatchMode="contains">
+													<h:outputLabel value="#{d.customerReference}" style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.custName']}" style="width:40%;">
+													<h:outputLabel value="#{d.customerName}" style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.foreignCurrency']}" style="width:10%;">
+													<h:outputLabel value="#{d.forreignCurrenyName}" />
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.foreigncurrencyamount']}" style="width:10%;">
+													<h:outputLabel value="#{d.foreignTrnxAmount}" style="float:right;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+
+												 <p:column selectionMode="multiple" width="10%" headerText="Select" style="width:5%;" />
+											</p:dataTable>
+										 
+										 <p:spacer height="30"/>
+											<h:panelGroup layout="block" class="clearfix"/>
+										 
+										 				<p:panel styleClass="right_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.enterremarks']}" />
+															<h:outputText value="*" style="color:red !important;"  />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText value="#{highValueAmlAuthFCurrencyBean.remarks}"  maxlength="60"> 
+																<p:ajax />
+															</p:inputText> 
+														</p:panel>
+													</p:panel>
+										 
+										 
+										 <p:spacer height="30"/>
+											<h:panelGroup layout="block" class="clearfix"/>
+											
+										 <p:panel styleClass="shadow_button" style=" background-color:#FFF !important;">
+										 
+										 <p:commandButton value="#{msg['lbl.submit']}"  update=":form:showDailog,:form:complete"  
+														onstart="process.show();" onsuccess="process.hide()"   
+														action="#{highValueAmlAuthFCurrencyBean.updateSelectedRecords}" style="margin-right:10px;"/>
+														
+										 <p:commandButton value="#{msg['lbl.clear']}"
+													onstart="process.show();" onsuccess="process.hide()"
+													action="#{highValueAmlAuthFCurrencyBean.gotoHighValueAmlAuthFCurrencyPage}"
+													immediate="true" update="mainPanel" ajax="false" style="margin-right:10px;"/>
+													
+										 <p:commandButton value="#{msg['lbl.exit']}"
+													onstart="process.show();" onsuccess="process.hide()"
+													action="#{highValueAmlAuthFCurrencyBean.exit}"
+													immediate="true" update="mainPanel" ajax="false" />
+									  </p:panel>
+															 
+									<h:panelGroup layout="block" class="clearfix"/>
+								</p:panel>
+								<h:panelGroup layout="block" class="clearfix"/>
+								</p:panel>
+								</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"/>
+					</h:panelGroup>
+					<h:panelGroup layout="block" class="clearfix"/>
+					</td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

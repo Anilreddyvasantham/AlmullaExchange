@@ -1,0 +1,1877 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<script src="../js/SigWeb.js" type="text/javascript"></script>
+	<script src="../js/digitalsignature.js"></script>
+	<script type="text/javascript">
+		var baseUri = makeUri();
+		history.pushState(null, null, 'employeeregistration.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'employeeregistration.xhtml');
+		});
+
+		$(document).ready(function() {
+			$(window).scroll(function() {
+				if ($(this).scrollTop() > 100) {
+					$('#goTop').stop().animate({
+						bottom : '30px'
+					}, 300);
+				} else {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				}
+			});
+			$('#goTop').click(function() {
+				$('html, body').stop().animate({
+					scrollTop : 0
+				}, 500, function() {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				});
+			});
+		});
+	</script>
+</h:head>
+
+
+<h:body dir="#{facesBean.direction}">
+	<f:view locale="#{facesBean.locale}">
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+					<!-- <ui:include
+						src="../common/employee_menu.xhtml"></ui:include> --> <ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include>
+				</td>
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h1>
+								<h:outputText value="#{msg['lbl.empregseach']}" />
+							</h1>
+
+							<h:form id="form1" title="employee">
+
+								<p:dialog id="norecord" widgetVar="norecord" width="260"
+									height="70" showHeader="false" resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+
+									<p:outputLabel value="#{msg['lbl.norecordfound']}" />
+									<br />
+
+									<p:commandButton value="#{msg['lbl.ok']}"
+										oncomplete="norecord.hide()" />
+								</p:dialog>
+
+								<p:dialog id="successreg" widgetVar="successreg" width="260"
+									height="70" showHeader="false" resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+
+									<p:outputLabel value="Employee successfully registered." />
+									<br />
+
+									<p:commandButton value="#{msg['lbl.ok']}"
+										actionListener="#{employeeBean.clickOnSave}" process="@this"
+										oncomplete="successreg.hide()" />
+								</p:dialog>
+
+								<p:confirmDialog id="saveerror" header="#{msg['lbl.warning']}"
+									widgetVar="saveerror" width="350" resizable="false"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip"
+									message="#{msg['lbl.errorwhilesavingcustomerdetails']}">
+
+									<p:commandButton value="#{msg['lbl.ok']}"
+										oncomplete="saveerror.hide()" />
+
+								</p:confirmDialog>
+
+								<p:confirmDialog id="signatureMandatory"
+									widgetVar="signatureMandatory" resizable="false" width="300px"
+									style="background-color: white !important;"
+									header="#{msg['lbl.warningDailog']}" styleClass="warning"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" message="#{msg['lbl.signaturemadatory']}">
+								</p:confirmDialog>
+
+								<p:confirmDialog id="userexist" widgetVar="userexist"
+									resizable="false" width="300px"
+									style="background-color: white !important;"
+									header="#{msg['lbl.warningDailog']}" styleClass="warning"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" message="User already exist.">
+								</p:confirmDialog>
+
+								<p:confirmDialog id="wuuserexist" widgetVar="wuuserexist"
+									resizable="false" width="300px"
+									style="background-color: white !important;"
+									header="#{msg['lbl.warningDailog']}" styleClass="warning"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" message="#{msg['lbl.wuuseralreadyexist']}">
+								</p:confirmDialog>
+
+								<p:confirmDialog id="emailexist" widgetVar="emailexist"
+									resizable="false" width="300px"
+									style="background-color: white !important;"
+									header="#{msg['lbl.warningDailog']}" styleClass="warning"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" message="#{msg['lbl.emaileisexist']}">
+								</p:confirmDialog>
+
+								<p:confirmDialog id="atleastsearch" widgetVar="atleastsearch"
+									resizable="false" width="400px"
+									style="background-color: white !important;"
+									header="#{msg['lbl.warningDailog']}" styleClass="warning"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" message="#{msg['lbl.plsorentersearch']}">
+								</p:confirmDialog>
+
+								<p:dialog id="inactiveuser" widgetVar="inactiveuser" width="400"
+									height="90" resizable="false"
+									style="background-color: white !important;"
+									styleClass="warning" header="#{msg['lbl.useractivation']}"
+									closable="false" showEffect="clip" hideEffect="clip">
+									<p:outputLabel value="#{msg['lbl.useracivationmessage']}"
+										style="text-align: center; font-size:15px !important;" />
+									<br />
+									<p:commandButton value="#{msg['lbl.yes']}" process="@this"
+										oncomplete="PF('inactiveuser').hide();"
+										actionListener="#{employeeBean.clickActivate}" update="form1"
+										style="margin-left: 150px !important;" />
+									<p:commandButton value="#{msg['lbl.no']}"
+										actionListener="#{employeeBean.clickInactivate}"
+										onclick="PF('inactiveuser').hide();" process="@this"
+										update="form1" style="margin-left:10px;" />
+								</p:dialog>
+
+								<p:dialog id="inactiveuser1" widgetVar="inactiveuser1"
+									height="90" resizable="false"
+									style="background-color: white !important;"
+									styleClass="warning" header="#{msg['lbl.useractivation']}"
+									closable="false" showEffect="clip" hideEffect="clip">
+									<p:outputLabel value="#{msg['lbl.useracivationmessage']}"
+										style="text-align: center; font-size:15px !important;" />
+									<br />
+									<p:commandButton value="#{msg['lbl.yes']}" process="@this"
+										oncomplete="PF('inactiveuser1').hide();"
+										actionListener="#{employeeBean.makeActivate}" update="form1"
+										style="margin-left: 150px !important;" />
+									<p:commandButton value="#{msg['lbl.no']}"
+										actionListener="#{employeeBean.clickInactivate}"
+										onclick="PF('inactiveuser1').hide();" process="@this"
+										update="form1" style="margin-left:10px;" />
+								</p:dialog>
+
+								<p:dialog id="callProcedureTele" widgetVar="callProcedureTele"
+									width="400" height="90" resizable="false"
+									style="background-color: white !important;"
+									styleClass="warning" header="#{msg['lbl.useractivation']}"
+									closable="false" showEffect="clip" hideEffect="clip">
+									<p:outputLabel
+										value="Please confirm Telemarketing Records to clear ?"
+										style="text-align: center; font-size:15px !important;" />
+									<br />
+									<p:commandButton value="#{msg['lbl.yes']}" process="@this"
+										oncomplete="PF('callProcedureTele').hide();"
+										actionListener="#{employeeBean.callProcedureForTeleMarketingYes}"
+										update="form1" style="margin-left: 150px !important;" />
+									<p:commandButton value="#{msg['lbl.no']}"
+										actionListener="#{employeeBean.callProcedureForTeleMarketingNo}"
+										onclick="PF('callProcedureTele').hide();" process="@this"
+										update="form1" style="margin-left:10px;" />
+								</p:dialog>
+
+								<p:dialog id="deletedActive" widgetVar="deletedActive"
+									height="90" resizable="false"
+									style="background-color: white !important;"
+									styleClass="warning" header="#{msg['lbl.useractivation']}"
+									closable="false" showEffect="clip" hideEffect="clip">
+									<p:outputLabel value="#{employeeBean.errorMessage}"
+										style="text-align: center; font-size:15px !important;" />
+									<br />
+									<p:commandButton value="#{msg['lbl.yes']}" process="@this"
+										oncomplete="PF('deletedActive').hide();"
+										actionListener="#{employeeBean.activateDeletedRecord}"
+										update="form1" style="margin-left: 150px !important;"
+										onstart="process.show();" onsuccess="process.hide();" />
+									<p:commandButton value="#{msg['lbl.no']}"
+										actionListener="#{employeeBean.clickInactivate}"
+										onclick="PF('deletedActive').hide();" process="@this"
+										update="form1" style="margin-left:10px;"
+										onstart="process.show();" onsuccess="process.hide();" />
+								</p:dialog>
+
+								<p:dialog id="lockEmployee" widgetVar="lockEmployee" height="90"
+									resizable="false" style="background-color: white !important;"
+									styleClass="warning" header="#{msg['lbl.useractivation']}"
+									closable="false" showEffect="clip" hideEffect="clip">
+									<p:outputLabel value="#{employeeBean.errorMessage}"
+										style="text-align: center; font-size:15px !important;" />
+									<br />
+									<p:commandButton value="#{msg['lbl.yes']}" process="@this"
+										oncomplete="PF('lockEmployee').hide();"
+										actionListener="#{employeeBean.lockEmployee}" update="form1"
+										style="margin-left: 150px !important;"
+										onstart="process.show();" onsuccess="process.hide();" />
+									<p:commandButton value="#{msg['lbl.no']}"
+										actionListener="#{employeeBean.clickInactivate}"
+										onclick="PF('lockEmployee').hide();" process="@this"
+										update="form1" style="margin-left:10px;"
+										onstart="process.show();" onsuccess="process.hide();" />
+								</p:dialog>
+
+								<p:dialog id="unLockEmployee" widgetVar="unLockEmployee"
+									height="90" resizable="false"
+									style="background-color: white !important;"
+									styleClass="warning" header="#{msg['lbl.useractivation']}"
+									closable="false" showEffect="clip" hideEffect="clip">
+									<p:outputLabel value="#{employeeBean.errorMessage}"
+										style="text-align: center; font-size:15px !important;" />
+									<br />
+									<p:commandButton value="#{msg['lbl.yes']}" process="@this"
+										oncomplete="PF('unLockEmployee').hide();"
+										actionListener="#{employeeBean.unlockEmployee}" update="form1"
+										style="margin-left: 150px !important;"
+										onstart="process.show();" onsuccess="process.hide();" />
+									<p:commandButton value="#{msg['lbl.no']}"
+										actionListener="#{employeeBean.clickInactivate}"
+										onclick="PF('unLockEmployee').hide();" process="@this"
+										update="form1" style="margin-left:10px;"
+										onstart="process.show();" onsuccess="process.hide();" />
+								</p:dialog>
+
+								<p:confirmDialog id="sameUserEnableLockUnlock"
+									widgetVar="sameUserEnableLockUnlock" modal="true"
+									showHeader="true" closable="true" closeOnEscape="true"
+									style="background-color:#FFF !important; border:2px solid red !important;font-weight:bold;"
+									message="#{employeeBean.errorMessage}">
+								</p:confirmDialog>
+
+								<p:dialog id="softdelete" widgetVar="softdelete" width="400"
+									height="80" resizable="false"
+									style="background-color: white !important;"
+									styleClass="warning" header="In-activate user" closable="false"
+									showEffect="clip" hideEffect="clip">
+									<p:outputLabel value="#{msg['lbl.doyouwantinactivaterec']}"
+										style="text-align: center; font-size:15px !important;" />
+									<br />
+									<p:commandButton value="#{msg['lbl.yes']}" process="@this"
+										oncomplete="PF('softdelete').hide();"
+										actionListener="#{employeeBean.clickOnYes}" update="form1"
+										style="margin-left: 150px !important;" />
+									<p:commandButton value="#{msg['lbl.no']}"
+										actionListener="#{employeeBean.clickNo}"
+										onclick="PF('softdelete').hide();" immediate="true"
+										style="margin-left:10px;" />
+								</p:dialog>
+
+
+								<p:dialog id="dlgPasswordCheck" widgetVar="dlgPasswordCheck"
+									modal="true" showHeader="true" closable="true"
+									closeOnEscape="true" width="20%"
+									style="background-color:#FFF !important; border:2px solid red !important;">
+									<p:panel>
+										<p:outputLabel value="#{msg['lbl.passwordmismatched']}" />
+									</p:panel>
+								</p:dialog>
+
+								<p:dialog id="dlgPasswordSave" widgetVar="dlgPasswordSave"
+									modal="true" showHeader="true" closable="true"
+									closeOnEscape="true" width="20%"
+									style="background-color:#FFF !important; border:2px solid red !important;">
+									<p:panel>
+										<p:outputLabel
+											value="#{msg['lbl.passwordsuccessfullychanged']}" />
+									</p:panel>
+								</p:dialog>
+
+								<p:confirmDialog id="notabletodelet" widgetVar="notabletodelet"
+									modal="true" showHeader="true" closable="true"
+									closeOnEscape="true" width="40%"
+									style="background-color:#FFF !important; border:2px solid red !important;font-weight:bold;"
+									message="#{msg['lbl.sameusernotdleteactivate']}">
+
+								</p:confirmDialog>
+
+								<p:dialog modal="true" showHeader="true"
+									header="#{msg['lbl.pleasewait']}" widgetVar="process"
+									id="process" width="300" height="50" resizable="false"
+									draggable="false" closable="false"
+									style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+									<div style="text-align: center;">
+										<p:graphicImage value="../images/preloader.gif" />
+									</div>
+								</p:dialog>
+
+								<p:panel id="mainPanel" style="padding:10px!important;">
+
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{employeeBean.errorMessage}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{employeeBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="empAlreadyExist"
+										widgetVar="empAlreadyExist" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message=" Employee  already exists , Kindly go to search employee option for modification">
+									</p:confirmDialog>
+
+									<p:dialog id="dilg" widgetVar="dilg" width="30%" modal="true"
+										header="#{msg['lbl.newpassword']}"
+										style="background-color:#FFF !important;">
+										<p:panel id="forGotPassword">
+											<p:outputLabel value="#{msg['lbl.newpassword']} *" />
+											<p:password id="newPass" value="#{employeeBean.newPassword}"
+												feedback="true" required="true"
+												requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.newpassword']}">
+												<f:validator
+													validatorId="com.amg.exchange.validator.passwordValidation" />
+												<p:ajax update="msg" />
+												<p:message id="msg" for="newPass" />
+											</p:password>
+											<p:outputLabel value="#{msg['lbl.retypepassword']} *" />
+											<p:password id="retypePassword"
+												value="#{employeeBean.retypePassword}" required="true"
+												requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.retypepassword']}">
+												<p:ajax event="blur" update="msgRetype" />
+												<p:message id="msgRetype" for="retypePassword" />
+											</p:password>
+											<div class="clearfix"></div>
+											<p:spacer height="10px" />
+											<div class="clearfix"></div>
+											<p:commandButton value="#{msg['lbl.submit']}"
+												action="#{employeeBean.savePassword}"
+												update="forGotPassword" immediate="true" />
+										</p:panel>
+									</p:dialog>
+
+									<p:dialog id="wudilg" widgetVar="wudilg" width="30%"
+										modal="true" header="#{msg['lbl.newpassword']}"
+										style="background-color:#FFF !important;">
+										<p:panel id="forGotPassword1">
+											<p:outputLabel value="#{msg['lbl.newpassword']} *" />
+											<p:password id="newPass1" value="#{employeeBean.newPassword}"
+												feedback="true" required="true"
+												requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.newpassword']}">
+												<f:validator
+													validatorId="com.amg.exchange.validator.passwordValidation" />
+												<p:ajax update="msg1" />
+												<p:message id="msg1" for="newPass1" />
+											</p:password>
+											<p:outputLabel value="#{msg['lbl.retypepassword']} *" />
+											<p:password id="retypePassword1"
+												value="#{employeeBean.retypePassword}" required="true"
+												requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.retypepassword']}">
+												<p:ajax event="blur" update="msgRetype1" />
+												<p:message id="msgRetype1" for="retypePassword1" />
+											</p:password>
+											<div class="clearfix"></div>
+											<p:spacer height="10px" />
+											<div class="clearfix"></div>
+											<p:commandButton value="#{msg['lbl.submit']}"
+												action="#{employeeBean.wuSavePassword}"
+												update="forGotPassword" immediate="true" />
+										</p:panel>
+									</p:dialog>
+
+
+									<p:dialog id="showrecord" widgetVar="showrecord" width="1100px"
+										modal="true" height="600" resizable="false"
+										style="background-color: white !important;" showHeader="true"
+										header="Employee Details" styleClass="info" closable="false"
+										showEffect="clip" hideEffect="clip">
+										<p:spacer height="30px" />
+										<p:panel id="employeePaneld" styleClass="panel_border">
+											<!-- <p:panel id="diashowrecord"> -->
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel for="idd"
+														value="#{msg['lbl.employeeid']} * " />
+												</p:panel>
+
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="idd"
+														value="#{employeeBean.employeeNumber}" required="true"
+														readonly="true"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.employeeid']}">
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel for="named"
+														value="#{msg['lbl.employeename']} * " />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="named"
+														value="#{employeeBean.employeeName}" required="true"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.employeename']}">
+														<p:ajax update="msgnamed" event="blur" />
+														<p:message for="named" display="text" id="msgnamed" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix" />
+
+											<p:panel styleClass="left_col" id="userPanel">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel for="surnamed"
+														value="#{msg['lbl.username']} *" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="surnamed" value="#{employeeBean.userName}"
+														readonly="true">
+
+													</p:inputText>
+
+												</p:panel>
+											</p:panel>
+
+											<!-- <p:panel styleClass="left_col" rendered="#{employeeBean.booCheckSave}">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel value="#{msg['lbl.password']} *" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="passemp" value="#{employeeBean.password}" required="true" requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.password']}">
+											<p:ajax update="msgpassemp" event="blur" />
+												<p:message for="passemp" display="text" id="msgpassemp" />
+												</p:inputText>
+											</p:panel>
+										</p:panel> -->
+
+											<!-- <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel value="#{msg['lbl.area']} *" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="emplocd" value="#{employeeBean.location}" required="true" requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.location']}">
+											<p:ajax update="msgemplocd" event="blur" />
+												<p:message for="emplocd" display="text" id="msgemplocd" />
+												</p:inputText>
+											</p:panel>
+										</p:panel> -->
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="Employee #{msg['lbl.country']} *" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="uempcountry" display="text"
+														id="msguempcountry" />
+													<p:selectOneMenu id="uempcountry"
+														value="#{employeeBean.employeeCountryId}" filter="true"
+														filterMatchMode="contains" required="true"
+														requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.country']}">
+														<f:selectItem itemLabel="Select" itemValue="" />
+														<f:selectItems value="#{employeeBean.lstEmpCountry}"
+															var="c"
+															itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+															itemValue="#{c.fsCountryMaster.countryId}" />
+														<p:ajax event="change" update="branch,msgempcountry" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.employeetel']} " />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="empteld" value="#{employeeBean.telephone}"
+														required="false"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.employeetel']}"
+														maxlength="8">
+														<f:validator validatorId="allowOnlyNumber" />
+														<p:ajax update="msgempteld" event="blur" />
+														<p:message for="empteld" display="text" id="msgempteld" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.country']} *" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="countryd" display="text" id="msgcountryd" />
+													<p:selectOneMenu id="countryd"
+														value="#{employeeBean.countryId}" filter="true"
+														filterMatchMode="contains" required="true"
+														requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.country']}">
+														<!--f:selectItem itemLabel="Select" itemValue="" /-->
+														<f:selectItems value="#{employeeBean.lstCountry}" var="c"
+															itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+															itemValue="#{c.fsCountryMaster.countryId}" />
+														<p:ajax event="change" update="branchd,msgcountryd" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.company']} *" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="companyd" display="text" id="msgcompanyd" />
+													<p:selectOneMenu id="companyd"
+														value="#{employeeBean.companyId}" filter="true"
+														filterMatchMode="contains" required="true"
+														requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.country']}">
+														<f:selectItem itemLabel="Select" itemValue="" />
+														<f:selectItems value="#{employeeBean.listCompany}" var="c"
+															itemLabel="#{c.fsCompanyMaster.companyCode} - #{c.companyName}"
+															itemValue="#{c.fsCompanyMaster.companyId}" />
+														<p:ajax event="change" update="msgcompanyd" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.branch']} *" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="branchd" display="text" id="msgbranchd" />
+													<p:selectOneMenu id="branchd"
+														value="#{employeeBean.branchId}" filter="true"
+														filterMatchMode="contains" required="true"
+														requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.branch']}">
+														<f:selectItem itemLabel="Select" itemValue="" />
+														<f:selectItems value="#{employeeBean.lstBranch}" var="c"
+															itemLabel="#{c.branchId} - #{c.branchName}"
+															itemValue="#{c.countryBranchId}" />
+														<p:ajax event="change" update="msgbranchd"
+															onstart="process.show();" oncomplete="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix" />
+
+											<!-- listener="#{employeeBean.populateAreaDesc}" -->
+											<!-- 	<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.area']} " />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="emplocd" display="text" id="msgemplocd" />
+													<p:inputText id="emplocd" value="#{employeeBean.location}" readonly="true">
+													<p:ajax update="msgemplocd" />
+													</p:inputText>
+													<p:selectOneMenu id="emplocd"
+														value="#{employeeBean.location}" filter="true"
+														filterMatchMode="contains" required="true"
+														requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.area']}">
+														<f:selectItem itemLabel="Select" itemValue="" />
+														<f:selectItems value="#{employeeBean.listArea}" var="c"
+															itemLabel="#{c.fuDesc}" itemValue="#{c.fuDesc}" />
+														<p:ajax update="msgemplocd" /> 
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel> -->
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.role']} *" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="roled" display="text" id="msgroled" />
+													<p:selectOneMenu id="roled" value="#{employeeBean.roleId}"
+														filter="true" filterMatchMode="contains" required="true"
+														requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.role']}">
+														<f:selectItem itemLabel="Select" itemValue="" />
+														<f:selectItems value="#{employeeBean.lstRole}" var="c"
+															itemLabel="#{c.roleDesc}" itemValue="#{c.roleId}" />
+														<p:ajax update="msgroled" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.designation']} *" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="designd" display="text" id="msgdesignd" />
+													<p:selectOneMenu id="designd"
+														value="#{employeeBean.designation}" filter="true"
+														filterMatchMode="contains" required="true"
+														requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.designation']}">
+														<f:selectItem itemLabel="Select" itemValue="" />
+														<f:selectItems value="#{employeeBean.listDesignation}"
+															var="c" itemLabel="#{c.mgrTyp} - #{c.fuDesc}"
+															itemValue="#{c.mgrTyp}" />
+														<p:ajax update="msgdesignd" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix" />
+
+											<!-- 	<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.ipaddress']} *" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="ipd" value="#{employeeBean.ipAddress}"
+														required="true"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.ipaddress']}"
+														maxlength="16" validatorMessage="Please Enter Valid IP">
+														<f:validateRegex
+															pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+															for="ip" />
+														<p:ajax update="msgipd" event="blur" />
+														<p:message for="ipd" display="text" id="msgipd" />
+													</p:inputText>
+												</p:panel>
+											</p:panel> -->
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.ipaddress']}" />
+													<h:outputText value=" *" style="color:red !important;"
+														rendered="#{employeeBean.booipAddress}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="ipd" value="#{employeeBean.ipAddress}"
+														required="#{employeeBean.booipAddress}"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.ipaddress']}"
+														maxlength="16" validatorMessage="Please Enter Valid IP"
+														disabled="#{!employeeBean.booipAddress}">
+														<f:validateRegex
+															pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+															for="ip" />
+														<p:ajax update="msgipd" event="blur" />
+														<p:message for="ipd" display="text" id="msgipd" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.cashieropt']} *" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="cashoptd" display="text" id="msgcashoptd" />
+													<p:selectOneMenu id="cashoptd"
+														value="#{employeeBean.cashierOption}" filter="true"
+														filterMatchMode="contains" required="true"
+														requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.cashieropt']}">
+														<f:selectItem itemLabel="Select" itemValue="" />
+														<f:selectItem itemLabel="Y" itemValue="Y" />
+														<f:selectItem itemLabel="N" itemValue="N" />
+														<p:ajax update="msgcashoptd" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.allowfctrx']} *" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="fctrxd" display="text" id="msgfctrxd" />
+													<p:selectOneMenu id="fctrxd"
+														value="#{employeeBean.allowFCTransaction}" filter="true"
+														filterMatchMode="contains" required="true"
+														requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.allowfctrx']}">
+														<f:selectItem itemLabel="Select" itemValue="" />
+														<f:selectItem itemLabel="Y" itemValue="Y" />
+														<f:selectItem itemLabel="N" itemValue="N" />
+														<p:ajax update="msgfctrxd" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.usertype']} *" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="usertyped" display="text" id="msgusertyped" />
+													<p:selectOneMenu id="usertyped"
+														value="#{employeeBean.userType}" filter="true"
+														filterMatchMode="contains" required="true"
+														requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.cashieropt']}">
+														<!-- <f:selectItem itemLabel="Select" itemValue="" />
+														<f:selectItem itemLabel="B - Branch User" itemValue="B" />
+														<f:selectItem itemLabel="E - External User" itemValue="E" />
+														<f:selectItem itemLabel="K - KIOSK" itemValue="K" /> -->
+														<f:selectItems value="#{employeeBean.listViewUserType}"
+															var="c" itemLabel="#{c.userType} - #{c.userDesc}"
+															itemValue="#{c.userType}" />
+														<p:ajax update="msgusertyped" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel
+														value=" #{msg['lbl.allowcustactivatedeactive']} *" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="custact1" display="text" id="msgfctrxd2" />
+													<p:selectOneMenu id="custact1"
+														value="#{employeeBean.custActivateDeactivate}"
+														filter="true" filterMatchMode="contains" required="true"
+														requiredMessage="#{msg['lbl.pleaseallowtoactivate']}">
+														<f:selectItem itemLabel="Select" itemValue="" />
+														<f:selectItem itemLabel="Y" itemValue="Y" />
+														<f:selectItem itemLabel="N" itemValue="N" />
+														<p:ajax update="msgfctrxd2" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col" id="userPanelwud">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel for="wuuserd"
+														value="#{msg['lbl.wuusername']} " />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="wuuserd" display="text" id="msgwuuserd" />
+													<p:inputText id="wuuserd"
+														value="#{employeeBean.wuUserName}">
+														<f:validator validatorId="allowOnlyNumber" />
+														<p:ajax event="blur" update="msgwuuserd,wuuserd,error"
+															onstart="process.show();" oncomplete="process.hide();"
+															listener="#{employeeBean.checkWUUser}" />
+													</p:inputText>
+
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="Wu Terminal ID" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{employeeBean.wuTerminalId}"
+														id="wuTermEdit">
+														<p:ajax event="blur" update="wuTermEdit"></p:ajax>
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="Wu Foreign Terminal ID" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{employeeBean.wuForeignTerminalId}"
+														id="wuForTermEdit">
+														<p:ajax event="blur" update="wuForTermEdit"></p:ajax>
+														<!-- <p:ajax event="blur"
+															update="wuForTermEdit,userPanel,error"
+															listener="#{employeeBean.checkWUDetails}" /> -->
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="Wu NAID" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{employeeBean.wuNaid}" id="wuNaidEdit">
+														<p:ajax event="blur" update="wuNaidEdit"></p:ajax>
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="Wu Account ID" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{employeeBean.wuAccId}"
+														id="wuAccIdEdit">
+														<p:ajax event="blur" update="wuAccIdEdit"></p:ajax>
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.email']} " />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="emaild" value="#{employeeBean.email}"
+														required="false"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.email']}"
+														maxlength="34">
+														<f:validator
+															validatorId="com.amg.exchange.validator.EmailValidator" />
+														<p:ajax update="msgemaild" event="blur" />
+														<p:message for="emaild" display="text" id="msgemaild" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.status']}" />
+												</p:panel>
+												<p:panel rendered="#{employeeBean.statusEmp eq 'N'}">
+													<!-- <div style="text-align: center !important;">
+														<p:commandLink > -->
+													<p:graphicImage value="../images/inactive.jpg" width="25"
+														height="25" id="imgLock" />
+													<!-- <p:tooltip for="imgLock" value="IN-ACTIVE USER" style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;"/>
+													</p:commandLink>
+													</div> -->
+												</p:panel>
+												<p:panel rendered="#{employeeBean.statusEmp eq 'Y'}">
+													<!-- <div style="text-align: center !important;">
+														<p:commandLink > -->
+													<p:graphicImage value="../images/active.jpg" width="25"
+														height="25" id="imgUnlock" />
+													<!-- <p:tooltip for="imgUnlock" value="ACTIVE USER" style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;"/> -->
+													<!-- </p:commandLink>
+													</div> -->
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="Allocate Indicator" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="pallocateId" display="text"
+														id="msgpallocateId" />
+													<p:selectOneMenu id="pallocateId"
+														value="#{employeeBean.allocateInd}" filter="true"
+														filterMatchMode="contains" required="false"
+														requiredMessage="#{msg['lbl.pleaseallowtoactivate']}">
+														<f:selectItem itemLabel="Select" itemValue="" />
+														<f:selectItem itemLabel="Y" itemValue="Y" />
+														<f:selectItem itemLabel="N" itemValue="N" />
+														<p:ajax update="msgpallocateId" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+
+											<p:panel styleClass="panel_border8">
+												<h:panelGroup layout="block"
+													styleClass="content_level_Digitalsign">
+
+													<p:panel id="signatureSpecimenPaneld" styleClass="left_col"
+														style="background-color:none !important; padding:0px !important;">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText
+																value="&nbsp;&nbsp;#{msg['lbl.signaturespecimen']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+
+															<table width="100%" height="20%" border="0" color="#CCC">
+																<tr>
+																	<td style="border: 1px solid #CCC;"><h:graphicImage
+																			url="data:image/gif;base64,#{employeeBean.digitalSignature}"
+																			style=" width:100%; height:100px;" /></td>
+																</tr>
+															</table>
+														</p:panel>
+
+													</p:panel>
+												</h:panelGroup>
+											</p:panel>
+
+											<div class="clearfix" />
+
+											<p:panel styleClass="left_col" id="ucivilId">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel for="ucivilIdIn" value="Civil Id" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="ucivilIdIn"
+														value="#{employeeBean.civilId}" required="false"
+														requiredMessage="#{msg['lbl.validationprefix']} Civil Id">
+														<p:ajax />
+														<p:message for="ucivilIdIn" display="text"
+															id="msgucivilIdIn" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<!-- </p:panel> -->
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="20px" />
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+
+												<p:commandButton value="#{msg['lbl.update']}"
+													process="@this" action="#{employeeBean.updateEmployee}"
+													update=":form1:employeePaneld,:form1:datatablePanel,subPanel,error,nullPointerId"
+													style="margin-right:10px;" onstart="process.show();"
+													onsuccess="process.hide()" />
+												<p:commandButton value="#{msg['lbl.exit']}"
+													onsuccess="showrecord.hide();"
+													action="#{employeeBean.exit}" process="@this"
+													update="form1" />
+											</h:panelGroup>
+
+
+										</p:panel>
+
+
+									</p:dialog>
+
+									<p:panel id="subPanel" styleClass="panel_border"
+										style="padding-top:20px !important;">
+
+										<p:panel id="employeePanel">
+											<h2>
+												<h:outputText value="#{msg['lbl.empregandsearch']}" />
+											</h2>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel for="id" value="#{msg['lbl.employeeid']} * " />
+												</p:panel>
+
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="id" value="#{employeeBean.employeeNumber}"
+														required="true"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.employeeid']}"
+														converterMessage="Please Enter Numbers ">
+														<f:validator
+															validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+														<p:ajax event="blur"
+															listener="#{employeeBean.checkEcNoWithHR}"
+															update="msgid,mainPanel,error,name,deletedActive" />
+														<p:message for="id" display="text" id="msgid" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+
+											<p:panel styleClass="left_col" id="userPaneld">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel for="surname"
+														value="#{msg['lbl.username']} *" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="surname" value="#{employeeBean.userName}"
+														required="true" size="5"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.username']}">
+														<f:validator
+															validatorId="com.amg.exchange.validator.AlphaNumericValidator" />
+														<f:validateLength for="surname" minimum="5" />
+														<p:ajax event="blur"
+															listener="#{employeeBean.checkEcNoAndUserNameWithEmployee}"
+															update="msgid,mainPanel,error,name,deletedActive,msgsurname,surname" />
+														<p:message for="surname" display="text" id="msgsurname" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel for="name"
+														value="#{msg['lbl.employeename']} * " />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="name" value="#{employeeBean.employeeName}"
+														required="true"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.employeename']}">
+														<p:ajax update="msgname" event="blur" />
+														<p:message for="name" display="text" id="msgname" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="Employee #{msg['lbl.country']} *" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="empcountry" display="text"
+														id="msgempcountry" />
+													<p:selectOneMenu id="empcountry"
+														value="#{employeeBean.employeeCountryId}" filter="true"
+														filterMatchMode="contains" required="true"
+														requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.country']}">
+														<f:selectItem itemLabel="Select" itemValue="" />
+														<f:selectItems value="#{employeeBean.lstEmpCountry}"
+															var="c"
+															itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+															itemValue="#{c.fsCountryMaster.countryId}" />
+														<p:ajax event="change" update="branch,msgempcountry" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix" />
+
+											<p:panel styleClass="left_col"
+												rendered="#{employeeBean.booCheckSave}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.password']} *" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:password id="passemp" value="#{employeeBean.password}"
+														required="true"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.password']}">
+														<f:validator
+															validatorId="com.amg.exchange.validator.passwordValidation" />
+														<p:ajax update="msgpassemp" event="blur" />
+														<p:message for="passemp" display="text" id="msgpassemp" />
+													</p:password>
+												</p:panel>
+											</p:panel>
+
+											<!-- <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel value="#{msg['lbl.area']} *" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="emploc" value="#{employeeBean.location}" required="true" requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.area']}">
+											<p:ajax update="msgemploc" event="blur" />
+												<p:message for="emploc" display="text" id="msgemploc" />
+												</p:inputText>
+											</p:panel>
+										</p:panel> -->
+
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.employeetel']} " />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="emptel" value="#{employeeBean.telephone}"
+														required="fasle"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.employeetel']}"
+														maxlength="8">
+														<f:validator validatorId="allowOnlyNumber" />
+														<p:ajax update="msgemptel" event="blur" />
+														<p:message for="emptel" display="text" id="msgemptel" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.country']} *" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="country" display="text" id="msgcountry" />
+													<p:selectOneMenu id="country"
+														value="#{employeeBean.countryId}" filter="true"
+														filterMatchMode="contains" required="true"
+														requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.country']}">
+														<!--f:selectItem itemLabel="Select" itemValue="" /-->
+														<f:selectItems value="#{employeeBean.lstCountry}" var="c"
+															itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+															itemValue="#{c.fsCountryMaster.countryId}" />
+														<p:ajax event="change" update="branch,msgcountry" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.company']} *" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="company" display="text" id="msgcompany" />
+													<p:selectOneMenu id="company"
+														value="#{employeeBean.companyId}" filter="true"
+														filterMatchMode="contains" required="true"
+														requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.country']}">
+														<f:selectItem itemLabel="Select" itemValue="" />
+														<f:selectItems value="#{employeeBean.listCompany}" var="c"
+															itemLabel="#{c.fsCompanyMaster.companyCode} - #{c.companyName}"
+															itemValue="#{c.fsCompanyMaster.companyId}" />
+														<p:ajax event="change" update="msgcompany" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.branch']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="branch" display="text" id="msgbranch" />
+													<p:selectOneMenu id="branch"
+														value="#{employeeBean.branchId}" filter="true"
+														filterMatchMode="contains" required="false"
+														requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.branch']}">
+														<f:selectItem itemLabel="Select" itemValue="" />
+														<f:selectItems value="#{employeeBean.searchBranchList}"
+															var="c" itemLabel="#{c.branchId} - #{c.branchName}"
+															itemValue="#{c.countryBranchId}" />
+														<p:ajax event="change" update="msgbranch"
+															onstart="process.show();" oncomplete="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											<!-- listener="#{employeeBean.populateAreaDesc}" -->
+											<!-- <p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.area']} " />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="emploc" display="text" id="msgemploc" />
+													<p:inputText id="emploc" value="#{employeeBean.location}" readonly="true">
+													<p:ajax update="emploc"/>
+													</p:inputText>
+													<p:selectOneMenu id="emploc"
+														value="#{employeeBean.location}" filter="true"
+														filterMatchMode="contains" required="true"
+														requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.area']}">
+														<f:selectItem itemLabel="Select" itemValue="" />
+														<f:selectItems value="#{employeeBean.listArea}" var="c"
+															itemLabel="#{c.fuDesc}" itemValue="#{c.fuDesc}" />
+														<p:ajax update="msgemploc" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel> -->
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.role']} *" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="role" display="text" id="msgrole" />
+													<p:selectOneMenu id="role" value="#{employeeBean.roleId}"
+														filter="true" filterMatchMode="contains" required="true"
+														requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.role']}">
+														<f:selectItem itemLabel="Select" itemValue="" />
+														<f:selectItems value="#{employeeBean.lstRole}" var="c"
+															itemLabel="#{c.roleDesc}" itemValue="#{c.roleId}" />
+														<p:ajax update="msgrole" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.designation']} *" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="design" display="text" id="msgdesign" />
+													<p:selectOneMenu id="design"
+														value="#{employeeBean.designation}" filter="true"
+														filterMatchMode="contains" required="true"
+														requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.designation']}">
+														<f:selectItem itemLabel="Select" itemValue="" />
+														<f:selectItems value="#{employeeBean.listDesignation}"
+															var="c" itemLabel="#{c.mgrTyp} - #{c.fuDesc}"
+															itemValue="#{c.mgrTyp}" />
+														<p:ajax update="msgdesign" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<!-- <p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.ipaddress']} *" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="ip" value="#{employeeBean.ipAddress}"
+														required="true"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.ipaddress']}"
+														maxlength="16" validatorMessage="Please Enter Valid IP">
+														<f:validateRegex
+															pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+															for="ip" />
+														<p:ajax update="msgip" event="blur" />
+														<p:message for="ip" display="text" id="msgip" />
+													</p:inputText>
+												</p:panel>
+											</p:panel> -->
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.cashieropt']} *" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="cashopt" display="text" id="msgcashopt" />
+													<p:selectOneMenu id="cashopt"
+														value="#{employeeBean.cashierOption}" filter="true"
+														filterMatchMode="contains" required="true"
+														requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.cashieropt']}">
+														<f:selectItem itemLabel="Select" itemValue="" />
+														<f:selectItem itemLabel="Y" itemValue="Y" />
+														<f:selectItem itemLabel="N" itemValue="N" />
+														<p:ajax update="msgcashopt" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.allowfctrx']} *" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="fctrx" display="text" id="msgfctrx" />
+													<p:selectOneMenu id="fctrx"
+														value="#{employeeBean.allowFCTransaction}" filter="true"
+														filterMatchMode="contains" required="true"
+														requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.allowfctrx']}">
+														<f:selectItem itemLabel="Select" itemValue="" />
+														<f:selectItem itemLabel="Y" itemValue="Y" />
+														<f:selectItem itemLabel="N" itemValue="N" />
+														<p:ajax update="msgfctrx" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.usertype']} *" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="usertype" display="text" id="msgusertype" />
+													<p:selectOneMenu id="usertype"
+														value="#{employeeBean.userType}" filter="true"
+														filterMatchMode="contains" required="true"
+														requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.cashieropt']}">
+														<f:selectItem itemLabel="Select" itemValue="" />
+														<!-- <f:selectItem itemLabel="B - Branch User" itemValue="B" />
+														<f:selectItem itemLabel="E - External User" itemValue="E" />
+														<f:selectItem itemLabel="K - KIOSK" itemValue="K" /> -->
+														<f:selectItems value="#{employeeBean.listViewUserType}"
+															var="c" itemLabel="#{c.userType} - #{c.userDesc}"
+															itemValue="#{c.userType}" />
+														<p:ajax update="msgusertype" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel
+														value=" #{msg['lbl.allowcustactivatedeactive']} *" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="custact" display="text" id="msgfctrxd1" />
+													<p:selectOneMenu id="custact"
+														value="#{employeeBean.custActivateDeactivate}"
+														filter="true" filterMatchMode="contains" required="true"
+														requiredMessage="#{msg['lbl.pleaseallowtoactivate']}">
+														<f:selectItem itemLabel="Select" itemValue="" />
+														<f:selectItem itemLabel="Y" itemValue="Y" />
+														<f:selectItem itemLabel="N" itemValue="N" />
+														<p:ajax update="msgfctrxd1" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+
+											<p:panel styleClass="left_col" id="userPanelwu">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel for="wuuser"
+														value="#{msg['lbl.wuusername']} " />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="wuuser" value="#{employeeBean.wuUserName}"
+														required="false"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.wuusername']}">
+														<f:validator validatorId="allowOnlyNumber" />
+														<f:validateLength for="surname" minimum="5" />
+														<p:ajax event="blur"
+															update="wuuser,userPanelwu,msgwuuser,userPanel,error"
+															listener="#{employeeBean.checkWUUser}" />
+														<p:message for="wuuser" display="text" id="msgwuuser" />
+													</p:inputText>
+													<!-- <h:outputText id="availableStatuswu"
+											value="#{employeeBean.statusMsg}" /> -->
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col"
+												rendered="#{employeeBean.booCheckSave}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.wupassword']} " />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="passempwu"
+														value="#{employeeBean.wuPassword}" required="false"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.wupassword']}">
+														<f:validator
+															validatorId="com.amg.exchange.validator.passwordValidation" />
+														<p:ajax update="msgpassempwu" event="blur" />
+														<p:message for="passempwu" display="text"
+															id="msgpassempwu" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="right_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.email']} " />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="email" value="#{employeeBean.email}"
+														required="false"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.employeetel']}"
+														maxlength="34">
+														<f:validator
+															validatorId="com.amg.exchange.validator.EmailValidator" />
+														<p:ajax update="msgemail" event="blur" />
+														<p:message for="email" display="text" id="msgemail" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.ipaddress']}" />
+													<h:outputText value=" *" style="color:red !important;"
+														rendered="#{employeeBean.booipAddress}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="ip" value="#{employeeBean.ipAddress}"
+														required="#{employeeBean.booipAddress}"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.ipaddress']}"
+														maxlength="16" validatorMessage="Please Enter Valid IP"
+														disabled="#{!employeeBean.booipAddress}">
+														<f:validateRegex
+															pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+															for="ip" />
+														<p:ajax update="msgip" event="blur" />
+														<p:message for="ip" display="text" id="msgip" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="Allocate Indicator" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="allocateId" display="text"
+														id="msgallocateId" />
+													<p:selectOneMenu id="allocateId"
+														value="#{employeeBean.allocateInd}" filter="true"
+														filterMatchMode="contains" required="false"
+														requiredMessage="#{msg['lbl.pleaseallowtoactivate']}">
+														<f:selectItem itemLabel="Select" itemValue="" />
+														<f:selectItem itemLabel="Y" itemValue="Y" />
+														<f:selectItem itemLabel="N" itemValue="N" />
+														<p:ajax update="msgallocateId" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="Wu Terminal ID" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{employeeBean.wuTerminalId}"
+														id="wuTerm">
+														<p:ajax event="blur" update="wuTerm"></p:ajax>
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="Wu Foreign Terminal ID" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{employeeBean.wuForeignTerminalId}"
+														id="wuForTerm">
+														<p:ajax event="blur" update="wuForTerm"></p:ajax>
+														<!-- <p:ajax event="blur"
+															update="wuForTerm,userPanel,error"
+															listener="#{employeeBean.checkWUDetails}" /> -->
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="Wu NAID" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{employeeBean.wuNaid}" id="wuNaid">
+														<p:ajax event="blur" update="wuNaid"></p:ajax>
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="Wu Account ID" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{employeeBean.wuAccId}" id="wuAccId">
+														<p:ajax event="blur" update="wuAccId"></p:ajax>
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col" id="civilId">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel for="civilIdIn" value="Civil Id" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="civilIdIn" value="#{employeeBean.civilId}"
+														required="false"
+														requiredMessage="#{msg['lbl.validationprefix']} Civil Id">
+														<p:ajax />
+														<p:message for="civilIdIn" display="text"
+															id="msgcivilIdIn" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="panel_border8">
+												<h:panelGroup layout="block"
+													styleClass="content_level_Digitalsign">
+													<p:panel id="signaturePanel" styleClass="left_col"
+														style="background-color:none !important; padding:0px !important;">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.signature']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<table width="100%" height="20%" border="0" color="#CCC">
+																<tr>
+																	<td style="border: 1px solid #CCC;"><canvas
+																			id="cnv" width="300" height="100"></canvas></td>
+																</tr>
+															</table>
+															<p:commandButton id="s1" value="#{msg['lbl.sign']}"
+																onclick="javascript:onSign()" tabindex="73"
+																onstart="process.show();" onsuccess="process.hide();" />
+															<p:commandButton styleClass="btn-info" id="s2"
+																value="#{msg['lbl.clear']}"
+																onclick="javascript:onClear()" tabindex="74"
+																onstart="process.show();" onsuccess="process.hide();" />
+
+															<h:inputHidden id="digitalsign"
+																value="#{employeeBean.digitalSignature}">
+															</h:inputHidden>
+														</p:panel>
+													</p:panel>
+
+												</h:panelGroup>
+											</p:panel>
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton id="addEmployee"
+													process=":form1:employeePanel" value="#{msg['lbl.submit']}"
+													action="#{employeeBean.addEmployee}" update="mainPanel"
+													rendered="#{employeeBean.booCheckSave}"
+													style="margin-right:10px;" onstart="process.show();"
+													onsuccess="process.hide();"
+													onmouseover="javascript:onDone()">
+												</p:commandButton>
+
+												<!-- 	<p:commandButton value="#{msg['lbl.submit']}"
+													process=":form1:employeePanel"
+													action="#{employeeBean.updateEmployee}" update="mainPanel"
+													rendered="#{employeeBean.booCheckUpdate}"
+													style="margin-right:10px;" onstart="process.show();"
+													onsuccess="process.hide();"
+													onmouseover="javascript:onDone()" /> -->
+												<p:commandButton value="#{msg['lbl.clear']}"
+													action="#{employeeBean.clearAll}" update="mainPanel"
+													immediate="true" process="@this"></p:commandButton>
+											</h:panelGroup>
+
+										</p:panel>
+
+
+										<div class="clearfix"></div>
+										<p:spacer height="20px" />
+										<div class="clearfix"></div>
+
+										<p:panel id="searchPanel">
+
+											<h2>
+												<h:outputText value="#{msg['lbl.searchatleastone']}" />
+											</h2>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.employeeid']}" />
+												</p:panel>
+
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="idsearch"
+														value="#{employeeBean.semployeeNumber}">
+
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="right_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.employeename']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="names"
+														value="#{employeeBean.semployeeName}">
+
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.username']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="usernames"
+														value="#{employeeBean.suserName}">
+
+
+													</p:inputText>
+
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="right_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.branch']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+
+													<p:selectOneMenu id="branchs"
+														value="#{employeeBean.sbranchId}" filter="true"
+														filterMatchMode="contains">
+														<f:selectItem itemLabel="Select" itemValue="" />
+														<f:selectItems value="#{employeeBean.searchBranchList}"
+															var="c" itemLabel="#{c.branchId} - #{c.branchName}"
+															itemValue="#{c.countryBranchId}" />
+
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.role']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+
+													<p:selectOneMenu id="roles" value="#{employeeBean.sroleId}"
+														filter="true" filterMatchMode="contains">
+														<f:selectItem itemLabel="Select" itemValue="" />
+														<f:selectItems value="#{employeeBean.lstRole}" var="c"
+															itemLabel="#{c.roleDesc}" itemValue="#{c.roleId}" />
+
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="right_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.employeetel']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="sempTel"
+														value="#{employeeBean.stelephone}">
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+
+												<p:commandButton value="#{msg['lbl.search']}"
+													process=":form1:searchPanel"
+													action="#{employeeBean.searchEmployee}" update="mainPanel"
+													style="margin-right:10px;" onstart="process.show();"
+													onsuccess="process.hide();" />
+
+												<p:commandButton value="#{msg['lbl.clear']}" process="@this"
+													action="#{employeeBean.clearSerach}" update="mainPanel"
+													style="margin-right:10px;" />
+
+											</h:panelGroup>
+
+										</p:panel>
+
+										<p:panel id="datatablePanel"
+											rendered="#{employeeBean.renderEmployeeList}">
+											<p:dataTable id="employeeAddTable"
+												widgetVar="employeeAddTable" var="employee"
+												value="#{employeeBean.employeeList}" editable="true"
+												paginatorPosition="bottom" rows="15" paginator="true"
+												rowIndexVar="rowIndex"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="15,25,50" styleClass="mydatatableclass">
+
+												<p:column headerText="#{msg['lbl.sino']}" style="width:2%">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.employeeid']}"
+													style="width:6%" sortBy="#{employee.employeeNumber}">
+													<p:commandLink value="#{employee.employeeNumber}"
+														style="color:blue !important; text-decoration:underline !important;"
+														action="#{employeeBean.employeeUpdate(employee)}"
+														process="@this" update=":form1:mainPanel" />
+												</p:column>
+
+												<p:column headerText="employeeName" style="width:20%"
+													sortBy="#{employee.employeeName}">
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.employeename']}" />
+													</f:facet>
+													<h:outputLabel value="#{employee.employeeName}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column style="width:8%" sortBy="#{employee.userName}">
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.username']} " />
+													</f:facet>
+													<h:outputLabel value="#{employee.userName}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column style="width:10%">
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.branch']}" />
+													</f:facet>
+													<h:outputLabel
+														value="#{employee.fsCountryBranch.branchName}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column style="width:10%">
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.role']}" />
+													</f:facet>
+													<h:outputLabel value="#{employee.fsRoleMaster.roleDesc}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+												
+												<p:column style="width:10%">
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.employeetel']}" />
+													</f:facet>
+													<h:outputLabel value="#{employee.telephoneNumber}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.status']}"
+													sortBy="#{employee.status}" style="width:5%">
+
+													<p:panel rendered="#{employee.isActive eq 'N'}">
+														<div style="text-align: center !important;">
+															<p:commandLink
+																action="#{employeeBean.populateInactiveUser(employee)}"
+																process="@this" update=":form1:datatablePanel">
+																<p:graphicImage value="../images/inactive.jpg"
+																	width="25" height="25" id="imgLock" />
+																<p:tooltip for="imgLock" value="IN-ACTIVE USER"
+																	style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" />
+															</p:commandLink>
+														</div>
+													</p:panel>
+													<p:panel rendered="#{employee.isActive eq 'Y'}">
+														<div style="text-align: center !important;">
+															<p:commandLink
+																action="#{employeeBean.deleteEmployee(employee)}"
+																process="@this" update=":form1:datatablePanel">
+																<p:graphicImage value="../images/active.jpg" width="25"
+																	height="25" id="imgUnlock" />
+																<p:tooltip for="imgUnlock" value="ACTIVE USER"
+																	style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" />
+															</p:commandLink>
+														</div>
+													</p:panel>
+
+												</p:column>
+
+												<p:column style="width:9%">
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.password']}" />
+													</f:facet>
+													<p:commandLink value="#{msg['lbl.changepassword']}"
+														style="color:blue !important; text-decoration:underline !important;"
+														action="#{employeeBean.forgotPassword(employee)}"
+														process="@this" />
+												</p:column>
+
+												<p:column style="width:9%">
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.wupassword']}" />
+													</f:facet>
+													<p:commandLink value="#{msg['lbl.changepassword']}"
+														style="color:blue !important; text-decoration:underline !important;"
+														action="#{employeeBean.westernUnionforgotPassword(employee)}"
+														process="@this" />
+												</p:column>
+
+												<p:column headerText="LOCK / UNLOCK"
+													sortBy="#{employee.lockDate}" style="width:5%"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+
+													<p:panel rendered="#{employee.lockDate == null}">
+														<div style="text-align: center !important;">
+															<p:commandLink
+																action="#{employeeBean.populateLockEmployee(employee)}"
+																process="@this"
+																update=":form1:datatablePanel,:form1:lockEmployee,:form1:sameUserEnableLockUnlock">
+																<p:graphicImage value="../images/unlock.jpg" width="25"
+																	height="25" id="imgLock1" />
+																<p:tooltip for="imgLock1" value="Lock"
+																	style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" />
+															</p:commandLink>
+														</div>
+													</p:panel>
+
+													<p:panel
+														rendered="#{employee.lockDate != null &amp;&amp; employee.unLockDate != null}">
+														<div style="text-align: center !important;">
+															<p:commandLink
+																action="#{employeeBean.populateLockEmployee(employee)}"
+																process="@this"
+																update=":form1:datatablePanel,:form1:lockEmployee,:form1:sameUserEnableLockUnlock">
+																<p:graphicImage value="../images/unlock.jpg" width="25"
+																	height="25" id="imgLock2" />
+																<p:tooltip for="imgLock2" value="Lock"
+																	style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" />
+															</p:commandLink>
+														</div>
+													</p:panel>
+
+													<p:panel
+														rendered="#{employee.lockDate != null &amp;&amp; employee.unLockDate == null}">
+														<div style="text-align: center !important;">
+															<p:commandLink
+																action="#{employeeBean.populateUnlockEmployee(employee)}"
+																process="@this"
+																update=":form1:datatablePanel,:form1:unLockEmployee,:form1:sameUserEnableLockUnlock">
+																<p:graphicImage value="../images/lock.jpg" width="25"
+																	height="25" id="imgUnlock1" />
+																<p:tooltip for="imgUnlock1" value="Un Lock"
+																	style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" />
+															</p:commandLink>
+														</div>
+													</p:panel>
+
+												</p:column>
+
+											</p:dataTable>
+										</p:panel>
+									</p:panel>
+								</p:panel>
+							</h:form>
+
+						</h:panelGroup>
+					</h:panelGroup>
+					<div class="clearfix"></div></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+		<a id="goTop" />
+	</f:view>
+</h:body>
+
+
+</html>

@@ -1,0 +1,1000 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<script>
+		function clearForm() {
+
+			var dat1 = document.getElementById("form1:currid");
+			dat1.value = '';
+			var dat2 = document.getElementById("form1:currencyName");
+			dat2.value = '';
+			var dat3 = document.getElementById("form1:quotenameid");
+			dat3.value = '';
+			var dat4 = document.getElementById("form1:currencydescid");
+			dat4.value = '';
+			var dat5 = document.getElementById("form1:cashMinRateid");
+			dat5.value = '';
+			var dat6 = document.getElementById("form1:cashMaxRate");
+			dat6.value = '';
+			var dat7 = document.getElementById("form1:cbkPrintIndid");
+			dat7.value = '';
+			var dat8 = document.getElementById("form1:cbkSortIndid");
+			dat8.value = '';
+			var dat9 = document.getElementById("form1:countryid");
+			dat9.value = '';
+			var dat10 = document.getElementById("form1:decimalNameid");
+			dat10.value = '';
+			var dat11 = document.getElementById("form1:decimalnameid");
+			dat11.value = '';
+			var dat12 = document.getElementById("form1:arabicQuoteNameid");
+			dat12.value = '';
+			var dat13 = document.getElementById("form1:fimsCurrencyCodeid");
+			dat13.value = '';
+			var dat14 = document.getElementById("form1:arabicCurrencyNameid");
+			dat14.value = '';
+			var dat15 = document.getElementById("form1:fundMinRateid");
+			dat15.value = '';
+			var dat16 = document.getElementById("form1:fundMaxRateid");
+			dat16.value = '';
+			var dat17 = document.getElementById("form1:isoCurrencyCodeid");
+			dat17.value = '';
+			var dat18 = document.getElementById("form1:swiftCurrencyid");
+			dat18.value = '';
+			var dat19 = document.getElementById("form1:onlineIndid");
+			dat19.value = '';
+			var dat20 = document.getElementById("form1:decimalNumberid");
+			dat20.value = '';
+			//alert("HELLO"+dat.value);
+
+		}
+
+		history.pushState(null, null, 'currencydetailsmannual.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'currencydetailsmannual.xhtml');
+		});
+	</script>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+</h:head>
+<p:dialog id="complete" widgetVar="complete" width="270" height="70"
+	showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} " />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{currencyMasterBean.clickOnOKSave}" process="@this" />
+</p:dialog>
+<p:confirmDialog id="succdesc" widgetVar="succdesc" width="400"
+	height="17" resizable="false"
+	style=" border:2px solid red  !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.currencyCodeAlreadyExisted']}"
+	header="#{msg['lbl.warningDailog']}">
+</p:confirmDialog>
+
+<p:confirmDialog id="remarksmandatory" widgetVar="remarksmandatory"
+	width="400" height="17" resizable="false"
+	style=" border:2px solid red  !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="Please Enter Remarks"
+	header="#{msg['lbl.warningDailog']}">
+</p:confirmDialog>
+
+
+<p:confirmDialog id="currencyothinfo" widgetVar="currencyothinfo"
+	width="400" height="17" resizable="false"
+	style=" border:2px solid red  !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.datanotavailableinotherinfo']}"
+	header="#{msg['lbl.warningDailog']}">
+</p:confirmDialog>
+
+<p:dialog id="couldnot" widgetVar="couldnot" width="400" height="80"
+	resizable="false" style="background-color: white !important;"
+	styleClass="warning" header="#{msg['lbl.warningDailog']}"
+	closable="false" showEffect="clip" hideEffect="clip">
+	<p:outputLabel value="#{msg['lbl.plsApproveRecord']}"
+		style="text-align: center; font-size:15px !important;" />
+	<br />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		onclick="PF('couldnot').hide();" immediate="true"
+		style="margin-left: 150px !important;" />
+</p:dialog>
+
+<p:confirmDialog id="deact" widgetVar="deact" width="450" height="17"
+	resizable="false"
+	style=" border:2px solid green !important; padding:0px !important;  color:green !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.recrdDeactivatedSuccessFully']}"
+	header="#{msg['lbl.deactivatedMessage']}">
+</p:confirmDialog>
+<p:confirmDialog id="act" widgetVar="act" width="450" height="17"
+	resizable="false"
+	style=" border:2px solid green !important; padding:0px !important;  color:green !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.recrdActivatedSuccessfully']}"
+	header="#{msg['lbl.activatedMessage']}">
+</p:confirmDialog>
+<p:confirmDialog id="dataNotFund" widgetVar="dataNotFund" width="450"
+	height="17" resizable="false"
+	style=" border:2px solid red !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.noRecordFound']}"
+	header="#{msg['lbl.warningDailog']}">
+</p:confirmDialog>
+<p:confirmDialog id="exist" widgetVar="exist" width="400" height="17"
+	resizable="false"
+	style=" border:2px solid green !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.noRecordFound']}">
+</p:confirmDialog>
+<p:confirmDialog id="succ" widgetVar="succ" width="400" height="17"
+	resizable="false"
+	style=" border:2px solid green !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.thisrecordalreadyexisted']}">
+</p:confirmDialog>
+<p:dialog id="permanentDelete" widgetVar="permanentDelete" width="300"
+	height="70" showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.douWantDeleteRecordPermentely']}" />
+	<p:spacer height="10px" />
+	<p:panel>
+		<p:commandButton value="#{msg['lbl.ok']}" style="margin-right:10px; "
+			actionListener="#{currencyMasterBean.confirmPermanentDelete}"
+			process="@this" oncomplete="PF('permanentDelete').hide();"
+			update=":form1" />
+		<p:commandButton value="#{msg['lbl.cancel']}"
+			onclick="PF('permanentDelete').hide();" immediate="true" />
+	</p:panel>
+</p:dialog>
+
+
+<h:body>
+
+	<f:view>
+
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form1">
+
+
+								<p:dialog modal="true" showHeader="true"
+									header="#{msg['lbl.pleasewait']}" widgetVar="process"
+									id="process" width="300" height="50" resizable="false"
+									draggable="false" closable="false"
+									style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+									<div style="text-align: center;">
+										<p:graphicImage value="../images/preloader.gif" />
+									</div>
+								</p:dialog>
+								<!--  Remarks Dialog -->
+
+								<!-- dilaog remark -->
+
+								<h1>
+									<h:outputText value="#{msg['lbl.currencymaster']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+
+									<h2>
+										<h:outputText value="#{msg['lbl.currencymaster']}" />
+									</h2>
+									<p:confirmDialog id="errormsg" widgetVar="errormsg" width="400"
+										height="65" resizable="false"
+										style=" border:2px solid red  !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{currencyMasterBean.errorMessage}"
+										header="#{msg['lbl.warningDailog']}">
+									</p:confirmDialog>
+									<p:confirmDialog id="fimscode" widgetVar="fimscode"
+										resizable="false"
+										style=" border:2px solid red  !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{msg['lbl.fimscodenotexisted']}"
+										header="#{msg['lbl.warningDailog']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{currencyMasterBean.errorMessage}">
+									</p:confirmDialog>
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{currencyMasterBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+
+
+									<p:dialog id="remarks" widgetVar="remarks" width="550"
+										height="205" showHeader="false" resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:panel styleClass="shadow">
+											<p:panel>
+												<h:outputText value="#{msg['lbl.approvedDate']}" />
+												<h:outputText value="#{currencyMasterBean.approvedDate}" />&nbsp;&nbsp;&nbsp;
+                                        <h:outputText
+													value="#{msg['lbl.approvedBy']}" />
+												<h:outputText value="#{currencyMasterBean.approvedBy}" />
+											</p:panel>
+											<div class="clearfix" />
+											<hr></hr>
+											<p:panel>
+												<h:outputText value="#{msg['lbl.enterremarks']}" />
+											</p:panel>
+											<p:panel>
+												<h:inputTextarea value="#{currencyMasterBean.remarks}"
+													rows="5" cols="50">
+													<p:ajax />
+												</h:inputTextarea>
+											</p:panel>
+											<p:spacer width="15px" />
+											<div class="clearfix" />
+											<h:panelGroup styleClass="shadow">
+												<div class="clearfix" />
+												<p:commandButton value="#{msg['lbl.ok']}"
+													actionListener="#{currencyMasterBean.remarkSelectedRecord}"
+													process="@this" update=":form1" immediate="true" />
+												<p:commandButton value="#{msg['lbl.cancel']}"
+													actionListener="#{currencyMasterBean.cancelRemarks}"
+													process="@this" />
+												<!-- onclick="PF('remarks').hide();" -->
+											</h:panelGroup>
+										</p:panel>
+									</p:dialog>
+									<p:panel>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currencycode']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgcurrencyCode" for="currid" display="text" />
+												<!--  - <p:inputText id="currid"
+													value="#{currencyMasterBean.currencyCode}" required="true"
+													requiredMessage="Please Enter Currency Code" maxlength="3">
+													<p:ajax event="blur" update="msgcurrencyCode,mainPanel"
+														listener="#{currencyMasterBean.populateValues}" /> 
+ 												  </p:inputText> -->
+												<p:autoComplete id="currid"
+													value="#{currencyMasterBean.currencyCode}"
+													completeMethod="#{currencyMasterBean.autoCompleteCurrencyCode}"
+													required="true" scrollHeight="350" maxlength="3"
+													requiredMessage="Please Enter Currency Code"
+													itemValue="#{currencyMasterBean.currencyList.currencyCode}"
+													onchange="clearForm(this);"
+													onkeyup="this.value=this.value.toUpperCase()">
+													<p:ajax update="updatePanel,msgcurrencyCode "
+														process="@this" event="itemSelect"
+														listener="#{currencyMasterBean.populateValues}"
+														onstart="process.show();" onsuccess="process.hide();" />
+													<p:ajax update="updatePanel,msgcurrencyCode " event="blur"
+														process="@this"
+														listener="#{currencyMasterBean.populateValues}"
+														onstart="process.show();" onsuccess="process.hide();" />
+													<p:ajax update="updatePanel,msgcurrencyCode "
+														event="change"
+														listener="#{currencyMasterBean.populateValues}"
+														process="@this" onstart="process.show();"
+														onsuccess="process.hide();" />
+
+												</p:autoComplete>
+
+											</p:panel>
+										</p:panel>
+										<p:panel id="updatePanel">
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.currencyName']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcurrencyName" for="currencyName"
+														display="text" />
+													<p:inputText id="currencyName"
+														value="#{currencyMasterBean.currencyName}" required="true"
+														requiredMessage="Please Enter Currency Name"
+														maxlength="60">
+														<p:ajax event="blur" update="msgcurrencyName" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.quoteName']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgquotename" for="quotenameid"
+														display="text" />
+													<p:inputText id="quotenameid"
+														value="#{currencyMasterBean.quoteName}" required="true"
+														requiredMessage="Please Enter Quote Name" maxlength="5">
+														<p:ajax event="blur" update="msgquotename" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.arabicQuoteName']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgarabicQuoteName" for="arabicQuoteNameid"
+														display="text" />
+													<p:inputText id="arabicQuoteNameid"
+														value="#{currencyMasterBean.arabicQuoteName}"
+														required="true"
+														requiredMessage="Please Enter Arabic Quote Name"
+														maxlength="100"
+														style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;"
+														dir="RTL">
+														<p:ajax update="msgarabicQuoteName" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.country']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgCountry" for="countryid" display="text" />
+													<p:selectOneMenu id="countryid"
+														value="#{currencyMasterBean.currencyCountryId}"
+														filter="true" required="true" filterMatchMode="startsWith"
+														requiredMessage="#{msg['lbl.pleaseSelectBankCountry']}">
+														<f:selectItem itemLabel="#{msg['lbl.selectcountry']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{currencyMasterBean.bankCountryList}" var="c"
+															itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+															itemValue="#{c.fsCountryMaster.countryId}" />
+														<p:ajax event="change" update="msgCountry"></p:ajax>
+														<!-- <p:ajax event="change"
+														listener="#{currencyMasterBean.getBankBasedOnCountry}"
+														update="msgCountry,bankPanel" /> -->
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											<!-- <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currencydecimal']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgcurrencydesc" for="currencydescid"
+													display="text" />
+												<p:inputText id="currencydescid"
+													value="#{currencyMasterBean.currencyDesc}" required="true"
+													requiredMessage="Please Enter Currency Decimal" maxlength="2" converterMessage="Please Enter 2 Digit Numbers only">
+													<f:validator validatorId="allowOnlyNumber" />
+													<p:ajax event="blur" update="msgcurrencydesc" />
+												</p:inputText>
+											</p:panel>
+										</p:panel> -->
+
+
+
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.cbkprintindicator']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<!-- <p:panel styleClass="inner_right_col">
+												<p:message id="msgcbkPrintInd" for="cbkPrintIndid"
+													display="text" />
+												<p:inputText id="cbkPrintIndid"
+													value="#{currencyMasterBean.cbkPrintInd}" required="true"
+													requiredMessage="Please Enter CBK Print Indicator"
+													maxlength="1">
+													<p:ajax event="blur" update="msgcbkPrintInd" />
+												</p:inputText>
+											</p:panel> -->
+
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcbkPrintInd" for="cbkPrintIndid"
+														display="text" />
+													<p:selectOneMenu id="cbkPrintIndid"
+														value="#{currencyMasterBean.cbkPrintInd}" required="true"
+														requiredMessage="Please Select CBK Print Indicator"
+														filter="startWith">
+														<f:selectItem itemLabel="#{msg['lbl.selectcbkindicator']}" />
+														<f:selectItem itemLabel="#{msg['lbl.I']}" itemValue="I" />
+														<f:selectItem itemLabel="#{msg['lbl.C']}" itemValue="C" />
+														<p:ajax event="change" update="msgcbkPrintInd" />
+													</p:selectOneMenu>
+												</p:panel>
+
+											</p:panel>
+
+											<div class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.decimalName']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdecimalname" for="decimalnameid"
+														display="text" />
+													<p:inputText id="decimalnameid"
+														value="#{currencyMasterBean.decimalName}" required="true"
+														requiredMessage="Please Enter Decimal Name" maxlength="10">
+														<p:ajax update="msgdecimalname" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+
+
+
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.arabicDecimalName']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdecimalName" for="decimalNameid"
+														display="text" />
+													<p:inputText id="decimalNameid"
+														value="#{currencyMasterBean.arabicDecimalName}"
+														required="true"
+														requiredMessage="Please Enter Arabic Decimal Name"
+														maxlength="20"
+														style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;"
+														dir="RTL">
+														<p:ajax event="blur" update="msgdecimalName" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.cbkshortindicator']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcbkSortInd" for="cbkSortIndid"
+														display="text" />
+													<p:inputText id="cbkSortIndid"
+														value="#{currencyMasterBean.cbkSortInd}" required="true"
+														requiredMessage="Please Enter CBK Sort Indicator"
+														maxlength="4">
+														<p:ajax event="blur" update="msgcbkSortInd" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.arabicCurrencyName']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgarabicCurrencyName"
+														for="arabicCurrencyNameid" display="text" />
+													<p:inputText id="arabicCurrencyNameid"
+														value="#{currencyMasterBean.arabicCurrencyName}"
+														required="true"
+														requiredMessage="Please EnterArabic Currency Name"
+														maxlength="120"
+														style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;"
+														dir="RTL">
+														<p:ajax event="blur" update="msgarabicCurrencyName" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+
+											<div class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.fimsCurrencyCode']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgfimsCurrencyCode"
+														for="fimsCurrencyCodeid" display="text" />
+													<p:inputText id="fimsCurrencyCodeid"
+														value="#{currencyMasterBean.fimsCurrencyCode}"
+														onkeyup="this.value=this.value.toUpperCase()"
+														required="true"
+														requiredMessage="Please Enter FIMS Currency Code"
+														maxlength="3">
+														<p:ajax update="msgfimsCurrencyCode,fimsCurrencyCodeid,error"/>
+														<!-- <p:ajax event="blur"
+															update="msgfimsCurrencyCode,fimsCurrencyCodeid,error"
+															listener="#{currencyMasterBean.fimsCurrencyCode}" /> -->
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.isoCurrencyCode']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgisoCurrencyCode" for="isoCurrencyCodeid"
+														display="text" />
+													<p:inputText id="isoCurrencyCodeid"
+														value="#{currencyMasterBean.isoCurrencyCode}"
+														required="true"
+														requiredMessage="Please EnterISO Currency Code"
+														maxlength="6">
+														<p:ajax event="blur" update="msgisoCurrencyCode" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.swiftCurrency']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgswiftCurrency" for="swiftCurrencyid"
+														display="text" />
+													<p:inputText id="swiftCurrencyid"
+														value="#{currencyMasterBean.swiftCurrency}"
+														required="true"
+														requiredMessage="Please Enter SWIFT Currency"
+														maxlength="3">
+														<p:ajax event="blur" update="msgswiftCurrency" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.onlineIndicator']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<!-- <p:panel styleClass="inner_right_col">
+												<p:message id="msgonlineInd" for="onlineIndid"
+													display="text" />
+												<p:inputText id="onlineIndid"
+													value="#{currencyMasterBean.onlineInd}" required="true"
+													requiredMessage="Please Enter Online Indicator"
+													maxlength="1">
+													<p:ajax event="blur" update="msgonlineInd" />
+												</p:inputText>
+											</p:panel> -->
+
+
+
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgonlineInd" for="onlineIndid"
+														display="text" />
+													<p:selectOneMenu id="onlineIndid"
+														value="#{currencyMasterBean.onlineInd}" required="true"
+														requiredMessage="Please Select #{msg['lbl.onlineIndicator']}"
+														filter="startWith">
+														<f:selectItem
+															itemLabel="#{msg['lbl.selectonlineindicator']}" />
+														<f:selectItem itemLabel="#{msg['lbl.yes']}" itemValue="Y" />
+														<f:selectItem itemLabel="#{msg['lbl.no']}" itemValue="N" />
+														<p:ajax event="change" update="msgcbkPrintInd" />
+													</p:selectOneMenu>
+												</p:panel>
+
+											</p:panel>
+											<div class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.fundminrate']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgfundMinRate" for="fundMinRateid"
+														display="text" />
+													<p:inputText id="fundMinRateid"
+														value="#{currencyMasterBean.fundMinRate}" required="true"
+														requiredMessage="Please EnterFund Min Rate" maxlength="20"
+														validatorMessage="Please Enter positive values">
+														<f:validator
+															validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+														<p:ajax event="blur" update="msgfundMinRate" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.fundmaxrate']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgfundMaxRate" for="fundMaxRateid"
+														display="text" />
+													<p:inputText id="fundMaxRateid"
+														value="#{currencyMasterBean.fundMaxRate}" required="true"
+														requiredMessage="Please Enter Fund Max Rate"
+														maxlength="20"
+														validator="#{currencyMasterBean.comparingAmount}">
+														<p:ajax event="blur" update="msgfundMaxRate" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.cashminrate']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcashMinRate" for="cashMinRateid"
+														display="text" />
+													<p:inputText id="cashMinRateid"
+														value="#{currencyMasterBean.cashMinRate}" required="true"
+														requiredMessage="Please Enter Cash Min Rate"
+														maxlength="20"
+														validatorMessage="Please enter positive values">
+														<f:validator
+															validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+														<p:ajax event="blur" update="msgcashMinRate" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value=" #{msg['lbl.cashmaxrate']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcashMaxRate" for="cashMaxRate"
+														display="text" />
+													<p:inputText id="cashMaxRate"
+														value="#{currencyMasterBean.cashMaxRate}" required="true"
+														requiredMessage="Please Enter Cash Max Rate"
+														maxlength="20"
+														validator="#{currencyMasterBean.comparingCashRate}">
+														<p:ajax event="blur" update="msgcashMaxRate" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix" />
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.currencydigits']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdecimalNumber" for="decimalNumberid"
+														display="text" />
+													<p:inputText id="decimalNumberid"
+														value="#{currencyMasterBean.decimalNumber}"
+														required="true"
+														requiredMessage="Please Enter Decimal Number"
+														maxlength="1">
+														<p:ajax event="blur" update="msgdecimalNumber" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.highValue']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msghighValue" for="highvalueid"
+														display="text" />
+													<p:inputText id="highvalueid"
+														value="#{currencyMasterBean.highValue}" required="true"
+														requiredMessage="Please Enter High Value">
+														<p:ajax event="blur" update="msghighValue" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.averagerate']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgaveragerate" for="averagerateid"
+														display="text" />
+													<p:inputText id="averagerateid"
+														value="#{currencyMasterBean.averageRate}" required="true"
+														requiredMessage="Please  Enter Average Rate">
+														<p:ajax event="blur" update="msgaveragerate" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Allow FC PURCHASE" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgallowFCP" for="allowFCP" display="text" />
+													<p:selectOneMenu id="allowFCP"
+														value="#{currencyMasterBean.allowFCPurchase}"
+														required="true" requiredMessage="Please Select Purchase"
+														filter="startWith">
+														<f:selectItem
+															itemLabel="#{msg['lbl.selectonlineindicator']}" />
+														<f:selectItem itemLabel="#{msg['lbl.yes']}" itemValue="Y" />
+														<f:selectItem itemLabel="#{msg['lbl.no']}" itemValue="N" />
+														<p:ajax event="change" update="msgallowFCP" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Allow FC SALE" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgallowFCS" for="allowFCS" display="text" />
+													<p:selectOneMenu id="allowFCS"
+														value="#{currencyMasterBean.allowFCSale}" required="true"
+														requiredMessage="Please Select Sale" filter="startWith">
+														<f:selectItem
+															itemLabel="#{msg['lbl.selectonlineindicator']}" />
+														<f:selectItem itemLabel="#{msg['lbl.yes']}" itemValue="Y" />
+														<f:selectItem itemLabel="#{msg['lbl.no']}" itemValue="N" />
+														<p:ajax event="change" update="msgallowFCS" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.placeOrderLmt']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="placeOrderLmt" value="#{currencyMasterBean.placeOrderLimit}">
+														<p:ajax event="blur" update="placeOrderLmt" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+
+
+										</p:panel>
+
+
+										<div class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.add']}"
+												action="#{currencyMasterBean.duplicateCheck}"
+												onstart="process.show();" onsuccess="process.hide();"
+												update=":form1" />
+											<p:commandButton value="#{msg['lbl.view']}"
+												action="#{currencyMasterBean.viewAllRecordsFromDB}"
+												immediate="true" update=":form1" process="@this"
+												onstart="process.show();" onsuccess="process.hide();" />
+											<p:commandButton value="#{msg['lbl.clear']}"
+												action="#{currencyMasterBean.clearAll}"
+												update="form1,updatePanel" process="@this" immediate="true"
+												disabled="#{currencyMasterBean.booHideClear}" />
+										</h:panelGroup>
+
+
+										<p:panel styleClass="left_col"
+											rendered="#{currencyMasterBean.booSeach}">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Search(Currency Code)"
+													style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+
+												<p:inputText id="searchid"
+													value="#{currencyMasterBean.searchValue}"
+													requiredMessage="Please Enter Decimal Number">
+													<p:ajax event="blur"
+														listener="#{currencyMasterBean.searchMethod}"
+														update="mainPanel" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										<div class="clearfix" />
+
+										<p:dataTable var="c" value="#{currencyMasterBean.listDT}"
+											styleClass="mydatatableclass" rows="10" paginator="true"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="5,10,15" editable="true" id="datatable"
+											emptyMessage="#{msg['lbl.norecordfound']}"
+											rowIndexVar="rowIndex" paginatorPosition="bottom"
+											rendered="#{currencyMasterBean.booRenderDatatable}">
+
+											<p:column headerText="#{msg['lbl.sino']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.currencycode']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+												id="curcode">
+												<h:outputText value="#{c.currencyCode}" />
+
+											</p:column>
+											<p:column headerText="#{msg['lbl.currencyName']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.currencyName}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.arabicCurrencyName']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.arabicCurrencyName}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.quoteName']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.quoteName}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.arabicQuoteName']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.arabicQuoteName}" />
+											</p:column>
+
+
+											<p:column headerText="#{msg['lbl.swiftCurrency']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.swiftCurrency}" />
+											</p:column>
+
+
+											<!-- 	<p:column headerText="#{msg['lbl.currencyDesc']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.currencyDesc}" />
+											</p:column> -->
+											<p:column headerText="#{msg['lbl.decimalNumbr']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.decimalNumber}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.decimalName']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.decimalName}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.arabicDecimalName']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.arabicDecimalName}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.isoCurrencyCode']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.isoCurrencyCode}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.cbkprintindicator']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.cbkPrintInd}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.cbkshortindicator']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.cbkSortInd}" />
+											</p:column>
+											<p:column headerText=" #{msg['lbl.onlineIndicator']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.onlineInd}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.countryName']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.countryName}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.fundminrate']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.fundMinRate}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.fundmaxrate']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.fundMaxRate}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.cashminrate']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.cashMinRate}" />
+											</p:column>
+											<p:column headerText=" #{msg['lbl.cashmaxrate']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.cashMaxRate}" />
+											</p:column>
+
+											<p:column headerText=" #{msg['lbl.highValue']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.highValue}" />
+											</p:column>
+											<p:column headerText=" #{msg['lbl.averagerate']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.averageRate}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.placeOrderLmt']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.placeOrderLimit}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.edit']}">
+												<p:commandButton styleClass="edit" value=""
+													action="#{currencyMasterBean.editDatatableRecord(c)}"
+													process="@this" update=":form1"
+													disabled="#{currencyMasterBean.booHideEdit}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.enqStatus']}"
+												style="text-align:center !important;">
+
+												<p:commandLink
+													action="#{currencyMasterBean.checkStatusType(c)}"
+													value="#{c.dynamicLabelForActivateDeactivate}"
+													style="color:blue !important; text-decoration:underline !important;"
+													update=":form1" process="@this" />
+											</p:column>
+
+
+
+										</p:dataTable>
+
+
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											rendered="#{currencyMasterBean.booRenderSubmit}">
+											<p:commandButton value="#{msg['lbl.submit']}"
+												action="#{currencyMasterBean.saveDataTableRecords}"
+												immediate="true" onstart="process.show();"
+												onsuccess="process.hide();"
+												disabled="#{currencyMasterBean.booHideSubmit}" />
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{currencyMasterBean.exit}" immediate="true" />
+										</h:panelGroup>
+									</p:panel>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

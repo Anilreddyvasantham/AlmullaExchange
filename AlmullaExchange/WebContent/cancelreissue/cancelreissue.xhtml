@@ -1,0 +1,1197 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link href="css/style1.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<style>
+.left_col_three {
+	width: 32% !important;
+	float: left !important;
+	vertical-align: middle !important;
+	margin-bottom: 7px;
+}
+
+.inner_left_col_three {
+	vertical-align: middle;
+	width: 40% !important;
+	float: left !important;
+	padding: 10px 0px 0px 10px;
+}
+
+.full_col {
+	width: 96% !important;
+	float: left !important;
+	vertical-align: middle !important;
+	margin-bottom: 7px;
+}
+
+.inner_left_col_full {
+	vertical-align: middle;
+	width: 18% !important;
+	float: left !important;
+	padding: 10px 0px 0px 10px;
+}
+
+.inner_right_col_full {
+	vertical-align: middle;
+	width: 78% !important;
+	float: left !important;
+	padding: 10px 0px 0px 10px;
+}
+
+.ui-fieldset {
+	border: solid 1px #51C4CC;
+	background-color: rgba(81, 196, 204, 0.03);
+	border-radius: 3px;
+}
+
+.ui-fieldset-legend {
+	color: #ffffff;
+	font-size: 16px;
+	line-height: 15px;
+	background-color: #51C4CC;
+	padding: 13px 20px !important;
+	border-bottom-right-radius: 2px;
+	border-bottom-left-radius: 2px;
+	border-top-right-radius: 2px;
+	border-top-left-radius: 2px;
+	-webkit-transition: all 0.3s ease;
+	-moz-transition: all 0.3s ease;
+	-ms-transition: all 0.3s ease;
+	-o-transition: all 0.3s ease;
+	transition: all 0.3s ease;
+}
+
+legend.ui-fieldset-legend span {
+	padding: 10px;
+}
+</style>
+
+	<script type="text/javascript">
+		$(function() {
+			// Set cursor to pointer and add click function
+			$("legend").css("cursor", "pointer").click(function() {
+				var legend = $(this);
+				var value = $(this).children("span").html();
+				if (value == "[-]")
+					value = "[+]";
+				else
+					value = "[-]";
+				$(this).siblings().slideToggle("slow", function() {
+					legend.children("span").html(value);
+				});
+			});
+		});
+		
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+	</script>
+</h:head>
+
+
+<h:body dir="#{facesBean.direction}">
+	<p:confirmDialog id="idNotFound" widgetVar="idNotFound" width="400"
+		height="17" resizable="false"
+		style="background-color: white !important;" header="Warning Dailog"
+		styleClass="warning" showEffect="clip" hideEffect="clip"
+		closeOnEscape="true" closable="true"
+		message="Please Select Any One Filed !!!">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="empty" widgetVar="empty" width="400" height="17"
+		resizable="false" style="background-color: white !important;"
+		header="Warning Dailog" styleClass="warning" showEffect="clip"
+		hideEffect="clip" closeOnEscape="true" closable="true"
+		message="#{msg['lbl.nocustomeravailable']}">
+	</p:confirmDialog>
+
+	
+	<f:view locale="#{facesBean.locale}">
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:panelGroup layout="block" class="heading1">
+								<h:outputText value="#{msg['lbl.cancelandreissue']}" />
+							</h:panelGroup>
+							<h:form id="inputForm">
+
+								<p:dialog modal="true" widgetVar="statusDialog"
+									id="statusDialog" draggable="false" closable="false"
+									showHeader="false">
+									<p:graphicImage value="../images/loaderImage.gif" />
+								</p:dialog>
+
+								<p:dialog modal="true" showHeader="true"
+									header="#{msg['lbl.pleasewait']}" widgetVar="process"
+									id="process" width="300" height="50" resizable="false"
+									draggable="false" closable="false"
+									style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+									<div style="text-align: center;">
+										<p:graphicImage value="../images/preloader.gif" />
+									</div>
+								</p:dialog>
+
+
+								<p:panel id="mainPanel" styleClass="shadow"
+									style="margin: 20px 10px !important; background-color:#FFF !important;">
+<p:dialog id="complete" widgetVar="complete" width="550" height="100"
+		showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+
+		<p:outputLabel
+			value="#{msg['lbl.requiescancelled']} #{cancelReissue.transactionNoForDisplay}"
+			style="text-align: center; font-size:15px !important;" />
+		<br />
+
+		<p:commandButton value="#{msg['lbl.ok']}"
+			actionListener="#{cancelReissue.redirectToPage}" immediate="true" />
+	</p:dialog>
+
+
+									<p:confirmDialog id="procedureError"
+										header="#{msg['lbl.warning']}" widgetVar="procedureError"
+										width="500" resizable="false" height="100"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{cancelReissue.errorMsg}">
+
+										<p:commandButton value="#{msg['lbl.ok']}"
+											oncomplete="procedureError.hide()" />
+
+									</p:confirmDialog>
+
+									<p:confirmDialog id="saveerror" header="#{msg['lbl.warning']}"
+										widgetVar="saveerror" width="350" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{cancelReissue.errorMsg}">
+
+										<p:commandButton value="#{msg['lbl.ok']}"
+											oncomplete="saveerror.hide()" />
+
+									</p:confirmDialog>
+
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{cancelReissue.errorMsg} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="notavailabledata"
+										widgetVar="notavailabledata" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="Data not available in Transaction table">
+									</p:confirmDialog>
+
+
+									<fieldset class="ui-fieldset">
+										<legend class="ui-fieldset-legend">
+											<span>[-]</span>
+
+											<h:outputText value="#{msg['lbl.canceltransaction']}" />
+										</legend>
+
+										<p:panel styleClass="panel_border1" id="panelHeader">
+
+											<p:confirmDialog id="datanotfound"
+												header="#{msg['lbl.warning']}" widgetVar="datanotfound"
+												width="350" resizable="false" closable="false"
+												style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+												showEffect="clip" hideEffect="clip"
+												message="Transaction has been cancelled">
+
+												<p:commandButton value="#{msg['lbl.ok']}"
+													action="#{cancelReissue.tranferNoClear}" immediate="true"
+													update="mainPanel,panelHeader" />
+
+											</p:confirmDialog>
+											<p:confirmDialog id="proceErr" widgetVar="proceErr"
+												width="400" resizable="false"
+												visible="#{cancelReissue.booProcedureDialog}"
+												style="background-color: white !important;"
+												header="#{msg['lbl.warningDailog']}" styleClass="warning"
+												showEffect="clip" hideEffect="clip" closeOnEscape="true"
+												closable="true" message="#{cancelReissue.errorMsg}"></p:confirmDialog>
+
+											<div class="clearfix"></div>
+											
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.company']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="company" style="width:140%; "
+													value="#{cancelReissue.companyName}" readonly="true"  />
+											</p:panel>
+										</p:panel>
+
+											<p:panel styleClass="left_col">
+
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.cancelremityearno']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<p:column
+																style="width:40%; text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText value="#{cancelReissue.remittanceYear}"
+																	id="remiYear" maxlength="4" required="true"
+																	requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.cancelremityearno']}">
+																	<p:ajax update="mainPanel,remiYearmsg" event="blur" />
+																	<p:message for="remiYear" display="text"
+																		id="remiYearmsg" />
+																	<f:validator validatorId="allowOnlyNumber" />
+																</p:inputText>
+															</p:column>
+															<p:column
+																style="width:60%; padding:0px 5px 0px 10px !important;">
+																<p:inputText value="#{cancelReissue.transferNo}"
+																	id="trnnoid" maxlength="10" required="true"
+																	requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.cancelremityearno']}">
+																	<p:ajax listener="#{cancelReissue.fetchRemiitanceView}"
+																		onstart="process.show();" onsuccess="process.hide();"
+																		event="blur" update="mainPanel,trnnoidmsg" />
+																	<f:validator validatorId="allowOnlyNumber" />
+																	<p:message for="trnnoid" display="text" id="trnnoidmsg" />
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.cancelappyearno']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<p:column
+																style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText value="#{cancelReissue.applicationYear}"
+																	readonly="true" styleClass="ui-state-disabled">
+
+																</p:inputText>
+															</p:column>
+															<p:column
+																style="width:70%; padding:0px 5px 0px 10px !important;">
+																<p:inputText value="#{cancelReissue.applicationRef}"
+																	readonly="true" styleClass="ui-state-disabled">
+
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+
+												</p:panel>
+											</p:panel>
+
+
+											<p:panel styleClass="left_col">
+
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.canceldate']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<p:column
+																style="text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText value="#{cancelReissue.systemDate}"
+																	readonly="true" styleClass="ui-state-disabled">
+																</p:inputText>
+															</p:column>
+
+														</p:row>
+													</p:panelGrid>
+
+												</p:panel>
+											</p:panel>
+
+
+
+											<!-- Next Row  -->
+
+											<p:panel styleClass="left_col">
+
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.customerRef']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<!-- <p:column
+																style="width:35%; text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText value="#{cancelReissue.customerId}"
+																	readonly="true" styleClass="ui-state-disabled">
+
+																</p:inputText>
+															</p:column> -->
+															<p:column
+																style="width:65%; padding:0px 5px 0px 10px !important;">
+																<p:inputText value="#{cancelReissue.customerRef}"
+																	readonly="true" styleClass="ui-state-disabled">
+
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+
+												</p:panel>
+											</p:panel>
+
+
+											<p:panel styleClass="left_col">
+
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.cancelphone']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<p:column
+																style="text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText value="#{cancelReissue.telephone}"
+																	readonly="true" styleClass="ui-state-disabled" />
+															</p:column>
+
+														</p:row>
+													</p:panelGrid>
+
+												</p:panel>
+											</p:panel>
+
+
+
+											<!-- <p:panel styleClass="left_col_three">
+
+												<p:panel styleClass="inner_left_col_three">
+													<h:outputText value="#{msg['lbl.company']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<p:column
+																style="text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText value="#{cancelReissue.companyName}"
+																	readonly="true" styleClass="ui-state-disabled" />
+															</p:column>
+
+														</p:row>
+													</p:panelGrid>
+
+												</p:panel>
+											</p:panel> -->
+
+											<p:panel styleClass="left_col">
+
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.productname']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<!-- <p:column
+																style="width:20%; text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText value="#{cancelReissue.productId}"
+																	readonly="true" styleClass="ui-state-disabled" >
+
+																</p:inputText>
+															</p:column> -->
+															<p:column style="width:100%;">
+																<p:inputText readonly="true"
+																	styleClass="ui-state-disabled"
+																	value="#{cancelReissue.product}">
+
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+
+												</p:panel>
+											</p:panel>
+
+											<!-- <p:panel styleClass="left_col_three">
+
+												<p:panel styleClass="inner_left_col_three">
+													<h:outputText value="#{msg['lbl.cancelsale']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<p:column
+																style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText value="#{cancelReissue.saleCurrencyCode}"
+																	readonly="true" styleClass="ui-state-disabled" >
+
+																</p:inputText>
+															</p:column>
+															<p:column
+																style="width:70%; padding:0px 5px 0px 10px !important;">
+																<p:inputText value="#{cancelReissue.saleCurrencyDesc}"
+																	readonly="true" styleClass="ui-state-disabled" >
+
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+
+												</p:panel>
+											</p:panel> -->
+
+
+											<!-- <p:panel styleClass="left_col_three">
+
+												<p:panel styleClass="inner_left_col_three">
+													<h:outputText value="#{msg['lbl.cancelpurchase']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<p:column
+																style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText
+																	value="#{cancelReissue.purchaseCurrencyCode}"
+																	readonly="true" styleClass="ui-state-disabled" >
+
+																</p:inputText>
+															</p:column>
+															<p:column
+																style="width:70%; padding:0px 5px 0px 10px !important;">
+																<p:inputText
+																	value="#{cancelReissue.purchaseCurrencyDesc}"
+																	readonly="true" styleClass="ui-state-disabled" >
+
+																</p:inputText>
+															</p:column>
+
+														</p:row>
+													</p:panelGrid>
+
+												</p:panel>
+											</p:panel> -->
+
+
+
+											<!-- Next Row  -->
+
+
+											<!-- <p:panel styleClass="left_col_three">
+
+												<p:panel styleClass="inner_left_col_three">
+													<h:outputText value="#{msg['lbl.neededSaleAmount']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<p:column
+																style="width:50%; text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText value="#{cancelReissue.amount}"
+																	readonly="true" styleClass="ui-state-disabled" >
+
+																</p:inputText>
+															</p:column>
+															<p:column
+																style="width:50%; padding:0px 5px 0px 10px !important;">
+																<p:inputText readonly="true" styleClass="ui-state-disabled" >
+
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+
+												</p:panel>
+											</p:panel> -->
+
+										</p:panel>
+									</fieldset>
+									<br />
+									<br />
+
+
+									<fieldset class="ui-fieldset">
+										<legend class="ui-fieldset-legend">
+											<span>[-]</span>
+											<h:outputText value="#{msg['lbl.canceltransactiondetails']}" />
+
+										</legend>
+										<p:panel styleClass="panel_border1">
+
+
+											<p:panel styleClass="left_col">
+
+												<p:panel styleClass="inner_left_col">
+													<h:outputText
+														value="#{msg['lbl.cancelsale']} #{msg['lbl.currency']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<!-- <p:column
+																style="width:30%; text-align:left;">
+																<p:inputText value="#{cancelReissue.saleCurrencyCode}"
+																	readonly="true" styleClass="ui-state-disabled" >
+
+																</p:inputText>
+															</p:column> -->
+															<p:column style="width:70%;">
+																<p:inputText value="#{cancelReissue.saleCurrencyDesc}"
+																	readonly="true" styleClass="ui-state-disabled">
+
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+
+												<p:panel styleClass="inner_left_col">
+													<h:outputText
+														value="  #{msg['lbl.cancelpurchase']} #{msg['lbl.currency']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<!-- <p:column
+																style="width:30%;">
+																<p:inputText
+																	value="#{cancelReissue.purchaseCurrencyCode}"
+																	readonly="true" styleClass="ui-state-disabled" >
+
+																</p:inputText>
+															</p:column> -->
+															<p:column style="width:70%;">
+																<p:inputText
+																	value="#{cancelReissue.purchaseCurrencyDesc}"
+																	readonly="true" styleClass="ui-state-disabled">
+
+																</p:inputText>
+															</p:column>
+
+														</p:row>
+													</p:panelGrid>
+
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+											<p:panel styleClass="left_col">
+
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.cancelsaleamount']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<p:column style="width:100%; ">
+																<p:inputText value="#{cancelReissue.saleAmount}"
+																	readonly="true" styleClass="ui-state-disabled">
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.cancelexchangerate']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<p:column
+																style="width:20%; text-align:left; padding:0px 5px 0px 0px !important;">
+																<h:outputText value="@"></h:outputText>
+															</p:column>
+															<p:column style="width:80%; ">
+																<p:inputText value="#{cancelReissue.exchangeRate}"
+																	readonly="true" styleClass="ui-state-disabled">
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.canceloriginalexrate']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<p:column style="width:100%; ">
+																<p:inputText value="#{cancelReissue.exchangeRate}"
+																	readonly="true" styleClass="ui-state-disabled">
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.cancelpurchaseamount']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<p:column style="width:100%; ">
+																<p:inputText value="#{cancelReissue.purchaseAmount}"
+																	readonly="true" styleClass="ui-state-disabled">
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.cancelcommission']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<p:column style="width:100%; ">
+																<p:inputText value="#{cancelReissue.commission}"
+																	readonly="true" styleClass="ui-state-disabled">
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.cancelcharges']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<p:column style="width:100%; ">
+																<p:inputText value="#{cancelReissue.charges}"
+																	readonly="true" styleClass="ui-state-disabled">
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+
+											<div class="clearfix"></div>
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.canceldeliveryamt']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<p:column style="width:100%; ">
+																<p:inputText value="#{cancelReissue.deliveryAmount}"
+																	readonly="true" styleClass="ui-state-disabled">
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.cancelnetamt']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<p:column style="width:100%; ">
+																<p:inputText value="#{cancelReissue.netAmount}"
+																	readonly="true" styleClass="ui-state-disabled">
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+										</p:panel>
+									</fieldset>
+
+									<br />
+									<br />
+
+									<fieldset class="ui-fieldset">
+										<legend class="ui-fieldset-legend">
+											<span>[-]</span>
+											<h:outputText value="#{msg['lbl.cancelbenedetails']}" />
+										</legend>
+										<p:panel styleClass="panel_border1">
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.cancelcorsbank']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+															<p:column style="width:30%; ">
+																<p:inputText value="#{cancelReissue.corsbankCode}"
+																	readonly="true" styleClass="ui-state-disabled">
+																</p:inputText>
+															</p:column>
+															<p:column style="width:70%; ">
+																<p:inputText value="#{cancelReissue.corsBankName}"
+																	readonly="true" styleClass="ui-state-disabled">
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.cancelcorsbranch']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+															<p:column style="width:20%; ">
+																<p:inputText value="#{cancelReissue.corsBranchId}"
+																	readonly="true" styleClass="ui-state-disabled">
+																</p:inputText>
+															</p:column>
+															<p:column style="width:80%; ">
+																<p:inputText value="#{cancelReissue.corsBranchName}"
+																	readonly="true" styleClass="ui-state-disabled">
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.cancelbenename']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<p:column style="width:100%;">
+																<p:inputText value="#{cancelReissue.benificiaryName}"
+																	readonly="true" styleClass="ui-state-disabled">
+																</p:inputText>
+															</p:column>
+
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.beneficaryBank']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<p:column style="width:100%; ">
+																<p:inputText value="#{cancelReissue.benificiaryBank}"
+																	readonly="true" styleClass="ui-state-disabled">
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.cancelcorsbranch']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<p:column style="width:100%; ">
+																<p:inputTextarea value="#{cancelReissue.branchName}"
+																	readonly="true" styleClass="ui-state-disabled"
+																	style="height:70px !important;" maxlength="500">
+																</p:inputTextarea>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.cancelaccount']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<p:column style="width:100%; ">
+																<p:inputText value="#{cancelReissue.account}"
+																	readonly="true">
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+								 <!-- <div class="clearfix"></div>
+						                  <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="A/c Payee"></h:outputText>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:panelGrid style="width:100%;">
+													<p:row>
+														<p:column
+															style="width:100%; ">
+															<p:inputText value="#{cancelReissue.accountPayee}">
+															</p:inputText>
+														</p:column>
+													</p:row>
+												</p:panelGrid>
+											</p:panel>
+										</p:panel> -->
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.cancelpayto']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<p:column style="width:100%; ">
+																<p:inputTextarea value="#{cancelReissue.payTo}"
+																	style="height:80px !important;" maxlength="500"
+																	readonly="true" styleClass="ui-state-disabled">
+																</p:inputTextarea>
+															</p:column>
+
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+										</p:panel>
+									</fieldset>
+									<br />
+									<br />
+
+									<fieldset class="ui-fieldset">
+										<legend class="ui-fieldset-legend">
+											<span>[-]</span>
+
+											<h:outputText value="#{msg['lbl.canceladditiondetails']}" />
+										</legend>
+
+										<p:panel styleClass="panel_border1">
+										
+											<p:panel styleClass="full_col">
+												<p:panel styleClass="inner_left_col_full">
+													<h:outputText value="#{msg['lbl.cancelfurtherins']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col_full">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<p:column style="width:100%; ">
+																<p:inputText value="#{cancelReissue.furtherInst}">
+																</p:inputText>
+															</p:column>
+
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="full_col">
+												<p:panel styleClass="inner_left_col_full">
+													<h:outputText
+														value="#{msg['lbl.cancelintermediarybankdetails']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col_full">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<p:column style="width:30%; ">
+																<p:inputText
+																	value="#{cancelReissue.benificiarySwiftBank1}"
+																	readonly="true" styleClass="ui-state-disabled">
+																</p:inputText>
+															</p:column>
+															<p:column style="width:70%; ">
+																<p:inputText
+																	value="#{cancelReissue.benificiaryInterBank1}"
+																	readonly="true" styleClass="ui-state-disabled">
+																</p:inputText>
+															</p:column>
+
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="full_col">
+												<p:panel styleClass="inner_left_col_full">
+													<h:outputText value=""></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col_full">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+															<p:column style="width:30%; ">
+																<p:inputText
+																	value="#{cancelReissue.benificiarySwiftBank2}"
+																	readonly="true" styleClass="ui-state-disabled">
+																</p:inputText>
+															</p:column>
+															<p:column style="width:70%; ">
+																<p:inputText
+																	value="#{cancelReissue.benificiaryInterBank2}"
+																	readonly="true" styleClass="ui-state-disabled">
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.cancelreciverintbank']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;    margin-left: 16%;">
+														<p:row>
+															<p:column style="">
+																<p:inputText value="#{cancelReissue.benificiaryName}"
+																	readonly="true" styleClass="ui-state-disabled">
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.employeetel']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+															<p:column style="width:100%;">
+																<p:inputText value="#{cancelReissue.tel}"
+																	readonly="true" styleClass="ui-state-disabled">
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value=""></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;    margin-left: 16%;">
+														<p:row>
+															<p:column style="">
+																<p:inputTextarea value="#{cancelReissue.intBank}"
+																	style="height:70px !important;" maxlength="500"
+																	readonly="true" styleClass="ui-state-disabled">
+																</p:inputTextarea>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.zip']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<p:column style="width:100%;">
+																<p:inputText value="#{cancelReissue.zip}"
+																	readonly="true" styleClass="ui-state-disabled">
+																</p:inputText>
+															</p:column>
+
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.cancelsourceofincome']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;    margin-left: 16%;">
+														<p:row>
+															<p:column style="width:100%; ">
+																<p:inputText value="#{cancelReissue.sourceOfIncomeName}"
+																	readonly="true" styleClass="ui-state-disabled">
+																</p:inputText>
+															</p:column>
+
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.purpose']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+															<p:column style="width:100%;">
+																<p:inputText value="#{cancelReissue.purposeOfTrnx}"
+																	readonly="true" styleClass="ui-state-disabled">
+																</p:inputText>
+															</p:column>
+
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+										</p:panel>
+									</fieldset>
+
+									<div class="clearfix"></div>
+
+									<p:panel styleClass="shadow_button"
+										style=" background-color:#FFF !important;">
+
+										<p:commandButton value="#{msg['lbl.accept']}" partialSubmit="true"
+											onstart="process.show();" onsuccess="process.hide();"
+											action="#{cancelReissue.saveRemitTansaction}"
+											update="mainPanel,complete" style="margin-right:10px;" />
+										<p:commandButton value="#{msg['lbl.clear']}"
+											update="mainPanel" style="margin-right:10px;"
+											onstart="process.show();" onsuccess="process.hide();"
+											action="#{cancelReissue.clear}" process="@this" />
+										<p:commandButton value="#{msg['lbl.exit']}" update="mainPanel"
+											immediate="true" action="#{cancelReissue.exit}" />
+									</p:panel>
+
+
+									<div class="clearfix"></div>
+								</p:panel>
+							</h:form>
+
+
+						</h:panelGroup>
+					</h:panelGroup>
+					<div class="clearfix"></div></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+
+
+</html>

@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	  <link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	  <script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+		history.pushState(null, null, 'TestKeyMasterEnquiry.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'TestKeyMasterEnquiry.xhtml');
+	    });
+	</script>
+</h:head>
+<p:confirmDialog id="noRecords" widgetVar="noRecords"
+										width="300"  resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="#{msg['lbl.noRecordFound']}">
+									</p:confirmDialog>
+<p:confirmDialog id="selectAll" widgetVar="selectAll"
+										width="300"  resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="#{msg['lbl.selectBankOrAccountNoOrCurrencyIdOrBranchIdOrSendReceiverIndicator']}">
+									</p:confirmDialog>
+								
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		
+			<h:form id="form">
+		
+				<table align="left" width="100%" style="height: 100%;">
+					<tr>
+						<td align="left" valign="top" style="height: 100%;">
+								<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+								</td>
+		
+						<td class="rightColumn" valign="top">
+						<h:panelGroup	layout="block" class="container">
+								<h:panelGroup layout="block" class="main_div">
+									<div class="menu_button">
+										<img style="cursor: pointer; position: relative; left: 15px;"
+											id="HideHandle" name="HideHandle"
+											src="../images/toggle_plus.png" alt=""
+											onclick='hideLeftCol("leftCol");closeMenus();' />
+									</div>
+									<h1>
+										<h:outputText value="#{msg['lbl.testKeyMasterForBankEnquiry']}" />
+									</h1>
+		
+		
+									<p:panel styleClass="shadow" id="mainPanel"
+										style="background-color:#FFF !important; " >
+										
+										<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{testKeyMasterEnquiryBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+
+
+									<p:confirmDialog id="exception" header="#{msg['lbl.warning']}"
+										widgetVar="exception" width="600" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{testKeyMasterEnquiryBean.errorMessage}">
+
+										<p:commandButton value="#{msg['lbl.ok']}"
+											onclick="exception.hide()" process="@this" update="mainPanel" />
+
+									</p:confirmDialog>	
+										
+										<h2>
+											<h:outputText value="#{msg['lbl.testKeyMasterForBankEnquiry']}" />
+										</h2>
+									<p:panel styleClass="panel_border" >
+												
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bank']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgbank"  for="bankId" display="text" />
+													<p:selectOneMenu id="bankId" value="#{testKeyMasterEnquiryBean.bankId}" filter="true" filterMatchMode="startsWith" required="true"  requiredMessage="Please Select Bank" >
+													 <f:selectItem itemLabel="#{msg['lbl.selectbank']}" itemValue="" />
+													<f:selectItems value="#{testKeyMasterEnquiryBean.bankMasterList}" var="c" itemLabel="#{c.bankMaster.bankCode} - #{c.bankMaster.bankFullName}" itemValue="#{c.bankMaster.bankId}" /> 
+													<p:ajax update="bankId,bankDesc,accountId" event="change" listener="#{testKeyMasterEnquiryBean.populateAccountNumbers}" />
+												</p:selectOneMenu>
+												</p:panel>
+												</p:panel>
+												<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bankDesc']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgBankDesc"  for="bankDesc" display="text" />
+											<p:inputText id="bankDesc" value="#{testKeyMasterEnquiryBean.bankDescription}" readonly="true">
+											<p:ajax update="msgBankDesc"/>
+											</p:inputText>
+												</p:panel>
+												</p:panel>
+													
+												
+											<h:panelGroup layout="block" class="clearfix"/>
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.accountNo']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgaccount"  for="accountId" display="text" />
+												<p:selectOneMenu id="accountId" value="#{testKeyMasterEnquiryBean.accountNo}"  required="true" requiredMessage="Please Select Bank" filter="startWith" >
+													<f:selectItem itemLabel="#{msg['lbl.selectaccountnumber']}" itemValue="" />
+													<f:selectItems value="#{testKeyMasterEnquiryBean.lstBankAccountDetails}" var="c" itemLabel="#{c.bankAcctDetId} - #{c.bankAcctNo}" itemValue="#{c.bankAcctDetId}" />
+														<p:ajax update="msgaccount,currencyId,accountDesc" event="change" listener="#{testKeyMasterEnquiryBean.populatecurrency}" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.accountdesc']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="MsgaccountDesc"  for="accountDesc" display="text" />
+											<p:inputText id="accountDesc" value="#{testKeyMasterEnquiryBean.accountDescription}" readonly="true">
+											<p:ajax update="MsgaccountDesc"/>
+											</p:inputText>
+												</p:panel>
+												</p:panel>
+												
+												
+										<h:panelGroup layout="block" class="clearfix"/>
+										<p:panel styleClass="left_col" >
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currency']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgcurrency"  for="currencyId" display="text" />
+											<p:selectOneMenu id="currencyId" value="#{testKeyMasterEnquiryBean.currencyId}"  required="true" requiredMessage="Please Select Currency" filter="true" filterMatchMode="startWith" >
+														<f:selectItem itemLabel="#{msg['lbl.benecurruncyselect']}" itemValue="" />
+														<f:selectItems value="#{testKeyMasterEnquiryBean.bankAccountDtlist}" var="c" itemLabel="#{c.fsCurrencyMaster.currencyCode} - #{c.fsCurrencyMaster.currencyName}" itemValue="#{c.fsCurrencyMaster.currencyId}" />
+														<p:ajax event="change" listener="#{testKeyMasterEnquiryBean.populateBranch}" update="msgcurrency,branchId" />
+													</p:selectOneMenu>
+												</p:panel>
+												</p:panel>
+												
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.branch']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgbranch"  for="branchId" display="text" />
+											<p:selectOneMenu id="branchId" value="#{testKeyMasterEnquiryBean.branchCode}"  required="true" requiredMessage="Please Select Branch Code" filter="true" filterMatchMode="startWith" >
+														<f:selectItem itemLabel="#{msg['lbl.selectBranch']}" itemValue="" />
+													<f:selectItems value="#{testKeyMasterEnquiryBean.bankbranchList}" var="c" itemLabel="#{c.branchCode} - #{c.branchFullName}" itemValue="#{c.bankBranchId}" />
+														<p:ajax update="msgcurrency" />
+													</p:selectOneMenu>
+												</p:panel>
+												</p:panel>
+												<h:panelGroup layout="block" class="clearfix"/>
+										<p:panel styleClass="left_col" >
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.sendOrReceiveIndicator']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgsendInd"  for="sendIndId" display="text" />
+											<p:selectOneMenu id="sendIndId" value="#{testKeyMasterEnquiryBean.sendReceiveIndicator}"  required="true" requiredMessage="Please Select Send/Receieve Indicator" filter="startWith" >
+													<f:selectItem itemLabel="#{msg['lbl.selectSendOrReceieveIndicator']}" />
+													<f:selectItem itemLabel="Send" itemValue="S" />
+													<f:selectItem itemLabel="Receieve" itemValue="R" />
+													<!-- <p:ajax event="change" listener="#{testKeyMasterEnquiryBean.fetchdataBasedOnCombination}" update="msgsendInd,mainPanel"/> -->
+													<p:ajax update="msgsendInd"/>
+													</p:selectOneMenu>
+												</p:panel>
+												</p:panel>
+												<h:panelGroup layout="block" class="clearfix"/>
+												<p:panel styleClass="left_col" >
+										<h:outputText  id="mandatory" value=" #{msg['lbl.*filedsAreMandatory']}"  style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										<h:panelGroup layout="block" class="clearfix"/>
+										</p:panel>
+										<div class="clearfix"></div>
+										<div class="clearfix"></div>
+										<h:panelGroup layout="block" class="clearfix"/>
+									<h:panelGroup layout="block" styleClass="shadow_button">						
+										<p:commandButton value="#{msg['lbl.view']}" action="#{testKeyMasterEnquiryBean.fetchdataBasedOnCombination}" style="margin-right:10px;" update="mainPanel" onstart="process.show();" onsuccess="process.hide();" />
+										<p:commandButton value="#{msg['lbl.clear']}" action="#{testKeyMasterEnquiryBean.clearAllFields}" style="margin-right:10px;" disabled="#{testkeyParameterForBankBean.booClearPanel}" immediate="true" process="@this" update="mainPanel" /> 
+										<!-- <p:commandButton value="#{msg['lbl.clear']}" onclick="clear(this)" disabled="#{complaintAssignedBean.booClearPanel}" immediate="true" process="@this" update="mainPanel"/>  -->
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+									
+								
+										
+									<p:panel id="dataPanel">
+									<p:dataTable id="dataTable" styleClass="mydatatableclass" value="#{testKeyMasterEnquiryBean.lstTestkeyParameterForBankDt}" 
+									rows="10" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="5,10,15" var="d" 
+									rowIndexVar="rowIndex" emptyMessage="#{msg['lbl.noRecordFound']}" paginatorPosition="bottom" rendered="#{testKeyMasterEnquiryBean.booRenderDataTable}" >
+										
+										<p:column headerText="#{msg['lbl.sino']}" style="width:30px;">
+											<h:outputText value="#{rowIndex+1}" />
+										</p:column>
+
+											<p:column headerText="#{msg['lbl.bank']}"  >
+											 <h:outputText value="#{d.bankName}"/>
+										</p:column>
+										
+										
+										<!-- <p:column headerText="Bank Description"  >
+											 <h:outputText value="#{d.bankDescription}"/>
+										</p:column> -->
+										
+										<p:column headerText="#{msg['lbl.accountNo']}"  >
+											<h:outputText value="#{d.accountNumber}"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.accountdesc']}"  >
+											<h:outputText value="#{d.accountDescription}"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.currency']}">
+											<h:outputText value="#{d.currencyName}"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.branch']}">
+											<h:outputText value="#{d.branchName}"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.sendOrReceiveIndicator']}">
+											<h:outputText value="#{d.sendReceiveIndicator}"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.calculationType']}">
+											<h:outputText value="#{d.calculationType}"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.primaryParameter']}">
+											<h:outputText value="#{d.primaryTestKeyName}"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.secondaryParameter']}">
+											<h:outputText value="#{d.secondaryTestKeyParameterName}"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.secondaryIndicator']}">
+											<h:outputText value="#{d.serialIndicator}"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.endOfSerial']}">
+											<h:outputText value="#{d.endOfSerial}"/>
+										</p:column>
+										<p:column headerText="#{msg['lbl.createdBy']}">
+											<h:outputText value="#{d.createdBy}" />
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.createddate']}">
+											<h:outputText value="#{d.createdDate}">
+												<f:convertDateTime pattern="dd-MM-yyyy" />
+											</h:outputText>
+       									</p:column>
+										<p:column headerText="#{msg['lbl.enqStatus']}">
+											<h:outputText value="#{d.dynamicLabelForActivateDeactivate}" />
+										</p:column>
+										 
+										</p:dataTable> 							
+											</p:panel>
+											<div class="clearfix"></div>
+										<p:spacer height="10px"/>
+										<div class="clearfix"></div>
+										<h:panelGroup layout="block" class="clearfix"/>
+									<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{testKeyMasterEnquiryBean.booSaveOrExit}" id="booSubmitPanel">						
+										<p:commandButton value="#{msg['lbl.exit']}"  style="margin-right:10px;" action="#{testKeyMasterEnquiryBean.exit}" process="@this" immediate="true" tabindex="11"/>
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+											<h:panelGroup layout="block" class="clearfix"/>
+										
+										<p:dialog modal="true" showHeader="true" header="#{msg['lbl.bco.plswait']}"  widgetVar="process"  id="process"   width="300" height="50" resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+							    	</p:dialog>			
+										</p:panel>
+										<div class="clearfix"></div>
+											</p:panel>
+										
+								</h:panelGroup>
+								
+							</h:panelGroup>
+						</td>
+					</tr>
+				</table>
+			</h:form>	
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link href="css/style1.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<style>
+.ui-datatable .ui-paginator {
+	padding: 2px;
+	background-color: #FFFFFF !important;
+	border: none !important;
+}
+
+.ui-fieldset {
+	border: solid 1px #51C4CC;
+	background-color: rgba(81, 196, 204, 0.03);
+	border-radius: 3px;
+}
+
+.ui-fieldset-legend {
+	color: #ffffff;
+	font-size: 16px;
+	line-height: 15px;
+	background-color: #51C4CC;
+	padding: 13px 20px !important;
+	border-bottom-right-radius: 2px;
+	border-bottom-left-radius: 2px;
+	border-top-right-radius: 2px;
+	border-top-left-radius: 2px;
+	-webkit-transition: all 0.3s ease;
+	-moz-transition: all 0.3s ease;
+	-ms-transition: all 0.3s ease;
+	-o-transition: all 0.3s ease;
+	transition: all 0.3s ease;
+}
+
+legend.ui-fieldset-legend span {
+	padding: 10px;
+}
+
+.ui-selectonemenu-panel .ui-selectonemenu-filter-container {
+    position: relative;
+    margin: 0;
+    padding: 0.4em;
+    display: inline-block;
+    width: 103px !important;
+}
+
+.table {
+	display: table;
+}
+
+.table-row {
+	display: table-row;
+}
+
+.table-cell {
+	display: table-cell;
+}
+
+.mydatatableclass table  tfoot tr td:nth-child(1),.mydatatableclass table  tfoot tr td:nth-child(3)
+	{
+	background-color: #cec !important;
+	color: #000 !important;
+	font-weight: bold !important;
+}
+
+.mydatatableclass table  tfoot tr td:nth-child(2),.mydatatableclass table  tfoot tr td:nth-child(4)
+	{
+	text-align: left !important;
+}
+</style>
+	<script type="text/javascript">
+		$(function() {
+			// Set cursor to pointer and add click function
+			$("legend").css("cursor", "pointer").click(function() {
+				var legend = $(this);
+				var value = $(this).children("span").html();
+				if (value == "[-]")
+					value = "[+]";
+				else
+					value = "[-]";
+				$(this).siblings().slideToggle(1000, function() {
+					legend.children("span").html(value);
+				});
+			});
+		});
+	</script>
+</h:head>
+
+
+<h:body dir="#{facesBean.direction}">
+
+
+	<f:view locale="#{facesBean.locale}">
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:panelGroup layout="block" class="heading1">
+								<h:outputText value="#{msg['lbl.jvprocessingenquiry']}" />
+							</h:panelGroup>
+							<h:form id="jvProcessForm">
+							
+							<p:confirmDialog id="notabletoApprove" widgetVar="notabletoApprove" width="370" styleClass="red"  showHeader="false" resizable="false" 	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" message="Same User Not Able To Approve The Record">
+      </p:confirmDialog>
+      
+      <p:dialog id="approvedsuccess" widgetVar="approvedsuccess" width="260" height="70"
+		showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+
+		<p:outputLabel value="#{msg['lbl.approvedatasuccesfullmsg']}" />
+		<br />
+
+		<p:commandButton value="#{msg['lbl.ok']}"
+			oncomplete="approvedsuccess.hide()" />
+	</p:dialog>
+
+								<p:panel id="mainPanel" styleClass="shadow"
+									style="margin: 20px 10px !important; background-color:#FFF !important;">
+
+									<p:dialog id="locaDena" widgetVar="locaDena" width="1000px"
+										header="#{msg['lbl.details']}" resizable="false"
+										style="background-color: white !important;" styleClass="info"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+
+										<p:dataTable var="o" id="denominationid2"
+											styleClass="mydatatableclass"
+											value="#{jvProcessEnquiryBean.lstDenominationForDailog}"
+											rowIndexVar="rowIndex" editable="true" editMode="cell"
+											emptyMessage="#{msg['lbl.norecordfound']}">
+
+
+											<p:column style="width:8px !important;"
+												headerText="#{msg['lbl.slNo']}">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+
+											<p:column style="width:50% !important;"
+												headerText="#{msg['stock.denomination']}" sortBy="#{o.item}">
+												<h:outputText value="#{o.denominationDesc}" />
+											</p:column>
+
+										<!-- 	<p:column style="width:22% !important;"
+												headerText="#{msg['lbl.currenctQuantity']}">
+												<h:outputText value="#{o.stock}" />
+											</p:column>
+ 											-->
+											<p:column style="width:20% !important;"
+												headerText="#{msg['lbl.fclocalpurchasenoofnotes']}">
+												<h:outputText value="#{o.noOfNotes}" />
+
+											</p:column>
+
+											<p:column style="width:20% !important;"
+												headerText="#{msg['lbl.newBal']}">
+												<h:outputText value="#{o.cashAmount}" />
+											</p:column>
+
+										</p:dataTable>
+
+
+									</p:dialog>
+
+
+
+									<fieldset class="ui-fieldset">
+										<legend class="ui-fieldset-legend">
+											<span>[-]</span>
+
+											<h:outputText value="#{msg['lbl.jvrefdetails']}" />
+										</legend>
+										<p:panel styleClass="panel_border1" id="jvPanelRefDetails">
+
+											<p:panel styleClass="left_col user_select">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.company']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText style="font-size:11px !important;"
+														value="#{jvProcessEnquiryBean.companyName}" readonly="true">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col branchpanel">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.jvjvref']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col" id="documentPanelId">
+													<p:panelGrid style="width:98%;">
+														<p:row>
+															<p:column
+																style="width:50% !important; padding:0px 13px 0px 0px !important;">
+																<p:inputText id="financeYear"
+																	value="#{jvProcessEnquiryBean.finaceYear}" required="true"
+																	requiredMessage="Enter Financial Year" readonly="true">
+																	<p:ajax event="blur" update="msgfinanceYear" />
+																	<p:message for="financeYear" display="text"
+																		id="msgfinanceYear" />
+																</p:inputText>
+															</p:column>
+															<p:column  style="width:50% !important; padding:0px !important;" >
+            								<p:message for="editableDocumentSerialId" display="text" id="msgeditableDocumentSerialId" />
+            								<p:selectOneMenu id="editableDocumentSerialId"
+												filter="true" value="#{jvProcessEnquiryBean.documentSerialIdNumber}"
+												filterMatchMode="startsWith" required="true"
+												requiredMessage="Please Select Document Number" >
+												<f:selectItem itemLabel="#{msg['lbl.select']}"
+													itemValue="" />
+												<f:selectItems
+													value="#{jvProcessEnquiryBean.dayBookList}" var="c"
+													itemLabel="#{c.documentNumber}" itemValue="#{c.documentNumber}"/>
+													<p:ajax event="change" listener="#{jvProcessEnquiryBean.fetchRecordfromDb}" update="mainPanel"/>
+											</p:selectOneMenu>
+            								
+            		
+            									</p:column>
+
+
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+
+
+
+
+											<p:panel styleClass="left_col user_select">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.date']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="hdValueDate" display="text" id="hdValDate" />
+													<p:inputText id="hdValueDate" readonly="true"
+														value="#{jvProcessEnquiryBean.hdCalValueDate}" >
+														<f:convertDateTime pattern="dd/MM/yyyy"/>
+												</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col branchpanel">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.jvreason']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText  tabindex="5" id="reasonId" readonly="true"
+																	panelStyle="width: 88px;"
+																	value="#{jvProcessEnquiryBean.jvReason} #{jvProcessEnquiryBean.hiphon} #{jvProcessEnquiryBean.jvReasonDesc}" 
+																	filterMatchMode="startsWith">
+																	
+																		
+																</p:inputText>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+
+
+											<p:panel styleClass="left_col user_select">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.jvdesc']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="jvDescriptionId" display="text"
+														id="msgJvDescription" />
+													<p:inputTextarea value="#{jvProcessEnquiryBean.jvDescription}"
+														id="jvDescriptionId" readonly="true"
+														>
+														
+													</p:inputTextarea>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col branchpanel">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.jvtotaldebit']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{jvProcessEnquiryBean.totalDebits}"
+														readonly="true" />
+
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col user_select">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.jvtotalcredit']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{jvProcessEnquiryBean.totalCredit}"
+														readonly="true" />
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col branchpanel">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.jvnet']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{jvProcessEnquiryBean.netAmount}"
+														readonly="true" />
+
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+											<br />
+
+										</p:panel>
+									</fieldset>
+									<br />
+									
+									
+									<fieldset class="ui-fieldset">
+										<legend class="ui-fieldset-legend">
+											<span>[-]</span>
+
+											<h:outputText value="#{msg['lbl.jvdetails']}" />
+										</legend>
+										
+										<p:panel styleClass="panel_border1"
+										rendered="#{jvProcessEnquiryBean.renderJVDetailsDataTable}">
+
+										<!-- <h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.add']}"
+												action="#{jvProcessEnquiryBean.addRecordsToDataTable}"
+												update="mainPanel" process="@this" />
+											<div class="clearfix"></div>
+										</h:panelGroup>  -->
+
+										<p:dataTable var="o" id="denominationid1"
+											styleClass="mydatatableclass"
+											value="#{jvProcessEnquiryBean.lstJVProcessDataTableBean}"
+											rowIndexVar="rowIndex" editable="true" editMode="cell"
+											emptyMessage="#{msg['lbl.norecordfound']}">
+											
+											<p:column headerText="#{msg['lbl.fclocalpurchaseserialno']}">
+												<h:outputText value="#{o.lineNo}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.bankName']}">
+												<h:outputText value="#{o.bankName}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.currencyname']}">
+											
+												<h:outputText value="#{o.currencyName}"
+													rendered="#{o.currencyNormal}" />
+												<p:commandLink rendered="#{o.currencyWithDenomination}"
+													action="#{jvProcessEnquiryBean.checkStatusType(o)}"
+													value="#{o.currencyName}"
+													style="color:blue !important; text-decoration:underline !important;"
+													update=":jvProcessForm:mainPanel" immediate="true"
+													process="@this" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.accountno']}">
+												<h:outputText value="#{o.accountNumber}" />
+											</p:column>
+											
+											<p:column headerText="#{msg['lbl.jvparticular']}">
+												<h:outputText value="#{o.particularsDesc}" />
+											</p:column>
+												<p:column headerText="#{msg['lbl.jvaccountno']}">
+												<h:outputText value="#{o.glAccountNo}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.jvsubcode']}">
+												<h:outputText value="#{o.subCode}" />
+											</p:column>
+											
+											<p:column headerText="#{msg['lbl.jvsubcode']}#{msg['lbl.description']}">
+													<h:outputText value="#{o.subDescription}"/>
+											</p:column>
+											
+											<p:column headerText="#{msg['lbl.jvforeignamt']}">
+												<h:outputText value="#{o.foreignAmt}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.jvexchangerate']}">
+												<h:outputText value="#{o.exchangeRate}" />
+											</p:column>
+											
+
+											<p:column headerText="#{msg['lbl.jvamount']}(KWD)">
+												<h:outputText value="#{o.kwdAmount}" />
+											</p:column>
+										</p:dataTable>
+									</p:panel>
+										
+									</fieldset>
+
+									<br />
+
+									
+
+									<div class="clearfix"></div>
+
+									<p:panel styleClass="shadow_button" style=" background-color:#FFF !important;">
+										<p:commandButton value="#{msg['lbl.exit']}" update="mainPanel" immediate="true" action="#{jvProcessEnquiryBean.exit}"/>
+									</p:panel> 
+
+
+									<div class="clearfix"></div>
+								</p:panel>
+
+							</h:form>
+
+
+						</h:panelGroup>
+					</h:panelGroup>
+					<div class="clearfix"></div></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

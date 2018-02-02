@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link href="css/style1.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+</h:head>
+<h:body dir="#{facesBean.direction}">
+
+	<p:confirmDialog id="idNotFound" widgetVar="idNotFound" width="400"
+		height="17" resizable="false"
+		style="background-color: white !important;"
+		header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.pleaseSelectAnyOne']}">
+	</p:confirmDialog>
+	<p:confirmDialog id="empty" widgetVar="empty" width="400" height="17"
+		resizable="false" style="background-color: white !important;"
+		header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.nocustomeravailable']}">
+	</p:confirmDialog>
+
+	<f:view locale="#{facesBean.locale}">
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:panelGroup layout="block" class="heading1">
+								<h:outputText value="#{msg['lbl.customerenquiry']}" />
+							</h:panelGroup>
+							<h:form id="inputForm">
+
+								<p:dialog id="searchCriteria" widgetVar="searchCriteria"
+									width="470" height="160" resizable="false" closeOnEscape="true"
+									style="background-color: white !important;"
+									styleClass="warning" header="#{msg['lbl.searchCriteria']}"
+									closable="true" showEffect="clip" hideEffect="clip">
+									<p:outputLabel>
+
+										<div
+											style="font-size: 14px; font-weight: bold; font-style: underline">
+											<u>"#{msg['lbl.followingCombinations']}"</u>
+										</div>
+										<br />
+										<div class="size">
+											<!-- 1. Nationality and Date of Birth <br /> 2. Nationality and
+											First Name 2 Character or Last Name 2 Character <br /> 3. ID
+											Type and Id Number<br /> 4. Mobile Number -->
+											1."#{msg['lbl.nationalityanddob']}" <br />
+											2."#{msg['lbl.nationalityandfirstlastnames']}" <br />
+											3."#{msg['lbl.idTypeandIdNumber']}" <br />
+											4."#{msg['lbl.mobileNumber']}"
+										</div>
+									</p:outputLabel>
+									<br />
+									<br />
+								</p:dialog>
+
+
+								<p:panel id="mainPanel" styleClass="shadow"
+									style="margin: 20px 10px !important; background-color:#FFF !important;">
+
+									<p:dialog modal="true" showHeader="true"
+										header="#{msg['lbl.pleasewait']}" widgetVar="process"
+										id="process" width="300" height="50" resizable="false"
+										draggable="false" closable="false"
+										style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+										<div style="text-align: center;">
+											<p:graphicImage value="../images/preloader.gif" />
+										</div>
+									</p:dialog>
+
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{searchCustomer.errorMessage}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{searchCustomer.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+
+
+									<h2>
+										<h:outputText value="#{msg['lbl.customerenquiry']}" />
+									</h2>
+
+									<p:panel styleClass="panel_border">
+
+										<div class="ui-grid-a ui-responsive">
+											<div class="ui-block-a" style="padding-top: 15px;">
+												<h:outputText id="lbl_nationality" />
+											</div>
+											<div class="ui-block-b">
+												<p:message for="nationality" display="text" />
+												<p:selectOneMenu id="nationality"
+													value="#{searchCustomer.nationality}" filter="true"
+													label="Nationality" filterMatchMode="contains">
+													<f:selectItem itemLabel="#{msg['lbl.selectnationality']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{searchCustomer.nationalityNameList}" var="c"
+														itemLabel="#{c.fsCountryMaster.countryCode} - #{c.nationality}"
+														itemValue="#{c.fsCountryMaster.countryId}" />
+
+												</p:selectOneMenu>
+											</div>
+
+										</div>
+										<div class="clearfix"></div>
+
+										<div class="ui-grid-e ui-responsive">
+											<div class="ui-block-a">
+												<h:outputText id="lbl_idtype" />
+											</div>
+											<div class="ui-block-b">
+												<p:message for="idtype" display="text" />
+												<p:selectOneMenu id="idtype"
+													value="#{searchCustomer.idType}" label="Identity Type">
+
+												</p:selectOneMenu>
+											</div>
+											<div class="ui-block-c">
+												<h:outputText value="#{msg['lbl.idnumber']}" />
+											</div>
+											<div class="ui-block-d">
+												<p:inputText id="idNo" value="#{searchCustomer.idNumber}">
+												</p:inputText>
+											</div>
+											<div class="ui-block-e"></div>
+										</div>
+										<div class="clearfix"></div>
+
+
+
+
+										<div class="ui-grid-e ui-responsive">
+											<div class="ui-block-a">
+												<h:outputText value="#{msg['lbl.firstname']}" />
+											</div>
+											<div class="ui-block-b">
+												<p:inputText id="firstName"
+													value="#{searchCustomer.firstName}"
+													onkeyup="this.value=this.value.toUpperCase()">
+												</p:inputText>
+											</div>
+											<div class="ui-block-c">
+												<h:outputText value="#{msg['lbl.lastname']}" />
+											</div>
+											<div class="ui-block-d">
+												<p:inputText id="lstName" value="#{searchCustomer.lastName}"
+													onkeyup="this.value=this.value.toUpperCase()" />
+											</div>
+											<div class="ui-block-e"></div>
+										</div>
+										<div class="clearfix"></div>
+
+
+
+										<div class="ui-grid-e ui-responsive">
+											<div class="ui-block-a">
+												<h:outputText value="#{msg['lbl.dob']}" />
+											</div>
+											<div class="ui-block-b">
+												<p:calendar id="dob" value="#{searchCustomer.dob}"
+													mode="popup" readonlyInput="true" navigator="true"
+													pattern="dd/MM/yyyy">
+												</p:calendar>
+											</div>
+											<div class="ui-block-c">
+												<h:outputText value="#{msg['lbl.mobile']}" />
+											</div>
+											<div class="ui-block-d">
+												<p:inputText id="mobNo" value="#{searchCustomer.mob}">
+												</p:inputText>
+											</div>
+											<div class="ui-block-e"></div>
+										</div>
+										<div class="clearfix"></div>
+
+										<p:spacer height="30px" />
+										<p:panel styleClass="shadow_button"
+											style=" background-color:#FFF !important;">
+
+											<p:commandButton value="#{msg['lbl.search']}" id="addTable"
+												update="mainPanel,tablePanel,error" style="margin-right:10px;"
+												action="#{searchCustomer.showCustomerEnquiryDetails}"
+												onstart="process.show();" onsuccess="process.hide();">
+											</p:commandButton>
+											<p:commandButton value="#{msg['lbl.clear']}"
+												update="mainPanel,tablePanel" process="@this"
+												actionListener="#{searchCustomer.resetValue}"
+												style="margin-right:10px;">
+											</p:commandButton>
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{searchCustomer.exitFromCustomerEnquiry}"
+												process="@this">
+											</p:commandButton>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<h:outputText value="#{msg['lbl.searchCriteria']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:outputText value="#{msg['lbl.nationalityanddob']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:outputText
+												value="#{msg['lbl.nationalityandfirstlastnames']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:outputText value="#{msg['lbl.idTypeandIdNumber']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:outputText value="#{msg['lbl.mobileNumber']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+										</p:panel>
+										<div class="clearfix"></div>
+
+										<p:ajaxStatus id="usernamestatuspanel" style="float:right;">
+											<f:facet name="start">
+												<h:graphicImage value="../images/ajax_loader.gif" />
+											</f:facet>
+											<f:facet name="start">
+												<h:graphicImage value="" />
+											</f:facet>
+										</p:ajaxStatus>
+										<div class="clearfix"></div>
+										<p:panel id="tablePanel">
+											<p:dataTable value="#{searchCustomer.finalData}"
+												rowIndexVar="rowIndex" var="o"
+												style=" font-family: Arial; font-size: 13px;"
+												paginatorPosition="bottom" widgetVar="50" editable="true"
+												id="datatable" rendered="#{searchCustomer.booPass}"
+												emptyMessage="#{msg['lbl.norecordfound']}" rows="10"
+												paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10,15">
+
+												<p:column headerText="#{msg['lbl.sNo']}"
+													style="width:3%;">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+
+
+												<!-- <p:column rendered="#{searchCustomer.booSearchCustomer}"
+											styleClass="auto_width" sortBy="#{o.customerId}">
+											<f:facet name="header">
+												<h:outputText value="#{msg['lbl.idnumber']}" />
+											</f:facet>
+											<p:outputLabel value="#{o.customerId}" />
+										</p:column> -->
+
+												<!-- <p:column styleClass="auto_width" sortBy="#{o.idType}">
+											<f:facet name="header">
+												<h:outputText value="#{msg['lbl.idtype']}" />
+											</f:facet>
+											<p:cellEditor>
+												<f:facet name="output">
+													<h:outputText value="#{o.idType}" />
+												</f:facet>
+												<f:facet name="input">
+													<p:inputText value="#{o.idType}" />
+												</f:facet>
+											</p:cellEditor>
+										</p:column> -->
+
+												<!-- <p:column styleClass="auto_width" sortBy="#{o.firstName}">
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.firstname']}" />
+													</f:facet>
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{o.firstName}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText value="#{o.firstName}" />
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+
+												<p:column styleClass="auto_width">
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.lastname']}" />
+													</f:facet>
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{o.lastName}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText value="#{o.lastName}" />
+														</f:facet>
+													</p:cellEditor>
+												</p:column> -->
+												
+												<p:column style="width:25%;">
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.customerName']}" />
+													</f:facet>
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{o.customerName}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText value="#{o.customerName}" />
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+
+												<p:column sortBy="#{o.nationality}" style="width:7%;">
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.nationality']}" />
+													</f:facet>
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{o.nationality}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText value="#{o.nationality}" />
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+
+												<p:column sortBy="#{o.dob}" style="width:5%;">
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.dob']}" />
+													</f:facet>
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{o.dob}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText value="#{o.dob}" />
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+
+												<p:column style="width:5%;">
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.mobile']}" />
+													</f:facet>
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{o.mob}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText value="#{o.mob}" />
+														</f:facet>
+													</p:cellEditor>
+
+												</p:column>
+
+												<p:column style="width:15%;">
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.email']}" />
+													</f:facet>
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{o.email}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText value="#{o.email}" />
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+
+												<p:column style="width:7%;" sortBy="#{o.createdBy}">
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.createdby']}" />
+													</f:facet>
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{o.createdBy}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText value="#{o.createdBy}" />
+														</f:facet>
+													</p:cellEditor>
+
+												</p:column>
+												
+												<p:column style="width:7%;" sortBy="#{o.createdDate}">
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.createddate']}" />
+													</f:facet>
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{o.createdDate}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText value="#{o.createdDate}" />
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+												
+												<p:column headerText="Expiry Date" style="width:7%;">
+													<p:outputLabel value="#{o.currentStatus}" style="text-align:center;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.view']}"
+													style="width:7% !important; text-align:center !important; ">
+													<p:commandLink
+														action="#{registerCustomerEnquiry.gotoRigisterCustomerEnquiryPage(o.customerTyId)}"
+														value="View Details"
+														style="color:blue !important; text-decoration:underline !important;"
+														update=":inputForm" immediate="true" process="@this" />
+												</p:column>
+
+											</p:dataTable>
+										</p:panel>
+									</p:panel>
+								</p:panel>
+
+
+							</h:form>
+
+
+						</h:panelGroup>
+					</h:panelGroup>
+					<div class="clearfix"></div></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+
+
+</html>

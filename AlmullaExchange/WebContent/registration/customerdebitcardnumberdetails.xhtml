@@ -1,0 +1,604 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link href="../css/new_style.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript">
+		 history.pushState(null, null, 'customerdebitcardnumberdetails.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'customerdebitcardnumberdetails.xhtml');
+		    });
+	</script>
+
+	<script type="text/javascript">
+			$(document).on("keypress", ".dropdown", function(event) {
+				if (event.keyCode == 32) {
+					$('.ui-selectonemenu-trigger', this).click();
+				}
+			});
+		</script>
+
+</h:head>
+
+<h:body>
+
+	<f:view>
+
+
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+					<!-- <ui:include
+						src="../common/common_menu.xhtml"></ui:include> --> <ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include>
+				</td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+
+
+						<h:panelGroup layout="block" class="main_div3">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+
+							<h:panelGroup layout="block" class="heading3">
+								<h:outputText value="#{msg['lbl.customerreg']}" />
+							</h:panelGroup>
+
+
+							<h:panelGroup layout="block" class="table_bg">
+								<h:form id="form1" enctype="multipart/form-data"
+									style="padding:0!important; background:none !important;"
+									onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'text') return false;}">
+
+
+
+									<p:panel id="mainPanel"
+										style="border: 0px; padding:0px!important; background:none !important;background-color:#cec !important;">
+
+										<p:dialog modal="true" showHeader="true"
+											header="#{msg['lbl.pleasewait']}" widgetVar="process"
+											id="process" width="300" height="50" resizable="false"
+											draggable="false" closable="false"
+											style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+											<div style="text-align: center;">
+												<p:graphicImage value="../images/preloader.gif" />
+											</div>
+										</p:dialog>
+
+										<p:dialog id="remarks" widgetVar="remarks" width="550"
+											height="205" showHeader="false" resizable="false"
+											style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true" modal="true">
+											<p:panel styleClass="shadow">
+
+												<p:panel>
+													<h:outputText value="#{msg['lbl.pleaseenterremarks']}*" />
+												</p:panel>
+												<p:panel>
+
+													<div class="clearfix" />
+													<hr></hr>
+
+
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgremarksId" for="remarksId"
+															display="text" />
+														<p:selectOneMenu id="remarksId"
+															value="#{customerPersonalInfo.remarksCode}"
+															filterMatchMode="contains" filter="true" required="true"
+															requiredMessage="Please Select Remarks">
+															<!-- <f:selectItem itemLabel="Select Bank" itemValue="" /> -->
+															<f:selectItem itemLabel="Select Remarks" itemValue="" />
+
+															<f:selectItems value="#{customerPersonalInfo.remarkList}"
+																var="c" itemLabel="#{c.remarkCode} - #{c.remarkDesc}"
+																itemValue="#{c.remarkCode} - #{c.remarkDesc}" />
+
+															<p:ajax onstart="process.show();"
+																onsuccess="process.hide();" />
+														</p:selectOneMenu>
+													</p:panel>
+
+												</p:panel>
+												<p:spacer width="25px" />
+												<div class="clearfix" />
+												<h:panelGroup styleClass="shadow">
+													<div class="clearfix" />
+													<p:commandButton value="#{msg['lbl.ok']}"
+														actionListener="#{customerPersonalInfo.remarkSelectedRecord}"
+														process="@this" oncomplete="PF('remarks').hide();"
+														update="remarks,:form1:dataTable,alertmsg" />
+													<p:commandButton value="#{msg['lbl.cancel']}"
+														update="remarks"
+														actionListener="#{customerPersonalInfo.cancelRemarks}"
+														process="@this" oncomplete="remarks.hide()" />
+												</h:panelGroup>
+											</p:panel>
+										</p:dialog>
+
+
+										<p:confirmDialog id="customerDeactive"
+											widgetVar="customerDeactive" header="Alert Message"
+											resizable="false" style="background-color: white !important;"
+											styleClass="warning" showEffect="clip" hideEffect="clip"
+											closeOnEscape="true" closable="true"
+											message="Do you want to in-activate card from #{customerPersonalInfo.customerDeactiveSts} ">
+											<br />
+											<p:commandButton value="#{msg['lbl.yes']}"
+												oncomplete="customerDeactive.hide()" process="@this"
+												onstart="process.show();" onsuccess="process.hide();"
+												action="#{customerPersonalInfo.deactiveCustomer}"
+												update="remarks,alertmsg" />
+											<p:commandButton value="#{msg['lbl.no']}"
+												action="#{customerPersonalInfo.clearDebitCradNo}"
+												update="colDebitCardNoId"
+												oncomplete="customerDeactive.hide()" process="@this" />
+										</p:confirmDialog>
+
+
+										<p:confirmDialog id="bankCodeEmpty" widgetVar="bankCodeEmpty"
+											header="Alert Message" resizable="false"
+											style="background-color: white !important;"
+											styleClass="warning" showEffect="clip" hideEffect="clip"
+											closeOnEscape="true" closable="true"
+											message="Please select bank code">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="bankPrefixEmpty"
+											widgetVar="bankPrefixEmpty" header="Alert Message"
+											resizable="false" style="background-color: white !important;"
+											styleClass="warning" showEffect="clip" hideEffect="clip"
+											closeOnEscape="true" closable="true"
+											message="Please select bank prefix">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="bankdebitCardNo"
+											widgetVar="bankdebitCardNo" header="Alert Message"
+											resizable="false" style="background-color: white !important;"
+											styleClass="warning" showEffect="clip" hideEffect="clip"
+											closeOnEscape="true" closable="true"
+											message="Please enter bank debit card number">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="cardNameEmpty" widgetVar="cardNameEmpty"
+											header="Alert Message" resizable="false"
+											style="background-color: white !important;"
+											styleClass="warning" showEffect="clip" hideEffect="clip"
+											closeOnEscape="true" closable="true"
+											message="Please select enter debit card name">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="approvalNoEmpty"
+											widgetVar="approvalNoEmpty" header="Alert Message"
+											resizable="false" style="background-color: white !important;"
+											styleClass="warning" showEffect="clip" hideEffect="clip"
+											closeOnEscape="true" closable="true"
+											message="Please enter debit card approval number">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="authorizedByEmpty"
+											widgetVar="authorizedByEmpty" header="Alert Message"
+											resizable="false" style="background-color: white !important;"
+											styleClass="warning" showEffect="clip" hideEffect="clip"
+											closeOnEscape="true" closable="true"
+											message="Please select debit card authorized by">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="authorizedPasswordEmpty"
+											widgetVar="authorizedPasswordEmpty" header="Alert Message"
+											resizable="false" style="background-color: white !important;"
+											styleClass="warning" showEffect="clip" hideEffect="clip"
+											closeOnEscape="true" closable="true"
+											message="Please enter debit card authorized password">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="passwordcheck" widgetVar="passwordcheck"
+											height="20" resizable="false" width="350"
+											style="background-color: white !important;"
+											header="#{msg['lbl.warningDailog']}" styleClass="warning"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true"
+											message="#{msg['lbl.sorrypassworddeosnotmatch']}">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="prefixNotMatch"
+											widgetVar="prefixNotMatch" header="Alert Message"
+											resizable="false" style="background-color: white !important;"
+											styleClass="warning" showEffect="clip" hideEffect="clip"
+											closeOnEscape="true" closable="true"
+											message="Bank prefix is not matching for selected bank">
+										</p:confirmDialog>
+
+										<!-- <p:confirmDialog id="DeactivateRecordExist"
+											widgetVar="DeactivateRecordExist" header="Alert Message"
+											resizable="false" style="background-color: white !important;"
+											styleClass="warning" showEffect="clip" hideEffect="clip"
+											closeOnEscape="true" closable="true"
+											message="Already deacivated this card number,please contact help desk">
+										</p:confirmDialog> -->
+
+										<p:confirmDialog id="NotAuthorized" widgetVar="NotAuthorized"
+											header="Alert Message" resizable="false"
+											style="background-color: white !important;"
+											styleClass="warning" showEffect="clip" hideEffect="clip"
+											closeOnEscape="true" closable="true"
+											message="You are not authorized to delete ,please contact branch manager">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="alertmsg" widgetVar="alertmsg"
+											header="Alert Message" resizable="false"
+											style="background-color: white !important;"
+											styleClass="warning" showEffect="clip" hideEffect="clip"
+											closeOnEscape="true" closable="true"
+											message="#{customerPersonalInfo.exceptionMessage}">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="noBankPrefix" widgetVar="noBankPrefix"
+											header="Alert Message" resizable="false"
+											style="background-color: white !important;"
+											styleClass="warning" showEffect="clip" hideEffect="clip"
+											closeOnEscape="true" closable="true"
+											message="Prefix is not setting for this bank,Please add prefix in bank prefix master ">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="debitCardNo" widgetVar="debitCardNo"
+											header="Alert Message" resizable="false"
+											style="background-color: white !important;"
+											styleClass="warning" showEffect="clip" hideEffect="clip"
+											closeOnEscape="true" closable="true"
+											message="Please enter debit card number">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="duplicateCheck"
+											widgetVar="duplicateCheck" header="Alert Message"
+											resizable="false" style="background-color: white !important;"
+											styleClass="warning" showEffect="clip" hideEffect="clip"
+											closeOnEscape="true" closable="true"
+											message="#{msg['lbl.duplicateRecordsNotFound']}">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="misMatchBankCardLength"
+											widgetVar="misMatchBankCardLength" height="20"
+											resizable="false" width="500"
+											style="background-color: white !important;"
+											header="#{msg['lbl.warningDailog']}" styleClass="warning"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true"
+											message="#{msg['lbl.bankDebitCardLengthShouldMatchWith']} #{customerPersonalInfo.colCardNoLength} ">
+										</p:confirmDialog>
+
+										<p:panel id="debitPanel">
+
+											<p:panel styleClass="panel_border3">
+												<h4
+													style="margin-top: 25px; text-align: center; font-size: 22px; color: #fff;">
+													<h:outputText value="Debit Card details" />
+												</h4>
+												<div class="clearfix" />
+											</p:panel>
+
+
+											<p:panel styleClass="panel_border7">
+												<h:panelGroup layout="block" styleClass="content_level1">
+
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+
+															<h:outputText value="#{msg['lbl.banks']} *" />
+
+														</p:panel>
+														<p:panel styleClass="inner_right_col" id="debitdetails">
+														<p:focus context="colbankid"></p:focus>
+															<p:message id="msgcolbankid" for="colbankid"
+																display="text" />
+															<p:selectOneMenu id="colbankid" styleClass="dropdown" tabindex="0"
+																value="#{customerPersonalInfo.colBankCode}"
+																filterMatchMode="contains" filter="true" required="true"
+																requiredMessage="Please Select Bank"
+																disabled="#{customerPersonalInfo.booRenderClearDebitCard}">
+																<f:selectItem itemLabel="#{msg['lbl.selectBank']}"
+																	itemValue="" />
+
+																<f:selectItems
+																	value="#{customerPersonalInfo.bankMasterList}" var="c"
+																	itemLabel="#{c.bankShortName} - #{c.bankFullName}"
+																	itemValue="#{c.chequeBankCode}" />
+
+																<p:ajax update="mainPanel" event="change"
+																	listener="#{customerPersonalInfo.populateCustomerBankDetails}"
+																	onstart="process.show();" onsuccess="process.hide();" />
+															</p:selectOneMenu>
+														</p:panel>
+													</p:panel>
+
+													<p:panel styleClass="left_col" id="colcardno">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.cardnumb']}*" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+
+															<p:panelGrid style="width:100%;">
+																<p:row>
+																	<p:column
+																		style="width:25% !important; padding:0px 13px 0px 0px !important;"
+																		rendered="#{customerPersonalInfo.booRenderMultipleCardPrefix}">
+
+																		<p:message id="msgColDebitCardPrefexId"
+																			for="colDebitCardPrefexId" display="text" />
+
+																		<p:selectOneMenu id="colDebitCardPrefexId"
+																			value="#{customerPersonalInfo.colDebitCardPrefex}"
+																			styleClass="dropdown" filter="true"
+																			filterMatchMode="contains" required="true"
+																			requiredMessage="select Card Number Prefix">
+																			<f:selectItem itemLabel="Select Prefix" itemValue="" />
+																			<f:selectItems
+																				value="#{customerPersonalInfo.lstBankPrefix}"
+																				var="c" itemLabel="#{c.bankPrefix}"
+																				itemValue="#{c.bankPrefix}" />
+																			<p:ajax for="msgColDebitCardPrefexId" event="change"
+																				listener="#{customerPersonalInfo.findPrefixLength}"
+																				update="msgColDebitCardPrefexId,colcardno"
+																				onstart="process.show();"
+																				onsuccess="process.hide();" />
+																		</p:selectOneMenu>
+																	</p:column>
+
+																	<p:column
+																		style="width:25% !important; padding:0px 13px 0px 0px !important;"
+																		rendered="#{customerPersonalInfo.booRenderSingleeCardPrefix}">
+																		<p:message for="singleDebitCardPrefexId"
+																			display="text" id="msgsingleDebitCardPrefexId" />
+
+																		<p:inputText id="singleDebitCardPrefexId" tabindex="-1"
+																			required="true" requiredMessage="select Card Prefix"
+																			value="#{customerPersonalInfo.singleDebitCardPrefex}"
+																			disabled="true">
+																		</p:inputText>
+																	</p:column>
+
+																	<p:column
+																		style="width:50% !important; padding:0px 13px 0px 0px !important;">
+																		<p:message for="colDebitCardNoId" display="text"
+																			id="msgcolDebitCardNoId" />
+																		<p:inputText id="colDebitCardNoId"
+																			value="#{customerPersonalInfo.debitCardNo}"
+																			required="true"
+																			requiredMessage="Please Enter Card Number" tabindex="-1"
+																			disabled="#{customerPersonalInfo.booRenderClearDebitCard}">
+																			<p:ajax
+																				update="msgcolDebitCardNoId,colDebitCardNoId,customerDeactive,remarks,remarksId,colcardno"
+																				event="blur"
+																				listener="#{customerPersonalInfo.checkingCardNumberLength}"></p:ajax>
+																		</p:inputText>
+																	</p:column>
+
+																</p:row>
+															</p:panelGrid>
+
+														</p:panel>
+
+													</p:panel>
+
+
+													<h:panelGroup layout="block" class="clearfix" />
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.nameofcard']}*" />
+														</p:panel>
+
+														<p:panel styleClass="inner_right_col" id="cardtypename">
+															<p:message id="msgcolnameid" for="colnameid" 
+																display="text" />
+															<p:inputText id="colnameid"
+																value="#{customerPersonalInfo.colNameofCard}"
+																 required="true"
+																requiredMessage="Please Enter Name of Card"
+																style="width:200%;" tabindex="-1">
+																<p:ajax event="blur"
+																	listener="#{customerPersonalInfo.firstNameCheck}"
+																	update="msgcolnameid,alertmsg,authpanel,mainPanel"
+																	onstart="process.show();" onsuccess="process.hide();" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+
+													<h:panelGroup layout="block" class="clearfix" />
+
+													<p:panel id="authpanel"
+														rendered="#{customerPersonalInfo.booAuthozed}">
+
+														<p:panel styleClass="left_col">
+															<p:panel styleClass="inner_left_col">
+																<h:outputText value="#{msg['lbl.authorzed']}*" />
+															</p:panel>
+															<p:panel styleClass="inner_right_col">
+																<p:message id="msgcolauthorid" for="colauthorid"
+																	display="text" />
+																<p:selectOneMenu id="colauthorid"
+																	value="#{customerPersonalInfo.colAuthorizedby}"
+																	styleClass="dropdown" filterMatchMode="contains"
+																	filter="true" required="true"
+																	requiredMessage="Please Select Authorized" tabindex="-1">
+																	<f:selectItem itemLabel="Select Authorized"
+																		itemValue="" />
+																	<f:selectItems value="#{customerPersonalInfo.empllist}"
+																		var="c" itemLabel="#{c.userName}"
+																		itemValue="#{c.userName}" />
+																	<p:ajax update="msgcolauthorid" />
+																</p:selectOneMenu>
+															</p:panel>
+														</p:panel>
+
+														<p:panel styleClass="left_col">
+															<p:panel styleClass="inner_left_col">
+																<h:outputText value="#{msg['lbl.password']}*" />
+															</p:panel>
+															<p:panel styleClass="inner_right_col" id="testpanel">
+																<p:message id="msgcolpassword" for="colpassid"
+																	display="text" />
+																<p:password id="colpassid"
+																	value="#{customerPersonalInfo.colpassword}"
+																	required="true"
+																	requiredMessage="Please Enter Authorized Password" tabindex="-1">
+																	<p:ajax update="msgcolpassword" />
+																</p:password>
+															</p:panel>
+														</p:panel>
+
+													</p:panel>
+
+												</h:panelGroup>
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="panel_border7"
+											style="background-color:#cec !important;">
+											<h:panelGroup layout="block" styleClass="shadow_button3">
+
+												<p:commandButton value="#{msg['lbl.add']}"
+													onstart="process.show();" onsuccess="process.hide()"
+													action="#{customerPersonalInfo.verifyPassword}"
+													process="@this" tabindex="-1"
+													update="mainPanel,colcardno,singleDebitCardPrefexId"
+													style="margin-right:10px;" />
+
+												<p:commandButton value="#{msg['lbl.clear']}"
+													styleClass="btn-warning" onstart="process.show();"
+													onsuccess="process.hide();" update="mainPanel"
+													action="#{customerPersonalInfo.clearDebitCard}"
+													process="@this" tabindex="-1"
+													disabled="#{customerPersonalInfo.booRenderClearDebitCard}">
+
+													<p:resetInput target="@form" />
+												</p:commandButton>
+											</h:panelGroup>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20" />
+
+										<p:panel id="debitDetailsDT">
+
+											<p:dataTable id="dataTable"
+												value="#{customerPersonalInfo.custDebitDataTableList}"
+												var="c"
+												rowStyleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+												rowIndexVar="rowIndex" style="width:100%;" paginator="true"
+												paginatorPosition="bottom"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10,15" styleClass="mydatatableclass">
+
+												<p:column headerText="#{msg['lbl.sNo']}" style="width:2px;">
+													<p:outputLabel value="#{rowIndex+1}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.banks']}"
+													style="width:190px;">
+													<p:outputLabel value="#{c.shortDesc} - #{c.fullDesc} "
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<!-- <p:column headerText="#{msg['lbl.cardnumb']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:outputLabel value="#{c.colCardNo}" />
+												</p:column> -->
+
+												<p:column headerText="#{msg['lbl.cardnumb']}"
+													style="width:70px;">
+													<p:outputLabel value="#{c.colMaskCardNo}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.nameofcard']}"
+													style="width:230px;">
+													<p:outputLabel value="#{c.colNameofCard}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.edit']}" style="width:3%;">
+													<p:commandButton value="" id="imgEdit" styleClass="edit"
+														onstart="process.show();"
+														onsuccess="process.hide()"
+														action="#{customerPersonalInfo.editCustomerCardName(c)}"
+														update=":form1" process="@this">
+													</p:commandButton>
+												</p:column>
+
+												<p:column style="width:30px; text-align:center !important;">
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.delete']}" />
+													</f:facet>
+													<p:commandButton styleClass="delete" value=""
+														action="#{customerPersonalInfo.removeDebitCard(c)}"
+														onstart="process.show();" onsuccess="process.hide();"
+														immediate="true" update=":form1:dataTable,:form1:remarks">
+													</p:commandButton>
+												</p:column>
+											</p:dataTable>
+
+										</p:panel>
+
+										<div class="clearfix"></div>
+
+										<p:panel id="debit" styleClass="panel_border5">
+											<h:panelGroup layout="block" styleClass="shadow_button1">
+
+												<p:commandButton value="#{msg['lbl.savenext']}"
+													style="margin-right:10px;"
+													action="#{customerPersonalInfo.saveCustomerDebitCard}"
+													update="mainPanel" onstart="process.show();"
+													immediate="true" onsuccess="process.hide();" />
+
+												<p:commandButton value="#{msg['lbl.back']}"
+													styleClass="btn-info"
+													action="#{customerPersonalInfo.backEmploymnetDetails}"
+													process="@this" update="mainPanel"
+													style=" margin-right:10px; " onstart="process.show();"
+													onsuccess="process.hide();" />
+
+												<div class="clearfix"></div>
+											</h:panelGroup>
+										</p:panel>
+
+
+										<div class="clearfix"></div>
+
+										<!-- </p:panel> -->
+
+									</p:panel>
+								</h:form>
+							</h:panelGroup>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+					</h:panelGroup></td>
+			</tr>
+		</table>
+		<div class="clearfix"></div>
+
+		<ui:include src="#{facesBean.footer}"></ui:include>
+		<a id="goTop" />
+	</f:view>
+</h:body>
+</html>

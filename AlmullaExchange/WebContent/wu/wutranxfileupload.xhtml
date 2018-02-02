@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	
+	<script type="text/javascript">
+		history.pushState(null, null, 'wutranxfileupload.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'wutranxfileupload.xhtml');
+		});
+	</script>
+</h:head>
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+		<h:form id="form" enctype="multipart/form-data" onkeypress="if (event.keyCode == 13) { return false; }">
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;"><ui:include
+							src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle"
+										src="../images/toggle_plus.png" alt=""
+										onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+
+								<h1>
+									<h:outputText value="Western Union File Upload" />
+								</h1>
+
+								<p:panel styleClass="shadow" id="mainPanel"
+									style="background-color:#FFF !important; ">
+
+									<p:confirmDialog id="errorPage" widgetVar="errorPage"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{wuTranxFileUploadBean.errorMessage} ">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="fileNotFound" widgetVar="fileNotFound"
+										resizable="false" width="500"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="Please choose file ,before submit click">
+									</p:confirmDialog>
+
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+
+									<h2>
+										<h:outputText value="Western Union File Upload" />
+									</h2>
+
+									<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputLabel value="Operator ID" style="color:#05000a;" />
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{wuTranxFileUploadBean.operatorID}"
+												style="font-size:12px !important;" readonly="true">
+												<p:ajax></p:ajax>
+											</p:inputText>
+										</p:panel>
+									</p:panel>
+
+									<!-- <p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<p:commandButton value="UPLOAD" ajax="false"
+												actionListener="#{wuTranxFileUploadBean.readCSVfile}"
+												update="dataTable,fileNotFound" />
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+										</p:panel>
+									</p:panel> -->
+
+									<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['lbl.fileUploadedcsv']}" />
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+
+											<p:fileUpload id="fileUplod" mode="advanced"
+												fileUploadListener="#{wuTranxFileUploadBean.readCSVfile}"
+												update="mainPanel" label="Choose a file"
+												sizeLimit="50485762222" allowTypes="/(\.|\/)(csv|CSV|)$/"
+												required="true" requiredMessage="Upload a File"
+												invalidSizeMessage="The maximum file size allowed is 1 Megabyte !"
+												invalidFileMessage="You are allowed to upload only CSV !!!"
+												oncomplete="PF('imageUpload').show()">
+												<p:message id="messages" for="fileUplod"
+													value="File Not Selected" style="color:red;" />
+											</p:fileUpload>
+										</p:panel>
+									</p:panel>
+
+									<p:dataTable id="dataTable"
+										value="#{wuTranxFileUploadBean.lstWUTranxFileUploadDatatable}"
+										var="c"
+										rowStyleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+										rowIndexVar="rowIndex" style="width:100%;" paginator="true"
+										paginatorPosition="bottom"
+										paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+										rowsPerPageTemplate="5" styleClass="mydatatableclass">
+
+										<p:column headerText="#{msg['lbl.sNo']}">
+											<p:outputLabel value="#{rowIndex+1}" />
+										</p:column>
+
+										<p:column headerText="Sender Name">
+											<p:outputLabel value="#{c.senderName}" />
+										</p:column>
+
+										<p:column headerText="Receiver Name">
+											<p:outputLabel value="#{c.receiverName}" />
+										</p:column>
+
+										<p:column headerText="Terminal">
+											<p:outputLabel value="#{c.terminalID}" />
+										</p:column>
+
+										<p:column headerText="Destination Country">
+											<p:outputLabel value="#{c.destinationCountryCode}" />
+										</p:column>
+
+										<p:column headerText="Desctination Currency">
+											<p:outputLabel value="#{c.destinationCurrencyCode}" />
+										</p:column>
+
+										<p:column headerText="MTCNO">
+											<p:outputLabel value="#{c.mtcNo}" />
+										</p:column>
+
+										<p:column headerText="Collected Amount">
+											<p:outputLabel value="#{c.collectAmount}" />
+										</p:column>
+
+										<p:column headerText="INorOUT">
+											<p:outputLabel value="#{c.inorOut}" />
+										</p:column>
+
+										<p:column headerText="Select">
+											<p:commandLink value="select" update=":form"
+												action="#{wuTranxFileUploadBean.showDetails(c)}"
+												onstart="process.show();" onsuccess="process.hide();"
+												process="@this"
+												style="float:left;margin-left:5px;margin-right:5px;color:blue !important; text-decoration:underline !important;" />
+										</p:column>
+
+									</p:dataTable>
+
+									<h:panelGroup layout="block" styleClass="shadow_button"
+										id="goexitId" style="color:green;">
+
+										<p:commandButton value="#{msg['lbl.exit']}"
+											action="#{wuTranxFileUploadBean.exitWU}" update="mainPanel"
+											onstart="process.show();" onsuccess="process.hide();"
+											immediate="true" />
+									</h:panelGroup>
+
+
+								</p:panel>
+
+							</h:panelGroup>
+							<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+						</h:panelGroup></td>
+				</tr>
+			</table>
+		</h:form>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

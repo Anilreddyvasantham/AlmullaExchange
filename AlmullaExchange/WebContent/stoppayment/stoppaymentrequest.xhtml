@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</h:head>
+
+<h:body>
+
+
+ <p:confirmDialog id="detailsexists" widgetVar="detailsexists" width="600" header="Warning DialogBox"
+		height="17" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="Record already exist">
+    </p:confirmDialog>
+    
+    
+ 	<p:dialog id="save" widgetVar="save" width="270" height="70"
+		showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+		<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} " />
+		<br />
+		<p:spacer width="15px" />
+		<p:commandButton value="#{msg['lbl.ok']}"
+			actionListener="#{stopPayment.clickOnPrint}"
+			process="@this" />
+	</p:dialog>
+    
+ <p:confirmDialog id="detailsnotexists" widgetVar="detailsnotexists" width="600" header="Warning DialogBox"
+		height="17" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="Record data not available ">
+    </p:confirmDialog>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include> 
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form>
+								<h1>
+									<h:outputText value="Stop Payment Request" />
+								</h1>
+								<p:panel styleClass="panel_border" id="mainPanel">
+								
+									<h3>
+										<h:outputText value="Stop Payment Request" />
+									</h3>
+									<p:panel styleClass="panel_border">
+									<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="Transfer Number" />
+										</p:panel>
+										
+						<!-- 				<p:column  style="width:45% !important; padding:0px 13px 0px 0px !important;"  rendered="#{stoppaymentCollectionBean.renderRef}">
+            								<p:message for="transferNoTextId" display="text" id="applicationNoId" />
+            									<p:inputText id="transferNoTextId" value="#{stoppaymentCollectionBean.transferNo}" required="true" requiredMessage="Enter Transfer No">
+            									<p:ajax event="blur"  listener="#{stoppaymentCollectionBean.fetchDetails}" update="mainPanel"/>
+            									</p:inputText>
+            								</p:column> -->
+										
+										
+										
+										<p:panel styleClass="inner_right_col">
+											<p:panelGrid style="width:98%;">
+												<p:row>
+													<p:column
+														style="width:45% !important; padding:0px 13px 0px 0px !important;">
+														<p:inputText value="#{stopPayment.transferYear}"> 
+														</p:inputText>
+													</p:column>
+													
+													<p:column
+														style="width:45% !important; padding:0px 13px 0px 0px !important;">
+														<p:message for="transferNoTextId" display="text" id="applicationNoId" />
+														<p:inputText   id="transferNoTextId"  value="#{stopPayment.transferNo}" tabindex="1" required="true" requiredMessage="Enter Transfer No">
+														<p:ajax event="blur" update="mainPanel" listener="#{stopPayment.viewDetails}"/>
+														</p:inputText>
+													</p:column>
+												</p:row>
+											</p:panelGrid>
+										</p:panel>
+									</p:panel>
+
+									<p:panel styleClass="right_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="Doc No" />
+											
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{stopPayment.docNo}" readonly="true">
+											
+											</p:inputText>
+										</p:panel>
+									</p:panel>
+
+
+									<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="Date" />
+										
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{stopPayment.date}" readonly="true"/>
+										</p:panel>
+									</p:panel>
+
+
+									<p:panel styleClass="right_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="Customer" />
+											
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:panelGrid style="width:98%;">
+												<p:row>
+													<p:column
+														style="width:45% !important; padding:0px 13px 0px 0px !important;">
+														<p:inputText value="#{stopPayment.customerRef}" readonly="true"/>
+													
+													</p:column>
+													<p:column
+														style="width:45% !important; padding:0px 13px 0px 0px !important;">
+														<p:inputText value="#{stopPayment.customerName}" readonly="true"/>
+														
+													</p:column>
+
+
+
+												</p:row>
+											</p:panelGrid>
+										</p:panel>
+									</p:panel>
+
+									<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="Telephone No" />
+											
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{stopPayment.telephone}" readonly="true"/>
+										</p:panel>
+									</p:panel>
+
+
+	<p:panel styleClass="right_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="Product" />
+											
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:panelGrid style="width:98%;">
+												<p:row>
+													<p:column
+														style="width:45% !important; padding:0px 13px 0px 0px !important;">
+														<p:inputText value="#{stopPayment.productNo}"  readonly="true"/>
+														
+													</p:column>
+													<p:column
+														style="width:45% !important; padding:0px 13px 0px 0px !important;">
+														<p:inputText value="#{stopPayment.productName}" readonly="true"/>
+														
+													</p:column>
+
+
+
+												</p:row>
+											</p:panelGrid>
+										</p:panel>
+									</p:panel>
+									
+									<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="Acount Payee" />
+											
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{stopPayment.accountPayee}" readonly="true"/>
+										</p:panel>
+									</p:panel>
+									
+									<div class="clearfix"></div>
+											<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="Benificiary" />
+										
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputTextarea value="#{stopPayment.benificiary}" style="height:20% !important;" readonly="true"/>
+										</p:panel>
+									</p:panel>
+									<!-- 	<div class="clearfix"></div> -->
+									<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="Payable At" />
+											
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:panelGrid style="width:98%;">
+												<p:row>
+													<p:column
+														style="width:45% !important; padding:0px 13px 0px 0px !important;">
+														<p:inputText value="#{stopPayment.payableBranch}" readonly="true"/>
+								
+													</p:column>
+													<p:column
+														style="width:45% !important; padding:0px 13px 0px 0px !important;">
+														<p:inputText value="#{stopPayment.payableBank}" readonly="true"/>
+																									</p:column>
+
+
+
+												</p:row>
+											</p:panelGrid>
+										</p:panel>
+									</p:panel>
+									<div class="clearfix"></div>
+										<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="Sale Amount" />
+																			</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{stopPayment.saleAmount}" readonly="true"/>
+										</p:panel>
+									</p:panel>
+									
+										<p:panel styleClass="right_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="Remark" />
+										
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{stopPayment.remarks}" tabindex="2"  maxlength="49" />
+										</p:panel>
+									</p:panel>
+									
+										<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="Exchange Rate" />
+										
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{stopPayment.exchangeRate}" readonly="true"/>
+										</p:panel>
+									</p:panel>
+									
+										<p:panel styleClass="right_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="Paid Amount" />
+											
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{stopPayment.paidAmount}" readonly="true" />
+										</p:panel>
+									</p:panel>
+									
+										<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="Purchase Amount" readonly="true"  />
+											
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{stopPayment.purchaseAmount}" readonly="true" />
+										</p:panel>
+									</p:panel>
+									
+									
+										<p:panel styleClass="right_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="Net Paid Amt" />
+											
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{stopPayment.netPaidAmount}" readonly="true" />
+										</p:panel>
+									</p:panel>
+									
+										<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="Commission" />
+											
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{stopPayment.commission}" readonly="true" />
+										</p:panel>
+									</p:panel>
+									
+									<p:panel styleClass="right_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="Refund Amt" />
+											
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{stopPayment.refundAmount}" readonly="true" />
+										</p:panel>
+									</p:panel>
+
+		<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="Charges(Bank)" />
+										
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{stopPayment.chargesForBank}" readonly="true" />
+										</p:panel>
+									</p:panel>
+									
+									
+		<p:panel styleClass="right_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="Valid Untill" />
+										
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{stopPayment.validUntill}"  readonly="true" />
+										</p:panel>
+									</p:panel>
+									
+									
+		<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="Charges(Devl)" />
+										
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{stopPayment.chargesForDelv}" readonly="true" />
+										</p:panel>
+									</p:panel>
+									
+										<p:panel styleClass="right_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="Value Date" />
+										
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{stopPayment.valueDate}" readonly="true" />
+										</p:panel>
+									</p:panel>
+									
+									<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="Net Amount" />
+										
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{stopPayment.netAmount}" readonly="true" />
+										</p:panel>
+									</p:panel>
+
+
+									<h:panelGroup layout="block" class="clearfix" />
+									
+
+									<h:panelGroup layout="block" class="clearfix" />
+									<p:spacer height="20px" />
+									<h:panelGroup layout="block" class="clearfix" />
+									<h:panelGroup layout="block" styleClass="shadow_button">
+										<p:commandButton value="Print" style="margin-right:10px; " action="#{stopPayment.print}" update="mainPanel"/>
+										<p:commandButton value="Clear" action="#{stopPayment.clear}" style="margin-right:10px; " update="mainPanel" />
+										<p:commandButton value="Exit" immediate="true"   action="#{stopPayment.clickOnExit}" style="margin-right:10px; " />
+										<h:panelGroup layout="block" class="clearfix" />
+									</h:panelGroup>
+									<h:panelGroup layout="block" class="clearfix" />
+									<!-- 	</p:panel> -->
+									<h:panelGroup layout="block" class="clearfix" />
+								</p:panel>
+								</p:panel>
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<!-- <ui:include src="#{facesBean.footer}"></ui:include> -->
+	</f:view>
+</h:body>
+</html>

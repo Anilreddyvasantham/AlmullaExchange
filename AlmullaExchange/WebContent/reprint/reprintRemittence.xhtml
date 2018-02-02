@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+
+		function showPDF(formId) {
+			var day = new Date();
+			var id = day.getTime();
+			var pdfWin = window
+					.open(
+							'',
+							id,
+							"width=800,height=700,toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes");
+			document.getElementById(formId).target = id;
+			if (window.focus) {
+				pdfWin.focus()
+			}
+		}
+	</script>
+</h:head>
+
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="reprint">
+
+								<p:focus for="transferNoTextId" />
+								<h1>
+									<h:outputText value="#{msg['lbl.remittenceReprint']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h2>
+										<h:outputText value="#{msg['lbl.remittenceReprint']}" />
+									</h2>
+
+									<p:confirmDialog id="csp" widgetVar="csp" width="500"
+										showHeader="false" resizable="false" header="Warning Message"
+										visible="#{reprintRemittenceBean.boodataNotFound}"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{reprintRemittenceBean.errorMessage}">
+									</p:confirmDialog>
+
+									<p:panel styleClass="panel_border">
+										<p:panel id="headerPanel">
+											<p:panel id="one">
+											
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.documentYear']}" />
+														<h:outputText value="*"
+															style="color:red;font-weight:bold;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:panelGrid style="width:98%;">
+															<p:row>
+																<p:column
+																	style="width:45% !important; padding:0px 13px 0px 0px !important;">
+																	<p:message id="msgDocumentYear" for="document"
+																		display="text" />
+																	<p:selectOneMenu id="document"
+																		value="#{reprintRemittenceBean.docYear}" filter="true"
+																		filterMatchMode="startsWith" required="true"
+																		requiredMessage="Please Select Document/Transaction Year">
+																		<f:selectItem
+																			itemLabel="#{msg['lbl.selectDocumentYear']}"
+																			itemValue="" />
+																		<f:selectItems
+																			value="#{reprintRemittenceBean.userFinancialYearList}"
+																			var="c" itemLabel="#{c.financialYear}"
+																			itemValue="#{c.financialYear}" />
+																		<p:ajax update="msgDocumentYear" />
+																	</p:selectOneMenu>
+																</p:column>
+															</p:row>
+														</p:panelGrid>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col" id="dealYearValueID">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Receipt Number" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:panelGrid style="width:98%;">
+															<p:row>
+																<p:column
+																	style="width:45% !important; padding:0px 13px 0px 0px !important;">
+																	<p:message for="transferNoTextId" display="text"
+																		id="applicationNoId" />
+																	<p:inputText id="transferNoTextId"
+																		value="#{reprintRemittenceBean.documentNo}"
+																		tabindex="1">
+																	</p:inputText>
+																</p:column>
+
+															</p:row>
+														</p:panelGrid>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+											</p:panel>
+
+											<p:spacer height="10px" />
+											<!--  Add button Panel-->
+											<p:panel>
+												<h:panelGroup layout="block" class="clearfix" />
+												<h:panelGroup layout="block" styleClass="shadow_button">
+													<!-- onclick="showGrpMemberSearchPageCalenderLeave()"  -->
+													<h:commandButton value="#{msg['lbl.print']}"
+														onclick="showPDF('reprint');"
+														action="#{reprintRemittenceBean.generatePersonalRemittanceReceiptReport}"
+														update="mainPanel,reprint,csp"
+														style="margin-right:10px;  padding: 3px 7px 4px 12px !important;" />
+													<p:commandButton value="#{msg['lbl.cancel']}"
+														action="#{reprintRemittenceBean.clickOnExit}"
+														process="@this" style="margin-right:10px; " />
+													<p:commandButton value="#{msg['lbl.clear']}"
+														action="#{reprintRemittenceBean.clear}" process="@this"
+														update="mainPanel" immediate="true"
+														style="margin-right:10px; " />
+												</h:panelGroup>
+
+											</p:panel>
+											<!--  Add button Panel ends here-->
+										</p:panel>
+										<!--  Mandatory Field-->
+										<div class="clearfix"></div>
+										<p:panel styleClass="left_col">
+											<h:outputText id="mandatory"
+												value=" #{msg['lbl.*filedsAreMandatory']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+									</p:panel>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

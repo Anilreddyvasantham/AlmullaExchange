@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</h:head>
+
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="../common/fxdeal_menu.xhtml"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h1>
+								<h:outputText
+									value="#{msg['lbl.bank']} #{msg['lbl.contactdetails']}" />
+							</h1>
+							<h:panelGroup layout="block" class="table_bg">
+								<h:form id="contactform" style="padding:0!important;">
+	<!-- 13/02/2015 start -->	<h2><h:outputText value="#{msg['lbl.bank']} #{msg['lbl.contactdetails']}"/></h2>	<!-- 13/02/2015 start -->
+									<p:panel styleClass="shadow" id="mainPanel"
+										style="background-color:#FFF !important; padding:20px 10px 20px 10px !important;  ">
+										
+										<p:dialog id="success" widgetVar="success" width="270" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+            											
+            											<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} "/><br/>
+            								<p:spacer width="15px" />
+            											<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{bankMasterContactDetails.clickOnOKSave}" process="@this"/>          
+       								 </p:dialog>
+
+										<p:confirmDialog id="confirmDialog" style=" border:3px solid #00a53e !important; font-size:16px; font-weight:bold; background:url('') 224px 45px no-repeat #FFF !important;"
+											header="#{msg['lbl.toSave']}"  message="#{msg['lbl.contactAdd']} #{bankMasterContactDetails.bankName}"
+											severity="alert" widgetVar="confirmDia">
+											<p:commandButton value="#{msg['lbl.go']}"
+												style="float:right; padding:0px 15px !important;"
+												oncomplete="confirmDia.hide()"
+												actionListener="#{bankMasterContactDetails.goFromPopUp}"
+												process="@this" update=":contactform" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												style="float:right;" oncomplete="confirmDia.hide()"
+												actionListener="#{bankMasterContactDetails.cancelFromPopUp}"
+												process="@this" update=":contactform" />
+										</p:confirmDialog>
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_bank" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="bank" display="text" />
+												<p:selectOneMenu id="bank" label="Bank Id"
+													value="#{bankMasterContactDetails.contactBankId}"
+													filter="true" filterMatchMode="startsWith">
+													<f:selectItem itemLabel="#{msg['lbl.selectbank']}"/>
+													<f:selectItems
+														value="#{bankMasterContactDetails.bankDetails}" var="c"
+														itemLabel="#{c.bankFullName}" itemValue="#{c.bankId}" />
+													<p:ajax event="change"
+														listener="#{bankMasterContactDetails.fetchBankContactInfo}"
+														update="mainPanel" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_zone" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:selectOneMenu id="zone"
+													value="#{bankMasterContactDetails.contactZone}" label="Zone"
+													filterMatchMode="startsWith" filter="true">
+													<f:selectItem itemLabel="#{msg['lbl.selectZone']}" itemValue="" />
+													<f:selectItems value="#{bankMasterContactDetails.getZoneLists()}"
+														var="c" itemLabel="#{c.zoneName}"
+														itemValue="#{c.zoneId}" />
+														<p:ajax/>
+														</p:selectOneMenu>
+											
+											</p:panel>
+										</p:panel>
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_contperson_1" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="contperson_1"
+													value="#{bankMasterContactDetails.contactPerson}" 
+													label="Contact Person">
+													<p:ajax update="contactPersonMsg" event="blur" />
+													<p:message id="contactPersonMsg" for="contperson_1"
+														display="text" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_department_1" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="department_1"
+													value="#{bankMasterContactDetails.contactDep}"
+													label="Contact Dep">
+												<!-- 	<f:validator  validatorId="arabicValidator" /> -->
+													<p:ajax update="contactDepartmentMsg" event="blur" />
+													<p:message id="contactDepartmentMsg" for="department_1"
+														display="text" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_designation_1" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="designation_1"
+													value="#{bankMasterContactDetails.contactDesignation}"
+													label="Contact Designation">
+													<!-- <f:validator  validatorId="arabicValidator" /> -->
+													<p:ajax update="contactDesignationMsg" event="blur" />
+													<p:message id="contactDesignationMsg" for="designation_1"
+														display="text" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_mobile" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="mobile"
+													value="#{bankMasterContactDetails.contactMobile}"
+													label="Mobile">
+													<p:ajax update="mobileMsg" event="blur" />
+													<p:message id="mobileMsg" for="mobile" display="text" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+
+
+										<p:panel id="localPanel"
+											style="padding:0px!important;border:none !important;">
+											<p:panel
+												style="padding:0px!important;border:none !important;"
+												rendered="#{bankMasterContactDetails.booLocal}">
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_contpersonl" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="contpersonl"
+															value="#{bankMasterContactDetails.localContactPerson}" lang="AR"
+															label="Local Contact Person">
+															<p:ajax update="localContactPersonMsg" event="blur" />
+															<p:message id="localContactPersonMsg" for="contpersonl"
+																display="text" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_departmentl"
+															value="#{msg['lbl.departmentl']} #{bankMasterContactDetails.viewBehaviorBean('Local Contact Dep','MANDATORY')}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="departmentl"
+															value="#{bankMasterContactDetails.localContactDepartment}" lang="AR"
+															label="Local Contact Dep">
+															<p:ajax update="localContactDepMsg" event="blur" />
+															<p:message id="localContactDepMsg" for="departmentl"
+																display="text" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_designationl" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="designationl"
+															value="#{bankMasterContactDetails.localContactDesignation}" lang="AR"
+															label="Local Contact Des">
+															<p:ajax update="localContactDesMsg" event="blur" />
+															<p:message id="localContactDesMsg" for="designationl"
+																display="text" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+											</p:panel>
+										</p:panel>
+										<div class="clearfix"></div>
+
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											>
+											<p:commandButton value="#{msg['lbl.add']}" update="mainPanel"
+												oncomplete="if (!args.validationFailed)confirmDia.show()"
+												style="float:right;" />
+											<div class="clearfix"></div>
+										</h:panelGroup>
+										<div class="clearfix"></div>
+<p:spacer height="20px"/>
+<div class="clearfix"></div>
+
+										<p:dataTable
+											value="#{bankMasterContactDetails.lstBankMasterContactDetails}"
+											id="datatable" var="o"
+											emptyMessage="#{msg['lbl.norecordfound']}">
+											<p:column headerText="#{msg['lbl.bank']}">
+												<h:outputText value="#{o.bank}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.zone']}">
+												<h:outputText value="#{o.zoneName}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.contperson']}">
+												<h:outputText value="#{o.contactPerson}" />
+											</p:column>
+
+											<p:column
+												headerText="#{msg['lbl.contperson']} #{msg['lbl.department']}">
+												<h:outputText value="#{o.contactDep}" />
+											</p:column>
+
+											<p:column
+												headerText="#{msg['lbl.contperson']} #{msg['lbl.designation']}">
+												<h:outputText value="#{o.contactDesignation}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.mobile']}">
+												<h:outputText value="#{o.mobile}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.contperson']}(L)"
+												rendered="#{bankMasterContactDetails.booLocal}">
+												<h:outputText value="#{o.localContactPerson}" />
+											</p:column>
+
+											<p:column
+												headerText="#{msg['lbl.contperson']} #{msg['lbl.departmentl']}"
+												rendered="#{bankMasterContactDetails.booLocal}">
+												<h:outputText value="#{o.localContactDepartment}" />
+											</p:column>
+
+											<p:column
+												headerText="#{msg['lbl.contperson']} #{msg['lbl.designationl']}"
+												rendered="#{bankMasterContactDetails.booLocal}">
+												<h:outputText value="#{o.localContactDesignation}" />
+											</p:column>
+											
+											<p:column headerText="#{msg['lbl.edit']}">
+													<p:commandButton   styleClass="edit" value="" action="#{bankMasterContactDetails.editRecord(o)}"  update=":contactform:mainPanel" immediate="true">
+													</p:commandButton>
+											</p:column>
+											<p:column headerText="#{msg['lbl.delete']}">
+												<p:commandButton styleClass="delete" value=""
+													actionListener="#{bankMasterContactDetails.remove(o)}"
+													update="datatable" process="@this" />
+											</p:column>
+
+										</p:dataTable>
+<div class="clearfix"></div>
+<p:spacer height="20px"/>
+<div class="clearfix"></div>
+										<h:panelGroup layout="block" styleClass="shadow_button">
+										
+										<p:commandButton value="#{msg['lbl.save']}" style="margin-right:10px;"
+												action="#{bankMasterContactDetails.save}" update="mainPanel"
+												process="@this" />
+											
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												action="#{bankMasterContactDetails.cancel}" immediate="true"
+												ajax="false" style=" margin-right:10px; " />
+												
+											<p:commandButton value="#{msg['lbl.clear']}"
+												action="#{bankMasterContactDetails.clear}"
+												update="mainPanel" />
+												
+												
+											<div class="clearfix"></div>
+										</h:panelGroup>
+										<div class="clearfix"></div>
+										<!-- stared koti 30/01/2015 -->
+									<p:panel styleClass="left_col" >
+									<h:outputText  id="mandatory" value=" #{msg['lbl.*filedsAreMandatory']}"  style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+								</p:panel>
+									<!-- ended koti 30/01/2015 -->
+									</p:panel>
+								</h:form>
+							</h:panelGroup>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+					</h:panelGroup>
+
+					<div class="clearfix"></div></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+
+	</f:view>
+</h:body>
+</html>

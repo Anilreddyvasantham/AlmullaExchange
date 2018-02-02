@@ -1,0 +1,624 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<style type="text/css">
+.animated .ui-progressbar-value {
+	background-image: url("./images/preloader.gif");
+}
+</style>
+<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+
+		 history.pushState(null, null, 'complaintmatrix.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'complaintmatrix.xhtml');
+		    });
+	</script>
+</h:head>
+<p:dialog id="approve" widgetVar="approve" width="400" height="80"
+	resizable="false" style="background-color: white !important;"
+	styleClass="success" header="#{msg['lbl.success']}" closable="false"
+	showEffect="clip" hideEffect="clip">
+	<p:outputLabel value="#{msg['lbl.complaintMatrixMasterApproval']}"
+		style="text-align: center; font-size:15px !important;" />
+	<br />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{complaint.clickOnOKApprove}" process="@this"
+		style="margin-left: 150px !important;" />
+</p:dialog>
+<p:confirmDialog id="noRecord" widgetVar="noRecord" width="300"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.noRecordFound']}">
+</p:confirmDialog>
+<p:confirmDialog id="remarksEmpty" widgetVar="remarksEmpty" width="400"
+	height="17" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" header="#{msg['lbl.warningDailog']}"
+	hideEffect="clip" closeOnEscape="true" closable="true"
+	message="#{msg['lbl.remarksShouldNotBeEmpty']}">
+</p:confirmDialog>
+
+
+
+<p:confirmDialog id="noRecords" widgetVar="noRecords" width="400"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true"
+	message="#{msg['lbl.theseCombinationAlreadyExistInDb']}">
+</p:confirmDialog>
+
+
+
+<p:dialog id="alreadyapprov" widgetVar="alreadyapprov" width="400"
+	height="80" resizable="false"
+	style="background-color: white !important;" styleClass="warning"
+	header="#{msg['lbl.warningDailog']}" closable="false" showEffect="clip"
+	hideEffect="clip">
+	<p:outputLabel value="#{msg['lbl.approvedbyanother']}"
+		style="text-align: center; font-size:15px !important;" />
+	<br />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{complaint.ComplaintMatrixApprovedByOhterPerson}"
+		process="@this" style="margin-left: 150px !important;" />
+</p:dialog>
+
+
+
+<h:body>
+
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+					<!-- <ui:include
+						src="../common/common_menu.xhtml"></ui:include> --> <ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include>
+				</td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h1>
+								<h:outputText value="#{msg['lbl.complaintMatrix']}" />
+
+							</h1>
+
+							<h:panelGroup layout="block" class="table_bg">
+								<h:form id="form1"
+									style="padding:0!important; background:none !important;">
+									<p:panel styleClass="shadow" id="mainPanel">
+										<h2>
+											<h:outputText value="#{msg['lbl.complaintMatrix']}" />
+
+										</h2>
+										<p:dialog id="pending" widgetVar="pending" width="400"
+											height="80" resizable="false"
+											style="background-color: white !important;"
+											styleClass="warning" header="#{msg['lbl.warningDailog']}"
+											closable="false" showEffect="clip" hideEffect="clip">
+											<p:outputLabel value="#{msg['lbl.plsApproveRecord']}"
+												style="text-align: center; font-size:15px !important;" />
+											<br />
+											<p:commandButton value="#{msg['lbl.ok']}"
+												onclick="PF('pending').hide();" immediate="true"
+												style="margin-left: 150px !important;" />
+										</p:dialog>
+
+										<p:dialog id="alReadyExist" widgetVar="alReadyExist"
+											width="400" height="80" resizable="false"
+											style="background-color: white !important;"
+											styleClass="warning" header="#{msg['lbl.warningDailog']}"
+											closable="false" showEffect="clip" hideEffect="clip">
+											<p:outputLabel value="These Combination Already Exist"
+												style="text-align: center; font-size:15px !important;" />
+											<br />
+											<p:commandButton value="#{msg['lbl.ok']}"
+												onclick="PF('alReadyExist').hide();" immediate="true"
+												style="margin-left: 150px !important;" />
+										</p:dialog>
+										<p:dialog id="complete" widgetVar="complete" width="400"
+											height="80" resizable="false"
+											style="background-color: white !important;"
+											styleClass="success" header="#{msg['lbl.success']}"
+											closable="false" showEffect="clip" hideEffect="clip">
+											<h:outputText
+												value="#{msg['lbl.complaintMatrixMasterSaved']}"
+												style="text-align: center; font-size:15px !important;" />
+											<br />
+											<p:commandButton value="#{msg['lbl.ok']}"
+												actionListener="#{complaint.clickOnOKSave}" process="@this"
+												style="margin-left: 150px !important;" />
+										</p:dialog>
+
+
+										<p:dialog id="permanentDelete" widgetVar="permanentDelete"
+											width="400" height="80" resizable="false"
+											style="background-color: white !important;"
+											styleClass="warning" header="#{msg['lbl.deleteRecrd']}"
+											closable="false" showEffect="clip" hideEffect="clip">
+											<p:outputLabel
+												value="#{msg['lbl.douWantDeleteRecordPermentely']}"
+												style="text-align: center; font-size:15px !important;" />
+											<br />
+											<p:commandButton value="#{msg['lbl.ok']}"
+												actionListener="#{complaint.complaintMatrixConfirmPermanentDelete}"
+												process="@this" oncomplete="PF('permanentDelete').hide();"
+												update="mainPanel" style="margin-left: 150px !important;" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												onclick="PF('permanentDelete').hide();" immediate="true"
+												style="margin-left:10px;" />
+										</p:dialog>
+
+										<p:dialog id="activateRecord" widgetVar="activateRecord"
+											width="400" height="80" resizable="false"
+											style="background-color: white !important;"
+											styleClass="warning" header="#{msg['lbl.activateRecrd']}"
+											closable="false" showEffect="clip" hideEffect="clip">
+											<p:outputLabel value="#{msg['lbl.doyouactivaterecord']}"
+												style="text-align: center; font-size:15px !important;" />
+											<br />
+											<p:commandButton value="#{msg['lbl.ok']}"
+												actionListener="#{complaint.activateRecord}" process="@this"
+												oncomplete="PF('activateRecord').hide();" update="mainPanel"
+												style="margin-left: 150px !important;" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												onclick="PF('activateRecord').hide();" immediate="true"
+												style="margin-left:10px;" />
+										</p:dialog>
+
+										<p:confirmDialog id="datatable" widgetVar="datatable"
+											width="400" resizable="false"
+											style="background-color: white !important;"
+											header="#{msg['lbl.warningDailog']}" styleClass="warning"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true" message="#{msg['lbl.combinationExist']}">
+											<!--  <h:outputText value="[Taken By: #{complaint.complaintTakenBy} Action By:#{complaint.complaintActionBy}]" style="text-align: center; font-size:15px !important;" />-->
+										</p:confirmDialog>
+										
+										<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true"
+	message="#{complaint.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+</p:confirmDialog>
+
+
+<p:confirmDialog id="exception" header="#{msg['lbl.warning']}"
+	widgetVar="exception" width="600" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" message="#{complaint.errorMessage}">
+
+	<p:commandButton value="#{msg['lbl.ok']}" onclick="exception.hide()"
+		process="@this" update="mainPanel" />
+
+</p:confirmDialog>
+
+										<p:dialog id="remarks" widgetVar="remarks" width="480"
+											resizable="false" style="background-color: white !important;"
+											styleClass="info" header="Remarks" closable="false"
+											showEffect="clip" hideEffect="clip" modal="true">
+											<p:panel>
+												<table>
+													<tr>
+														<td><h:outputText value="#{msg['lbl.approvedDate']}" /></td>
+														<td><h:outputText value="#{complaint.approvedDate}"
+																style="color:red !important;" /></td>
+													</tr>
+													<tr>
+														<td><h:outputText value="#{msg['lbl.approvedBy']}" />
+														</td>
+														<td><h:outputText value="#{complaint.approvedBy}"
+																style="color:red !important;" /></td>
+													</tr>
+												</table>
+											</p:panel>
+											<p:spacer height="10px" />
+											<p:panel>
+												<h:outputText value="#{msg['lbl.enterremarks']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:spacer height="5px" />
+											<p:panel>
+												<h:inputTextarea id="remarksId" value="#{complaint.remarks}"
+													validatorMessage="Maximum 255 charectors allowed">
+													<f:validateLength maximum="255" />
+													<p:ajax />
+												</h:inputTextarea>
+											</p:panel>
+											<p:spacer height="5px" />
+											<p:panel style="padding-left:160px;">
+												<p:commandButton value="#{msg['lbl.ok']}"
+													actionListener="#{complaint.clickOkRemarks}"
+													process="@this" />
+												<p:commandButton value="#{msg['lbl.cancel']}"
+													actionListener="#{complaint.cancelRemarks}" process="@this" />
+											</p:panel>
+										</p:dialog>
+
+										<p:panel styleClass="panel_border">
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.country']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+
+													<p:message for="country" display="text" id="msgcountry" />
+													<p:selectOneMenu id="country"
+														value="#{complaint.countryId}" filter="true"
+														required="true" requiredMessage="Please Select Country"
+														filterMatchMode="contains"
+														disabled="#{complaint.booReadOnly}">
+														<f:selectItem itemLabel="#{msg['lbl.selectcountry']}"
+															itemValue="" />
+														<f:selectItems value="#{complaint.countryNameList}"
+															var="c"
+															itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+															itemValue="#{c.fsCountryMaster.countryId}" />
+														<p:ajax event="change" update="bank,service"
+															listener="#{complaint.popBank}" onstart="process.show();"
+															onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.bank']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+
+													<p:message for="bank" display="text" id="msgbank" />
+													<p:selectOneMenu id="bank" value="#{complaint.bankId}"
+														filter="true" required="true"
+														requiredMessage="Please Select Bank"
+														filterMatchMode="contains"
+														disabled="#{complaint.booReadOnly}">
+														<f:selectItem itemLabel="#{msg['lbl.selectbank']}"
+															itemValue="" />
+														<f:selectItems value="#{complaint.bankMasterList}" var="c"
+															itemLabel="#{c.bankMaster.bankCode} - #{c.bankMaster.bankFullName}"
+															itemValue="#{c.bankMaster.bankId}" />
+														<p:ajax event="change"
+															listener="#{complaint.fetchComplaintMatrix}"
+															update="msgbank,service,msgService,complainttype,takenBy,action,destination,commethod" />
+													</p:selectOneMenu>
+
+												</p:panel>
+
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.service']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="service" display="text" id="msgService" />
+													<p:selectOneMenu id="service"
+														value="#{complaint.serviceId}" filter="true"
+														filterMatchMode="contains" required="true"
+														requiredMessage="Please Select Service"
+														disabled="#{complaint.booReadOnly}" styleClass="readonly">
+														<f:selectItem itemLabel="#{msg['lbl.selectService']}"
+															itemValue="" />
+														<f:selectItems value="#{complaint.serviceMasterDescList}"
+															var="c"
+															itemLabel="#{c.serviceMaster.serviceCode} - #{c.localServiceDescription}"
+															itemValue="#{c.serviceMaster.serviceId}" />
+														<p:ajax event="change"
+															listener="#{complaint.fetchComplaintMatrix}"
+															update="msgService,complainttype,takenBy,action,destination,commethod" />
+													</p:selectOneMenu>
+												</p:panel>
+
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.complainttypemaster']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+
+													<p:message for="complainttype" display="text"
+														id="msgcomplainttype" />
+													<p:selectOneMenu id="complainttype"
+														value="#{complaint.complaintTypeId}" filter="true"
+														required="true" filterMatchMode="contains"
+														label="Complaint Type" disabled="#{complaint.booReadOnly}">
+														<f:selectItem
+															itemLabel="#{msg['lbl.selectComplaintType']}"
+															itemValue="" />
+														<f:selectItems value="#{complaint.complaintTypeList}"
+															var="c"
+															itemLabel="#{c.complaintType.complaintTypeCode} - #{c.fullDesc}"
+															itemValue="#{c.complaintType.complaintTypeId}" />
+														<p:ajax event="change"
+															listener="#{complaint.fetchComplaintMatrix}"
+															update="msgcomplainttype,takenBy,action,destination,commethod,mainPanel"
+															process="@this" />
+													</p:selectOneMenu>
+												</p:panel>
+
+											</p:panel>
+
+											<div class="clearfix"></div>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.takenBy']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+
+												<p:panel styleClass="inner_right_col">
+													<p:message for="takenBy" display="text"
+														id="msgComplaintTaken" />
+													<p:selectOneMenu id="takenBy"
+														value="#{complaint.complaintTakenById}" filter="true"
+														required="true" filterMatchMode="contains"
+														label="Taken By" disabled="#{complaint.booReadOnly}">
+														<f:selectItem itemLabel="#{msg['lbl.selectTakenBy']}"
+															itemValue="" />
+														<f:selectItems value="#{complaint.complaintAssignedList}"
+															var="c"
+															itemLabel="#{c.complaintAssigned.complaintAssignedCode} - #{c.fullDescription}"
+															itemValue="#{c.complaintAssigned.complaintAssignedId}" />
+														<!-- <h:inputHidden  value="#{c.complaintTypeCode}" >																												
+																	</h:inputHidden> -->
+														<p:ajax update="msgComplaintTaken" event="change"
+															listener="#{complaint.checkDuplicateTakenByAndAction}" />
+													</p:selectOneMenu>
+
+												</p:panel>
+
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.action']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="action" display="text" id="msgAction" />
+													<p:selectOneMenu id="action"
+														value="#{complaint.complaintActionId}" filter="true"
+														required="true" filterMatchMode="contains"
+														disabled="#{complaint.booReadOnly}">
+														<f:selectItem itemLabel="#{msg['lbl.selectAction']}"
+															itemValue="" />
+														<f:selectItems value="#{complaint.complaintActionList}"
+															var="c"
+															itemLabel="#{c.complaintAction.complaintActionCode} - #{c.fullDescription}"
+															itemValue="#{c.complaintAction.complaintActionId}" />
+														<p:ajax update="msgAction" event="change"
+															listener="#{complaint.checkDuplicateTakenByAndAction}" />
+
+													</p:selectOneMenu>
+												</p:panel>
+
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.destination']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="destination" display="text"
+														id="msgdestination" />
+													<p:selectOneMenu id="destination"
+														value="#{complaint.complaintDestinationId}" filter="true"
+														required="true" filterMatchMode="contains"
+														label="Destination" disabled="#{complaint.booReadOnly}">
+														<f:selectItem itemLabel="#{msg['lbl.selectDestination']}"
+															itemValue="" />
+														<f:selectItems value="#{complaint.destinationList}"
+															var="c"
+															itemLabel="#{c.complaintAssigned.complaintAssignedCode} - #{c.fullDescription}"
+															itemValue="#{c.complaintAssigned.complaintAssignedId}" />
+														<p:ajax event="change" update="msgdestination"
+															listener="#{complaint.disableSubmit}" />
+													</p:selectOneMenu>
+												</p:panel>
+
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.commMethod']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="commethod" display="text" id="msgcommethod" />
+													<p:selectOneMenu id="commethod"
+														value="#{complaint.communicationMethodId}" filter="true"
+														required="true" filterMatchMode="contains"
+														label="Communication Method"
+														disabled="#{complaint.booReadOnly}">
+														<f:selectItem itemLabel="#{msg['lbl.selectCommMethod']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{complaint.communicationMethodList}" var="c"
+															itemLabel="#{c.communicationMethodId.comMethodCode} - #{c.fullDescription}"
+															itemValue="#{c.communicationMethodId.comMethodId}" />
+														<p:ajax update="msgcommethod" />
+													</p:selectOneMenu>
+												</p:panel>
+
+											</p:panel>
+
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<h:outputText id="mandatory"
+													value=" #{msg['lbl.*filedsAreMandatory']}"
+													style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+												<h:panelGroup layout="block" class="clearfix" />
+											</p:panel>
+											<div class="clearfix"></div>
+											<div class="clearfix"></div>
+
+											<h:panelGroup layout="block" styleClass="shadow_button"
+												id="booRenderClear" rendered="#{complaint.booAdd}">
+												<p:commandButton value="#{msg['lbl.add']}"
+													action="#{complaint.duplicateCheckingComplaintMatrix}"
+													update="mainPanel" style="margin-right:10px;" />
+												<p:commandButton value="#{msg['lbl.view']}"
+													action="#{complaint.viewAllComplaintMatrix}"
+													disabled="#{complaint.booRenderClear}"
+													style="margin-right:10px;" update="mainPanel"
+													process="@this" onstart="process.show();"
+													onsuccess="process.hide();" />
+												<p:commandButton value="#{msg['lbl.clear']}"
+													action="#{complaint.clear}"
+													disabled="#{complaint.booRenderClear}" update="mainPanel"
+													process="@this" style="margin-right:10px;" />
+												<div class="clearfix"></div>
+											</h:panelGroup>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" styleClass="shadow_button"
+												rendered="#{complaint.booApprove}">
+												<p:commandButton value="#{msg['lbl.approve']}"
+													action="#{complaint.complaintMatrixApproveRecord}"
+													style="margin-right:10px;" process="@this" immediate="true" />
+												<p:commandButton value="#{msg['lbl.cancel']}"
+													action="#{complaint.complaintMatrixCancel}"
+													style="margin-right:10px;" update="mainPanel"
+													process="@this" immediate="true" />
+												<h:panelGroup layout="block" class="clearfix" />
+											</h:panelGroup>
+
+											<p:panel id="complaintpanel">
+
+
+												<p:dataTable id="dataTable" styleClass="mydatatableclass"
+													value="#{complaint.complaintMatrixList}" rows="10"
+													paginator="true"
+													paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+													rowsPerPageTemplate="5,10,15" var="o"
+													rowIndexVar="rowIndex"
+													emptyMessage="#{msg['lbl.noRecordFound']}"
+													paginatorPosition="bottom"
+													rendered="#{complaint.booRenderDataTable}">
+
+													<p:column headerText="#{msg['lbl.sino']}">
+														<h:outputText value="#{rowIndex+1}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.country']}">
+														<h:outputText value="#{o.countryName}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.bank']}">
+														<h:outputText value="#{o.bankName}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.service']}">
+														<h:outputText value="#{o.serviceName}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.complainttypemaster']}">
+														<h:outputText value="#{o.complaintTypeCode}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.takenBy']}">
+														<h:outputText value="#{o.complaintTakenByCode}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.action']}">
+														<h:outputText value="#{o.complaintActionCode}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.destination']}">
+														<h:outputText value="#{o.complaintDestinationCode}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.commMethod']}">
+														<h:outputText value="#{o.communicationMethodCode}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.edit']}">
+														<p:commandButton id="imgEdit" styleClass="edit" value=""
+															rendered="#{o.renderEditButton}"
+															action="#{complaint.editComplaintMatrix(o)}"
+															disabled="#{complaint.booEditButton}"
+															update="dataTable,:form1:mainPanel" process="@this" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.active/deactive']}"
+														style="text-align:center !important;">
+														<p:commandLink action="#{complaint.checkStatus(o)}"
+															value="#{o.dynamicLabelForActivateDeactivate}"
+															style="color:blue !important; text-decoration:underline !important;"
+															update=":form1:mainPanel,dataTable" immediate="true"
+															process="@this" />
+													</p:column>
+												</p:dataTable>
+											</p:panel>
+
+
+											<div class="clearfix"></div>
+
+											<h:panelGroup layout="block" styleClass="shadow_button"
+												rendered="#{complaint.booRenderSaveExit}"
+												id="booSubmitPanel">
+												<p:commandButton id="submitPanel"
+													value="#{msg['lbl.submit']}"
+													action="#{complaint.saveComplaintMatrix}"
+													disabled="#{complaint.booSubmitPanel}" immediate="true"
+													update="mainPanel" style="margin-right:10px;" />
+												<p:commandButton value="#{msg['lbl.exit']}"
+													action="#{complaint.exit}" style="margin-right:10px;"
+													process="@this" immediate="true" />
+												<div class="clearfix"></div>
+											</h:panelGroup>
+											<p:dialog modal="true" showHeader="true"
+												header="Please wait.." widgetVar="process" id="process"
+												width="300" height="50" resizable="false" draggable="false"
+												closable="false"
+												style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+												<div style="text-align: center;">
+													<p:graphicImage value="../images/preloader.gif" />
+												</div>
+											</p:dialog>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+									</p:panel>
+								</h:form>
+							</h:panelGroup>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+					</h:panelGroup></td>
+			</tr>
+		</table>
+		<div class="clearfix"></div>
+
+		<ui:include src="#{facesBean.footer}"></ui:include>
+
+	</f:view>
+</h:body>
+</html>

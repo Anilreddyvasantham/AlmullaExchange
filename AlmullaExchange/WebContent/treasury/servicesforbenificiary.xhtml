@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script type="text/javascript" language="javascript">
+	document.onkeydown = function(e) {
+		//Enter button pressed 
+		/* if (e.keyCode === 13) {
+			return false;
+		} */
+	};
+
+	 history.pushState(null, null, 'servicesforbenificiary.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'servicesforbenificiary.xhtml');
+	    });
+	</script>
+</h:head>
+
+<h:body>
+
+	<p:dialog id="permanentDelete" widgetVar="permanentDelete" width="300"
+		height="70" showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+		<p:outputLabel
+			value="#{msg['lbl.doyouwanttodeleterecordperminently']}" />
+		<p:spacer height="10px" />
+		<p:panel>
+			<p:commandButton value="#{msg['lbl.ok']}" style="margin-right:10px; "
+				actionListener="#{benecountryservice.confirmPermanentDelete}"
+				process="@this" oncomplete="PF('permanentDelete').hide();"
+				update="form" />
+			<p:commandButton value="#{msg['lbl.cancel']}"
+				onclick="PF('permanentDelete').hide();" immediate="true" />
+		</p:panel>
+	</p:dialog>
+
+	<p:dialog id="succsses" widgetVar="succsses" width="270" height="70"
+		showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+
+		<p:outputLabel value="#{msg['lbl.benisuccessfull']}" />
+		<br />
+		<p:spacer width="15px" />
+		<p:commandButton value="#{msg['lbl.ok']}"
+			actionListener="#{benecountryservice.refresh}" process="@this" />
+	</p:dialog>
+
+	<p:dialog id="emptyData" widgetVar="emptyData" width="270" height="70"
+		showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+
+		<p:outputLabel value="#{msg['lbl.beneatleast']}" />
+		<br />
+		<p:spacer width="15px" />
+		<p:commandButton value="#{msg['lbl.ok']}"
+			actionListener="#{benecountryservice.refresh}" process="@this" />
+	</p:dialog>
+
+	<p:confirmDialog id="norecord" widgetVar="norecord" width="350"
+		height="17" resizable="false"
+		style=" border:2px solid #007f30 !important; padding:0px !important;  color:#007f30 !important; background:url('../images/warning.png') 10px 43px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.activerecordsnotfound']}">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="check" widgetVar="check" header="Warning Message"
+		width="500" height="17" resizable="false"
+		style=" border:2px solid #007f30 !important; padding:0px !important;  color:#007f30 !important; background:url('../images/warning.png') 10px 43px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true"
+		message="#{msg['lbl.beneficiaryrecordalreadyexistforthiscombination']}">
+		<!-- <p:commandButton value="#{msg['lbl.ok']}" actionListener="#{benecountryservice.refresh1}" process="@this"/>  -->
+	</p:confirmDialog>
+
+	<p:confirmDialog id="checkdt" widgetVar="checkdt"
+		header="Warning Message" width="500" height="17" resizable="false"
+		style=" border:2px solid #007f30 !important; padding:0px !important;  color:#007f30 !important; background:url('../images/warning.png') 10px 43px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true"
+		message="#{msg['lbl.beneficiaryrecordalreadyexistforthiscombinationindatatable']}">
+		<!-- <p:commandButton value="#{msg['lbl.ok']}" actionListener="#{benecountryservice.refresh1}" process="@this"/>  -->
+	</p:confirmDialog>
+
+	<p:confirmDialog id="pendingwithApproval"
+		widgetVar="pendingwithApproval" header="Warning Message" width="700"
+		height="17" resizable="false"
+		style=" border:2px solid #007f30 !important; padding:0px !important;  color:#007f30 !important; background:url('../images/warning.png') 10px 43px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true"
+		message="#{msg['lbl.beneficiaryrecordalresdyexistforthiscombinationanditispendingforapproval']}">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="chooseAnyOne" widgetVar="chooseAnyOne" width="400"
+		height="17" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true"
+		message="#{msg['lbl.pleaseSelectCountryOrCurrencyOrService']} ">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="remarksEmpty" widgetVar="remarksEmpty" width="400"
+		height="17" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.remarksnotempty']}">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="delete" widgetVar="delete" width="400" height="17"
+		resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.recordsuccessfullydeleted']}">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="notdelet" widgetVar="notdelet" width="400"
+		height="17" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.recordnotdeletedperminently']}">
+	</p:confirmDialog>
+
+	<f:view id="main">
+
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form">
+
+								<p:confirmDialog id="delet" widgetVar="delet" width="350"
+									height="17" resizable="false"
+									style=" border:2px solid #007f30 !important; padding:0px !important;  color:#007f30 !important; background:url('../images/warning.png') 10px 43px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true"
+									message=" #{msg['lbl.recordsuccessfullydeleted']}">
+								</p:confirmDialog>
+
+								<p:confirmDialog id="norecord" widgetVar="norecord" width="350"
+									height="17" resizable="false"
+									style=" border:2px solid #007f30 !important; padding:0px !important;  color:#007f30 !important; background:url('../images/warning.png') 10px 43px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" message="  #{msg['lbl.benifinorecords']}">
+								</p:confirmDialog>
+
+								<h1>
+									<h:outputText value="#{msg['lbl.benificiaryScreenName']}" />
+								</h1>
+								
+								<p:panel styleClass="shadow" id="mainPanel">
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{benecountryservice.errorMessage}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{benecountryservice.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+
+									<p:dialog modal="true" showHeader="true" header="Please wait.."
+										widgetVar="process" id="process" width="400" height="100"
+										resizable="false" draggable="false" closable="false"
+										style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+										<div style="text-align: center;">
+											<p:graphicImage value="../images/preloader.gif" />
+										</div>
+									</p:dialog>
+									
+									<p:dialog id="remarksMsg" widgetVar="remarksMsg" width="480"
+										height="300" showHeader="false" resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:panel>
+											<table>
+												<tr>
+													<td><h:outputText
+															value="#{msg['lbl.activateddate']}     :" /></td>
+													<td><h:outputText
+															value="#{benecountryservice.approvedDate}"
+															style="color:red !important;" /></td>
+												</tr>
+												<tr>
+													<td><h:outputText
+															value="#{msg['lbl.activatedby']}    :" /></td>
+													<td><h:outputText
+															value="#{benecountryservice.approvedBy}"
+															style="color:red !important;" /></td>
+												</tr>
+											</table>
+										</p:panel>
+										<p:spacer height="10px" />
+										<p:panel>
+											<h:outputText value="#{msg['lbl.pleaseenterremarks']}" />
+											<h:outputText value="*" style="color:red !important;" />
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel>
+											<h:inputTextarea id="remarksId"
+												value="#{benecountryservice.remarks}">
+												<p:ajax />
+											</h:inputTextarea>
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel style="padding-left:160px;">
+											<p:commandButton value="#{msg['lbl.ok']}"
+												actionListener="#{benecountryservice.clickOK}"
+												process="@this" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												actionListener="#{benecountryservice.clickClear}"
+												process="@this" />
+
+										</p:panel>
+									</p:dialog>
+									
+									<h3>
+										<h:outputText value="#{msg['lbl.benificiaryScreenName']}" />
+									</h3>
+
+									<p:panel styleClass="panel_border">
+
+										<p:panel id="firstPanel">
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.benecountry']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="country" display="text" id="countrymsg" />
+													<p:selectOneMenu id="country"
+														value="#{benecountryservice.countryId}"
+														filterMatchMode="contains" filter="true" label="Country"
+														required="true" requiredMessage="Please Select Country">
+														<f:selectItem itemLabel="#{msg['lbl.beleselect']}"
+															itemValue="" />
+														<f:selectItems value="#{benecountryservice.listCountry}"
+															var="c"
+															itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+															itemValue="#{c.fsCountryMaster.countryId}" />
+														<p:ajax event="change" update="countrymsg"
+															onstart="process.show();" onsuccess="process.hide();" />
+													</p:selectOneMenu>
+
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.benecurrency']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="currency" display="text" id="courrencymsg" />
+													<p:selectOneMenu id="currency"
+														value="#{benecountryservice.currencyId}"
+														filterMatchMode="contains" filter="true" label="Country"
+														required="true" requiredMessage="Please Select Currency">
+														<f:selectItem itemLabel="#{msg['lbl.benecurruncyselect']}"
+															itemValue="" />
+														<f:selectItems value="#{benecountryservice.listCurrency}"
+															var="c" itemLabel="#{c.currencyCode} - #{c.currencyName}"
+															itemValue="#{c.currencyId}" />
+														<p:ajax event="change" update="courrencymsg"
+															onstart="process.show();" onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.beneservice']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="servic" display="text" id="servicemsg" />
+													<p:selectOneMenu id="servic"
+														value="#{benecountryservice.serviceId}"
+														filterMatchMode="contains" filter="true" label="Services"
+														required="true" requiredMessage="Please Select Service">
+														<f:selectItem itemLabel="#{msg['lbl.beneserviceselcect']}"
+															itemValue="" />
+														<f:selectItems value="#{benecountryservice.listService}"
+															var="c"
+															itemLabel="#{c.serviceMaster.serviceCode}-#{c.localServiceDescription}"
+															itemValue="#{c.serviceMaster.serviceId}" />
+														<p:ajax event="change"
+															listener="#{benecountryservice.popRemitanceMode}"
+															update="remitance,servicemsg,mainPanel "
+															onstart="process.show();" onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.beneremitancemode']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="remitance" display="text" id="remitancemsg" />
+													<p:selectOneMenu id="remitance"
+														value="#{benecountryservice.remitancyId}"
+														filterMatchMode="contains" filter="true" required="true"
+														requiredMessage="Please Select Remittance">
+														<f:selectItem itemLabel="#{msg['lbl.beneremiselect']}"
+															itemValue="" />
+														<f:selectItems value="#{benecountryservice.listremitacy}"
+															var="c"
+															itemLabel="#{c.remittanceModeMaster.remittance} - #{c.remittanceDescription}"
+															itemValue="#{c.remittanceModeMaster.remittanceModeId}" />
+														<p:ajax event="change"
+															update="remitancemsg,deleveryPanel,error"
+															listener="#{benecountryservice.popDeliveryMode}"
+															onstart="process.show();" onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col" id="deleveryPanel">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.benedeliverymode']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="delivery" display="text" id="deliverymsg" />
+													<p:selectOneMenu id="delivery"
+														value="#{benecountryservice.deliveryId}"
+														filterMatchMode="contains" filter="true" label="Services"
+														required="true" requiredMessage="Please Select Delivery">
+														<f:selectItem itemLabel="#{msg['lbl.benedeliveryselect']}"
+															itemValue="" />
+														<f:selectItems value="#{benecountryservice.listdelivery}"
+															var="c"
+															itemLabel="#{c.deliveryMode.deliveryMode} - #{c.englishDeliveryName}"
+															itemValue="#{c.deliveryMode.deliveryModeId}" />
+														<p:ajax event="change" update="deliverymsg"
+															onstart="process.show();" onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+
+
+
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:spacer height="10px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+
+												<p:commandButton value="#{msg['lbl.add']}"
+													action="#{benecountryservice.add}" update="mainPanel"
+													style="margin-right:10px;" process="firstPanel" />
+												<!-- <p:commandButton id="search" value="#{msg['lbl.search']}" action="#{benecountryservice.search}" update="data,mainPanel"   style="margin-right:10px; " /> -->
+												<p:commandButton id="view" value="#{msg['lbl.view']}"
+													action="#{benecountryservice.view}" update="data,mainPanel"
+													process="@this" style="margin-right:10px; "
+													onstart="process.show();" onsuccess="process.hide();" />
+												<p:commandButton id="clear" value="#{msg['lbl.clear']}"
+													action="#{benecountryservice.clearAllFields}"
+													disabled="#{benecountryservice.clearPanel}"
+													update="mainPanel" process="@this">
+													<p:resetInput target="@form" />
+												</p:commandButton>
+												<h:panelGroup layout="block" class="clearfix" />
+											</h:panelGroup>
+										</p:panel>
+
+										<!-- <p:dataTable id="data" var="c" value="#{benecountryservice.lstbeneCountryServiceData}" rowIndexVar="rowIndex" rendered="#{benecountryservice.datatable}"> -->
+
+										<p:dataTable id="data" var="c" rows="10" paginator="true"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="5,10,15"
+											value="#{benecountryservice.lstbeneCountryServiceData}"
+											rowIndexVar="rowIndex"
+											emptyMessage="#{msg['lbl.norecordfound']}"
+											rendered="#{benecountryservice.datatable}"
+											paginatorPosition="bottom" styleClass="mydatatableclass">
+
+
+
+											<p:column headerText="#{msg['lbl.dslNo']}"
+												style="width:30px;">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.dCountry']}">
+												<h:outputText value="#{c.countryName}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.dCurrency']}">
+												<h:outputText value="#{c.currencyName}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.dservice']}">
+												<h:outputText value="#{c.serviceCode}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.dremittance']}">
+												<h:outputText value="#{c.remitanceMode}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.benedeliverymode']}">
+												<h:outputText value="#{c.deliveryMode}" />
+											</p:column>
+
+											<!--  <p:column headerText="Edit">
+  			 <p:commandLink action="#{benecountryservice.editRecord(c)}"  update=":form" process="@this">
+				<p:graphicImage value="../images/edit.png" id="imgEdit"/>
+				<p:tooltip  for="imgEdit" value="#{msg['lbl.edit']}"/>
+			</p:commandLink>#{c.renderEditButtion}
+			</p:column> -->
+
+											<p:column headerText="#{msg['lbl.edit']}">
+												<p:commandButton id="imgEdit" styleClass="edit" value=""
+													action="#{benecountryservice.editRecord(c)}"
+													disabled="#{benecountryservice.booEditButton}"
+													update=":form" process="@this"
+													rendered="#{c.renderEditButton}" />
+											</p:column>
+
+
+
+											<!--   <p:column style="width:15% !important; text-align:center !important; margin-left:10px;">
+											<f:facet name="header">
+												<h:outputText value="#{msg['lbl.delete']}"/>
+											</f:facet>
+											<p:commandButton value="" styleClass="delete"
+												actionListener="#{benecountryservice.removeServiceBene(c)}"
+												process="@this" update="data">
+											</p:commandButton>
+										</p:column>
+										
+ -->
+											<p:column headerText="#{msg['lbl.activatedeactivate']}"
+												style="text-align:center !important;">
+												<p:commandLink action="#{benecountryservice.checkStatus(c)}"
+													value="#{c.dynamicLabelForActivateDeactivate}"
+													style="color:blue !important; text-decoration:underline !important;"
+													update="data,:form:mainPanel" process="@this" />
+											</p:column>
+
+
+										</p:dataTable>
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											rendered="#{benecountryservice.datatable}">
+											<p:commandButton value="#{msg['lbl.submit']}"
+												action="#{benecountryservice.save}" update="mainPanel"
+												style="margin-right:10px;" process="@this"
+												disabled="#{benecountryservice.booSubmitButton}"
+												onstart="process.show();" onsuccess="process.hide();" />
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{benecountryservice.exit}" immediate="true" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col">
+											<h:outputText value=" #{msg['lbl.*filedsAreMandatory']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+
+
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

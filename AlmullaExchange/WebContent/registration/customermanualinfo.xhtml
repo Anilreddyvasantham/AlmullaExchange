@@ -1,0 +1,740 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<link href="../css/new_style.css" rel="stylesheet" type="text/css" />
+	<script type="text/javascript">
+		history.pushState(null, null, 'customermanualinfo.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'customermanualinfo.xhtml');
+		});
+	</script>
+
+	<script type="text/javascript">
+		$(document).on("keypress", ".dropdown", function(event) {
+			if (event.keyCode == 32) {
+				$('.ui-selectonemenu-trigger', this).click();
+			}
+		});
+	</script>
+
+
+	<style type="text/css">
+.ui-dialog.dialogsuccess .ui-widget-content {
+	border: 3px solid #00a53e !important;
+	font-weight: bold;
+	padding: 0px 0px 0px 30px !important;
+}
+
+.ui-dialog.dialogsuccess .ui-widget-content label {
+	margin-right: 0px !important;
+}
+
+label {
+	margin-right: 26px !important;
+}
+</style>
+
+</h:head>
+
+<h:body>
+
+	<f:view>
+
+
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<f:event listener="#{customerPersonalInfo.populateSearchValue}"
+			type="preRenderView" />
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+					<!-- <ui:include
+						src="../common/common_menu.xhtml"></ui:include> --> <ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include>
+				</td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+
+
+						<h:panelGroup layout="block" class="main_div3">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+
+
+
+							<h:panelGroup layout="block" class="heading3">
+
+								<h:outputText value="#{msg['lbl.customerreg']}" />
+								<!-- <p:ajaxStatus id="usernamestatuspanel" style="float:right;">
+									<f:facet name="start">
+										<h:graphicImage value="../images/progress.GIF" />
+									</f:facet>
+									<f:facet name="start">
+										<h:graphicImage value="" />
+									</f:facet>
+								</p:ajaxStatus> -->
+							</h:panelGroup>
+
+							<h:panelGroup layout="block" class="table_bg">
+								<h:form id="form1" enctype="multipart/form-data"
+									style="padding:0!important; background:none !important;"
+									onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'text') return false;}">
+
+
+
+									<p:panel id="mainPanel"
+										style="border: 0px; padding:0px!important; background:none !important;background-color:#cec !important;">
+
+										<p:dialog modal="true" showHeader="true"
+											header="#{msg['lbl.pleasewait']}" widgetVar="process"
+											id="process" width="300" height="50" resizable="false"
+											draggable="false" closable="false"
+											style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+											<div style="text-align: center;">
+												<p:graphicImage value="../images/preloader.gif" />
+											</div>
+										</p:dialog>
+
+
+										<p:confirmDialog id="duplicate" widgetVar="duplicate"
+											resizable="false" style="background-color: white !important;"
+											header="#{msg['lbl.warning']}" styleClass="warning"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true"
+											message="#{msg['lbl.introducedbycannotbesameascustomerbeingregistered']}">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="dupcustomerref"
+											widgetVar="dupcustomerref" resizable="false"
+											style="background-color: white !important;"
+											header="#{msg['lbl.warning']}" styleClass="warning"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true"
+											message="#{customerPersonalInfo.errorMsg} - #{msg['lbl.duplicateCusReferContAMl']}">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="customernotactive"
+											widgetVar="customernotactive" resizable="false"
+											style="background-color: white !important;"
+											header="#{msg['lbl.warning']}" styleClass="warning"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true" message="#{msg['lbl.introducedbyisactive']}">
+										</p:confirmDialog>
+
+
+										<p:confirmDialog header="#{msg['lbl.warning']}"
+											id="civilexists" widgetVar="civilexists" width="260"
+											height="17" resizable="false"
+											style=" font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true" message="#{msg['lbl.civiliddoesnotexist']}">
+										</p:confirmDialog>
+
+
+										<p:confirmDialog id="saveerror" header="#{msg['lbl.warning']}"
+											widgetVar="saveerror" width="600" resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip"
+											message="#{msg['lbl.errorwhilesavingcustomerdetails']} #{customerPersonalInfo.errorMsg}">
+
+											<p:commandButton value="#{msg['lbl.exit']}"
+												actionListener="#{customerPersonalInfo.exit}"
+												process="@this" update="mainPanel" />
+
+										</p:confirmDialog>
+
+										<p:confirmDialog id="migrationexception"
+											header="#{msg['lbl.warning']}" widgetVar="migrationexception"
+											width="900" resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip"
+											message="#{msg['lbl.customerhasregisteredsucessfullywithrefno']} #{customerPersonalInfo.updateCustomerRefNo}.#{msg['lbl.pleaserecallthisrefnoonemos']}">
+											<p:commandButton value="#{msg['lbl.ok']}"
+												oncomplete="migrationexception.hide()" update="remitterinfo"
+												immediate="true" />
+										</p:confirmDialog>
+
+										<p:confirmDialog id="fourtnameerror"
+											header="#{msg['lbl.warning']}" widgetVar="fourtnameerror"
+											width="800" resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip"
+											message="#{msg['lbl.fourthNameMsg']}">
+											<!-- message="#{customerPersonalInfo.noOfCount} : #{msg['lbl.namesmandatory']} #{customerPersonalInfo.nationalityName} #{msg['lbl.nationality']}.#{msg['lbl.withlastname']}"> -->
+											<p:commandButton value="#{msg['lbl.ok']}"
+												oncomplete="fourtnameerror.hide()" update="mainPanel"
+												immediate="true" />
+										</p:confirmDialog>
+
+										<p:confirmDialog id="printCustomerReference"
+											header="#{msg['lbl.informationmessage']}"
+											widgetVar="printCustomerReference" width="700"
+											showHeader="false" resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip"
+											message="#{msg['lbl.theidnumber']} #{customerPersonalInfo.idNumber} #{msg['lbl.isalreadyregisteredinemosapplicationwithrefno']} : #{customerPersonalInfo.custRefNo}">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="sqlexception" header="Exception Message"
+											widgetVar="sqlexception" width="700" showHeader="false"
+											resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip"
+											message="There are some un-expected error while data migration!">
+										</p:confirmDialog>
+
+
+
+										<p:panel styleClass="shadow" id="remitterinfo"
+											style="background-color:#cec !important;">
+
+
+											<p:panel styleClass="panel_border3">
+												<h4
+													style="margin-top: 25px; text-align: center; font-size: 22px; color: #fff;">
+													<h:outputText value="#{msg['lbl.customerdetails']}" />
+												</h4>
+												<div class="clearfix" />
+											</p:panel>
+
+
+
+
+											<p:panel styleClass="panel_border7">
+												<h:panelGroup layout="block" styleClass="content_level1">
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText id="lbl_title" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message for="title" display="text" id="msgtitle" />
+															<p:selectOneMenu id="title" styleClass="dropdown"
+																tabindex="1" value="#{customerPersonalInfo.title}"
+																filterMatchMode="contains" filter="true" label="Title">
+																<p:ajax event="change" update="gender,titleL,msgtitle"
+																	listener="#{customerPersonalInfo.changeGender}" />
+
+															</p:selectOneMenu>
+														</p:panel>
+													</p:panel>
+
+													<div class="clearfix"></div>
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText id="lbl_firstname" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="firstname" tabindex="2"
+																value="#{customerPersonalInfo.firstName}"
+																label="First Name"
+																onkeyup="this.value=this.value.toUpperCase()">
+																<p:ajax update="fnameMsg" event="blur" />
+																<p:message id="fnameMsg" for="firstname" display="text" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+
+													<p:panel styleClass="right_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText id="lbl_midname" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="midname" tabindex="3"
+																value="#{customerPersonalInfo.middleName}"
+																label="Middle Name"
+																onkeyup="this.value=this.value.toUpperCase()">
+
+																<p:ajax update="middlenameMsg" event="blur" />
+																<p:message id="middlenameMsg" for="midname"
+																	display="text" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText id="lbl_lastname" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="lastname" tabindex="4"
+																value="#{customerPersonalInfo.lastName}"
+																label="Last Name"
+																onkeyup="this.value=this.value.toUpperCase()">
+
+
+																<p:ajax update="lnameMsg" event="blur" />
+																<p:message id="lnameMsg" for="lastname" display="text" />
+
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+
+													<p:panel styleClass="right_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText id="lbl_shortname" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="shortname" tabindex="5"
+																value="#{customerPersonalInfo.shortName}"
+																label="Short Name"
+																onkeyup="this.value=this.value.toUpperCase()">
+
+																<p:ajax update="snameMsg" event="blur" />
+																<p:message id="snameMsg" for="shortname" display="text" />
+
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+
+
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText id="lbl_titleL" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message for="titleL" display="text" />
+
+															<p:inputText id="titleL" styleClass="ui-state-disabled" tabindex="-1"
+																value="#{customerPersonalInfo.titlel}" readonly="true"
+																onblur="true" />
+														</p:panel>
+													</p:panel>
+
+													<div class="clearfix"></div>
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText id="lbl_firstnameL" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="firstnameL" tabindex="6"
+																value="#{customerPersonalInfo.firstNamel}" lang="AR"
+																label="Local First Name">
+
+																<p:ajax update="fnamelMsg" event="blur" />
+																<p:message id="fnamelMsg" for="firstnameL"
+																	display="text" />
+
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+
+													<p:panel styleClass="right_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText id="lbl_middlenameL" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="middlenameL" tabindex="7"
+																value="#{customerPersonalInfo.middleNamel}" lang="AR"
+																label="Local Middle name">
+																<p:ajax update="mnamelMsg" event="blur" />
+																<p:message id="mnamelMsg" for="middlenameL"
+																	display="text" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText id="lbl_lastnameL" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="lastnameL" tabindex="8"
+																value="#{customerPersonalInfo.lastNamel}" lang="AR"
+																label="Local Last Name">
+
+																<p:ajax update="lnamelMsg" event="blur" />
+																<p:message id="lnamelMsg" for="lastnameL" display="text" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+
+													<p:panel styleClass="right_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText id="lbl_shortnameL" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="shortnameL" tabindex="9"
+																value="#{customerPersonalInfo.shortNamel}" lang="AR"
+																label="Local Short Name">
+
+																<p:ajax update="snamelMsg" event="blur" />
+																<p:message id="snamelMsg" for="shortnameL"
+																	display="text" />
+
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText id="lbl_nationality" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message for="nationality" display="text"
+																id="natilitymsg" />
+															<p:selectOneMenu
+																value="#{customerPersonalInfo.nationality}"
+																styleClass="dropdown" tabindex="10" filter="true"
+																filterMatchMode="startsWith" id="nationality"
+																label="Nationality" style="width:185px;text-align:left;">
+																<f:selectItem itemLabel="#{msg['lbl.select']}"
+																	itemValue="" />
+																<f:selectItems
+																	value="#{customerPersonalInfo.nationalityNameList}"
+																	var="c" itemLabel="#{c.nationality}"
+																	itemValue="#{c.fsCountryMaster.countryId}" />
+																<p:ajax update="natilitymsg" />
+															</p:selectOneMenu>
+														</p:panel>
+													</p:panel>
+
+													<p:panel styleClass="right_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText id="lbl_gender" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message for="gender" display="text" />
+
+															<p:inputText id="gender" styleClass="ui-state-disabled" tabindex="-1"
+																value="#{customerPersonalInfo.gender}" readonly="true">
+
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+													<div class="clearfix"></div>
+
+													<p:panel styleClass="left_col" id="mobilePanel">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText id="lbl_mobile" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:outputLabel
+																value="#{msg['lbl.mobileisexist']} #{customerPersonalInfo.errorMsg}"
+																rendered="#{customerPersonalInfo.booMobilecheck}"
+																style="color: red !important; font-weight:bold;" />
+															<p:inputText id="mobile" tabindex="11"
+																value="#{customerPersonalInfo.mobile}" label="Mobile No"
+																validator="#{customerPersonalInfo.validateMobile}">
+
+																<p:ajax update="mobilePanel,mobMsg" event="blur"
+																	listener="#{customerPersonalInfo.checkMobile}" />
+																<p:message id="mobMsg" for="mobile" display="text" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+
+													<p:panel styleClass="right_col" id="emailPanel">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.email']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:outputLabel value="#{msg['lbl.emaileisexist']}"
+																rendered="#{customerPersonalInfo.booEmailCheck}"
+																style="color: red !important; font-weight:bold;" />
+															<p:inputText id="email"
+																value="#{customerPersonalInfo.email}" tabindex="12"
+																validatorMessage="#{msg['lbl.validlemailformat']}"
+																maxlength="50" style=""
+																onkeyup="this.value=this.value.toLowerCase()">
+
+																<f:validateRegex
+																	pattern="^([/^\\s+$/])||[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+
+																<p:ajax update="emailPanel,emailMsg" event="blur"
+																	listener="#{customerPersonalInfo.checkEmail}"
+																	process="@this" />
+
+																<p:message id="emailMsg" for="email" display="text" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.alternatemail']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="alternatemail"
+																value="#{customerPersonalInfo.alternativeEmail}"
+																tabindex="13"
+																validatorMessage="#{msg['lbl.validationprefix']} #{msg['lbl.validalternatemail']}"
+																onkeyup="this.value=this.value.toLowerCase()">
+
+																<f:validateRegex
+																	pattern="^([/^\\s+$/])||[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+
+																<p:ajax update="alternateemailMsg" event="blur" />
+																<p:message id="alternateemailMsg" for="alternatemail"
+																	display="text" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+
+													<p:panel styleClass="right_col" id="pnlDob">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText id="lbl_dob" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col"
+															rendered="#{customerPersonalInfo.booCivilId}">
+															<p:inputText id="dobCivil"
+																value="#{customerPersonalInfo.showDob}" navigator="true"
+																readonly="#{customerPersonalInfo.booReadonly}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col"
+															rendered="#{customerPersonalInfo.booOtherId}">
+
+															<p:calendar id="dob" value="#{customerPersonalInfo.dob}"
+																tabindex="15" yearRange="c-50:c+50"
+																label="Date of Birth"
+																style="font-weight :normal; text-align: left;"
+																navigator="true"
+																maxdate="#{customerPersonalInfo.effectiveMinDate}">
+																<!-- <p:ajax update="dobMsg" event="blur" /> -->
+																<p:message for="dob" display="text" />
+																<p:ajax event="dateSelect"
+																	listener="#{customerPersonalInfo.ageValidation}"
+																	update="pnlDob" />
+															</p:calendar>
+															<div class="clearfix"></div>
+															<p:spacer height="3px" />
+
+
+														</p:panel>
+														<div class="clearfix"></div>
+														<p:panel id="checkDobPanel"
+															rendered="#{customerPersonalInfo.changeDobPass}">
+
+															<p:selectBooleanCheckbox tabindex="14"
+																value="#{customerPersonalInfo.booChangeDob}">
+																<p:ajax event="change" update="pnlDob" 
+																	listener="#{customerPersonalInfo.enableDob}" />
+															</p:selectBooleanCheckbox>
+													 &nbsp; <h:outputText value="#{msg['lbl.changedobmsg']}"/>
+														</p:panel>
+													</p:panel>
+
+
+													<!-- <p:panel styleClass="left_col" id="amlStatus">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_amlstatus" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="amlstatus" styleClass="ui-state-disabled"
+															value="#{customerPersonalInfo.AMLStatus}"
+															label="AML Status" readonly="true" />
+													</p:panel>
+												</p:panel>
+ -->
+													<!-- <p:panel styleClass="right_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_numberHits" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="numberHits" styleClass="ui-state-disabled"
+															value="#{customerPersonalInfo.numberofhits}"
+															label="Hit Count" readonly="true" />
+													</p:panel>
+												</p:panel> -->
+
+													<p:panel id="panel1">
+
+
+														<p:panel styleClass="right_col">
+
+															<p:panel styleClass="inner_left_col">
+																<h:outputText id="lbl_customerintroducedby_1" />
+															</p:panel>
+
+															<p:panel styleClass="inner_right_col">
+																<p:panelGrid style="width:100%;">
+																	<p:row>
+																		<p:column style="width:95%; padding:0px !important;">
+																			<p:tooltip value="Enter Valid CIVIL ID"
+																				for="customerintroducedby_1" />
+																			<p:watermark value="Enter Valid CIVIL ID"
+																				for="customerintroducedby_1" />
+																			<p:message id="introducemsgmanual"
+																				for="customerintroducedby_1" display="text" />
+																			<p:inputText id="customerintroducedby_1"
+																				tabindex="16"
+																				value="#{customerPersonalInfo.introducedBy}"
+																				label="Customer Introduced By">
+																				<p:ajax event="blur"
+																					listener="#{customerPersonalInfo.getintrudecedby}"
+																					update="customerintroducedby_1,introducemsgmanual" />
+																			</p:inputText>
+																		</p:column>
+																		<p:column
+																			style="width:20%; text-align:right !important;padding:4px 0px 0px 8px !important;">
+																			<p:commandButton id="customerSearchButton"
+																				tabindex="17" value="" styleClass="search_icon"
+																				action="#{customerPersonalInfo.searchClicked}"
+																				process="@this">
+																				<p:tooltip for="customerSearchButton"
+																					value="#{msg['lbl.clickToSearch']}" />
+																			</p:commandButton>
+																		</p:column>
+																	</p:row>
+																</p:panelGrid>
+															</p:panel>
+
+														</p:panel>
+
+														<p:panel styleClass="left_col">
+															<p:panel styleClass="inner_left_col">
+																<h:outputText
+																	value="#{msg['lbl.medicalinsuranceindicator']}" />
+
+															</p:panel>
+															<p:panel styleClass="inner_right_col">
+
+																<p:selectOneMenu id="medicalindicator"
+																	styleClass="dropdown" tabindex="18"
+																	filterMatchMode="startsWith" filter="true"
+																	value="#{customerPersonalInfo.medicalInsuranceInd}">
+
+																	<!-- 	<f:selectItem itemLabel="#{msg['lbl.medical']}"
+																	itemValue="" /> -->
+																	<f:selectItem itemValue="N"
+																		itemLabel="#{msg['lbl.no']}" />
+																	<f:selectItem itemValue="Y"
+																		itemLabel="#{msg['lbl.yes']}" />
+
+
+																	<p:ajax update="medicalindicator" />
+																</p:selectOneMenu>
+															</p:panel>
+														</p:panel>
+
+														<!-- <p:panel styleClass="right_col" id="remPl">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="rem" value="#{msg['lbl.remarks']} #{customerPersonalInfo.boolRemarksforStoM==true?'*':''}"/>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="remarks" tabindex="10"
+															value="#{customerPersonalInfo.remarks}" required="#{customerPersonalInfo.boolRemarksforStoM}" requiredMessage="#{msg['lbl.scRem']}"
+															maxlength="100"
+															onkeyup="this.value=this.value.toUpperCase()">
+
+															<p:ajax update="remarks" event="blur" />
+															<p:message id="remarksMsg" for="remarks" display="text" />
+
+														</p:inputText>
+													</p:panel>
+											      </p:panel>						
+													 -->
+
+														<p:panel styleClass="left_col">
+															<p:panel styleClass="inner_left_col">
+																<h:outputText value="#{msg['lbl.pepsindicator']}" />
+															</p:panel>
+															<p:panel styleClass="inner_right_col">
+
+																<p:selectOneMenu id="pepsindicator1"
+																	styleClass="dropdown" tabindex="19"
+																	filterMatchMode="startsWith" filter="true"
+																	value="#{customerPersonalInfo.pepsindicator}">
+
+																	<!-- <f:selectItem
+																	itemLabel="#{msg['lbl.prehyphen']} #{msg['lbl.pepsindicator']} #{msg['lbl.posthyphen']}"
+																	itemValue="" /> -->
+																	<f:selectItem itemValue="N"
+																		itemLabel="#{msg['lbl.no']}" />
+																	<f:selectItem itemValue="Y"
+																		itemLabel="#{msg['lbl.yes']}" />
+																	<p:ajax update="pepsindicator1" />
+
+																</p:selectOneMenu>
+															</p:panel>
+														</p:panel>
+
+													</p:panel>
+
+													<div class="clearfix"></div>
+
+
+													<p:panel styleClass="left_col">
+														<h:outputText value="#{msg['lbl.fieldaremandatory']}"
+															style="color:red; padding:10px !important; font-size:10px;" />
+													</p:panel>
+													<div class="clearfix"></div>
+
+
+
+												</h:panelGroup>
+
+
+
+												<p:panel styleClass="panel_border5">
+
+													<h:panelGroup layout="block" styleClass="shadow_button3">
+
+														<p:commandButton value="#{msg['lbl.savenext']}"
+															tabindex="20" styleClass="btn-success"
+															onstart="process.show();" onsuccess="process.hide();"
+															style="margin-right:10px;"
+															action="#{customerPersonalInfo.savePersonalManualPage}"
+															update="mainPanel" />
+
+														<!-- <p:commandButton value="#{msg['lbl.next']}" tabindex=""
+													style="margin-right:10px;"
+													action="#{customerPersonalInfo.nextContactDetails}"
+													update="mainPanel" /> -->
+
+														<p:commandButton value="#{msg['lbl.back']}" tabindex="21"
+															onstart="process.show();" onsuccess="process.hide();"
+															action="#{customerPersonalInfo.idInfo}"
+															update="mainPanel" styleClass="btn-info" immediate="true"
+															style="margin-right:10px; ">
+															<p:resetInput target="@form" />
+														</p:commandButton>
+
+														<p:commandButton value="#{msg['lbl.clear']}" tabindex="22"
+															styleClass="btn-warning" onstart="process.show();"
+															onsuccess="process.hide();"
+															action="#{customerPersonalInfo.clearPersonalInfo}"
+															update="mainPanel" process="@this">
+															<p:resetInput target="@form" />
+														</p:commandButton>
+
+
+														<div class="clearfix"></div>
+													</h:panelGroup>
+													<div class="clearfix"></div>
+												</p:panel>
+
+											</p:panel>
+
+										</p:panel>
+
+									</p:panel>
+								</h:form>
+							</h:panelGroup>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+					</h:panelGroup></td>
+			</tr>
+		</table>
+		<div class="clearfix"></div>
+
+		<ui:include src="#{facesBean.footer}"></ui:include>
+
+	</f:view>
+</h:body>
+</html>

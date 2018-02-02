@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script>
+		history.pushState(null, null, 'associationTagging.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'associationTagging.xhtml');
+		});
+	</script>
+</h:head>
+
+<p:confirmDialog id="noRecords" widgetVar="noRecords" resizable="false"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all" message="No Records Found!">
+</p:confirmDialog>
+
+<p:confirmDialog id="enterAnyOne" widgetVar="enterAnyOne"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all"
+	message="Please Enter Either Customer Reference Number (or) Civil Id!">
+</p:confirmDialog>
+
+<p:confirmDialog id="assoTag" widgetVar="assoTag" resizable="false"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all"
+	message="Please Select Association Tagging!">
+</p:confirmDialog>
+
+<p:dialog id="updateSuccess" widgetVar="updateSuccess" width="270"
+	height="70" showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="Record Updated Successfully!" />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}" process="@this"
+		oncomplete="updateSuccess.hide()" />
+</p:dialog>
+
+<p:confirmDialog id="updateSucces" widgetVar="updateSucces"
+	resizable="false" style="background-color: white !important;"
+	header="Success Dailog" styleClass="success" showEffect="clip"
+	hideEffect="clip" closeOnEscape="true" closable="true" update="@all"
+	message="Infromation is successfully saved!">
+</p:confirmDialog>
+
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="assoTagForm" onkeypress="if (event.keyCode == 13) { return false; }">
+
+								<p:confirmDialog id="error" widgetVar="error" resizable="false"
+									style="background-color: white !important;"
+									header="#{msg['lbl.warningDailog']}" styleClass="warning"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" update="@all"
+									message="#{associationTaggingBean.errorMessage}">
+								</p:confirmDialog>
+
+								<p:dialog modal="true" showHeader="true"
+									header="#{msg['lbl.pleasewait']}" widgetVar="process"
+									id="process" width="300" height="50" resizable="false"
+									draggable="false" closable="false"
+									style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+									<div style="text-align: center;">
+										<p:graphicImage value="../images/preloader.gif" />
+									</div>
+								</p:dialog>
+								<h1>
+									<h:outputText value="Association Tagging" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h3>
+										<h:outputText value="Association Tagging" />
+									</h3>
+									<p:panel styleClass="panel_border">
+										<p:panel id="headerPanel">
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Customer Mobile / Civil Id" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+															<p:column
+																style="width:50%; text-align:left; padding:0px 5px 0px 0px !important;">
+																<!-- <p:inputText id="crnumber"
+																	value="#{associationTaggingBean.cusRefNumSearch}">
+																	<p:ajax event="change"
+																		listener="#{associationTaggingBean.fetchCusRefData}"
+																		update="crnumber,assoTagForm"
+																		onstart="process.show();" onsuccess="process.hide();" />
+																</p:inputText>
+																<p:watermark for="crnumber" value="Customer Ref" /> -->
+																<p:inputText id="crMobnumber"
+																	value="#{associationTaggingBean.mobileNumSearch}">
+																	<p:ajax event="change"
+																		listener="#{associationTaggingBean.fetchCusRefData}"
+																		update="crMobnumber,assoTagForm"
+																		onstart="process.show();" onsuccess="process.hide();" />
+																</p:inputText>
+																<p:watermark for="crMobnumber" value="Customer Mobile" />
+															</p:column>
+															<p:column
+																style="width:50%; padding:0px 5px 0px 10px !important;">
+																<p:inputText id="civilIdSearch"
+																	value="#{associationTaggingBean.civilIDSearch}">
+																	<p:ajax event="change"
+																		listener="#{associationTaggingBean.fetchCivilIdData}"
+																		update="civilIdSearch,assoTagForm"
+																		onstart="process.show();" onsuccess="process.hide();" />
+																</p:inputText>
+																<p:watermark for="civilIdSearch" value="Civil Id" />
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Title" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{associationTaggingBean.title}"
+														readonly="true" />
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Name" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{associationTaggingBean.name}"
+														readonly="true" />
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Name(Local)" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{associationTaggingBean.nameLocal}"
+														readonly="true" />
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Mobile" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{associationTaggingBean.mobileNum}"
+														readonly="true" />
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Email" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{associationTaggingBean.email}"
+														readonly="true" />
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Nationality" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+															<p:column
+																style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText
+																	value="#{associationTaggingBean.nationality1}"
+																	readonly="true" />
+															</p:column>
+															<p:column
+																style="width:70%; padding:0px 5px 0px 10px !important;">
+																<p:inputText
+																	value="#{associationTaggingBean.nationality2}"
+																	readonly="true" />
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Home Country" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+															<p:column
+																style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText
+																	value="#{associationTaggingBean.homeCountryId}"
+																	readonly="true" />
+															</p:column>
+															<p:column
+																style="width:70%; padding:0px 5px 0px 10px !important;">
+																<p:inputText
+																	value="#{associationTaggingBean.homeCountryName}"
+																	readonly="true" />
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Local Country" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+															<p:column
+																style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText
+																	value="#{associationTaggingBean.locCountryId}"
+																	readonly="true" />
+															</p:column>
+															<p:column
+																style="width:70%; padding:0px 5px 0px 10px !important;">
+																<p:inputText
+																	value="#{associationTaggingBean.locCountryName}"
+																	readonly="true" />
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Home State" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+															<p:column
+																style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText
+																	value="#{associationTaggingBean.homeStateId}"
+																	readonly="true" />
+															</p:column>
+															<p:column
+																style="width:70%; padding:0px 5px 0px 10px !important;">
+																<p:inputText
+																	value="#{associationTaggingBean.homeStateName}"
+																	readonly="true" />
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Local State" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+															<p:column
+																style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText
+																	value="#{associationTaggingBean.locStateId}"
+																	readonly="true" />
+															</p:column>
+															<p:column
+																style="width:70%; padding:0px 5px 0px 10px !important;">
+																<p:inputText
+																	value="#{associationTaggingBean.locStateName}"
+																	readonly="true" />
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Home District" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+															<p:column
+																style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText
+																	value="#{associationTaggingBean.homeDistrictId}"
+																	readonly="true" />
+															</p:column>
+															<p:column
+																style="width:70%; padding:0px 5px 0px 10px !important;">
+																<p:inputText
+																	value="#{associationTaggingBean.homeDistrictName}"
+																	readonly="true" />
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Local District" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+															<p:column
+																style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText
+																	value="#{associationTaggingBean.locDistrictId}"
+																	readonly="true" />
+															</p:column>
+															<p:column
+																style="width:70%; padding:0px 5px 0px 10px !important;">
+																<p:inputText
+																	value="#{associationTaggingBean.locDistrictName}"
+																	readonly="true" />
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Home City" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+															<p:column
+																style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText
+																	value="#{associationTaggingBean.homeCityId}"
+																	readonly="true" />
+															</p:column>
+															<p:column
+																style="width:70%; padding:0px 5px 0px 10px !important;">
+																<p:inputText
+																	value="#{associationTaggingBean.homeCityName}"
+																	readonly="true" />
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Local City" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+															<p:column
+																style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText value="#{associationTaggingBean.locCityId}"
+																	readonly="true" />
+															</p:column>
+															<p:column
+																style="width:70%; padding:0px 5px 0px 10px !important;">
+																<p:inputText
+																	value="#{associationTaggingBean.locCityName}"
+																	readonly="true" />
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="left_col">
+											<p:panel>
+												<h:outputText value="Association Reference" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel id="cardtypename" style="width:110%;important">
+												<p:message id="assoTag" for="colassoTag" display="text" />
+												<p:selectOneMenu id="colassoTag" filter="true"
+													filterMatchMode="contains"
+													value="#{associationTaggingBean.associationCode}"
+													style="width:125%;important">
+													<f:selectItem
+														itemLabel="-- Select Association Reference --"
+														itemValue="" />
+													<f:selectItems
+														value="#{associationTaggingBean.companyNames}" var="c"
+														itemLabel="#{c.companyName}" itemValue="#{c.customerId}" />
+													<p:ajax event="change" update="assoTag"></p:ajax>
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="Accept"
+												update=":assoTagForm:mainPanel,error,assoTag"
+												action="#{associationTaggingBean.updateAssoCode}"
+												immediate="true" onstart="process.show();" process="@this"
+												onsuccess="process.hide();" style="margin-right:10px;"/>
+											<p:commandButton value="#{msg['lbl.exit']}"
+												update="assoTagForm" action="#{associationTaggingBean.exit}"
+												process="@this" onstart="process.show();"
+												onsuccess="process.hide();" style="margin-right:10px;"/>
+											<p:commandButton value="#{msg['lbl.clear']}" update="assoTagForm"
+												action="#{associationTaggingBean.clearAll}" process="@this"
+												onstart="process.show();" onsuccess="process.hide();" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+										<h:panelGroup layout="block" class="clearfix" />
+
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

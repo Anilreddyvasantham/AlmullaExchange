@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script>
+	function clearForm(){
+		
+		var dat1 = document.getElementById("countryForm:englishId");
+		dat1.value='';
+		var dat2 = document.getElementById("countryForm:localId");
+		dat2.value='';
+		//alert("HELLO"+dat.value);
+		
+	}
+	
+	</script>
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+	</script>
+</h:head>
+<p:dialog id="succsses" widgetVar="succsses" width="270" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"
+>
+	<p:outputLabel value="#{msg['lbl.benisuccessfull']}" />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{countrymaster.saveClick}" process="@this" />
+</p:dialog>
+<p:confirmDialog id="failure" widgetVar="failure" header="Warning Message" width="500" height="17" resizable="false"
+	style=" border:2px solid #007f30 !important; padding:0px !important;  color:#007f30 !important; background:url('../images/warning.png') 10px 43px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"
+	message="Data not saved"
+>
+</p:confirmDialog>
+<p:confirmDialog id="deleteSuccess" widgetVar="deleteSuccess" width="400" height="17" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="Record got  deleted successfully"
+>
+</p:confirmDialog>
+<p:confirmDialog id="deleteFailure" widgetVar="deleteFailure" width="400" height="17" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="Record not deleted successfully"
+>
+</p:confirmDialog>
+<p:confirmDialog id="remarksEmpty" widgetVar="remarksEmpty" width="400" height="17" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="Remarks should not empty.Please enter it"
+>
+</p:confirmDialog>
+<p:confirmDialog id="editRecord" widgetVar="editRecord" width="400" height="17" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="Sorry.!! You can not edit multiple record at a time ..">
+</p:confirmDialog>
+
+<p:confirmDialog id="alreadymodifed" widgetVar="alreadymodifed" width="400" height="20" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="Sorry.!! You could not able to delete this record .">
+</p:confirmDialog>
+
+<p:confirmDialog id="csp" widgetVar="csp"  
+resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" 
+showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{countrymaster.errorMessage}" >
+</p:confirmDialog>
+<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"  
+resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" 
+showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{countrymaster.errorMessage} - #{msg['lbl.nullPonterExcepetion']}" >
+</p:confirmDialog>
+
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;" id="HideHandle" name="HideHandle" src="../images/toggle_plus.png" alt="" onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="countryForm">
+								<!-- Remarks Dailog  -->
+								<p:dialog id="remarksMsg" widgetVar="remarksMsg" width="550" height="205" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;" showEffect="clip"
+									hideEffect="clip" closeOnEscape="true" closable="true" modal="true"
+								>
+									<p:panel styleClass="shadow">
+										<p:panel>
+											<h:outputText value="#{msg['lbl.activatedate']}" />
+											<h:outputText value="#{countrymaster.approvedDate}" />&nbsp;&nbsp;&nbsp;
+                                        <h:outputText value="#{msg['lbl.approvedBy']}" />
+											<h:outputText value="#{countrymaster.approvedBy}" />
+										</p:panel>
+										<div class="clearfix" />
+										<hr></hr>
+										<p:panel>
+											<h:outputText value="#{msg['lbl.enterremarks']}" />
+										</p:panel>
+										<p:panel>
+											<h:inputTextarea value="#{countrymaster.remarks}" rows="5" cols="50">
+												<p:ajax />
+											</h:inputTextarea>
+										</p:panel>
+										<p:spacer width="15px" />
+										<div class="clearfix" />
+										<h:panelGroup styleClass="shadow">
+											<div class="clearfix" />
+											<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{countrymaster.clickRemarkOK}" process="@this" oncomplete="PF('remarksMsg').hide();" update="mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+											<p:commandButton value="#{msg['lbl.cancel']}" onclick="PF('remarksMsg').hide()" actionListener="#{countrymaster.cancelRemarks}" process="@this" />
+										</h:panelGroup>
+									</p:panel>
+								</p:dialog>
+								<!-- dilaog remark -->
+								<h1>
+									<h:outputText value="#{msg['lbl.countrymaster']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h2>
+										<h:outputText value="#{msg['lbl.countrymaster']}" />
+									</h2>
+									
+									
+									<p:dialog id="permanentDelete" widgetVar="permanentDelete" width="300" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+                                                          showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"  >
+                                                          <p:outputLabel  value="Do You Want to Delete This Record Permentely ?"/>
+                                                          <p:spacer height="10px"/>
+                                                          <p:panel>
+ 					        <p:commandButton value="#{msg['lbl.ok']}" style="margin-right:10px; "  actionListener="#{countrymaster.confirmPermanentDelete}" process="@this" oncomplete="PF('permanentDelete').hide();" update=":countryForm" /> 
+                                        <p:commandButton value="#{msg['lbl.cancel']}"  onclick="PF('permanentDelete').hide();" immediate="true"/> 
+								</p:panel>                        
+                            </p:dialog>	
+									
+									
+										<p:confirmDialog id="csp" widgetVar="csp" width="500" showHeader="false" resizable="false" header="Warning Message"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip"
+											message="#{countrymaster.errorMessage}"
+										>
+										</p:confirmDialog>
+									
+									<p:dialog modal="true" showHeader="true" header="#{msg['lbl.bco.plswait']}"  widgetVar="process"  id="process"   width="300" height="50" resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+							    	</p:dialog>	
+									
+									<p:panel styleClass="panel_border">
+										<p:panel id="headerPanel">
+											<p:panel styleClass="left_col" id="relationPanel">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.countrycode']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdelivery" for="modeId" display="text" />
+													<p:autoComplete id="modeId" value="#{countrymaster.countryCode}" completeMethod="#{countrymaster.autoCompleteData}" onkeyup="this.value=this.value.toUpperCase()" readonly="#{countrymaster.booCountryCodeReadOnly}" maxlength="3" maxResults="10" onchange="clearForm(this);"
+														required="true" requiredMessage="Please Enter Country Code" validatorMessage="Alphanumeric only allowed"  
+													>
+														<!-- <f:validateRegex pattern="(?=.*[^ ])[a-zA-Z0-9]+" /> -->
+														
+															<!-- <f:convertNumber integerOnly="true" /> -->
+													<!-- <f:validateLongRange minimum="1" /> -->
+														<p:ajax update="mainPanel,msgdelivery,modeId" event="itemSelect" listener="#{countrymaster.populateCountryMaster}" />
+														<p:ajax event="blur" update="msgdelivery " />
+													</p:autoComplete>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="right_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.countryisocode']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgiso" for="isoId" display="text" />
+													<p:inputText value="#{countrymaster.isoCode}" id="isoId" required="true" requiredMessage="Please Enter ISO Code" 
+													onkeyup="this.value=this.value.toUpperCase()" style="text-align:left !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;" maxlength="13">
+														<p:ajax event="blur" update="msgiso" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.englishcountryname']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgenglish" for="englishId" display="text" />
+													<p:inputText value="#{countrymaster.englishDescption}" id="englishId" required="true" requiredMessage="Please enter English Country Name"  onkeyup="this.value=this.value.toUpperCase()" maxlength="40"
+														>
+														<!-- <f:validator validatorId="allowOnlyCharectorWithSpecialCharactors" /> -->
+														<p:ajax event="blur" update="msgenglish,englishId" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="right_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.englishnationality']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgenglishnation" for="englishnationId" display="text" />
+													<p:inputText value="#{countrymaster.englishNationality}" id="englishnationId" required="true" requiredMessage="Please Enter English Nationality"  onkeyup="this.value=this.value.toUpperCase()" maxlength="40"
+														validatorMessage="Character only allow"
+													>
+												<f:validator validatorId="AllowCharectorswithSpace" />
+														<p:ajax event="blur" update="msgenglishnation" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.localcountryname']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msglocal" for="localId" display="text" />
+													<p:inputText value="#{countrymaster.localDescption}" id="localId" required="true" requiredMessage="Please enter Local Country Name" maxlength="40"
+														style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;" dir="RTL"
+													>
+														<p:ajax event="blur" update="msglocal" />
+														<f:validator validatorId="arabicValidator" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="right_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.localnationality']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msglocalnation" for="localnationId" display="text" />
+													<p:inputText value="#{countrymaster.localNationality}" id="localnationId" required="true" requiredMessage="Please Enter Local Nationality" maxlength="40"
+														style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;" dir="RTL"
+													>
+														<p:ajax event="blur" update="msglocalnation" />
+														<f:validator validatorId="arabicValidator" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<h2>
+												<h:outputText value="#{msg['lbl.countrydetails']}" />
+											</h2>
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Swift Code" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgalpha2" for="apha2Id" display="text" />
+														<p:inputText value="#{countrymaster.countryAlpha2Code}" id="apha2Id" required="true" requiredMessage="Please Enter Alpha2 Code"
+															style="text-align:left !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;" onkeyup="this.value=this.value.toUpperCase()" maxlength="2"
+														>
+														 <f:validator validatorId="com.amg.exchange.validator.AlphaNumericValidator" />
+															<p:ajax event="blur" update="msgalpha2" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<p:panel styleClass="right_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.isoalphacode']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgalpha3" for="apha3Id" display="text" />
+														<p:inputText value="#{countrymaster.countryAlpha3Code}" id="apha3Id" required="true" requiredMessage="Please Enter Alpha3 Code"
+															style="text-align:left !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;" onkeyup="this.value=this.value.toUpperCase()" maxlength="3"
+														>
+														<f:validator validatorId="com.amg.exchange.validator.AlphaNumericValidator" />
+															<p:ajax event="blur" update="msgalpha3" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<h:panelGroup layout="block" class="clearfix" />
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.businesscountry']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="businessMsgId" for="businessId" display="text" />
+														<p:selectOneMenu id="businessId" value="#{countrymaster.businessCountry}" required="true" requiredMessage="Select Business Country" filter="startWith">
+															<f:selectItem itemLabel="-- Select Business Country --" />
+															<f:selectItem itemLabel="Yes" itemValue="Y" />
+															<f:selectItem itemLabel="No" itemValue="N" />
+															<p:ajax event="change" update="businessMsgId" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+												<p:panel styleClass="right_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.bstate']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="stateMsgId" for="stateId" display="text" />
+														<p:selectOneMenu id="stateId" value="#{countrymaster.stateStatus}" required="true" requiredMessage="Select State status" filter="startWith">
+															<f:selectItem itemLabel="-- Select Status --" />
+															<f:selectItem itemLabel="#{msg['lbl.yes']}" itemValue="Y" />
+															<f:selectItem itemLabel="#{msg['lbl.no']}" itemValue="N" />
+															<p:ajax event="change" update="stateMsgId" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+												<h:panelGroup layout="block" class="clearfix" />
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.countrytelecode']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgtele" for="teleId" display="text" />
+														<p:inputText value="#{countrymaster.telCode}" id="teleId" required="true" requiredMessage="Please Enter Telephone Code" validatorMessage="Alphanumeric only allowed"  maxlength="8"
+															style="text-align:left !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;"
+														>
+														<f:validator validatorId="AllowNumberwithSpace" />
+															<p:ajax event="blur" update="msgtele" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.spilitind']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgspilitIndicator" for="spilitIndicatorId" display="text" />
+														<p:inputText value="#{countrymaster.spilitIndicator}" id="spilitIndicatorId" required="true" requiredMessage="Please Enter spilit indicator" converterMessage="#{msg['lbl.enterOnlyNumbers']}"  maxlength="8"
+															style="text-align:left !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;"
+														>
+														<f:validator validatorId="allowOnlyNumber" />
+															<p:ajax event="change" update="msgspilitIndicator" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												</p:panel>
+											
+										
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.add']}" action="#{countrymaster.addtoDataTable}" update="mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+											<p:commandButton value="#{msg['lbl.view']}" action="#{countrymaster.viewAll}" update=":countryForm:mainPanel,:countryForm:dataTable" immediate="true" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+											<p:commandButton value="#{msg['lbl.clear']}" action="#{countrymaster.clearAll}" update=":countryForm" immediate="true" process="@this" disabled="#{countrymaster.hideEdit}" onstart="process.show();" onsuccess="process.hide();"/>
+											<!-- <p:commandButton value="Exit" action="#{relationsBean.exit}" immediate="true"/> -->
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:dataTable id="dataTable" value="#{countrymaster.countrymasterDataTableList}" var="d" rowIndexVar="rowIndex" emptyMessage="No records Found" rendered="#{countrymaster.booDatatableEnabled}" rows="20" paginator="true"
+											styleClass="mydatatableclass" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  paginatorPosition="bottom"  rowsPerPageTemplate="15,20,25" sortMode="multiple"
+										>
+											<p:column headerText="#{msg['lbl.sino']}" style="width:30px;" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.countrycode']}"  sortBy="#{d.countryCode}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.countryCode}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.englishcountryname']}" filterBy="#{d.englishDescption}"
+													filterMatchMode="contains"  sortBy="#{d.englishDescption}" style="width:4%;" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.englishDescption}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.englishnationality']}" sortBy="#{d.englishNationality}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.englishNationality}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.localcountryname']}" sortBy="#{d.localDescption}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.localDescption}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.localnationality']}" sortBy="#{d.localNationality}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.localNationality}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.swiftcode']}" sortBy="#{d.countryAlpha2Code}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.countryAlpha2Code}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.isoalphacode']}" sortBy="#{d.countryAlpha3Code}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.countryAlpha3Code}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.countrytelecode']}" sortBy="#{d.telCode}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.telCode}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.businesscountry']}" sortBy="#{d.businessCountry}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.businessCountry}" />
+											</p:column>
+											<!-- <p:column headerText="State status" sortBy="#{d.stateStatus}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.stateStatus}" />
+											</p:column> -->
+											<p:column headerText="#{msg['lbl.edit']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<p:commandButton value="" id="imgEdit" styleClass="edit" action="#{countrymaster.editRecord(d)}" disabled="#{countrymaster.hideEdit}"  update=":countryForm" process="@this" >
+												</p:commandButton>
+											</p:column>
+											<p:column headerText="Activate / Deactivate" style="text-align:center !important;" sortBy="#{d.dynamicLabelForActivateDeactivate}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<p:commandLink action="#{countrymaster.checkStatus(d)}" value="#{d.dynamicLabelForActivateDeactivate}" style="color:blue !important; text-decoration:underline !important;" update=":countryForm" immediate="true" process="@this" />
+											</p:column>
+										</p:dataTable>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{countrymaster.booDatatableEnabled}" id="submitPanel">
+											<p:commandButton id="save" value="#{msg['lbl.submit']}" style="margin-right:10px;" action="#{countrymaster.saveAll}" immediate="true" disabled="#{countrymaster.booSubmitButton}" onstart="process.show();" onsuccess="process.hide();"/>
+											<p:commandButton value="#{msg['lbl.exit']}" action="#{countrymaster.clickOnExit}" process="@this" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+										<p:panel styleClass="left_col">
+											<h:outputText id="mandatory" value=" #{msg['lbl.*filedsAreMandatory']}" style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+									</p:panel>
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

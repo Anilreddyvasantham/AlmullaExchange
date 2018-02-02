@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+	document.onkeydown = function(e) {
+		//Enter button pressed 
+		/* if (e.keyCode === 13) {
+			return false;
+		} */
+	};
+
+	 history.pushState(null, null, 'paymentMode.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'paymentMode.xhtml');
+	    });
+	
+	function clearForm(){
+		
+		var dat1 = document.getElementById("paymentForm:englishId");
+		dat1.value='';
+		var dat2 = document.getElementById("paymentForm:localId1");
+		dat2.value='';
+		//alert("HELLO"+dat.value);
+		
+	}
+	
+	</script>
+</h:head>
+ <p:confirmDialog id="remarksEmpty" widgetVar="remarksEmpty" width="400" height="17" resizable="false" style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+					showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.remarksnotempty']}" >
+</p:confirmDialog>	
+	<p:confirmDialog id="sqlexception" widgetVar="sqlexception" 
+		resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{paymentModeBean.errorMessage}"   >
+	 </p:confirmDialog>
+				
+	 		
+	
+<p:dialog id="duplicaterecord" widgetVar="duplicaterecord" width="310" height="70" showHeader="false" resizable="false" style=" border:2px solid green !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"  >
+            											<p:outputLabel value="#{msg['lbl.thisrecordalreadyexisted']}"/><br/>
+            								<p:spacer width="15px" />
+            								<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{paymentModeBean.clear}" onclick="PF('duplicaterecord').hide();"  update=":paymentForm" immediate="true"/>          
+</p:dialog>				
+				
+<p:confirmDialog id="norecord" widgetVar="norecord" width="400" height="17" resizable="false" style="color:#FF0000 !important; border:2px solid #F33535 !important; padding:0px !important;  font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="#{msg['lbl.recordnotfound']}">
+   </p:confirmDialog>
+   <p:dialog id="permanentDelete" widgetVar="permanentDelete" width="300" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+                                                          showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"  >
+                                                          <p:outputLabel  value="#{msg['lbl.doyouwanttodeleterecordperminently']}"/>
+                                                          <p:spacer height="10px"/>
+                                                          <p:panel>
+ 					        <p:commandButton value="#{msg['lbl.ok']}" style="margin-right:10px; "  actionListener="#{paymentModeBean.confirmPermanentDelete}" process="@this" oncomplete="PF('permanentDelete').hide();" update=":paymentForm" /> 
+                                        <p:commandButton value="#{msg['lbl.cancel']}" actionListener="#{paymentModeBean.confirmPermanentDeleteCancel}"   onclick="PF('permanentDelete').hide();" immediate="true"/> 
+								</p:panel>                        
+                            </p:dialog>		
+<p:confirmDialog widgetVar="datatable" width="300"
+									showHeader="false" resizable="false"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip"
+									message="#{msg['lbl.thisrecordalreadyexisted']}">
+									<p:spacer width="15px" />
+            			<p:commandButton value="#{msg['lbl.ok']}"  process="@this" onclick="datatable.hide()"/>
+									</p:confirmDialog>
+<p:dialog id="complete" widgetVar="complete" width="270" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+            											<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} "/><br/>
+            								<p:spacer width="15px" />
+            											<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{paymentModeBean.clickOnOKSave}" process="@this"/>          
+</p:dialog>
+<p:confirmDialog id="dataNotFund" widgetVar="dataNotFund" width="400" height="17" resizable="false" style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="#{msg['lbl.addAlteastOneRecordtoDataTable']}">
+   </p:confirmDialog>
+
+<p:confirmDialog id="exist" widgetVar="exist" width="400" height="17" resizable="false" style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="#{msg['lbl.thisrecordalreadyexisted']} ">
+   </p:confirmDialog>
+   <p:confirmDialog id="update" widgetVar="update" width="400" height="17" resizable="false" style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="#{msg['lbl.doyouwanttoupdatetherecord']}">
+                      									
+                      									<p:commandButton value="#{msg['lbl.yes']}" actionListener="#{paymentModeBean.update}" process="@this" onclick="update.hide()"/>
+                      									<p:commandButton value="#{msg['lbl.no']}" actionListener="#{paymentModeBean.clickOnOKSave}" process="@this"/>  
+   </p:confirmDialog>
+   <p:dialog id="recordupdated" widgetVar="recordupdated" width="270" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+            											<p:outputLabel value="#{msg['lbl.recordsupdatedsuccessfully']}"/><br/>
+            								<p:spacer width="15px" />
+            											<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{paymentModeBean.clickOnOKSave}" process="@this"/>          
+</p:dialog>
+
+  <!-- <p:dialog id="datatable" widgetVar="datatable" width="270" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+            											<p:outputLabel value="This record is already existed in Datatable"/><br/>
+            								<p:spacer width="15px" />
+            											<p:commandButton value="#{msg['lbl.ok']}"  process="@this" onclick="datatable.hide()"/>   
+</p:dialog>-->        
+<!-- <p:dialog id="username" widgetVar="username" width="270" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+            											<p:outputLabel value="Your Not Authorized Person"/><br/>
+            								<p:spacer width="15px" />
+            								<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{paymentModeBean.cancel}" process="@this"/> 
+</p:dialog> -->
+<p:confirmDialog id="username1" widgetVar="username1" width="370" styleClass="red"  showHeader="false" resizable="false" 	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" message="#{msg['lbl.sameusernotabletoapprove']}">
+      </p:confirmDialog>
+       <p:confirmDialog id="couldnot" widgetVar="couldnot" width="450" height="17" resizable="false" style=" border:2px solid red !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="This Record Pending for Approval" header="Warning Message">
+   </p:confirmDialog>
+
+  
+<p:dialog id="approv" widgetVar="approv"  width="400" height="80"  resizable="false" 
+	style="background-color: white !important;" styleClass="success" header="Success" closable="false" showEffect="clip" hideEffect="clip" >
+           <p:outputLabel value="#{msg['lbl.approvedsuccessfully']} " style="text-align: center; font-size:15px !important;"/><br/>
+           <p:commandButton value="#{msg['lbl.ok']}" actionListener="#{paymentModeBean.clickOnOk}" process="@this" style="margin-left: 150px !important;"/>          
+     </p:dialog>
+
+<p:dialog id="alreadyapprov" widgetVar="alreadyapprov" width="310" height="70" showHeader="false" resizable="false" style=" border:2px solid green !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"  >
+            											<p:outputLabel value="#{msg['lbl.thisrecordalreadyapprovedby']}"/><br/>
+            								<p:spacer width="15px" />
+            								<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{paymentModeBean.clickOnOkButton}" process="@this"/>          
+</p:dialog>			
+<h:body> 
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+							<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+						</td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+								<h:form id="paymentForm">
+								
+       					     <p:dialog id="remarks" widgetVar="remarks" width="480" height="230" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+                                                          showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"  >
+                             		<p:panel>
+                             		<table>
+                             		<tr>
+                             		<td> <h:outputText value="#{msg['lbl.activateddate']}     :" /></td>
+                             		<td><h:outputText value="#{paymentModeBean.approvedDate}" style="color:red !important;"/> </td>
+                             		</tr>
+                             		<tr>
+                             		<td> <h:outputText value="#{msg['lbl.activatedby']}    :" /> </td>
+                             		<td>	<h:outputText  value="#{paymentModeBean.approvedBy}"  style="color:red !important;"/> </td>
+                             		</tr>
+                             		</table>
+                             		</p:panel>
+                             		<p:spacer height="10px"/>
+                             		<p:panel>
+                             		<h:outputText value="#{msg['lbl.pleaseenterremarks']}" /><h:outputText value="*" style="color:red !important;" />
+                             		</p:panel>
+                             		<p:spacer height="5px"/>
+                             		<p:panel>
+                             		<h:inputTextarea id="remarksId" value="#{paymentModeBean.remarks}" >
+                                            <p:ajax/>
+                                     </h:inputTextarea>
+                                    </p:panel>
+                                    <p:spacer height="5px"/>
+                                   	<p:panel style="padding-left:160px;">
+                                       <p:commandButton value="#{msg['lbl.ok']}"  actionListener="#{paymentModeBean.clickOnOKApproval}"  process="@this"  /> 
+            							<p:commandButton value="#{msg['lbl.cancel']}" actionListener="#{paymentModeBean.cancelRemarks}" process="@this"  />  <!-- onclick="PF('remarks').hide();" -->
+            						
+                             </p:panel>
+                               </p:dialog>
+							<h1>
+								<h:outputText value=" #{msg['lbl.paymentModeMaster']} " />
+							</h1>
+							<p:panel styleClass="shadow" id="mainPanel">
+							<h2>
+											<h:outputText value="#{msg['lbl.paymentModeMaster']}" />
+										</h2>
+										
+										
+								<p:confirmDialog id="csp" widgetVar="csp"   showHeader="false" resizable="false" header="Warning Message" styleClass="warning"
+														style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="explode" hideEffect="explode" message="#{paymentModeBean.errorMessage}">
+							  	</p:confirmDialog>
+								 <p:confirmDialog id="nullPoiterId"
+                                                                     widgetVar="nullPoiterId" resizable="false"
+                                                                     style="background-color: white !important;"
+                                                                     header="#{msg['lbl.warningDailog']}" styleClass="warning"
+                                                                     showEffect="clip" hideEffect="clip" closeOnEscape="true"
+                                                                     closable="true"
+                                                                     message="#{paymentModeBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+		
+								<p:panel styleClass="panel_border">
+								
+									<p:panel styleClass="left_col" id="deliveryPanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.PaymentMode']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgdelivery"  for="modeId" display="text" />
+											<p:autoComplete  value="#{paymentModeBean.paymentCode}" id="modeId" required="true" requiredMessage="Please Enter Payment Mode" completeMethod="#{paymentModeBean.autoCompleteData}" var="obj" itemLabel="#{obj}"
+											onchange="clearForm(this)"	itemValue="#{obj}" readonly="#{paymentModeBean.readOnly}" maxlength="40"  >
+												<!-- <f:validateRegex pattern="^[0-9]*$"  for="modeId"  /> -->
+											<p:ajax update="msgdelivery,englishId,localId1" event="itemSelect" listener="#{paymentModeBean.autoPopRec}" />
+											<p:ajax update="msgdelivery,englishId,localId1" event="blur" listener="#{paymentModeBean.autoPopRec}" process="@this"/>
+											</p:autoComplete>
+											
+											
+											</p:panel>
+										</p:panel>
+								<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.englishPaymentDescription']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgenglish"  for="englishId" display="text" />
+											<p:inputText value="#{paymentModeBean.paymentDescEnglish}" maxlength="40" id="englishId" onkeyup="this.value=this.value.toUpperCase()" required="true" requiredMessage="Please Enter  English Payment Description" readonly="#{paymentModeBean.readOnly}" validatorMessage="Please Enter English Language">
+											<!-- <p:ajax event="blur" listener="#{paymentModeBean.autoPopRec}" update="msgenglish,mainPanel" /> -->
+										<!-- 	<f:validateRegex pattern="[a-zA-Z ]+" for="englishId"/> -->
+									    	<p:ajax  event="blur" update="msgenglish"     />
+											</p:inputText>
+											</p:panel>
+										</p:panel>
+												<h:panelGroup layout="block" class="clearfix"/>				
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.localPaymentDescription']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgpay1"  for="localId1" display="text" />
+											<p:inputText value="#{paymentModeBean.paymentDescArabic}" maxlength="40" id="localId1" required="true" style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;" dir="RTL" requiredMessage="Please Enter Mode of Payment In Local" readonly="#{paymentModeBean.readOnly}">
+											<p:ajax  update="msgpay1,submtPanel" event="blur" listener="#{remitanceModeMasterBean.hideSubmtButton}"/>
+											<f:validator  validatorId="arabicValidator" />
+											</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+									<h:panelGroup layout="block" class="clearfix"/>
+									<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{paymentModeBean.hideButton}">						
+										<p:commandButton value="#{msg['lbl.add']}" action="#{paymentModeBean.checkDelivery}" update=":paymentForm" style="margin-right:10px; "   />
+										<p:commandButton value="#{msg['lbl.view']}" action="#{paymentModeBean.view}" update=":paymentForm,mainPanel" process="@this" style="margin-right:10px; " onstart="process.show();" onsuccess="process.hide();"/>
+										 <p:commandButton value="#{msg['lbl.clear']}" action="#{paymentModeBean.clear}"  update=":paymentForm" process="@this" style="margin-right:10px; "  disabled="#{paymentModeBean.booHideClear}"/>
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+									<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{paymentModeBean.shwApprovbutton}">						
+										<p:commandButton value="#{msg['lbl.approve']}" action="#{paymentModeBean.approv}" immediate="true" update=":paymentForm"  style="margin-right:10px;"/>
+										<p:commandButton value="#{msg['lbl.cancel']}" action="#{paymentModeBean.cancel}"  immediate="true"/>
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+									<h:panelGroup layout="block" class="clearfix"/>
+										<p:spacer height="20px"/>
+								
+									<h:panelGroup layout="block" class="clearfix"/>
+																		
+										
+										 
+	<p:dataTable id="dataTable" value="#{paymentModeBean.listData}" var="d" rowIndexVar="rowIndex" emptyMessage="No records Found" rendered="#{paymentModeBean.booRenderDataTable}"
+	rows="10" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  rowsPerPageTemplate="5,10,15" paginatorPosition="bottom" styleClass="mydatatableclass">
+     
+      <p:column headerText="#{msg['lbl.sNo']}" style="width:30px;">
+            <h:outputText value="#{rowIndex+1}"/>
+        </p:column>
+ 
+        <p:column headerText="#{msg['lbl.PaymentMode']}">
+            <h:outputText value="#{d.modeOfPayment}"/>
+        </p:column>
+ 
+        <p:column headerText=" #{msg['lbl.englishPaymentDescription']}">
+            <h:outputText value="#{d.modeOfPaymentDesc}" />
+        </p:column>
+                 
+       <!--  <p:column headerText="#{msg['lbl.paymentInLocal']}">
+            <h:outputText value="#{d.modeOfPaymentInLocal}"/>
+        </p:column> -->
+         <p:column headerText="#{msg['lbl.localPaymentDescription']}">
+            <h:outputText value="#{d.modeOfPaymentDescInLocal}"/>
+        </p:column>
+ 
+        <p:column headerText="#{msg['lbl.edit']}">
+        <p:commandButton id="imgEdit" styleClass="edit" value="" action="#{paymentModeBean.editRecord(d)}"  update=":paymentForm" rendered="#{d.renderEditButton}" process="@this" disabled="#{paymentModeBean.booHideEdit}" />
+  			<!--  <p:commandButton id="imgEdit" styleClass="edit" value="" action="#{paymentModeBean.editRecord(d)}"  update=":paymentForm" process="@this"> -->
+				<!-- <p:graphicImage value="../images/edit.png" id="imgEdit"/> -->
+				<!-- <p:tooltip  for="imgEdit" value="#{msg['lbl.edit']}"/> -->
+			<!-- </p:commandButton>   --> 
+		</p:column>
+		  <p:column headerText="#{msg['lbl.activatedeactivate']}">
+           <!-- 	<p:commandButton value="" actionListener="#{paymentModeBean.removeRecord(d)}" ajax="false" immediate="true" styleClass="delete"  update="dataTable"/> -->
+           	<p:commandLink action="#{paymentModeBean.checkStatusType(d)}" value="#{d.dynamicLabelForActivateDeactivate}" style="color:blue !important; text-decoration:underline !important;" update=":paymentForm" immediate="true" process="@this"/>
+        </p:column>
+              
+    </p:dataTable>
+							
+		
+<h:panelGroup layout="block" class="clearfix"/>
+<p:spacer height="20px"/>
+									<h:panelGroup layout="block" class="clearfix"/>
+									<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{paymentModeBean.booRenderSave}" id="submtPanel">
+									   <!--  <p:commandButton id="save"  value="#{msg['lbl.save']}"  style="margin-right:10px;" action="#{paymentModeBean.saveDataTableRecords}" immediate="true" /> -->
+									   <p:commandButton id="save"  value="#{msg['lbl.submit']}"  style="margin-right:10px;" action="#{paymentModeBean.saveDataTableRecords}" immediate="true" disabled="#{paymentModeBean.submit}" update="csp" />
+ 						
+										<p:commandButton value="#{msg['lbl.exit']}" action="#{paymentModeBean.exit}" process="@this"/>
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+									<p:panel styleClass="left_col" >
+									<h:outputText  id="mandatory" value=" #{msg['lbl.*filedsAreMandatory']}"  style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+								</p:panel>
+								
+								</p:panel>
+							 <p:dialog modal="true" showHeader="true" header="Please wait.." widgetVar="process"  id="process"   width="400" height="100" resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+							    	</p:dialog> 			
+								</p:panel>
+								</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"/>
+					</h:panelGroup>
+					<h:panelGroup layout="block" class="clearfix"/>
+					</td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

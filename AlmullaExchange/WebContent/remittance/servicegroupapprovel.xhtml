@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+<script type="text/javascript">
+		document.onkeydown = function(e) {
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+
+		 history.pushState(null, null, 'servicegroupapprovel.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'servicegroupapprovel.xhtml');
+		    });
+	</script>
+</h:head>
+ <p:confirmDialog id="notValidUser" widgetVar="notValidUser" width="370" styleClass="red"  showHeader="false" resizable="false" 	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" message="#{msg['lbl.sameUserNotApproved']}">
+      </p:confirmDialog>
+ <p:dialog id="complete" widgetVar="complete" width="270" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+            											<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} "/><br/>
+            								<p:spacer width="15px" />
+            											<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{serviceGroupMasterBean.approveOK}" process="@this"/>          
+</p:dialog>
+
+
+
+<h:body>
+
+	<f:view>
+
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include>
+				 </td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form1">
+								<!--  Remarks Dialog -->
+
+								<!-- dilaog remark -->
+
+								<h1>
+									<h:outputText value="#{msg['lbl.servicegroupmaster']} " />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+								
+								
+								<p:confirmDialog id="csp" widgetVar="csp"   showHeader="false" resizable="false" header="Warning Message" styleClass="warning"
+														style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="explode" hideEffect="explode" message="#{serviceGroupMasterBean.errorMessage}">
+							  	</p:confirmDialog>
+								 <p:confirmDialog id="nullPoiterId"
+                                                                     widgetVar="nullPoiterId" resizable="false"
+                                                                     style="background-color: white !important;"
+                                                                     header="#{msg['lbl.warningDailog']}" styleClass="warning"
+                                                                     showEffect="clip" hideEffect="clip" closeOnEscape="true"
+                                                                     closable="true"
+                                                                     message="#{serviceGroupMasterBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+
+									<h2>
+										<h:outputText value="#{msg['lbl.servicegroupmaster']} " />
+									</h2>
+								 
+									<p:panel id = "firstPanel" rendered="#{serviceGroupMasterBean.booRenderInputPanel}">
+									
+									
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.servicegroupcode']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgserviceGroupCode" for="serviceGroupCode"
+													display="text" />
+												<p:inputText id="serviceGroupCode" value="#{serviceGroupMasterBean.serviceGroupCode}" required="true"  readonly="true" requiredMessage="Please enter the district code" validatorMessage="Please Enter Service Group Code Positive Numbers"
+														maxlength="3">
+													<f:validateRegex pattern="[0-9]+"  for="msgserviceGroupCode"  /> 
+													<p:ajax  update="serviceGroupCode,msgserviceGroupCode" event="change" />
+											
+													</p:inputText>
+											</p:panel>
+										</p:panel>	
+											<h:panelGroup layout="block" class="clearfix" />
+										
+								 
+										
+										
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.serviceenglishdescription']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgEnglishServiceGroupDescription"
+												for="serviceGroupDescriptionId" display="text" />
+											<p:message id="msgalpha" for="serviceGroupDescriptionId"
+												display="text" escape="true" />
+											<p:inputText
+												value="#{serviceGroupMasterBean.serviceGroupEnglishDesc}"
+												id="serviceGroupDescriptionId" required="true"
+												requiredMessage="Please Enter the Service Group Description" readonly="true"
+												onkeyup="this.value=this.value.toUpperCase()"
+												validatorMessage="Please Enter UpperCase Alphabets"
+												maxlength="40">
+												<f:validateRegex pattern="[A-Z ]+" for="msgalpha" />
+												<p:ajax event="change"
+													update="serviceGroupDescriptionId,msgEnglishServiceGroupDescription,msgalpha" />
+											</p:inputText>
+											</p:panel>
+										</p:panel>		
+									
+										 <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.servicelocaldescription']}" />
+											<h:outputText value="*" style="color:red !important;" />
+											</p:panel>											
+												<p:panel styleClass="inner_right_col">
+												<p:message id="msglocalServiceGroupDescription"
+												for="localServiceGroupDescriptionId" display="text" />
+											<p:inputText
+												value="#{serviceGroupMasterBean.serviceGroupLocalDesc}" readonly="true"
+												id="localServiceGroupDescriptionId" required="true"
+												style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;"
+												dir="RTL"
+												requiredMessage="Please Enter the Local Service Group Description"
+												maxlength="40">
+												<p:ajax update="localServiceGroupDescriptionId,msglocalServiceGroupDescription"
+													event="change" />
+												<f:validator validatorId="arabicValidator" />
+											</p:inputText>
+																	
+											</p:panel>
+											
+										</p:panel>															
+										
+										 
+													<h:panelGroup layout="block" class="clearfix" />
+										
+								 						
+								
+										 
+										<div class="clearfix" />
+										 
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.Approve']}" action="#{serviceGroupMasterBean.approveSave}" process="@this"
+											 
+												  />
+											<p:commandButton value="#{msg['lbl.cancel']}" action="#{serviceGroupMasterBean.cancelApproval}" style="margin-right:10px;" update="mainPanel" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+										</h:panelGroup>
+										</p:panel>
+
+<p:panel id = "secondPanel" rendered="#{serviceGroupMasterBean.booRenderDatatablePanel}">
+							<!-- 			<p:dataTable id="dataTable" value="#{serviceGroupMasterBean.lstGroupBeanDataTables}" var="d"
+											rowIndexVar="rowIndex" emptyMessage="No records Found"
+											rows="10" paginator="true"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											paginatorPosition="bottom" rowsPerPageTemplate="15,10,5"
+											sortMode="multiple" > -->
+												<p:dataTable id="dataTable" styleClass="mydatatableclass" value="#{serviceGroupMasterBean.lstGroupBeanDataTables}" 
+									rows="10" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="5,10,15" var="d" 
+									rowIndexVar="rowIndex" emptyMessage="#{msg['lbl.noRecordFound']}" paginatorPosition="bottom" >
+
+											<p:column headerText="#{msg['lbl.sNo']}" style="width:30px;">
+											<h:outputText value="#{rowIndex+1}" />
+										</p:column>
+										
+											<p:column headerText="#{msg['lbl.servicegroupcode']}">
+											<h:outputText value="#{d.serviceGroupCode}" />
+										</p:column>
+										
+
+										<p:column headerText="#{msg['lbl.serviceenglishdescription']}">
+											<h:outputText value="#{d.serviceGroupEnglishDesc}" />
+										</p:column>
+
+
+										<p:column headerText="#{msg['lbl.serviceenglishdescription']}">
+											<h:outputText value="#{d.serviceGroupLocalDesc}" />
+										</p:column>
+<p:column headerText="Approve"
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<p:commandLink update=":form1" action="#{serviceGroupMasterBean.approve(d)}"
+														 process="@this" tabindex="8">
+															<p:graphicImage value="../images/approve.jpg" width="25"
+													height="25"  style="float:center;" id="approve" />
+															<p:tooltip for="approve" value="Approve" />
+														</p:commandLink>
+													</p:column>
+										
+								</p:dataTable>
+
+
+										<!-- <h:panelGroup layout="block" styleClass="shadow_button" >
+											
+											<p:commandButton value="#{msg['lbl.Approve']}" action="#{serviceGroupMasterBean.save}" process="@this"
+											 
+												  />
+											<p:commandButton value="#{msg['lbl.exit']}"/> action="#{serviceGroupMasterBean.exit}" 
+												  />
+										</h:panelGroup> -->
+									</p:panel>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

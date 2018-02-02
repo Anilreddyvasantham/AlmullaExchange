@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script src="../js/SigWeb.js" type="text/javascript"></script>
+	<script src="../js/digitalsignature.js"></script>
+	<script type="text/javascript">
+		var baseUri = "http://localhost:47289/SigWeb/";		
+		document.onkeydown = function(e) {
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+
+		 history.pushState(null, null, 'BankexternalreferenceApproval.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'BankexternalreferenceApproval.xhtml');
+		    });
+	</script>
+</h:head>
+
+<h:body>
+
+	<!-- <p:confirmDialog id="notEligible" widgetVar="notEligible" width="400"
+		height="17" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true"
+		message="You are not eligible for to approve this record.">
+	</p:confirmDialog> -->
+<p:confirmDialog id="notEligible" widgetVar="notEligible" width="370" styleClass="red"  showHeader="false" resizable="false" 	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" message="#{msg['lbl.sameusernotabletoapprove']}">
+      </p:confirmDialog>
+
+<!-- 	<p:confirmDialog id="approved" widgetVar="approved" width="400"
+		height="17" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true"
+		message="Record got approved successfully.!">
+	</p:confirmDialog> -->
+
+       
+
+
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+			<h:form id="form">
+			
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+					
+					
+						
+						<h:panelGroup layout="block" class="main_div" rendered="#{bankExternalReferenceBean.booRenderApproveScreen}" >
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h1>
+								<h:outputText value="#{msg['lbl.bankexternalreferenceapproval']}" />
+							</h1>
+							<p:panel styleClass="shadow" id="mainPanel">
+							
+					
+								<h2>
+									<h:outputText value="#{msg['lbl.bankexternalreferenceapproval']} " />
+									<p:commandLink action="#{bankExternalReferenceBean.clickOnExit}"
+														 process="@this">
+														<p:graphicImage value="../images/return.jpg" width="25" height="25" id="imgEdit" styleClass="icon_right" style="float:right;" />
+														<p:tooltip for="imgEdit" value="Go to Home" />
+													</p:commandLink>
+								</h2>
+
+								<p:panel styleClass="panel_border">
+
+									<p:dataTable id="dataTableId" var="c"
+										value="#{bankExternalReferenceBean.approveList}"
+										rowIndexVar="rowIndex" emptyMessage="No records Found"
+										rows="10" paginator="true"
+										paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+										rowsPerPageTemplate="5,10,15" paginatorPosition="bottom" styleClass="mydatatableclass">
+
+
+										<p:column headerText="#{msg['lbl.sino']}" style="width:50px;" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputText value="#{rowIndex+1}" />
+										</p:column>
+
+										<p:column headerText="#{msg['lbl.country']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+ 									<h:outputText value="#{c.countryName}" />
+										</p:column>
+
+										<p:column headerText="#{msg['lbl.bank']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputText value="#{c.bankName}" />
+										</p:column>
+
+										<p:column headerText="#{msg['lbl.beneficiaryBank']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputText value="#{c.beneficaryBankName}" />
+										</p:column>
+
+										<p:column headerText="#{msg['lbl.bankExternalId']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputText value="#{c.bankExternalId}" />
+										</p:column>
+
+										<p:column headerText="#{msg['lbl.createdby']} " styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputText value="#{c.createdBy}" />
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.createddate']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputText value="#{c.createdOn}" />
+										</p:column>
+										<!-- <p:column headerText="View Branch" >
+													<p:commandLink id="branchappid" action="#{bankExternalReferenceBean.detailsBranchData(c)}" update=":form:datatabledetails" immediate="true">
+														<h:outputText value="View Branch" style="text-align:center; width:50px;text-decoration:underline !important;color:blue !important;"/>
+													</p:commandLink>
+											</p:column> -->
+
+									<!-- <p:column headerText="Approve" style="text-align:center !important;">
+									<p:commandLink action="#{bankExternalReferenceBean.gotoServiceApproval(c)}" value="Approve" style="color:blue !important; text-decoration:underline !important;" process="@this" update="dataTableId"/>
+									</p:column>   -->
+
+
+										<p:column headerText="#{msg['lbl.approve']}"
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<p:commandLink
+												action="#{bankExternalReferenceBean.gotoServiceApproval(c)}"
+												update="dataTableId" process="@this">
+												<p:graphicImage value="../images/approve.jpg" width="25"
+													height="25" id="imgEdit" style="float:center;" />
+												<p:tooltip for="imgEdit" value="Approve" />
+											</p:commandLink>
+										</p:column>
+
+									</p:dataTable>
+								</p:panel>
+							</p:panel>
+
+						</h:panelGroup>
+						
+						<!--  -->
+
+						<h:panelGroup layout="block" class="main_div"  rendered="#{bankExternalReferenceBean.booRenderApproveDataScreen}">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h1>
+								<h:outputText value="#{msg['lbl.bankexternalreferenceapproval']}" />
+							</h1>
+							<p:panel styleClass="shadow" id="mainPanelApproveScreen">
+							
+							<p:dialog modal="true" showHeader="true" header="#{msg['lbl.bco.plswait']}"  widgetVar="process"  id="process"   width="300" height="50" resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+							    	</p:dialog>	
+							
+									<p:dialog id="approve" widgetVar="approve" width="270" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+            											<p:outputLabel value="#{msg['lbl.approvedsuccessfully']} !"/><br/>
+            								<p:spacer width="15px" />
+            											<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{bankExternalReferenceBean.clickOnOkApproval}" process="@this"/>          
+</p:dialog>
+
+
+<p:dialog id="alreadyapprov" widgetVar="alreadyapprov" width="310" height="70" showHeader="false" resizable="false" style=" border:2px solid green !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+                                                          showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"  >
+                                                        <p:outputLabel value="#{msg['lbl.thisrecordalreadyapprovedby']}"/><br/>
+                                            <p:spacer width="15px" />
+                                                        <p:commandButton value="#{msg['lbl.ok']}" actionListener="#{bankExternalReferenceBean.clickOnOkApproval}" process="@this"/>          
+</p:dialog>     
+
+<p:confirmDialog id="nullPointerId"
+										widgetVar="nullPointerId" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{bankExternalReferenceBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+								</p:confirmDialog>
+								
+								<p:confirmDialog id="error"
+										widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{bankExternalReferenceBean.errorMessage}">
+								</p:confirmDialog>	
+							
+								<h2>
+									<h:outputText value="#{msg['lbl.bankexternalreferenceapproval']} " />
+								</h2>
+
+								<p:panel styleClass="left_col">
+									<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['lbl.country']}" />
+								
+									</p:panel>
+									<p:panel styleClass="inner_right_col">
+										<p:inputText id="tbbankCountryName"
+											value="#{bankExternalReferenceBean.bankCountryName}"	readonly="true">
+										</p:inputText>
+
+									</p:panel>
+								</p:panel>
+
+
+								<p:panel styleClass="left_col">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.bank']}" />
+									
+									</p:panel>
+									<p:panel styleClass="inner_right_col">
+										<p:inputText id="tbbankId"	value="#{bankExternalReferenceBean.bankName}" readonly="true">
+
+										</p:inputText>
+									</p:panel>
+								</p:panel>
+								
+								
+								
+								
+								<p:panel styleClass="left_col">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.beneficiaryBank']}" />
+								
+									</p:panel>
+									<p:panel styleClass="inner_right_col">
+										<p:inputText id="tbbenebankCountryId"
+											value="#{bankExternalReferenceBean.benfiBankName}"	readonly="true">
+										</p:inputText>
+
+									</p:panel>
+								</p:panel>
+
+
+								<p:panel styleClass="left_col">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.bankExternalId']}" />
+										
+									</p:panel>
+									<p:panel styleClass="inner_right_col">
+										<p:inputText id="bankExternalId"	value="#{bankExternalReferenceBean.externalId}" readonly="true">
+
+										</p:inputText>
+									</p:panel>
+								</p:panel>
+								
+								<p:panel styleClass="left_col">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.flexFiled1']}" />
+									</p:panel>
+									<p:panel styleClass="inner_right_col">
+										<p:inputText id="flex1"
+													value="#{bankExternalReferenceBean.flexField1}"
+													required="false" readonly="true">
+
+										</p:inputText>
+									</p:panel>
+								</p:panel>
+								
+								<p:panel styleClass="left_col">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.flexFiled2']}" />
+									</p:panel>
+									<p:panel styleClass="inner_right_col">
+										<p:inputText id="flex2"
+													value="#{bankExternalReferenceBean.flexField2}"
+													required="false" readonly="true">
+
+										</p:inputText>
+									</p:panel>
+								</p:panel>
+								
+								<p:panel styleClass="left_col">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.flexFiled3']}" />
+									</p:panel>
+									<p:panel styleClass="inner_right_col">
+											<p:inputText id="flex3"
+													value="#{bankExternalReferenceBean.flexField3}"
+													required="false" readonly="true">
+
+										</p:inputText>
+									</p:panel>
+								</p:panel>
+								
+								
+									<!--  Added by Rabil on 06/03/2016  -->
+										 
+										 
+											<h:panelGroup layout="block" class="clearfix" />
+										 
+										 <p:panel id="detailsId">
+				 
+
+										<p:dataTable id="viewDataTable" styleClass="mydatatableclass"
+											value="#{bankExternalReferenceBean.approvalBranchDetailsList}" var="d" 
+											rowIndexVar="rowIndex" editable="true" editMode="cell" paginator="true" rows="5"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="15,10,5" 
+											emptyMessage="#{msg['lbl.norecordfound']}">
+											<p:column headerText="S.No" style="width:50px;">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.branchcode']}"
+												>
+												<h:outputText value="#{d.branchCode}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.branch']}"
+												>
+												<h:outputText value="#{d.branchDescription}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.branchExternalId']}">
+												<p:inputText value="#{d.branchExternalId}" readonly="true" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.flexFiled1']}"
+												sortBy="#{d.flexField1}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.flexField1}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.flexFiled2']}"
+												sortBy="#{d.flexField2}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.flexField2}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.flexFiled3']}"
+												sortBy="#{d.flexField3}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.flexField3}" />
+											</p:column>
+											 
+											
+
+											
+										</p:dataTable>
+				 
+</p:panel>
+
+
+										<!--  End of Flexi filed   -->
+																					
+							
+							<h:panelGroup layout="block" class="clearfix" />
+								<p:spacer width="20px" />
+							<h:panelGroup layout="block" class="clearfix" />
+							
+							<h:panelGroup layout="block" styleClass="shadow_button" >						
+										<p:commandButton value="#{msg['lbl.approve']}" action="#{bankExternalReferenceBean.approveExternal}" immediate="true" process="@this"  update="mainPanelApproveScreen"  onstart="process.show();" onsuccess="process.hide();"/>
+										<p:commandButton value="#{msg['lbl.cancel']}" action="#{bankExternalReferenceBean.cancelApproval}" immediate="true" process="@this"/>
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+
+							</p:panel>
+
+						</h:panelGroup>
+
+
+						<h:panelGroup layout="block" class="clearfix" />
+						<p:spacer width="15px" />
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup></td>
+			</tr>
+		</table>
+		</h:form>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

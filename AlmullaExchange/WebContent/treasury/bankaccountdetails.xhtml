@@ -1,0 +1,582 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+
+		history.pushState(null, null, 'bankaccountdetails.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'bankaccountdetails.xhtml');
+		});
+	</script>
+</h:head>
+
+<h:body>
+
+	<p:dialog id="complete" widgetVar="complete" width="400" height="80"
+		resizable="false" style="background-color: white !important;"
+		styleClass="success" header="Success" closable="false"
+		showEffect="clip" hideEffect="clip" modal="true">
+		<p:outputLabel value="Bank Account Details Created Successfully "
+			style="text-align: center; font-size:15px !important;" />
+		<br />
+		<p:commandButton value="ok"
+			actionListener="#{bankaccountdetails.clearCache}"
+			style="margin-left: 150px !important;" />
+	</p:dialog>
+
+	<p:confirmDialog id="recordExists" widgetVar="recordExists" width="300"
+		resizable="false" style="background-color: white !important;"
+		header="Warning Dailog" styleClass="warning" showEffect="clip"
+		hideEffect="clip" closeOnEscape="true" closable="true"
+		message="Account Already Record Exists">
+	</p:confirmDialog>
+	<p:confirmDialog id="errorMsg" widgetVar="errorMsg" width="300"
+		resizable="false" style="background-color: white !important;"
+		header="Warning Dailog" styleClass="warning" showEffect="clip"
+		hideEffect="clip" closeOnEscape="true" closable="true" message="">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="duplicatecode" widgetVar="duplicatecode"
+		width="300" resizable="false"
+		style="background-color: white !important;" header="Warning Dailog"
+		styleClass="warning" showEffect="clip" hideEffect="clip"
+		closeOnEscape="true" closable="true"
+		message="This Account Already Exist">
+	</p:confirmDialog>
+
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+					<!-- <ui:include
+						src="../common/fxdeal_menu.xhtml"></ui:include> --> <ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include>
+				</td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h1>
+								<h:outputText value="#{msg['lbl.bankaccountdetails']}" />
+							</h1>
+
+
+							<h:form id="bankaccountdetailsfrm" style="padding:0!important;">
+								<p:panel styleClass="shadow" id="mainPanel">
+								
+							
+									<p:dialog modal="true" showHeader="true" header="Please wait.."
+										widgetVar="process" id="process" width="300" height="50"
+										resizable="false" draggable="false" closable="false"
+										style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+										<div style="text-align: center;">
+											<p:graphicImage value="../images/preloader.gif" />
+										</div>
+									</p:dialog>
+
+									<h2>
+										<h:outputText value="#{msg['lbl.bankaccountdetails']}" />
+									</h2>
+									<p:panel styleClass="panel_border">
+										<p:panel id="accountdetailsPanel"
+											style="padding:0px!important; border:none !important;">
+
+
+											<p:confirmDialog id="csp" widgetVar="csp" showHeader="false"
+												resizable="false" header="Warning Message"
+												styleClass="warning"
+												style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+												showEffect="explode" hideEffect="explode"
+												message="#{bankaccountdetails.errorMesssage}">
+											</p:confirmDialog>
+											<p:confirmDialog id="nullPoiterId" widgetVar="nullPoiterId"
+												resizable="false"
+												style="background-color: white !important;"
+												header="#{msg['lbl.warningDailog']}" styleClass="warning"
+												showEffect="clip" hideEffect="clip" closeOnEscape="true"
+												closable="true"
+												message="#{bankaccountdetails.errorMesssage} - #{msg['lbl.nullPonterExcepetion']}">
+											</p:confirmDialog>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_country" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="country" display="text" />
+													<p:selectOneMenu id="country"
+														value="#{bankaccountdetails.countryId}" filter="true"
+														label="Country" filterMatchMode="contains">
+														<!--  started 30/01/2015 added @Koti -->
+														<f:selectItem itemLabel="#{msg['lbl.selectCountry']}"
+															itemValue="" />
+														<!--  ended 30/01/2015  @Koti -->
+														<!-- <f:selectItems
+														value="#{bankaccountdetails.countryNameList}" var="c"
+														itemLabel="#{c.countryName}"
+														itemValue="#{c.countryMasterId}" /> -->
+														<f:selectItems
+															value="#{bankaccountdetails.countryNameList}" var="c"
+															itemLabel="#{c.bankCountryCode} - #{c.bankCountryName}"
+															itemValue="#{c.bankCountryId}" />
+														<p:ajax event="change" update="bank"
+															listener="#{bankaccountdetails.popBank}"
+															onstart="process.show();" onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_bank" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="bank" display="text" id="bankmsg" />
+													<p:selectOneMenu id="bank"
+														value="#{bankaccountdetails.bankId}" label="Banks"
+														filterMatchMode="contains" filter="true">
+														<!--  started 30/01/2015 added @Koti -->
+														<f:selectItem itemLabel="#{msg['lbl.selectBank']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{bankaccountdetails.bankMasterList}" var="c"
+															itemLabel="#{c.bankCode} - #{c.bankFullName}"
+															itemValue="#{c.bankId}" />
+														<p:ajax
+															update="bankmsg,panelAccountNo,panelAccontEdit,mainPanel"
+															listener="#{bankaccountdetails.popBankAccountNo}"
+															onstart="process.show();" onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+
+											<p:panel styleClass="left_col" id="panelAccountNo">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_accountno" />
+												</p:panel>
+
+												<p:panel styleClass="inner_right_col" id="panelAccontEdit">
+													<p:panelGrid id="CheckSystemOrUpdated">
+														<p:row>
+															<p:column
+																style="width:95%; text-align:left;padding-left:0px;"
+																rendered="#{bankaccountdetails.booSystemAccountNo}">
+																<p:message for="accountsel" display="text"
+																	id="msgAccountSel" />
+																<p:selectOneMenu id="accountsel"
+																	value="#{bankaccountdetails.accountNo}" filter="true"
+																	filterMatchMode="contains" required="true"
+																	requiredMessage="Please Select Account Number">
+																	<f:selectItem itemLabel="#{msg['lbl.select']}"
+																		itemValue="" />
+																	<f:selectItems
+																		value="#{bankaccountdetails.bankAccountDetailsList}"
+																		var="c"
+																		itemLabel="#{c.bankAcctNo}-#{c.fsCurrencyMaster.currencyName}-#{c.fsCurrencyMaster.currencyCode}"
+																		itemValue="#{c.bankAcctNo}" />
+																	<p:ajax event="change" update="msgAccountSel,mainPanel"
+																		listener="#{bankaccountdetails.fetchData}"
+																		onstart="process.show();" onsuccess="process.hide();" />
+																</p:selectOneMenu>
+															</p:column>
+
+															<p:column
+																style="width:95%; text-align:left;padding-left:0px;"
+																rendered="#{bankaccountdetails.booUpdateAccountNo}">
+																<p:message for="accountno" display="text"
+																	id="accountMsg" />
+																<p:inputText id="accountno" label="Account Number"
+																	value="#{bankaccountdetails.accountNo}"
+																	style="width:110%;">
+																	<p:ajax event="blur" update="accountMsg,mainPanel"
+																		listener="#{bankaccountdetails.fetchData}" />
+																</p:inputText>
+															</p:column>
+
+															<p:column style="width:5%;"
+																rendered="#{bankaccountdetails.editButton}">
+																<p:commandButton value=" " styleClass="edit"
+																	action="#{bankaccountdetails.insertNewAccountNo}"
+																	update="mainPanel" process="@this" />
+															</p:column>
+
+														</p:row>
+													</p:panelGrid>
+
+												</p:panel>
+
+
+
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_currency" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="currency" display="text" id="currencymsg" />
+													<p:selectOneMenu id="currency"
+														value="#{bankaccountdetails.currency}" label="Currency"
+														filterMatchMode="contains" filter="true">
+														<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{bankaccountdetails.lstCurrencyMaster}" var="c"
+															itemLabel="#{c.currencyCode} - #{c.currencyName}"
+															itemValue="#{c.currencyId}" />
+														<p:ajax update="currencymsg" />
+													</p:selectOneMenu>
+
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_accounttype" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="accounttype" display="text" />
+													<p:selectOneMenu id="accounttype"
+														value="#{bankaccountdetails.accountType}"
+														label="Account Type" filterMatchMode="contains"
+														filter="true">
+														<f:selectItem itemLabel="#{msg['lbl.selectAccountType']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{bankaccountdetails.accountTypeList}" var="c"
+															itemLabel="#{c.bankAccountTypeId.bankAccountTypeCode} - #{c.bankAccountTypeDesc}"
+															itemValue="#{c.bankAccountTypeId.bankAccountTypeId}"></f:selectItems>
+														<p:ajax />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_minbalance" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="minbalance"
+														value="#{bankaccountdetails.minBalance}"
+														label="Minimum Balance">
+														<p:ajax update="minbalMsg" event="blur" />
+														<p:message id="minbalMsg" for="minbalance" display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_odlimit" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="odlimit"
+														value="#{bankaccountdetails.odLimit}" label="OD Limit">
+														<p:ajax update="odlimitMsg" event="blur" />
+														<p:message id="odlimitMsg" for="odlimit" display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_glno" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="glno" value="#{bankaccountdetails.glNo}"
+														label="GL No">
+														<p:ajax update="glnoMsg,csp" event="blur" listener="#{bankaccountdetails.checktoValidateGlNo}" 	onstart="process.show();" onsuccess="process.hide();"/>
+														<p:message id="glnoMsg" for="glno" display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_fundglno" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="fundglno"
+														value="#{bankaccountdetails.fundGlNo}" label="Fund GL No">
+														<p:ajax update="fundglMsg,csp" event="blur" listener="#{bankaccountdetails.checktoValidateFundGlNo}" 	onstart="process.show();" onsuccess="process.hide();"/>
+														<p:message id="fundglMsg" for="fundglno" display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Control GLNo" /><h:outputText value="*" style="color:black !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="ctrlGlNoId"
+														value="#{bankaccountdetails.ctrlGlNo}" required="true" requiredMessage="Please Enter Control GL NO">
+														<p:ajax update="ctrlGlNoIdlMsg,csp" event="blur" listener="#{bankaccountdetails.checktoValidatectrlGlNo}" 	onstart="process.show();" onsuccess="process.hide();"/>
+														<p:message id="ctrlGlNoIdlMsg" for="ctrlGlNoId" display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_intminbalance" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="intminbalance"
+														value="#{bankaccountdetails.internalMinBalance}"
+														label="Internal Minimum Balance">
+														<p:ajax update="intminbalMsg" event="blur" />
+														<p:message id="intminbalMsg" for="intminbalance"
+															display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											
+										</p:panel>
+
+
+										<div class="clearfix"></div>
+
+										<p:panel id="contperPanel"
+											style="padding:0px!important; border:none !important;">
+											<p:panel
+												style="padding:0px!important; border:none !important;">
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_contperson" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="contperson"
+															value="#{bankaccountdetails.contactPerson}"
+															label="Contact Person">
+															<p:ajax update="contperMsg" event="blur" />
+															<p:message id="contperMsg" for="contperson"
+																display="text" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_department" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="department"
+															value="#{bankaccountdetails.department}"
+															label="Department">
+															<p:ajax update="depMsg" event="blur" />
+															<p:message id="depMsg" for="department" display="text" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_designation" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="designation"
+															value="#{bankaccountdetails.designation}"
+															label="Contact Designation">
+															<p:ajax update="desMsg" event="blur" />
+															<p:message id="desMsg" for="designation" display="text" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+
+													</p:panel>
+												</p:panel>
+
+
+												<div class="clearfix"></div>
+											</p:panel>
+
+											<p:panel id="contperlocalPanel"
+												style="padding:0px!important; border:none !important;">
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_contpersonl" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="contpersonl"
+															value="#{bankaccountdetails.contPersonLocal}"
+															label="Local Contact Person" lang="AR">
+															<p:ajax update="contperlMsg" event="blur" />
+															<p:message id="contperlMsg" for="contpersonl"
+																display="text" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_departmentl" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="departmentl"
+															value="#{bankaccountdetails.departmentLocal}"
+															label="Local Contact Dep" lang="AR">
+															<p:ajax update="deplMsg" event="blur" />
+															<p:message id="deplMsg" for="departmentl" display="text" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_designationl" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="designationl"
+															value="#{bankaccountdetails.designationLocal}"
+															label="Local Contact Des" lang="AR">
+															<p:ajax update="deslMsg" event="blur" />
+															<p:message id="deslMsg" for="designationl" display="text" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<div class="clearfix"></div>
+											</p:panel>
+											<div class="clearfix"></div>
+											<p:panel
+												style="padding:0px!important; border:none !important;">
+
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_mobile" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="mobile"
+															value="#{bankaccountdetails.mobile}" label="Mobile No">
+															<p:ajax update="mobMsg" event="blur" />
+															<p:message id="mobMsg" for="mobile" display="text" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_telephone" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="telephone"
+															value="#{bankaccountdetails.telephone}"
+															label="Telephone Number">
+															<p:ajax update="telephoneMsg" event="blur" />
+															<p:message id="telephoneMsg" for="telephone"
+																display="text" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_fax" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="fax" value="#{bankaccountdetails.fax}"
+															label="Fax">
+															<p:ajax update="faxMsg" event="blur" />
+															<p:message id="faxMsg" for="fax" display="text" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_email" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="email"
+															value="#{bankaccountdetails.email}" label="Email">
+															<p:ajax update="emailMsg" event="blur" />
+															<p:message id="emailMsg" for="email" display="text" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+												<h:panelGroup layout="block" styleClass="shadow_button">
+
+													<p:commandButton value="#{msg['lbl.submit']}"
+														style="margin-right:10px;" update="mainPanel"
+														process="mainPanel"
+														action="#{bankaccountdetails.saveBankAccount}"
+														onstart="process.show();" onsuccess="process.hide();">
+													</p:commandButton>
+
+													<p:commandButton value="#{msg['lbl.exit']}"
+														action="#{bankaccountdetails.exit}" immediate="true"
+														ajax="false" style=" margin-right:10px; ">
+													</p:commandButton>
+
+													<p:commandButton value="#{msg['lbl.clear']}"
+														action="#{bankaccountdetails.reset}" update="mainPanel"
+														process="@this" onstart="process.show();"
+														onsuccess="process.hide();" />
+
+													<div class="clearfix"></div>
+												</h:panelGroup>
+											</p:panel>
+										</p:panel>
+										<p:panel styleClass="left_col">
+											<h:outputText id="mandatory"
+												value=" #{msg['lbl.*filedsAreMandatory']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+									</p:panel>
+								</p:panel>
+
+							</h:form>
+
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+					</h:panelGroup>
+					<div class="clearfix"></div></td>
+			</tr>
+		</table>
+
+		<ui:include src="#{facesBean.footer}"></ui:include>
+
+	</f:view>
+</h:body>
+</html>

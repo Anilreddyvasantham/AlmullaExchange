@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+		history.pushState(null, null, 'Encashment.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'Encashment.xhtml');
+	    });
+	</script>
+</h:head>
+<p:confirmDialog id="datevalid" widgetVar="datevalid" width="500"
+	header="#{msg['lbl.warningDailog']}" height="20" resizable="false"
+	style=" border:2px solid gray !important; padding:0px !important;  color:solid green !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="explode" closeOnEscape="true"
+	closable="true"
+	message=" #{msg['lbl.effectiveToDateGreaterThanEffectiveFrom']} ">
+</p:confirmDialog>
+<p:confirmDialog id="toAmount" widgetVar="toAmount" width="500"
+	header="#{msg['lbl.warningDailog']}" height="20" resizable="false"
+	style=" border:2px solid gray !important; padding:0px !important;  color:solid green !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="explode" closeOnEscape="true"
+	closable="true" message=" From Amount Lessthan To Amount ">
+</p:confirmDialog>
+<p:confirmDialog id="toTime" widgetVar="toTime" width="500"
+	header="#{msg['lbl.warningDailog']}" height="20" resizable="false"
+	style=" border:2px solid gray !important; padding:0px !important;  color:solid green !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="explode" closeOnEscape="true"
+	closable="true" message=" To Time greatrethan From Time ">
+</p:confirmDialog>
+<p:confirmDialog id="remarksEmpty" widgetVar="remarksEmpty" width="400"
+	height="17" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" header="#{msg['lbl.warningDailog']}"
+	hideEffect="clip" closeOnEscape="true" closable="true"
+	message="#{msg['lbl.remarksShouldNotBeEmpty']}">
+</p:confirmDialog>
+
+<p:dialog id="notSaved" widgetVar="notSaved" width="310" height="70"
+	showHeader="false" resizable="false"
+	style=" border:2px solid green !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']}" />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{encashment.loyalityParameterSettingNotSaved}"
+		process="@this" />
+</p:dialog>
+
+<p:confirmDialog id="noRecords" widgetVar="noRecords" width="300"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.noRecordFound']}">
+</p:confirmDialog>
+<p:confirmDialog id="datatable" widgetVar="datatable" width="400"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.recrdAlreadyExisted']}">
+</p:confirmDialog>
+<p:confirmDialog id="assignedToAlreadyExist"
+	widgetVar="assignedToAlreadyExist" width="400" resizable="false"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.assignedToAlreadyExist']}">
+</p:confirmDialog>
+<p:dialog id="alreadyapprov" widgetVar="alreadyapprov" width="310"
+	height="70" showHeader="false" resizable="false"
+	style=" border:2px solid green !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.thisrecordalreadyapprovedby']}" />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{encashment.loyaltyEncashmentApprovedByOhterPerson}"
+		process="@this" />
+</p:dialog>
+<p:dialog id="approve" widgetVar="approve" width="400" height="80"
+	resizable="false" style="background-color: white !important;"
+	styleClass="success" header="#{msg['lbl.success']}" closable="false"
+	showEffect="clip" hideEffect="clip">
+	<p:outputLabel value="#{msg['lbl.approvedsuccessfully']}"
+		style="text-align: center; font-size:15px !important;" />
+	<br />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{encashment.clickOnOKApprove}"
+		process="@this" style="margin-left: 150px !important;" />
+</p:dialog>
+
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form">
+
+
+								<h1>
+									<h:outputText value="#{msg['lbl.encashment']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<p:dialog id="pending" widgetVar="pending" width="400"
+										height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.warningDailog']}"
+										closable="false" showEffect="clip" hideEffect="clip" modal="true">
+										<p:outputLabel value="#{msg['lbl.plsApproveRecord']}"
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											onclick="PF('pending').hide();" immediate="true"
+											style="margin-left: 150px !important;" />
+									</p:dialog>
+									<p:dialog id="succsses" widgetVar="succsses" width="400"
+										height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="success" header="#{msg['lbl.success']}"
+										closable="false" showEffect="clip" hideEffect="clip" modal="true">
+										<p:outputLabel
+											value="#{msg['lbl.recordsSuccessfullySaved']}  "
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{encashment.clear}" process="@this"
+											style="margin-left: 150px !important;" />
+									</p:dialog>
+									<p:dialog id="permanentDelete" widgetVar="permanentDelete" width="400" height="80" resizable="false" style="background-color: white !important;" styleClass="warning" header="#{msg['lbl.deleteRecrd']}" closable="false" showEffect="clip" hideEffect="clip" modal="true">
+									<p:outputLabel
+										value="#{msg['lbl.douWantDeleteRecordPermentely']}"
+										style="text-align: center; font-size:15px !important;" />
+									<br />
+									<p:commandButton value="#{msg['lbl.ok']}"
+										actionListener="#{encashment.loyaltyEncashmentConformDelete}"
+										process="@this" oncomplete="PF('permanentDelete').hide();"
+										update="mainPanel" style="margin-left: 150px !important;" />
+									<p:commandButton value="#{msg['lbl.cancel']}"
+										onclick="PF('permanentDelete').hide();" immediate="true"
+										style="margin-left:10px;" />
+									</p:dialog>
+									<p:dialog id="activateRecord" widgetVar="activateRecord"
+										width="400" height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.activateRecrd']}"
+										closable="false" showEffect="clip" hideEffect="clip" modal="true">
+										<p:outputLabel value="#{msg['lbl.doyouactivaterecord']}"
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{encashment.activateRecord}"
+											process="@this" oncomplete="PF('activateRecord').hide();"
+											update="mainPanel" style="margin-left: 150px !important;" />
+										<p:commandButton value="#{msg['lbl.cancel']}"
+											onclick="PF('activateRecord').hide();" immediate="true"
+											style="margin-left:10px;" />
+									</p:dialog>
+									<p:confirmDialog id="error" widgetVar="error"  
+											resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" 
+											showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{encashment.errorMessage}" >
+											</p:confirmDialog>
+											
+											<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"  
+												resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" 
+												showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{encashment.errorMessage} - #{msg['lbl.nullPonterExcepetion']}" >
+												</p:confirmDialog>
+									<p:dialog id="remarks" widgetVar="remarks" width="480"
+										resizable="false" style="background-color: white !important;"
+										styleClass="info" header="Remarks" closable="false"
+										showEffect="clip" hideEffect="clip" modal="true">
+										<p:panel>
+											<table>
+												<tr>
+													<td><h:outputText value="#{msg['lbl.approvedDate']}" /></td>
+													<td><h:outputText
+															value="#{encashment.approvedDate}"
+															style="color:red !important;" /></td>
+												</tr>
+												<tr>
+													<td><h:outputText value="#{msg['lbl.approvedBy']}" />
+													</td>
+													<td><h:outputText
+															value="#{encashment.approvedBy}"
+															style="color:red !important;" /></td>
+												</tr>
+											</table>
+										</p:panel>
+										<p:spacer height="10px" />
+										<p:panel>
+											<h:outputText value="#{msg['lbl.enterremarks']}" />
+											<h:outputText value="*" style="color:red !important;" />
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel>
+											<h:inputTextarea id="remarksId"
+												value="#{encashment.remarks}"
+												validatorMessage="Maximum 255 charectors allowed">
+												<f:validateLength maximum="255" />
+												<p:ajax />
+											</h:inputTextarea>
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel style="padding-left:160px;">
+											<p:commandButton value="#{msg['lbl.ok']}"
+												actionListener="#{encashment.clickOkRemarks}"
+												process="@this" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												actionListener="#{encashment.cancelRemarks}"
+												process="@this" />
+										</p:panel>
+									</p:dialog>
+
+									<h2>
+										<h:outputText value="#{msg['lbl.encashment']}" />
+									</h2>
+
+									<p:panel styleClass="panel_border">
+										<p:panel id="headerPanel">
+
+											<p:panel styleClass="left_col" id="relationPanel">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.points']}" />
+													<h:outputText value="*" style="color:red !important;" />
+
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:message for="pointsId" display="text" id="pointsmsg" />
+												<p:message id="point"  for="pointsId" display="text" />
+												<p:autoComplete id="pointsId"  value="#{encashment.points}" onkeyup="this.value=this.value.toUpperCase()"  completeMethod="#{encashment.autoComplete}" maxResults="10" required="true" requiredMessage="Please Enter Points" readonly="#{encashment.booRead}" >
+												<p:ajax update="pointsmsg,mainPanel,error" event="itemSelect"  listener="#{encashment.itemSelectPopulate}" />
+												<p:ajax update="pointsmsg,mainPanel,error" event="blur"  listener="#{encashment.itemSelectPopulate}" process="@this"/>
+											</p:autoComplete>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.equivalue']}" />
+													<h:outputText value="*" style="color:red !important;" />
+
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="equivalentValue" display="text"
+															id="equivalentValuemsg" />
+													<p:inputText value="#{encashment.equivalentValue}"
+														id="equivalentValue" required="true"
+														requiredMessage="Please Enter Equivalent Value" readonly="#{encashment.booRead}" >
+														<p:ajax event="blur" listener="#{encashment.disableSubmit}" update="equivalentValuemsg,booSubmitPanel" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.description']}" />
+
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="descriptionId" display="text"
+															id="descriptionmsg" />
+														<p:inputText id="descriptionId" value="#{encashment.description}" readonly="#{encashment.booRead}"  >
+															<p:ajax update="descriptionId" />
+														</p:inputText>
+													
+													
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.effdatefrom']}" />
+													<h:outputText value="*" style="color:red !important;" />
+
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="fromDate" display="text" id="msgfromDate" />
+													<p:calendar id="fromDate"
+														value="#{encashment.effectiveDateFrom}" required="true"
+														requiredMessage="Please select Effective From Date"
+														navigator="true" mindate="#{encashment.minDate}"
+														pattern="dd/MM/yyyy" disabled="#{encashment.booRead}" >
+														<p:ajax event="dateSelect"
+															listener="#{encashment.toClearToDate}"
+															update="msgfromDate,effectiveDateTo" />
+													</p:calendar>
+
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.effdateto']}" />
+													<h:outputText value="*" style="color:red !important;" />
+
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="effectiveDateTo" display="text"
+														id="effectiveDateTomsg" />
+													<p:calendar value="#{encashment.effectiveDateTo}"
+														id="effectiveDateTo" required="true"
+														requiredMessage="Please Enter Effective Date To"
+														pattern="dd/MM/yyyy" mindate="#{encashment.minDate}" disabled="#{encashment.booRead}" >
+														<p:ajax event="dateSelect"
+															listener="#{encashment.checkToDateValidator}"
+															update="effectiveDateTomsg,effectiveDateTo" />
+													</p:calendar>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.activeflag']}" />
+													<h:outputText value="*" style="color:red !important;" />
+
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="cardId" display="text" id="msgCard" />
+													<p:selectOneMenu id="cardId"
+														value="#{encashment.activeFlag}" required="true"
+														requiredMessage="Please Select Active Flag" disabled="#{encashment.booRead}" 
+														filter="startWith">
+														<f:selectItem itemLabel="-- #{msg['lbl.selactiveflag']} --" />
+														<f:selectItem itemLabel="#{msg['lbl.yes']}" itemValue="Y" />
+														<f:selectItem itemLabel="#{msg['lbl.no']}" itemValue="N" />
+														<p:ajax update="msgCard" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+											<div class="clearfix"></div>
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" styleClass="shadow_button"
+												id="booClearPanel" rendered="#{encashment.booAdd}">
+												<p:commandButton value="#{msg['lbl.add']}"
+													action="#{encashment.duplicateChekingEncashment}"
+													style="margin-right:10px;" update="mainPanel" tabindex="7" />
+												<p:commandButton value="#{msg['lbl.view']}"
+													action="#{encashment.viewAllEncashmentDetails}"
+													style="margin-right:10px;"
+													disabled="#{encashment.booClearPanel}"
+													update="mainPanel" process="@this"
+													onstart="process.show();" onsuccess="process.hide();"
+													tabindex="8" />
+												<p:commandButton value="#{msg['lbl.clear']}"
+													action="#{encashment.clearAllFields}"
+													style="margin-right:10px;"
+													disabled="#{encashment.booClearPanel}"
+													immediate="true" process="@this" update="mainPanel"
+													tabindex="9" />
+												<!-- <p:commandButton value="#{msg['lbl.clear']}" onclick="clear(this)" disabled="#{complaintAssignedBean.booClearPanel}" immediate="true" process="@this" update="mainPanel"/>  -->
+												<h:panelGroup layout="block" class="clearfix" />
+											</h:panelGroup>
+											<h:panelGroup layout="block" class="clearfix"/>
+									<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{encashment.booApproval}">						
+										<p:commandButton value="#{msg['lbl.approve']}" action="#{encashment.loyaltyEncashmentApproveRecord}" style="margin-right:10px;" process="@this" immediate="true"/>
+										<p:commandButton value="#{msg['lbl.cancel']}" action="#{encashment.loyaltyEncashmentCancel}" style="margin-right:10px;" update="mainPanel" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+											<p:panel id="dataPanel">
+												<p:dataTable id="dataTable" styleClass="mydatatableclass"
+													value="#{encashment.lstEncashmentDataTables}" rows="10"
+													paginator="true"
+													paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+													rowsPerPageTemplate="5,10,15" var="d"
+													rowIndexVar="rowIndex"
+													emptyMessage="#{msg['lbl.noRecordFound']}"
+													paginatorPosition="bottom"
+													rendered="#{encashment.booRenderDataTable}">
+
+													<p:column headerText="#{msg['lbl.sino']}"
+														style="width:30px;">
+														<h:outputText value="#{rowIndex+1}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.points']}">
+														<h:outputText value="#{d.points}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.equivalue']}">
+														<h:outputText value="#{d.equivalentValue}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.description']}">
+														<h:outputText value="#{d.description}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.effdatefrom']}">
+														<h:outputText value="#{d.effectiveDateFrom}">
+															<f:convertDateTime pattern="dd/MM/yyyy" />
+														</h:outputText>
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.effdateto']}">
+														<h:outputText value="#{d.effectiveDateTo}">
+															<f:convertDateTime pattern="dd/MM/yyyy" />
+														</h:outputText>
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.activeflag']}">
+														<h:outputText value="#{d.activeFlag}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.edit']}">
+														<p:commandButton id="imgEdit" styleClass="edit" value=""
+															action="#{encashment.edit(d)}"
+															disabled="#{encashment.booEditButton}"
+															update="dataTable,:form:mainPanel" process="@this" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.active/deactive']}"
+														style="text-align:center !important;">
+														<p:commandLink action="#{encashment.checkStatus(d)}"
+															value="#{d.dynamicLabelForActivateDeactivate}"
+															style="color:blue !important; text-decoration:underline !important;"
+															update=":form:mainPanel,dataTable" immediate="true"
+															process="@this" />
+													</p:column>
+												</p:dataTable>
+											</p:panel>
+											<div class="clearfix"></div>
+											<p:spacer height="10px" />
+											<div class="clearfix"></div>
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{encashment.booSaveOrExit}" id="booSubmitPanel">
+												<p:commandButton id="submitPanel"
+													value="#{msg['lbl.submit']}" action="#{encashment.save}" disabled="#{encashment.booSubmitPanel}" immediate="true"
+													update="mainPanel" style="margin-right:10px;" tabindex="10" />
+												<p:commandButton value="#{msg['lbl.exit']}"
+													action="#{encashment.exit}" process="@this"
+													immediate="true" tabindex="11" />
+												<h:panelGroup layout="block" class="clearfix" />
+											</h:panelGroup>
+
+
+
+										</p:panel>
+									</p:panel>
+									<p:dialog modal="true" showHeader="true"
+										header="#{msg['lbl.bco.plswait']}" widgetVar="process"
+										id="process" width="300" height="50" resizable="false"
+										draggable="false" closable="false"
+										style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+										<div style="text-align: center;">
+											<p:graphicImage value="../images/preloader.gif" />
+										</div>
+									</p:dialog>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+					</h:panelGroup></td>
+
+
+
+
+
+
+
+
+
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

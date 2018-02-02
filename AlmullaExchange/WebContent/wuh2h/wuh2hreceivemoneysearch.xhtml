@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript">
+		var baseUri = makeUri();
+		history.pushState(null, null, 'wuh2hreceivemoneysearch.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'wuh2hreceivemoneysearch.xhtml');
+		});
+
+		$(document).ready(function() {
+			$(window).scroll(function() {
+				if ($(this).scrollTop() > 100) {
+					$('#goTop').stop().animate({
+						bottom : '30px'
+					}, 300);
+				} else {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				}
+			});
+			$('#goTop').click(function() {
+				$('html, body').stop().animate({
+					scrollTop : 0
+				}, 500, function() {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				});
+			});
+		});
+	</script>
+	<style>
+.centeralign {
+	margin-left: auto;
+	margin-right: auto;
+	width: 6em
+}
+
+.ui-datatable .ui-state-highlight {
+	background-color: red;
+}
+</style>
+</h:head>
+
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form1"
+								onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'text') return false;}">
+								<h1>
+									<h:outputText value="Western Union H2H Money Receive" />
+								</h1>
+								<p:panel id="mainPanel" styleClass="shadow"
+									style="margin: 20px 10px !important; background-color:#FFF !important;">
+									
+									<!--  Process Dialog Box -->
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{wuh2hbean.errorMessage}">
+									</p:confirmDialog>
+
+									<p:panel style="padding:50px 100px 50px 100px !important;"
+										>
+										<fieldset
+											style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+											<legend
+												style="font-size: 15px; font-weight: bold; color: #037712;"
+												align="top">&nbsp;Western Union H2H - Receive
+												Search&nbsp;</legend>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="MTCN" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="recvmtcn" display="text" id="recvmtcnmsg" />
+													<p:inputText id="recvmtcn" value="#{wuh2hbean.receiveMtcnno}" maxlength="10"
+														required="true" requiredMessage="Please Enter MTCN for Receive Money Search!">
+														<p:ajax />
+
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:commandButton value=" Search "
+													onstart="process.show();" onsuccess="process.hide()"
+													action="#{wuh2hbean.wuh2hReceiveMoneySearch}" 
+													update="mainPanel,recvinfopanel,dataTable,error,recvmtcn" />
+												</p:panel>												
+											</p:panel>
+											</fieldset>
+											<div class="clearfix"></div>
+										<p:panel id="recvinfopanel" rendered="#{wuh2hbean.displayReceiverInfo}">
+										<p:dataTable id="dataTable" widgetVar="dataTable"
+											styleClass="mydatatableclass" 
+											value="#{wuh2hbean.receiverSearchReplyList}" var="d"
+											rowIndexVar="rowIndex" rowKey="#{d.senderFirstName}"
+											emptyMessage="#{msg['lbl.norecordfound']}" rows="5"
+											paginator="true"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="5,10,15" paginatorPosition="bottom">
+											<f:facet name="header">
+										            Receive Money Search Result
+										    </f:facet>
+
+
+											<!-- <p:ajax event="rowSelectRadio"
+												listener="#{wuh2hbean.onRowSelect}"
+												update=":form1:dataTable,:form1"
+												style="width:5%;text-align:center" onstart="process.show();"
+												onsuccess="process.hide()" /> -->
+
+											<p:column headerText="#{msg['lbl.sNo']}" style="width:5%;"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+
+											<p:column headerText="Sender First Name"
+												
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+												style="width:15%;">
+												<p:outputLabel value="#{d.senderFirstName}"
+													style="float:left;margin-left:7px;" />
+											</p:column>
+
+											<p:column headerText="Sender Last Name"
+												
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+												style="width:15%;">
+												<p:outputLabel value="#{d.senderLastName}"
+													style="float:left;margin-left:7px;" />
+											</p:column>
+
+											<p:column headerText="Receiver First Name"
+												
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+												style="width:15%;">
+												<p:outputLabel value="#{d.receiverFirstName}"
+													style="float:left;margin-left:7px;" />
+											</p:column>
+
+											<p:column headerText="Receiver Last Name"
+												
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+												style="width:15%;">
+												<p:outputLabel value="#{d.receiverLasttName}"
+													style="float:left;margin-left:7px;" />
+											</p:column>
+											
+											<p:column headerText="MTCN"
+												
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+												style="width:10%;">
+												<p:outputLabel value="#{d.mtcn}"
+													style="float:left;margin-left:7px;" />
+											</p:column>
+											<p:column headerText="Status"
+												
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+												style="width:10%;">
+												<p:outputLabel value="#{d.payStatusDescription}"
+													style="float:left;margin-left:7px;" />
+											</p:column>
+											
+											<p:column headerText="Origination Country"
+												
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+												style="width:10%;">
+												<p:outputLabel value="#{d.originatingCountryISOCode}"
+													style="float:left;margin-left:7px;" />
+											</p:column>
+											
+											<p:column headerText="Origination Amount"
+												
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+												style="width:10%;">
+												<p:outputLabel value="#{d.originationAmountDisplay}"
+													style="float:left;margin-left:7px;" />
+											</p:column>
+											
+											
+											<p:column selectionMode="single" headerText="Select"
+												style="width:5%;text-align:center"  />
+
+											<p:ajax event="rowSelectRadio"
+												listener="#{wuh2hbean.onRowReceivePaySelect}"
+												update=":form1:dataTable,:form1"
+												style="width:5%;text-align:center" onstart="process.show();"
+												onsuccess="process.hide()" />
+											
+										</p:dataTable>
+										</p:panel>
+										<div class="clearfix"></div>
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.back']}"
+												onstart="process.show();" onsuccess="process.hide()"
+												action="#{wuh2hbean.wuh2hBackFromReceiveMoneySearch}" process="@this" update="mainPanel" />
+										</h:panelGroup>
+
+									</p:panel>
+
+								</p:panel>
+								
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+		<a id="goTop" />
+	</f:view>
+
+</h:body>
+</html>

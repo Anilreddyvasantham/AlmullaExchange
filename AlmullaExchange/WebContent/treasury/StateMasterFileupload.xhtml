@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+ <link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+</h:head>
+<h:body>
+<p:dialog id="complete" widgetVar="complete" width="270" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+            											<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} "/><br/>
+            								<p:spacer width="15px" />
+            											<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{ stateMasterBeanFileupload.clickOnOKFileuploadSave}" process="@this"/>          
+</p:dialog>
+<p:dialog id="imageupload" widgetVar="imageUpload"
+												width="250" height="40" resizable="false"
+												style=" border:5px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 15px no-repeat #FFF !important;"
+												showEffect="clip" hideEffect="clip" closeOnEscape="true"
+												closable="true">
+												<p:outputLabel value="#{msg['lbl.xlsUploaded']}" />
+											</p:dialog>
+<f:view>
+<p:confirmDialog id="noFileUploded" widgetVar="noFileUploded" width="250" styleClass="red"  showHeader="false" showEffect="drop" hideEffect="explode" resizable="false" 	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									 message="#{msg['lbl.pleaseUploadExcelFile']}">
+      </p:confirmDialog>
+       <p:confirmDialog id="changeFile" widgetVar="changeFile" width="370" styleClass="red" showEffect="drop" hideEffect="explode" showHeader="false" resizable="false" 	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									 message="#{msg['lbl.pleaseUploadStateUploadedExcelFile']}">
+      </p:confirmDialog>
+<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="mainPanel">
+								<h1>
+									<h:outputText value="#{msg['lbl.stateMaster']}" />
+								</h1>
+							<h:panelGroup layout="block" class="clearfix" />
+							<p:panel id="statePanel" styleClass="shadow" style=" background-color:#FFF !important;">
+									<h:panelGroup layout="block" class="clearfix" />
+								<h3>
+										<h:outputText value="#{msg['lbl.stateMaster']}" />
+									</h3>
+									<p:panel styleClass="panel_border">
+											
+										<h:panelGroup layout="block" class="clearfix" />
+										
+									
+
+											<!-- <p:panel styleClass="left_col"> -->
+											<p:panel id="fileUploadPanel" styleClass="shadow"
+											style=" background-color:#FFF !important;"
+											rendered="#{stateMasterBean.booRenderFileUploadPanel}">
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.fileUpload']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:fileUpload id="fileUplod" mode="advanced" fileLimit="1" fileUploadListener="#{stateMasterBeanFileupload.handleFileUpload}"
+														fileLimitMessage="one File is Allowed" update="messages"
+														label="Choose a file" sizeLimit="50485762222" allowTypes="/(\.|\/)(xls)$/" required="true"
+														requiredMessage="#{msg['lbl.uploadfile']}"
+														invalidSizeMessage="The maximum file size allowed is 1 Megabyte !"
+													invalidFileMessage="You are allowed to upload only XLS !"
+														oncomplete="PF('imageUpload').show()">
+														<p:message id="messages" for="fileUplod"
+															value="#{msg['lbl.fileNotSelected']}" style="color:red;" />
+															
+													</p:fileUpload>
+													<!-- <h:outputText value="Uploadfile"
+														style="color:red;" />   (.xls,xlxs)  -->
+												</p:panel>
+
+											</p:panel>
+											
+												<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button"  ><!--  id="clearPanel" -->
+											<p:commandButton value="#{msg['lbl.add']}" action="#{stateMasterBeanFileupload.addRecordsToDataTable}"  update="mainPanel" onstart="process.show();" onsuccess="process.hide();" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+								
+								<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+									<!-- 	<p:dataTable id="dataTable"  value="#{stateMasterBeanFileupload.stateMasterDTList}" var="d" rowIndexVar="rowIndex" emptyMessage="#{msg['lbl.noRecordFound']}" rendered="#{stateMasterBeanFileupload.booRenderDataTable}"
+rows="10"  paginator="true"  paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  rowsPerPageTemplate="5,10,15" paginatorPosition="bottom" > -->
+	<p:dataTable id="dataTable" styleClass="mydatatableclass" value="#{stateMasterBeanFileupload.stateMasterDTList}" 
+									rows="10" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="5,10,15" var="d" 
+									rowIndexVar="rowIndex" emptyMessage="#{msg['lbl.noRecordFound']}" paginatorPosition="bottom" rendered="#{stateMasterBeanFileupload.booRenderDataTable}" >
+     <p:column headerText="#{msg['lbl.sino']}" style="width:30px;">
+            <h:outputText value="#{rowIndex+1}"/>
+        </p:column>
+ 
+         <p:column headerText="#{msg['lbl.countryId']}">
+            <h:outputText value="#{d.countryId}"/>
+        </p:column>
+ 
+        <p:column headerText="#{msg['lbl.stateCode']}" >
+            <h:outputText value="#{d.stateCode}" />
+        </p:column>
+        
+         <p:column headerText="#{msg['lbl.englisgStateDesc']}">
+            <h:outputText value="#{d.englishStateName}"/>
+        </p:column>
+ 
+   <p:column headerText="#{msg['lbl.localStateDesc']}" >
+            <h:outputText value="#{d.arabicStateName}"/>
+        </p:column>
+      <p:column headerText="#{msg['lbl.enqStatus']}">
+		   <p:commandLink  value="#{d.dynamicLabelForActivateDeactivate}" style="color:blue !important; text-decoration: !important;" update=":mainPanel,dataTable" immediate="true" process="@this"/>
+        </p:column>
+    </p:dataTable>
+        	<h:panelGroup layout="block" class="clearfix" />
+        		<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{stateMasterBeanFileupload.booSaveExit}" >		
+										<p:commandButton value="#{msg['lbl.submit']}" style="margin-right:10px;" action="#{stateMasterBeanFileupload.saveDataTableRecods}" immediate="true"  onstart="process.show();" onsuccess="process.hide();" />
+										<p:commandButton value="#{msg['lbl.exit']}" style="margin-right:10px;"  action="#{stateMasterBean.exit}" immediate="true" process="@this" /> <!--  -->
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col">
+											<h:outputText id="mandatory"
+												value=" #{msg['lbl.*filedsAreMandatory']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										</p:panel>
+													<h:panelGroup layout="block" class="clearfix" />
+								<p:dialog modal="true" showHeader="false" widgetVar="process" id="process" width="300" height="60" resizable="false" draggable="false" closable="false"
+style=" border: 2px green solid !important;background-color: #FFF !important;">
+<div style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important; ">
+<p:graphicImage value="../images/processImg.gif" style="float: left !important; margin-right: 24px !important; "/>
+<p:outputLabel value="Please wait ........" style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" /></div>
+</p:dialog>				
+							</p:panel>
+								<h:panelGroup layout="block" class="clearfix" />
+			
+						
+										<h:panelGroup layout="block" class="clearfix" />
+							</h:form>
+							</h:panelGroup>
+							</h:panelGroup>
+							</td>
+							</tr>
+							</table>
+							<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+</f:view>
+</h:body>
+</html>

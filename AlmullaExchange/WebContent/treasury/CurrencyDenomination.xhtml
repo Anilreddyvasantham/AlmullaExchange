@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script>
+		history.pushState(null, null, 'CurrencyDenomination.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'CurrencyDenomination.xhtml');
+		});
+	</script>
+
+</h:head>
+
+<h:body>
+
+	<p:confirmDialog id="noRecord" header="#{msg['lbl.warningDailog']}"
+		widgetVar="noRecord" width="400" height="17" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.noRecordsFoundTheseCombination']}">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="check" widgetVar="check"
+		header="#{msg['lbl.warningDailog']}" width="500" height="17"
+		resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true"
+		message="#{msg['lbl.denominationRecordAlreadyExistForThisCombination']}">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="chooseAnyOne" header="#{msg['lbl.warningDailog']}"
+		widgetVar="chooseAnyOne" width="400" height="17" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.selectCountryAndCurrency']}">
+	</p:confirmDialog>
+
+	<p:dialog id="complete" widgetVar="complete" width="270" height="70"
+		showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+		<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} " />
+		<br />
+		<p:spacer width="15px" />
+		<p:commandButton value="#{msg['lbl.ok']}"
+			actionListener="#{currencyDenominationBean.clickOnOKSave}"
+			process="@this" />
+	</p:dialog>
+
+	<p:dialog id="permanentDelete" widgetVar="permanentDelete" width="300"
+		height="70" showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+		<p:outputLabel value="#{msg['lbl.douWantDeleteRecordPermentely']}" />
+		<p:spacer height="10px" />
+		<p:panel>
+			<p:commandButton value="#{msg['lbl.ok']}" style="margin-right:10px; "
+				actionListener="#{currencyDenominationBean.confirmPermanentDelete}"
+				process="@this" oncomplete="PF('permanentDelete').hide();"
+				update=":currencyForm" />
+			<p:commandButton value="#{msg['lbl.cancel']}"
+				onclick="PF('permanentDelete').hide();" immediate="true" />
+		</p:panel>
+	</p:dialog>
+
+	<p:dialog id="pending" widgetVar="pending" width="400" height="80"
+		resizable="false" style="background-color: white !important;"
+		styleClass="warning" header="#{msg['lbl.warningDailog']}"
+		closable="false" showEffect="clip" hideEffect="clip">
+		<p:outputLabel value="#{msg['lbl.plsApproveRecord']}"
+			style="text-align: center; font-size:15px !important;" />
+		<br />
+		<p:commandButton value="#{msg['lbl.ok']}"
+			onclick="PF('pending').hide();" immediate="true"
+			style="margin-left: 150px !important;" />
+	</p:dialog>
+
+	<p:confirmDialog id="checkdt" header="#{msg['lbl.warningDailog']}"
+		widgetVar="checkdt" width="270" showHeader="false" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip"
+		message="#{msg['lbl.RecrdAlreadyAddedToDataTable']}">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="remarksEmpty" header="#{msg['lbl.warningDailog']}"
+		widgetVar="remarksEmpty" width="400" height="17" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="Remarks should not empty.Please enter it">
+	</p:confirmDialog>
+
+	<p:dialog id="approve" widgetVar="approve" width="270" height="70"
+		showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+		<p:outputLabel value="#{msg['lbl.approvedSuccess']}" />
+		<br />
+		<p:spacer width="15px" />
+		<p:commandButton value="#{msg['lbl.ok']}"
+			actionListener="#{currencyDenominationBean.clickOnSave}"
+			process="@this" />
+	</p:dialog>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="currencyForm">
+								<h1>
+									<h:outputText value="#{msg['lbl.denominationMaster']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{currencyDenominationBean.errorMessage}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{currencyDenominationBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+
+									<h3>
+										<h:outputText value="#{msg['lbl.denominationMaster']}" />
+									</h3>
+
+									<p:dialog id="remarks" widgetVar="remarks" width="480"
+										height="230" showHeader="false" resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:panel>
+											<table>
+												<tr>
+													<td><h:outputText value="#{msg['lbl.approvedDate']}" /></td>
+													<td><h:outputText
+															value="#{currencyDenominationBean.approvedDate}"
+															style="color:red !important;" /></td>
+												</tr>
+												<tr>
+													<td><h:outputText value="#{msg['lbl.approvedBy']}" />
+													</td>
+													<td><h:outputText
+															value="#{currencyDenominationBean.approvedBy}"
+															style="color:red !important;" /></td>
+												</tr>
+											</table>
+										</p:panel>
+										<p:spacer height="10px" />
+										<p:panel>
+											<h:outputText value="#{msg['lbl.enterremarks']}" />
+											<h:outputText value="*" style="color:red !important;" />
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel>
+											<h:inputTextarea id="remarksId"
+												value="#{currencyDenominationBean.remarks}">
+												<p:ajax />
+											</h:inputTextarea>
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel style="padding-left:160px;">
+											<p:commandButton value="#{msg['lbl.ok']}"
+												style="margin-right:10px;" onstart="process.show();"
+												onsuccess="process.hide();"
+												actionListener="#{currencyDenominationBean.remarkSelectedRecord}"
+												process="@this" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												style="margin-right:10px;" onstart="process.show();"
+												onsuccess="process.hide();"
+												actionListener="#{currencyDenominationBean.cancelFromActivation}"
+												process="@this" />
+										</p:panel>
+
+									</p:dialog>
+
+									<p:panel styleClass="panel_border">
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.country']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgCountry" for="country" display="text" />
+												<p:selectOneMenu id="country"
+													value="#{currencyDenominationBean.countryId}" filter="true"
+													filterMatchMode="contains" required="true"
+													requiredMessage="Please Select Country"
+													disabled="#{currencyDenominationBean.booReadOnly}">
+													<f:selectItem itemLabel="#{msg['lbl.selectCountry']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{currencyDenominationBean.listCountry}" var="c"
+														itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+														itemValue="#{c.fsCountryMaster.countryId}" />
+													<p:ajax update="msgCountry,msgCurrency,mainPanel"
+														event="change" onstart="process.show();"
+														onsuccess="process.hide();"
+														listener="#{currencyDenominationBean.popupCurrency}" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currency']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgCurrency" for="currency" display="text" />
+												<p:selectOneMenu id="currency"
+													value="#{currencyDenominationBean.currencyId}"
+													filter="true" filterMatchMode="contains" required="true"
+													requiredMessage="Please Select Currency"
+													disabled="#{currencyDenominationBean.booReadOnly}">
+													<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{currencyDenominationBean.listCurrency}" var="c"
+														itemLabel="#{c.currencyCode} - #{c.currencyName}"
+														itemValue="#{c.currencyId}" />
+													<p:ajax update="msgCurrency" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.denominationAmount']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgDenominationAmount"
+													for="denominationAmount" display="text" />
+												<p:inputText
+													value="#{currencyDenominationBean.denomonationAmount}"
+													id="denominationAmount" required="true"
+													requiredMessage="Please Enter Denomination Amount"
+													disabled="#{currencyDenominationBean.booReadOnly}"
+													validatorMessage="Zero value Not Allowed here"
+													maxlength="20">
+													<f:validator
+														validatorId="com.amg.exchange.validator.doubleCheckValidator" />
+													<p:ajax update="msgDenominationAmount" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.denominationDesc']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgDenominationDesc" for="denominationDesc"
+													display="text" />
+												<p:inputText
+													value="#{currencyDenominationBean.denominationDesc}"
+													id="denominationDesc" required="true"
+													requiredMessage="Please Enter Denomination Description"
+													disabled="#{currencyDenominationBean.booReadOnly}"
+													maxlength="40">
+													<p:ajax update="msgDenominationDesc,submitPanel"
+														event="blur" onstart="process.show();"
+														onsuccess="process.hide();"
+														listener="#{currencyDenominationBean.hideButton}" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.denominationCode']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgDenominationCode" for="denominationCode"
+													display="text" />
+												<p:inputText
+													value="#{currencyDenominationBean.denominationCode}"
+													id="denominationCode" required="true"
+													requiredMessage="Please Enter Denomination Description"
+													disabled="#{currencyDenominationBean.booReadOnly}"
+													maxlength="40">
+													<p:ajax update="msgDenominationCode,submitPanel" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											rendered="#{currencyDenominationBean.booAdd}">
+											<p:commandButton value="#{msg['lbl.add']}"
+												style="margin-right:10px;"
+												action="#{currencyDenominationBean.addRecordsToDataTable}"
+												update="mainPanel" onstart="process.show();"
+												onsuccess="process.hide();" />
+											<p:commandButton value="#{msg['lbl.view']}"
+												style="margin-right:10px;"
+												action="#{currencyDenominationBean.view}" update="mainPanel"
+												process="@this" onstart="process.show();"
+												onsuccess="process.hide();" />
+											<p:commandButton value="#{msg['lbl.clear']}"
+												style="margin-right:10px;"
+												action="#{currencyDenominationBean.clear}"
+												disabled="#{currencyDenominationBean.booClear}"
+												immediate="true" process="@this" update="mainPanel"
+												onstart="process.show();" onsuccess="process.hide();" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											rendered="#{currencyDenominationBean.booRenderApprove}">
+											<p:commandButton value="#{msg['lbl.approve']}"
+												style="margin-right:10px;"
+												action="#{currencyDenominationBean.approve}" process="@this"
+												immediate="true" onstart="process.show();"
+												onsuccess="process.hide();" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												style="margin-right:10px;"
+												action="#{currencyDenominationBean.cancel}" process="@this"
+												onstart="process.show();" onsuccess="process.hide();" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:dataTable
+											value="#{currencyDenominationBean.currencyDenominationDtList}"
+											rows="10" paginator="true"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="5,10,15" var="d" rowIndexVar="rowIndex"
+											emptyMessage="#{msg['lbl.noRecordFound']}"
+											rendered="#{currencyDenominationBean.booRenderDataTable}"
+											paginatorPosition="bottom">
+
+											<p:column headerText="#{msg['lbl.sino']}" style="width:30px;">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.country']}">
+												<h:outputText value="#{d.countryName}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.currency']}">
+												<h:outputText value="#{d.currencyName}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.denominationAmount']}">
+												<h:outputText value="#{d.denomonationAmount}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.denominationDesc']}">
+												<h:outputText value="#{d.denominationDesc}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.denominationCode']}">
+												<h:outputText value="#{d.denominationCode}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.edit']}">
+												<p:commandButton id="imgEdit" styleClass="edit" value=""
+													action="#{currencyDenominationBean.edit(d)}"
+													rendered="#{d.renderEditButton}"
+													disabled="#{currencyDenominationBean.booEditButton}"
+													update=":currencyForm" process="@this"
+													onstart="process.show();" onsuccess="process.hide();" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.active/deactive']}"
+												style="text-align:center !important;">
+												<p:commandLink
+													action="#{currencyDenominationBean.checkStatus(d)}"
+													value="#{d.dynamicLabelForActivateDeactivate}"
+													style="color:blue !important; text-decoration:underline !important;"
+													update=":currencyForm" immediate="true" process="@this"
+													onstart="process.show();" onsuccess="process.hide();" />
+											</p:column>
+
+										</p:dataTable>
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											rendered="#{currencyDenominationBean.booSaveExit}">
+											<p:commandButton id="submitPanel"
+												value="#{msg['lbl.submit']}" style="margin-right:10px;"
+												action="#{currencyDenominationBean.save}"
+												disabled="#{currencyDenominationBean.booSubmit}"
+												process="@this" update="mainPanel,error,nullPointerId"
+												onstart="process.show();" onsuccess="process.hide();" />
+											<p:commandButton value="#{msg['lbl.exit']}"
+												style="margin-right:10px;"
+												action="#{currencyDenominationBean.exit}" immediate="true" />
+											<h:panelGroup layout="block" class="clearfix"
+												onstart="process.show();" onsuccess="process.hide();" />
+										</h:panelGroup>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col">
+											<h:outputText id="mandatory"
+												value=" #{msg['lbl.*filedsAreMandatory']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+									</p:panel>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+					</h:panelGroup></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

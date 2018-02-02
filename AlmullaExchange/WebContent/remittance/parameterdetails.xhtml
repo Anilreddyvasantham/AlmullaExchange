@@ -1,0 +1,1434 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions">
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	
+	<script type="text/javascript">
+		history.pushState(null, null, 'parameterdetails.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'parameterdetails.xhtml');
+		});
+		
+		
+		$(document).ready(function() {
+		    $(window).scroll(function() {
+		        if($(this).scrollTop() > 100){
+		            $('#goTop').stop().animate({
+		                bottom: '30px'    
+		                }, 300);
+		        }
+		        else{
+		            $('#goTop').stop().animate({
+		               bottom: '-100px'    
+		            }, 300);
+		        }
+		    });
+		    $('#goTop').click(function() {
+		        $('html, body').stop().animate({
+		           scrollTop: 0
+		        }, 500, function() {
+		           $('#goTop').stop().animate({
+		               bottom: '-100px'    
+		           }, 300);
+		        });
+		    });
+		}); 
+	</script>
+	
+	
+</h:head>
+<h:body>
+	<p:dialog id="success" widgetVar="succsses" width="270" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip"
+		closeOnEscape="true" closable="true" modal="true">
+		<p:outputLabel value="#{msg['lbl.benisuccessfull']}" />
+		<br />
+		<p:spacer width="15px" />
+		<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{articlemaster.pageNavigation}" process="@this" />
+	</p:dialog>
+	<p:confirmDialog id="bankcharges" widgetVar="bankcharges" width="400" header="Warning DialogBox" height="17" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"
+		message="#{msg['lbl.bankchargesChecking']}">
+	</p:confirmDialog>
+	<p:confirmDialog id="currencyNotExist" widgetVar="currencyNotExist" width="500" header="Warning DialogBox" height="24" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"
+		message="#{msg['lbl.currencyNotExist']}">
+	</p:confirmDialog>
+	<p:confirmDialog id="please" widgetVar="please" header="Warning DialogBox" resizable="false" style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="Please select Parameter Master">
+	</p:confirmDialog>
+	<p:confirmDialog id="notfound" widgetVar="notfound" header="Warning DialogBox" resizable="false" style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="Data not found">
+	</p:confirmDialog>
+	<p:confirmDialog id="bankchargesDstatus" widgetVar="bankchargesDstatus" header="Warning DialogBox" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"
+		message="This combination already existed with deactive status">
+	</p:confirmDialog>
+	<p:confirmDialog id="NoDataFound" widgetVar="NoDataFound" width="370" styleClass="red" showHeader="false" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip" message="No data found">
+	</p:confirmDialog>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;" id="HideHandle" name="HideHandle" src="../images/toggle_plus.png" alt="" onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form">
+								<p:confirmDialog id="deleted" widgetVar="deleted" width="400" header="Warning DialogBox" height="17" resizable="false"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"
+									message="Record got deleted successfully">
+								</p:confirmDialog>
+								<p:dialog id="success" widgetVar="success" width="270" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip"
+									closeOnEscape="true" closable="true" modal="true">
+									<p:outputLabel value="#{msg['lbl.benisuccessfull']}" />
+									<br />
+									<p:spacer width="15px" />
+									<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{parameterDetailsBean.pageNavigation}" process="@this" />
+								</p:dialog>
+								<p:confirmDialog id="alreadyExist" widgetVar="alreadyExist" width="400" height="17" resizable="false"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"
+									message=" Flexi Field alreay exist in the datatable ">
+								</p:confirmDialog>
+								<p:confirmDialog id="remarksEmpty" widgetVar="remarksEmpty" width="600" header="Warning DialogBox" height="17" resizable="false"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"
+									message="Remarks should not empty">
+								</p:confirmDialog>
+								<p:confirmDialog id="numbersonly" widgetVar="numbersonly" width="700" header="Warning DialogBox" height="17" resizable="false"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"
+									message="You are choosing NUMERIC_FIELD type.Please enter numbers only for Flexi Field Value">
+								</p:confirmDialog>
+								<p:confirmDialog id="dateonly" widgetVar="dateonly" width="600" header="Warning DialogBox" height="17" resizable="false"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"
+									message="You are choosing DATE_FIELD type.Please enter Date">
+								</p:confirmDialog>
+								<p:dialog id="permanentDelete" widgetVar="permanentDelete" width="300" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+									<p:outputLabel value="Do You Want to Delete This Record Permentely ?" />
+									<p:spacer height="10px" />
+									<p:panel>
+										<p:commandButton value="#{msg['lbl.ok']}" style="margin-right:10px; " actionListener="#{parameterDetailsBean.confirmPermanentDelete}" process="@this" oncomplete="PF('permanentDelete').hide();" update=":form,csp" />
+										<p:commandButton value="#{msg['lbl.cancel']}" onclick="PF('permanentDelete').hide();" immediate="true" />
+									</p:panel>
+								</p:dialog>
+								<h1>
+									<h:outputText value="#{msg['lbl.parameterDetails']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+								
+									<h2>
+										<h:outputText value="#{msg['lbl.parameterDetails']}" />
+									</h2>
+									<!-- Remarks Dailog  -->
+									<p:dialog id="remarks" widgetVar="remarks" width="550" height="205" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;" showEffect="scale" hideEffect="scale" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:panel styleClass="shadow">
+											<p:panel>
+												<h:outputText value="#{msg['lbl.activatedate']}" />
+												<h:outputText value="#{parameterDetailsBean.approvedDate}" />&nbsp;&nbsp;&nbsp;
+                                        <h:outputText value="#{msg['lbl.approvedBy']}" />
+												<h:outputText value="#{parameterDetailsBean.approvedBy}" />
+											</p:panel>
+											<div class="clearfix" />
+											<hr></hr>
+											<p:panel>
+												<h:outputText value="#{msg['lbl.enterremarks']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel>
+												<h:inputTextarea value="#{parameterDetailsBean.remarks}" rows="5" cols="50">
+													<p:ajax />
+												</h:inputTextarea>
+											</p:panel>
+											<p:spacer width="15px" />
+											<div class="clearfix" />
+											<h:panelGroup styleClass="shadow">
+												<div class="clearfix" />
+												<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{parameterDetailsBean.updateStatusoftheRecord}" process="@this" update="mainPanel,csp" immediate="true" />
+												<p:commandButton value="#{msg['lbl.cancel']}" onclick="PF('remarks').hide()" actionListener="#{parameterDetailsBean.cancelRemarks}" process="@this" update="mainPanel" immediate="true" />
+											</h:panelGroup>
+										</p:panel>
+									</p:dialog>
+									
+									<p:confirmDialog id="csp" widgetVar="csp" width="600" showHeader="true" resizable="false" header="Warning Message" styleClass="ui-confirmdialog-yes"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:green; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip" message="#{parameterDetailsBean.errorMessage}">
+									</p:confirmDialog>
+									
+									<p:panel styleClass="panel_border">
+										<p:panel id="headerPanel">
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.paramMaster']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col" id="paramMas">
+													<p:message id="msgparameterid" for="parameterid" display="text" />
+													<p:selectOneMenu id="parameterid" value="#{parameterDetailsBean.parameterMasterId}" filterMatchMode="contains" filter="true" required="true" requiredMessage="Please Select Parameter Master">
+														<f:selectItem itemLabel="#{msg['lbl.selectcode']}" itemValue="" />
+														<f:selectItems value="#{parameterDetailsBean.lstParameterMaster}" var="c" itemLabel="#{c.recordId} - #{c.fullDesc}" itemValue="#{c.parameterMasterId}" />
+														<p:ajax event="change" listener="#{parameterDetailsBean.getMasterList}" update="msgparameterid,headerPanel,mainPanel,csp" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" />
+														<p:ajax event="blur" listener="#{parameterDetailsBean.getMasterList}" update="msgparameterid,headerPanel,mainPanel,csp" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.fulldescription']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgfullid" for="fullid" display="text" />
+													<p:inputText id="fullid" value="#{parameterDetailsBean.parameterFullDesc}" required="true" maxlength="80" readonly="#{parameterDetailsBean.booradonlyforMasterDesciption}" requiredMessage="Please Enter Parameter Full Description">
+														<p:ajax update="msgfullid" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.shortdescription']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgshortid" for="shortid" display="text" />
+													<p:inputText id="shortid" value="#{parameterDetailsBean.parameterShortDesc}" required="true" maxlength="10" readonly="#{parameterDetailsBean.booradonlyforMasterDesciption}" requiredMessage="Please Enter Parameter Short Description">
+														<p:ajax update="msgshortid" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.arabicFullDescr']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgarfullid" for="arfullid" display="text" />
+													<p:inputText id="arfullid" value="#{parameterDetailsBean.arabicFullDesc}" required="true" maxlength="80" readonly="#{parameterDetailsBean.booradonlyforMasterDesciption}" requiredMessage="Please Enter Arabic Full Description" style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;" dir="RTL">
+														<p:ajax update="msgarfullid" />
+														<f:validator validatorId="arabicValidator" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.arabicShortDesc']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgarshortid" for="arshortid" display="text" />
+													<p:inputText id="arshortid" value="#{parameterDetailsBean.arabicShortDesc}" required="true" maxlength="10" readonly="#{parameterDetailsBean.booradonlyforMasterDesciption}" style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;" dir="RTL" requiredMessage="Please Enter Arabic Short Description">
+														<p:ajax update="msgarshortid" />
+														<f:validator validatorId="arabicValidator" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.parameterCode']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgparametercode" for="parametercode" display="text" />
+													<!-- <p:selectOneMenu id="parametercode" value="#{parameterDetailsBean.parameterCode}" filterMatchMode="startsWith" filter="true" required="true" requiredMessage="Please Select Parameter Master">
+														<f:selectItem itemLabel="#{msg['lbl.selectcode']}" itemValue="" />
+														<f:selectItems value="#{parameterDetailsBean.lstParameterCode}" var="c" itemLabel="#{c.pcode}" itemValue="#{c.pcode}" />
+														<p:ajax event="change" listener="#{parameterDetailsBean.getEnableFlexifiled}" update="msgparameterid,headerPanel" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" />
+														<p:ajax event="blur" listener="#{parameterDetailsBean.getEnableFlexifiled}" update="msgparameterid,headerPanel" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" />
+													</p:selectOneMenu> -->
+													
+												<!-- 	<p:inputText id="parametercode"  value="#{parameterDetailsBean.parameterCode}" required="true" maxlength="4" requiredMessage="Please Enter Parameter Code">
+														<p:ajax event="blur" update="msgparametercode,mainPanel"  listener="#{parameterDetailsBean.getEnableFlexifiled}"/>
+														<p:ajax event="change" update="msgparametercode,mainPanel" listener="#{parameterDetailsBean.getEnableFlexifiled}" />
+														<f:validator validatorId="com.amg.exchange.validator.AlphaNumericValidator"/>
+													</p:inputText> -->
+													
+													<p:autoComplete id="parametercode"  value="#{parameterDetailsBean.parameterCode}" 
+																	completeMethod="#{parameterDetailsBean.autoCompleteData}" required="true" maxlength="4" requiredMessage="Please Enter Parameter Code" >
+														<p:ajax event="blur" update="msgparametercode,mainPanel,csp"  listener="#{parameterDetailsBean.getEnableFlexifiled}"/>
+														<p:ajax event="change" update="msgparametercode,mainPanel,csp" listener="#{parameterDetailsBean.getEnableFlexifiled}" />
+														<f:validator validatorId="com.amg.exchange.validator.AlphaNumericValidator"/>
+													</p:autoComplete>
+												</p:panel>
+												
+												</p:panel>
+												
+												<p:panel styleClass="right_col" rendered="#{parameterDetailsBean.isActive!=null}" >
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.status']}"  />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgStatus" for="isActive" display="text" />
+													<p:inputText id="isActive" required="true" requiredMessage="Please Enter #{msg['lbl.status']}"
+														value="#{parameterDetailsBean.isActive}"  >
+														<p:ajax update="msgStatus" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+												
+												
+											
+											
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.NUMERIC_FIELD1}" >
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.numericfieldLabel1}"  />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid1" for="numfieldid1" display="text" />
+													<p:inputText id="numfieldid1" required="true" requiredMessage="Please Enter #{parameterDetailsBean.numericfieldLabel1}"
+														value="#{parameterDetailsBean.numericfield1}"  >
+														<p:ajax update="msgnumfieldid1" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.NUMERIC_FIELDLOV1}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.numericfieldLabel1}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid10" for="numfieldid10" display="text" />
+													<!-- <p:inputText id="numfieldid2" required="true" requiredMessage="Please Enter #{parameterDetailsBean.numericfieldLabel2}"
+														value="#{parameterDetailsBean.numericfield2}"  >
+														<p:ajax update="msgnumfieldid2" />
+													</p:inputText> -->
+
+													<p:selectOneMenu id="numfieldid10" value="#{parameterDetailsBean.numericfield1}" filter="true" required="true" filterMatchMode="contains" requiredMessage="Please select #{parameterDetailsBean.numericfieldLabel1}">
+														<f:selectItem itemLabel="-- #{parameterDetailsBean.numericfieldLabel1} -- " itemValue="" />
+														<f:selectItems
+														value="#{parameterDetailsBean.NUMERIC_FIELD1LOVList}" var="c"
+														itemLabel="#{c.listValue}" itemValue="#{c.listValue}" />
+													</p:selectOneMenu>
+
+
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.NUMERIC_FIELD2}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.numericfieldLabel2}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid2" for="numfieldid2" display="text" />
+													<p:inputText id="numfieldid2" required="true" requiredMessage="Please Enter #{parameterDetailsBean.numericfieldLabel2}"
+														value="#{parameterDetailsBean.numericfield2}"  >
+														<p:ajax update="msgnumfieldid2" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.NUMERIC_FIELDLOV2}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.numericfieldLabel2}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid11" for="numfieldid11" display="text" />
+													<!-- <p:inputText id="numfieldid2" required="true" requiredMessage="Please Enter #{parameterDetailsBean.numericfieldLabel2}"
+														value="#{parameterDetailsBean.numericfield2}"  >
+														<p:ajax update="msgnumfieldid2" />
+													</p:inputText> -->
+
+													<p:selectOneMenu id="numfieldid11" value="#{parameterDetailsBean.numericfield2}" filter="true" required="true" filterMatchMode="contains" requiredMessage="Please select #{parameterDetailsBean.numericfieldLabel2}">
+														<f:selectItem itemLabel="-- #{parameterDetailsBean.numericfieldLabel2} -- " itemValue="" />
+														<f:selectItems
+														value="#{parameterDetailsBean.NUMERIC_FIELD2LOVList}" var="c"
+														itemLabel="#{c.listValue}" itemValue="#{c.listValue}" />
+													</p:selectOneMenu>
+
+
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.NUMERIC_FIELD3}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.numericfieldLabel3}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid3" for="numfieldid3" display="text" />
+													<p:inputText id="numfieldid3" required="true" requiredMessage="Please Enter #{parameterDetailsBean.numericfieldLabel3}"
+														value="#{parameterDetailsBean.numericfield3}"  >
+														<p:ajax update="msgnumfieldid3" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.NUMERIC_FIELDLOV3}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.numericfieldLabel3}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid13" for="numfieldid13" display="text" />
+													<!-- <p:inputText id="numfieldid2" required="true" requiredMessage="Please Enter #{parameterDetailsBean.numericfieldLabel2}"
+														value="#{parameterDetailsBean.numericfield2}"  >
+														<p:ajax update="msgnumfieldid2" />
+													</p:inputText> -->
+
+													<p:selectOneMenu id="numfieldid13" value="#{parameterDetailsBean.numericfield3}" filter="true" required="true" filterMatchMode="contains" requiredMessage="Please select #{parameterDetailsBean.numericfieldLabel3}">
+														<f:selectItem itemLabel="-- #{parameterDetailsBean.numericfieldLabel2} -- " itemValue="" />
+														<f:selectItems
+														value="#{parameterDetailsBean.NUMERIC_FIELD3LOVList}" var="c"
+														itemLabel="#{c.listValue}" itemValue="#{c.listValue}" />
+													</p:selectOneMenu>
+
+
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.NUMERIC_FIELD4}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.numericfieldLabel4}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid4" for="numfieldid4" display="text" />
+													<p:inputText id="numfieldid4" required="true" requiredMessage="Please Enter #{parameterDetailsBean.numericfieldLabel4}"
+														value="#{parameterDetailsBean.numericfield4}"  >
+														<p:ajax update="msgnumfieldid4" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.NUMERIC_FIELDLOV4}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.numericfieldLabel4}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid14" for="numfieldid14" display="text" />
+													<!-- <p:inputText id="numfieldid2" required="true" requiredMessage="Please Enter #{parameterDetailsBean.numericfieldLabel2}"
+														value="#{parameterDetailsBean.numericfield2}"  >
+														<p:ajax update="msgnumfieldid2" />
+													</p:inputText> -->
+
+													<p:selectOneMenu id="numfieldid14" value="#{parameterDetailsBean.numericfield4}" filter="true" required="true" filterMatchMode="contains" requiredMessage="Please select #{parameterDetailsBean.numericfieldLabel4}">
+														<f:selectItem itemLabel="-- #{parameterDetailsBean.numericfieldLabel4} -- " itemValue="" />
+														<f:selectItems
+														value="#{parameterDetailsBean.NUMERIC_FIELD4LOVList}" var="c"
+														itemLabel="#{c.listValue}" itemValue="#{c.listValue}" />
+													</p:selectOneMenu>
+
+
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											
+											
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.NUMERIC_FIELD5}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.numericfieldLabel5}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid5" for="numfieldid5" display="text" />
+													<p:inputText id="numfieldid5" required="true" requiredMessage="Please Enter #{parameterDetailsBean.numericfieldLabel5}"
+														value="#{parameterDetailsBean.numericfield5}"  >
+														<p:ajax update="msgnumfieldid5" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.NUMERIC_FIELDLOV5}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.numericfieldLabel5}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid15" for="numfieldid15" display="text" />
+													<!-- <p:inputText id="numfieldid2" required="true" requiredMessage="Please Enter #{parameterDetailsBean.numericfieldLabel2}"
+														value="#{parameterDetailsBean.numericfield2}"  >
+														<p:ajax update="msgnumfieldid2" />
+													</p:inputText> -->
+
+													<p:selectOneMenu id="numfieldid15" value="#{parameterDetailsBean.numericfield5}" filter="true" required="true" filterMatchMode="contains" requiredMessage="Please select #{parameterDetailsBean.numericfieldLabel5}">
+														<f:selectItem itemLabel="-- #{parameterDetailsBean.numericfieldLabel5} -- " itemValue="" />
+														<f:selectItems
+														value="#{parameterDetailsBean.NUMERIC_FIELD5LOVList}" var="c"
+														itemLabel="#{c.listValue}" itemValue="#{c.listValue}" />
+													</p:selectOneMenu>
+
+
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.NUMERIC_FIELD6}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.numericfieldLabel6}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid6" for="numfieldid6" display="text" />
+													<p:inputText id="numfieldid6" required="true" requiredMessage="Please Enter #{parameterDetailsBean.numericfieldLabel6}"
+														value="#{parameterDetailsBean.numericfield6}"  >
+														<p:ajax update="msgnumfieldid6" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.NUMERIC_FIELDLOV6}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.numericfieldLabel6}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid16" for="numfieldid16" display="text" />
+													<!-- <p:inputText id="numfieldid2" required="true" requiredMessage="Please Enter #{parameterDetailsBean.numericfieldLabel2}"
+														value="#{parameterDetailsBean.numericfield2}"  >
+														<p:ajax update="msgnumfieldid2" />
+													</p:inputText> -->
+
+													<p:selectOneMenu id="numfieldid16" value="#{parameterDetailsBean.numericfield6}" filter="true" required="true" filterMatchMode="contains" requiredMessage="Please select #{parameterDetailsBean.numericfieldLabel6}">
+														<f:selectItem itemLabel="-- #{parameterDetailsBean.numericfieldLabel6} -- " itemValue="" />
+														<f:selectItems
+														value="#{parameterDetailsBean.NUMERIC_FIELD6LOVList}" var="c"
+														itemLabel="#{c.listValue}" itemValue="#{c.listValue}" />
+													</p:selectOneMenu>
+
+
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.NUMERIC_FIELD7}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.numericfieldLabel7}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid7" for="numfieldid7" display="text" />
+													<p:inputText id="numfieldid7" required="true" requiredMessage="Please Enter #{parameterDetailsBean.numericfieldLabel7}"
+														value="#{parameterDetailsBean.numericfield7}"  >
+														<p:ajax update="msgnumfieldid7" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.NUMERIC_FIELDLOV7}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.numericfieldLabel7}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid17" for="numfieldid17" display="text" />
+													<!-- <p:inputText id="numfieldid2" required="true" requiredMessage="Please Enter #{parameterDetailsBean.numericfieldLabel2}"
+														value="#{parameterDetailsBean.numericfield2}"  >
+														<p:ajax update="msgnumfieldid2" />
+													</p:inputText> -->
+
+													<p:selectOneMenu id="numfieldid17" value="#{parameterDetailsBean.numericfield7}" filter="true" required="true" filterMatchMode="contains" requiredMessage="Please select #{parameterDetailsBean.numericfieldLabel7}">
+														<f:selectItem itemLabel="-- #{parameterDetailsBean.numericfieldLabel7} -- " itemValue="" />
+														<f:selectItems
+														value="#{parameterDetailsBean.NUMERIC_FIELD7LOVList}" var="c"
+														itemLabel="#{c.listValue}" itemValue="#{c.listValue}" />
+													</p:selectOneMenu>
+
+
+												</p:panel>
+											</p:panel>
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.NUMERIC_FIELD8}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.numericfieldLabel8}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid8" for="numfieldid8" display="text" />
+													<p:inputText id="numfieldid8"  required="true" requiredMessage="Please Enter #{parameterDetailsBean.numericfieldLabel8}"
+														value="#{parameterDetailsBean.numericfield8}"  >
+														<p:ajax update="msgnumfieldid8" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.NUMERIC_FIELDLOV8}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.numericfieldLabel8}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid18" for="numfieldid18" display="text" />
+													<!-- <p:inputText id="numfieldid2" required="true" requiredMessage="Please Enter #{parameterDetailsBean.numericfieldLabel2}"
+														value="#{parameterDetailsBean.numericfield2}"  >
+														<p:ajax update="msgnumfieldid2" />
+													</p:inputText> -->
+
+													<p:selectOneMenu id="numfieldid18" value="#{parameterDetailsBean.numericfield8}" filter="true" required="true" filterMatchMode="contains" requiredMessage="Please select #{parameterDetailsBean.numericfieldLabel8}">
+														<f:selectItem itemLabel="-- #{parameterDetailsBean.numericfieldLabel8} -- " itemValue="" />
+														<f:selectItems
+														value="#{parameterDetailsBean.NUMERIC_FIELD8LOVList}" var="c"
+														itemLabel="#{c.listValue}" itemValue="#{c.listValue}" />
+													</p:selectOneMenu>
+
+
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.NUMERIC_FIELD9}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.numericfieldLabel9}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid9" for="numfieldid9" display="text" />
+													<p:inputText id="numfieldid9" required="true" requiredMessage="Please Enter #{parameterDetailsBean.numericfieldLabel9}"
+														value="#{parameterDetailsBean.numericfield9}"  >
+														<p:ajax update="msgnumfieldid9" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.NUMERIC_FIELDLOV9}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.numericfieldLabel9}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid19" for="numfieldid19" display="text" />
+													<!-- <p:inputText id="numfieldid2" required="true" requiredMessage="Please Enter #{parameterDetailsBean.numericfieldLabel2}"
+														value="#{parameterDetailsBean.numericfield2}"  >
+														<p:ajax update="msgnumfieldid2" />
+													</p:inputText> -->
+
+													<p:selectOneMenu id="numfieldid19" value="#{parameterDetailsBean.numericfield9}" filter="true" required="true" filterMatchMode="contains" requiredMessage="Please select #{parameterDetailsBean.numericfieldLabel9}">
+														<f:selectItem itemLabel="-- #{parameterDetailsBean.numericfieldLabel9} -- " itemValue="" />
+														<f:selectItems
+														value="#{parameterDetailsBean.NUMERIC_FIELD9LOVList}" var="c"
+														itemLabel="#{c.listValue}" itemValue="#{c.listValue}" />
+													</p:selectOneMenu>
+
+
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.CHAR_FIELD1}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.charfieldLabel1}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid1" for="charfieldid1" display="text" />
+													<p:inputText id="charfieldid1" required="true" requiredMessage="Please Enter #{parameterDetailsBean.charfieldLabel1}"
+														value="#{parameterDetailsBean.charfield1}"  >
+														<p:ajax update="msgcharfieldid1" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.CHAR_FIELDLOV1}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.charfieldLabel1}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid11" for="charfieldid11" display="text" />
+
+													<p:selectOneMenu id="charfieldid11" value="#{parameterDetailsBean.charfield1}" filter="true" required="true" filterMatchMode="contains" requiredMessage="Please select #{parameterDetailsBean.charfieldLabel1}">
+														<f:selectItem itemLabel="-- #{parameterDetailsBean.charfieldLabel1} -- " itemValue="" />
+														<f:selectItems
+														value="#{parameterDetailsBean.CHAR_FIELD1LOVList}" var="c"
+														itemLabel="#{c.columnName}" itemValue="#{c.columnName}" />
+														
+														<p:ajax update="msgcharfieldid11" />
+														
+														
+													</p:selectOneMenu>
+
+
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.CHAR_FIELD2}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.charfieldLabel2}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid2" for="charfieldid2" display="text" />
+													<p:inputText id="charfieldid2" required="true" requiredMessage="Please Enter #{parameterDetailsBean.charfieldLabel2}"
+														value="#{parameterDetailsBean.charfield2}"  >
+														<p:ajax update="msgcharfieldid2" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.CHAR_FIELDLOV2}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.charfieldLabel2}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid12" for="charfieldid12" display="text" />
+
+													<p:selectOneMenu id="charfieldid12" value="#{parameterDetailsBean.charfield2}" filter="true" required="true" filterMatchMode="contains" requiredMessage="Please select #{parameterDetailsBean.charfieldLabel2}">
+														<f:selectItem itemLabel="-- #{parameterDetailsBean.charfieldLabel2} -- " itemValue="" />
+														<f:selectItems
+														value="#{parameterDetailsBean.CHAR_FIELD2LOVList}" var="c"
+														itemLabel="#{c.columnName}" itemValue="#{c.columnName}" />
+														
+															<p:ajax update="msgcharfieldid12,charfieldid12" />
+													</p:selectOneMenu>
+
+
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.CHAR_FIELD3}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.charfieldLabel3}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid3" for="charfieldid3" display="text" />
+													<p:inputText id="charfieldid3" required="true" requiredMessage="Please Enter #{parameterDetailsBean.charfieldLabel3}"
+														value="#{parameterDetailsBean.charfield3}"  >
+														<p:ajax update="msgcharfieldid3" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.CHAR_FIELDLOV3}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.charfieldLabel3}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid13" for="charfieldid13" display="text" />
+
+													<p:selectOneMenu id="charfieldid13" value="#{parameterDetailsBean.charfield3}" filter="true" required="true" filterMatchMode="contains" requiredMessage="Please select #{parameterDetailsBean.charfieldLabel3}">
+														<f:selectItem itemLabel="-- #{parameterDetailsBean.charfieldLabel3} -- " itemValue="" />
+														<f:selectItems
+														value="#{parameterDetailsBean.CHAR_FIELD3LOVList}" var="c"
+														itemLabel="#{c.columnName}" itemValue="#{c.columnName}" />
+														<p:ajax update="msgcharfieldid13,charfieldid13" />
+													</p:selectOneMenu>
+													
+
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											
+												<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.CHAR_FIELD4}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.charfieldLabel4}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid4" for="charfieldid4" display="text" />
+													<p:inputText id="charfieldid4" required="true" requiredMessage="Please Enter #{parameterDetailsBean.charfieldLabel4}"
+														value="#{parameterDetailsBean.charfield4}"  >
+														<p:ajax update="msgcharfieldid4" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.CHAR_FIELDLOV4}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.charfieldLabel4}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid14" for="charfieldid14" display="text" />
+
+													<p:selectOneMenu id="charfieldid14" value="#{parameterDetailsBean.charfield4}" filter="true" required="true" filterMatchMode="contains" requiredMessage="Please select #{parameterDetailsBean.charfieldLabel4}">
+														<f:selectItem itemLabel="-- #{parameterDetailsBean.charfieldLabel4} -- " itemValue="" />
+														<f:selectItems
+														value="#{parameterDetailsBean.CHAR_FIELD4LOVList}" var="c"
+														itemLabel="#{c.columnName}" itemValue="#{c.columnName}" />
+													</p:selectOneMenu>
+
+
+												</p:panel>
+											</p:panel>
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.CHAR_FIELD5}" >
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.charfieldLabel5}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid5" for="charfieldid5" display="text" />
+													<p:inputText id="charfieldid5" required="true" requiredMessage="Please Enter #{parameterDetailsBean.charfieldLabel5}"
+														value="#{parameterDetailsBean.charfield5}"  >
+														<p:ajax update="msgcharfieldid5" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.CHAR_FIELDLOV5}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.charfieldLabel5}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid15" for="charfieldid15" display="text" />
+
+													<p:selectOneMenu id="charfieldid15" value="#{parameterDetailsBean.charfield5}" filter="true" required="true" filterMatchMode="contains" requiredMessage="Please select #{parameterDetailsBean.charfieldLabel5}">
+														<f:selectItem itemLabel="-- #{parameterDetailsBean.charfieldLabel5} -- " itemValue="" />
+														<f:selectItems
+														value="#{parameterDetailsBean.CHAR_FIELD5LOVList}" var="c"
+														itemLabel="#{c.columnName}" itemValue="#{c.columnName}" />
+													</p:selectOneMenu>
+
+
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.CHAR_FIELD6}" >
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.charfieldLabel6}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid6" for="charfieldid6" display="text" />
+													<p:inputText id="charfieldid6" required="true" requiredMessage="Please Enter #{parameterDetailsBean.charfieldLabel6}"
+														value="#{parameterDetailsBean.charfield6}"  >
+														<p:ajax update="msgcharfieldid6" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.CHAR_FIELDLOV6}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.charfieldLabel6}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid16" for="charfieldid16" display="text" />
+
+													<p:selectOneMenu id="charfieldid16" value="#{parameterDetailsBean.charfield6}" filter="true" required="true" filterMatchMode="contains" requiredMessage="Please select #{parameterDetailsBean.charfieldLabel6}">
+														<f:selectItem itemLabel="-- #{parameterDetailsBean.charfieldLabel1} -- " itemValue="" />
+														<f:selectItems
+														value="#{parameterDetailsBean.CHAR_FIELD6LOVList}" var="c"
+														itemLabel="#{c.columnName}" itemValue="#{c.columnName}" />
+													</p:selectOneMenu>
+
+
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.CHAR_FIELD7}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.charfieldLabel7}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid7" for="charfieldid7" display="text" />
+													<p:inputText id="charfieldid7" required="true" requiredMessage="Please Enter #{parameterDetailsBean.charfieldLabel7}"
+														value="#{parameterDetailsBean.charfield7}"  >
+														<p:ajax update="msgcharfieldid7" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.CHAR_FIELDLOV7}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.charfieldLabel17}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid17" for="charfieldid17" display="text" />
+
+													<p:selectOneMenu id="charfieldid17" value="#{parameterDetailsBean.charfield7}" filter="true" required="true" filterMatchMode="contains" requiredMessage="Please select #{parameterDetailsBean.charfieldLabel7}">
+														<f:selectItem itemLabel="-- #{parameterDetailsBean.charfieldLabel7} -- " itemValue="" />
+														<f:selectItems
+														value="#{parameterDetailsBean.CHAR_FIELD7LOVList}" var="c"
+														itemLabel="#{c.columnName}" itemValue="#{c.columnName}" />
+													</p:selectOneMenu>
+
+
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.CHAR_FIELD8}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.charfieldLabel8}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid8" for="charfieldid8" display="text" />
+													<p:inputText id="charfieldid8" required="true" requiredMessage="Please Enter #{parameterDetailsBean.charfieldLabel8}"
+														value="#{parameterDetailsBean.charfield8}"  >
+														<p:ajax update="msgcharfieldid8" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.CHAR_FIELDLOV8}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.charfieldLabel8}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid18" for="charfieldid18" display="text" />
+
+													<p:selectOneMenu id="charfieldid18" value="#{parameterDetailsBean.charfield8}" filter="true" required="true" filterMatchMode="contains" requiredMessage="Please select #{parameterDetailsBean.charfieldLabel8}">
+														<f:selectItem itemLabel="-- #{parameterDetailsBean.charfield8} -- " itemValue="" />
+														<f:selectItems
+														value="#{parameterDetailsBean.CHAR_FIELD8LOVList}" var="c"
+														itemLabel="#{c.columnName}" itemValue="#{c.columnName}" />
+													</p:selectOneMenu>
+
+
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.CHAR_FIELD9}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.charfieldLabel9}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid9" for="charfieldid9" display="text" />
+													<p:inputText id="charfieldid9" required="true" requiredMessage="Please Enter #{parameterDetailsBean.charfieldLabel9}"
+														value="#{parameterDetailsBean.charfield9}"  >
+														<p:ajax update="msgcharfieldid9" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.CHAR_FIELDLOV9}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.charfieldLabel9}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid19" for="charfieldid19" display="text" />
+
+													<p:selectOneMenu id="charfieldid19" value="#{parameterDetailsBean.charfield9}" filter="true" required="true" filterMatchMode="contains" requiredMessage="Please select #{parameterDetailsBean.charfieldLabel9}">
+														<f:selectItem itemLabel="-- #{parameterDetailsBean.charfieldLabel9} -- " itemValue="" />
+														<f:selectItems
+														value="#{parameterDetailsBean.CHAR_FIELD9LOVList}" var="c"
+														itemLabel="#{c.columnName}" itemValue="#{c.columnName}" />
+													</p:selectOneMenu>
+
+
+												</p:panel>
+											</p:panel>
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.DATE_FIELD1}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.datefieldLabel1}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdatefieldid1" for="datefieldid1" display="text" />
+													<!-- <p:inputText id="datefieldid1"
+														value="#{parameterDetailsBean.datefield1}"  >
+														<p:ajax update="msgdatefieldid1" />
+													</p:inputText> -->
+													<p:calendar id="datefieldid1" value="#{parameterDetailsBean.datefield1}"   required="true" requiredMessage="Please Enter #{parameterDetailsBean.datefieldLabel1}"
+												mode="popup" navigator="true"
+												pattern="dd/MM/yyyy" >
+												<p:ajax update="msgdatefieldid1" />
+												</p:calendar>
+													
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.DATE_FIELD2}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.datefieldLabel2}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdatefieldid2" for="datefieldid2" display="text" />
+													<!-- <p:inputText id="datefieldid2"
+														value="#{parameterDetailsBean.datefield2}"  >
+														<p:ajax update="msgdatefieldid2" />
+													</p:inputText> -->
+													
+													
+													<p:calendar id="datefieldid2" value="#{parameterDetailsBean.datefield2}" 
+												mode="popup" navigator="true" required="true" requiredMessage="Please Enter #{parameterDetailsBean.datefieldLabel2}"
+												pattern="dd/MM/yyyy" >
+												<p:ajax update="msgdatefieldid2" />
+												</p:calendar>
+													
+												</p:panel>
+											</p:panel>
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.DATE_FIELD3}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.dateFieldThree']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdatefieldid3" for="datefieldid3" display="text" />
+													<!-- <p:inputText id="datefieldid3"
+														value="#{parameterDetailsBean.datefield3}"  >
+														<p:ajax update="msgdatefieldid3" />
+													</p:inputText> -->
+													
+													<p:calendar id="datefieldid3" value="#{parameterDetailsBean.datefieldLabel3}" 
+												mode="popup" navigator="true" required="true" requiredMessage="Please Enter #{parameterDetailsBean.datefieldLabel3}"
+												pattern="dd/MM/yyyy" >
+												<p:ajax update="msgdatefieldid3" />
+												</p:calendar>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.DATE_FIELD4}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.datefieldLabel4}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdatefieldid4" for="datefieldid4" display="text" />
+													<!-- <p:inputText id="datefieldid4"
+														value="#{parameterDetailsBean.datefield4}"  >
+														<p:ajax update="msgdatefieldid4" />
+													</p:inputText> -->
+													
+													<p:calendar id="datefieldid4" value="#{parameterDetailsBean.datefield4}" 
+												mode="popup" navigator="true" required="true" requiredMessage="Please Enter #{parameterDetailsBean.datefieldLabel4}"
+												pattern="dd/MM/yyyy" >
+												<p:ajax update="msgdatefieldid4" />
+												</p:calendar>
+													
+												</p:panel>
+											</p:panel>
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.DATE_FIELD5}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.datefieldLabel5}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdatefieldid5" for="datefieldid5" display="text" />
+													<!-- <p:inputText id="datefieldid5"
+														value="#{parameterDetailsBean.datefield5}"  >
+														<p:ajax update="msgdatefieldid5" />
+													</p:inputText> -->
+													
+													<p:calendar id="datefieldid5" value="#{parameterDetailsBean.datefield5}" 
+												mode="popup" navigator="true" required="true" requiredMessage="Please Enter #{parameterDetailsBean.datefieldLabel5}"
+												pattern="dd/MM/yyyy" >
+												<p:ajax update="msgdatefieldid5" />
+												</p:calendar>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.DATE_FIELD6}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.datefieldLabel6}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdatefieldid6" for="datefieldid6" display="text" />
+													<!-- <p:inputText id="datefieldid6"
+														value="#{parameterDetailsBean.datefield6}"  >
+														<p:ajax update="msgdatefieldid6" />
+													</p:inputText> -->
+													<p:calendar id="datefieldid6" value="#{parameterDetailsBean.datefield6}" 
+												mode="popup" navigator="true" required="true" requiredMessage="Please Enter #{parameterDetailsBean.datefieldLabel6}"
+												pattern="dd/MM/yyyy" >
+												<p:ajax update="msgdatefieldid6" />
+												</p:calendar>
+													
+													
+												</p:panel>
+											</p:panel>
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.DATE_FIELD7}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.datefieldLabel7}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdatefieldid7" for="datefieldid7" display="text" />
+													<!-- <p:inputText id="datefieldid7"
+														value="#{parameterDetailsBean.datefield7}"  >
+														<p:ajax update="msgdatefieldid7" />
+													</p:inputText> -->
+													<p:calendar id="datefieldid7" value="#{parameterDetailsBean.datefield7}" 
+												mode="popup" navigator="true" required="true" requiredMessage="Please Enter #{parameterDetailsBean.datefieldLabel7}"
+												pattern="dd/MM/yyyy" >
+												<p:ajax update="msgdatefieldid7" />
+												</p:calendar>
+													
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.DATE_FIELD8}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.datefieldLabel8}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdatefieldid8" for="datefieldid8" display="text" />
+													<!-- <p:inputText id="datefieldid8"
+														value="#{parameterDetailsBean.datefield8}"  >
+														<p:ajax update="msgdatefieldid8" />
+													</p:inputText> -->
+													
+													<p:calendar id="datefieldid8" value="#{parameterDetailsBean.datefield8}" 
+												mode="popup" navigator="true" required="true" requiredMessage="Please Enter #{parameterDetailsBean.datefieldLabel8}"
+												pattern="dd/MM/yyyy" >
+												<p:ajax update="msgdatefieldid8" />
+												</p:calendar>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailsBean.DATE_FIELD9}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailsBean.datefieldLabel9}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdatefieldid9" for="datefieldid9" display="text" />
+													<!-- <p:inputText id="datefieldid9"
+														value="#{parameterDetailsBean.datefield9}"  >
+														<p:ajax update="msgdatefieldid9" />
+													</p:inputText> -->
+													<p:calendar id="datefieldid9" value="#{parameterDetailsBean.datefield9}" 
+												mode="popup" navigator="true" required="true" requiredMessage="Please Enter #{parameterDetailsBean.datefieldLabel9}"
+												pattern="dd/MM/yyyy" >
+												<p:ajax update="msgdatefieldid9" />
+											</p:calendar>
+													
+												</p:panel>
+											</p:panel>
+											
+											
+											<h:panelGroup layout="block" class="clearfix" />
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel id="submitPanel">
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="#{msg['lbl.add']}" action="#{parameterDetailsBean.addToDataTable}" update="mainPanel,csp" style="margin-right:10px; " onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" />
+												<p:commandButton value="#{msg['lbl.clear']}" update="paramMas,mainPanel" style="margin-right:10px; " immediate="true" action="#{parameterDetailsBean.clearAllB}" />
+												<p:commandButton value="#{msg['lbl.view']}" action="#{parameterDetailsBean.view}" update="mainPanel,csp" immediate="true" />
+											</h:panelGroup>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<p:panel id="dataTablePanel">
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:dataTable id="dataTableId" var="d" styleClass="mydatatableclass" sortMode="multiple" rows="10" paginator="true" paginatorPosition="bottom" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="5,10,15"
+												value="#{parameterDetailsBean.lstFinalListForDataTable}" rowIndexVar="rowIndex" emptyMessage="No records Found" rendered="#{parameterDetailsBean.booRenderDataTable}">
+												
+												<p:column headerText="#{msg['lbl.sNo']}" style="width:5%;">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+												
+												<p:column headerText="Full Desc" sortBy="#{d.parameterFullDesc}" style="width:12%;">
+													<h:outputLabel value="#{d.parameterFullDesc}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+												
+												<p:column headerText="Short Desc" sortBy="#{d.parameterShortDesc}" style="width:10%;">
+													<h:outputLabel value="#{d.parameterShortDesc}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+												
+												<p:column headerText="Arabic ShortDesc" style="width:8%;">
+													<h:outputLabel value="#{d.arabicShortDesc}" style="float:right;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+												
+												<p:column headerText="Parameter Code" sortBy="#{d.parameterCode}" style="width:5%;">
+													<h:outputLabel value="#{d.parameterCode}" />
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.charfieldLabel1}"  rendered="#{parameterDetailsBean.CHAR_FIELDLOV1}" filterBy="#{d.charfield1}" filterMatchMode="contains" style="width:10%;">
+													<h:outputLabel value="#{d.charfield1}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.charfieldLabel2}"  rendered="#{parameterDetailsBean.CHAR_FIELDLOV2}" filterBy="#{d.charfield2}" filterMatchMode="contains" style="width:10%;">
+													<h:outputLabel value="#{d.charfield2}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.charfieldLabel3}"  rendered="#{parameterDetailsBean.CHAR_FIELDLOV3}" filterBy="#{d.charfield3}" filterMatchMode="contains" style="width:10%;">
+													<h:outputLabel value="#{d.charfield3}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.charfieldLabel4}"  rendered="#{parameterDetailsBean.CHAR_FIELDLOV4}" filterBy="#{d.charfield4}" filterMatchMode="contains" style="width:10%;">
+													<h:outputLabel value="#{d.charfield4}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.charfieldLabel5}"  rendered="#{parameterDetailsBean.CHAR_FIELDLOV5}" filterBy="#{d.charfield5}" filterMatchMode="contains" style="width:10%;">
+													<h:outputLabel value="#{d.charfield5}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.charfieldLabel6}"  rendered="#{parameterDetailsBean.CHAR_FIELDLOV6}" filterBy="#{d.charfield6}" filterMatchMode="contains" style="width:10%;">
+													<h:outputLabel value="#{d.charfield6}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.charfieldLabel7}"  rendered="#{parameterDetailsBean.CHAR_FIELDLOV7}" filterBy="#{d.charfield7}" filterMatchMode="contains" style="width:10%;">
+													<h:outputLabel value="#{d.charfield7}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.charfieldLabel8}"  rendered="#{parameterDetailsBean.CHAR_FIELDLOV8}" filterBy="#{d.charfield8}" filterMatchMode="contains" style="width:10%;">
+													<h:outputLabel value="#{d.charfield8}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.charfieldLabel9}"  rendered="#{parameterDetailsBean.CHAR_FIELDLOV9}" filterBy="#{d.charfield9}" filterMatchMode="contains" style="width:10%;">
+													<h:outputLabel value="#{d.charfield9}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.charfieldLabel1}"  rendered="#{parameterDetailsBean.CHAR_FIELD1}" filterBy="#{d.charfield1}" filterMatchMode="contains" style="width:10%;">
+													<h:outputLabel value="#{d.charfield1}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.charfieldLabel2}"  rendered="#{parameterDetailsBean.CHAR_FIELD2}" filterBy="#{d.charfield2}" filterMatchMode="contains" style="width:10%;">
+													<h:outputLabel value="#{d.charfield2}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.charfieldLabel3}"  rendered="#{parameterDetailsBean.CHAR_FIELD3}" filterBy="#{d.charfield3}" filterMatchMode="contains" style="width:10%;">
+													<h:outputLabel value="#{d.charfield3}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.charfieldLabel4}"  rendered="#{parameterDetailsBean.CHAR_FIELD4}" filterBy="#{d.charfield4}" filterMatchMode="contains" style="width:10%;">
+													<h:outputLabel value="#{d.charfield4}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.charfieldLabel5}"  rendered="#{parameterDetailsBean.CHAR_FIELD5}" filterBy="#{d.charfield5}" filterMatchMode="contains" style="width:10%;">
+													<h:outputLabel value="#{d.charfield5}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.charfieldLabel6}"  rendered="#{parameterDetailsBean.CHAR_FIELD6}" filterBy="#{d.charfield6}" filterMatchMode="contains" style="width:10%;">
+													<h:outputLabel value="#{d.charfield6}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.charfieldLabel7}"  rendered="#{parameterDetailsBean.CHAR_FIELD7}" filterBy="#{d.charfield7}" filterMatchMode="contains" style="width:10%;">
+													<h:outputLabel value="#{d.charfield7}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.charfieldLabel8}"  rendered="#{parameterDetailsBean.CHAR_FIELD8}" filterBy="#{d.charfield8}" filterMatchMode="contains" style="width:10%;">
+													<h:outputLabel value="#{d.charfield8}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.charfieldLabel9}"  rendered="#{parameterDetailsBean.CHAR_FIELD9}" filterBy="#{d.charfield9}" filterMatchMode="contains" style="width:10%;">
+													<h:outputLabel value="#{d.charfield9}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.numericfieldLabel1}"  rendered="#{parameterDetailsBean.NUMERIC_FIELD1}" filterBy="#{d.numericfield1}" filterMatchMode="contains" style="width:7%;">
+													<h:outputText value="#{d.numericfield1}" />
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.numericfieldLabel2}"  rendered="#{parameterDetailsBean.NUMERIC_FIELD2}" filterBy="#{d.numericfield2}" filterMatchMode="contains" style="width:7%;">
+													<h:outputText value="#{d.numericfield2}" />
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.numericfieldLabel3}"  rendered="#{parameterDetailsBean.NUMERIC_FIELD3}" filterBy="#{d.numericfield3}" filterMatchMode="contains" style="width:7%;">
+													<h:outputText value="#{d.numericfield3}" />
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.numericfieldLabel4}"  rendered="#{parameterDetailsBean.NUMERIC_FIELD4}" filterBy="#{d.numericfield4}" filterMatchMode="contains" style="width:7%;">
+													<h:outputText value="#{d.numericfield4}" />
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.numericfieldLabel5}"  rendered="#{parameterDetailsBean.NUMERIC_FIELD5}" filterBy="#{d.numericfield5}" filterMatchMode="contains" style="width:7%;">
+													<h:outputText value="#{d.numericfield5}" />
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.numericfieldLabel6}"  rendered="#{parameterDetailsBean.NUMERIC_FIELD6}" filterBy="#{d.numericfield6}" filterMatchMode="contains" style="width:7%;">
+													<h:outputText value="#{d.numericfield6}" />
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.numericfieldLabel7}"  rendered="#{parameterDetailsBean.NUMERIC_FIELD7}" filterBy="#{d.numericfield7}" filterMatchMode="contains" style="width:7%;">
+													<h:outputText value="#{d.numericfield7}" />
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.numericfieldLabel8}"  rendered="#{parameterDetailsBean.NUMERIC_FIELD8}" filterBy="#{d.numericfield8}" filterMatchMode="contains" style="width:7%;">
+													<h:outputText value="#{d.numericfield8}" />
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.numericfieldLabel9}"  rendered="#{parameterDetailsBean.NUMERIC_FIELD9}" filterBy="#{d.numericfield9}" filterMatchMode="contains" style="width:7%;">
+													<h:outputText value="#{d.numericfield9}" />
+												</p:column>
+		
+												<p:column headerText="#{parameterDetailsBean.numericfieldLabel1}"  rendered="#{parameterDetailsBean.NUMERIC_FIELDLOV1}" filterBy="#{d.numericfield1}" filterMatchMode="contains" style="width:7%;">
+													<h:outputText value="#{d.numericfield1}" />
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.numericfieldLabel2}"  rendered="#{parameterDetailsBean.NUMERIC_FIELDLOV2}" filterBy="#{d.numericfield2}" filterMatchMode="contains" style="width:7%;">
+													<h:outputText value="#{d.numericfield2}" />
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.numericfieldLabel3}"  rendered="#{parameterDetailsBean.NUMERIC_FIELDLOV3}" filterBy="#{d.numericfield3}" filterMatchMode="contains" style="width:7%;">
+													<h:outputText value="#{d.numericfield3}" />
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.numericfieldLabel4}"  rendered="#{parameterDetailsBean.NUMERIC_FIELDLOV4}" filterBy="#{d.numericfield4}" filterMatchMode="contains" style="width:7%;">
+													<h:outputText value="#{d.numericfield4}" />
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.numericfieldLabel5}"  rendered="#{parameterDetailsBean.NUMERIC_FIELDLOV5}" filterBy="#{d.numericfield5}" filterMatchMode="contains" style="width:7%;">
+													<h:outputText value="#{d.numericfield5}" />
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.numericfieldLabel6}"  rendered="#{parameterDetailsBean.NUMERIC_FIELDLOV6}" filterBy="#{d.numericfield6}" filterMatchMode="contains" style="width:7%;">
+													<h:outputText value="#{d.numericfield6}" />
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.numericfieldLabel7}"  rendered="#{parameterDetailsBean.NUMERIC_FIELDLOV7}" filterBy="#{d.numericfield7}" filterMatchMode="contains" style="width:7%;">
+													<h:outputText value="#{d.numericfield7}" />
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.numericfieldLabel8}"  rendered="#{parameterDetailsBean.NUMERIC_FIELDLOV8}" filterBy="#{d.numericfield8}" filterMatchMode="contains" style="width:7%;">
+													<h:outputText value="#{d.numericfield8}" />
+												</p:column>
+												
+												<p:column headerText="#{parameterDetailsBean.numericfieldLabel9}"  rendered="#{parameterDetailsBean.NUMERIC_FIELDLOV9}" filterBy="#{d.numericfield9}" filterMatchMode="contains" style="width:7%;">
+													<h:outputText value="#{d.numericfield9}" />
+												</p:column>
+												
+												<p:column headerText="Edit" style="width:5%;">
+													<p:commandLink action="#{parameterDetailsBean.editRecord(d)}" update=":form" process="@this" rendered="#{d.renderEditButton}">
+														<p:graphicImage value="../images/edit.png" id="imgEdit" />
+														<p:tooltip for="imgEdit" value="#{msg['lbl.edit']}" />
+													</p:commandLink>
+												</p:column>
+												<p:column headerText="Activate / Deactivate" style="text-align:center !important;width:6%;" sortBy="#{d.dynamicLabelForActivateDeactivate}">
+													<p:commandLink action="#{parameterDetailsBean.removeRecord(d)}" value="#{d.dynamicLabelForActivateDeactivate}" style="float:left;margin-left:5px;margin-right:5px;color:blue !important; text-decoration:underline !important;" update=":form:mainPanel,:form:csp" immediate="true" process="@this" />
+												</p:column>
+											</p:dataTable>
+											
+											
+											<h:outputText id="mandatory1" value="If you change the Parameter Master datatable should be cleared." style="color:red; padding:13px !important; font-size:10px; font-weight:bold;" rendered="#{parameterDetailsBean.booRenderDataTable}" />
+											
+											<p:dialog id="dialog" header="Parameter Detail" showEffect="explode" widgetVar="documentDialog" modal="true" resizable="false"
+												style=" border:2px solid green !important; padding:0px !important;  color:green !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+												<p:outputPanel id="documentPanel">
+													<!-- <p:panelGrid columns="2" columnClasses="label,value" rendered="#{not empty parameterDetailsBean.selectedDocument}"> -->
+													<h:outputLabel for="name" value="Char Field1  :" />
+													<h:outputText id="name" value="#{parameterDetailsBean.selectedDocument.charfield1}" style="font-weight:bold" />
+													<h:outputLabel for="size" value="Char Field2  :" />
+													<h:outputText id="size" value="#{parameterDetailsBean.selectedDocument.charfield2}" style="font-weight:bold" />
+													<h:outputLabel for="type" value="Char Field3 :" />
+													<h:outputText id="type" value="#{parameterDetailsBean.selectedDocument.charfield3}" style="font-weight:bold" />
+													<!-- </p:panelGrid> -->
+												</p:outputPanel>
+											</p:dialog>
+										</p:panel>
+										<p:panel id="savePanel">
+											<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{parameterDetailsBean.booRenderDataTable}">
+												<p:commandButton value="Submit" action="#{parameterDetailsBean.saveToDataBase}" immediate="true" update="savePanel,headerPanel,dataTablePanel,mainPanel" style="margin-right:10px; " onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" />
+												<p:commandButton value="Exit" update="mainPanel" style="margin-right:10px; " immediate="true" action="#{parameterDetailsBean.clickOnExit}" />
+											</h:panelGroup>
+										</p:panel>
+										<pe:blockUI widgetVar="blockUIWidget">
+											<h:panelGrid columns="2">
+												<p:graphicImage value="../images/ajax_loader.gif" />
+												<h:outputText value="Please wait, data is being processed..." style="white-space: nowrap;" />
+											</h:panelGrid>
+										</pe:blockUI>
+										<p:panel styleClass="left_col">
+											<h:outputText id="mandatory" value=" #{msg['lbl.*filedsAreMandatory']}" style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+		<a id="goTop"/>
+</h:body>
+</html>

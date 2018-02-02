@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script src="../js/SigWeb.js" type="text/javascript"></script>
+	<script src="../js/digitalsignature.js"></script>
+	<script type="text/javascript">
+		//var baseUri = "http://localhost:47289/SigWeb/";
+		var baseUri = makeUri();
+		$(function(){
+		    /*
+		     * this swallows backspace keys on any non-input element.
+		     * stops backspace -> back
+		     */
+		    var rx = /INPUT|SELECT|TEXTAREA/i;
+
+		    $(document).bind("keydown keypress", function(e){
+		        if( e.which == 8 ){ // 8 == backspace
+		            if(!rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly ){
+		                e.preventDefault();
+		            }
+		        }
+		    });
+		});
+	</script>
+	<style>
+	.centeralign {
+    margin-left: auto;
+    margin-right: auto;
+    width: 6em
+}
+	</style>
+</h:head>
+
+<h:body onload="javascript:onClear()">
+
+	
+	
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+			<f:event listener="#{beneficaryTransactionBean.populateValue}" type="preRenderView"/>
+		<h:form id="form1" target="_blank">
+    
+
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;">
+						<!-- <ui:include src="../common/common_menu.xhtml"></ui:include> -->
+						<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+					</td>
+
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle"
+										src="../images/toggle_plus.png" alt=""
+										onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+
+
+								<p:dialog id="invalidNoOFNotes" widgetVar="invalidNoOFNotes" width="400" height="30" resizable="false" style=" border:3px solid #F33535 !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 43px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true" >
+            											
+            											<p:outputLabel style="padding-left:20px;" value="#{msg['lbl.enternoofnoteswithincurrentstock']} : #{beneficaryTransactionBean.validNoOFQuantity} !!!!!"/>
+        					</p:dialog>
+        					
+        					<p:dialog id="complete" widgetVar="complete"  showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 345px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+            											
+            											<p:outputLabel value="FC Sale Saved Successfully"/><br/>
+            								
+            											<p:commandButton value="ok" actionListener="#{beneficaryTransactionBean.completed}" process="@this"/>          
+        </p:dialog> 
+
+							<h1>
+								<h:outputText value="Beneficary Transactions" />
+							</h1>
+								<p:panel styleClass="shadow" id="mainPanel" >
+							
+							
+							
+										
+										<p:panel rendered="#{beneficaryTransactionBean.booRenderFcSalePanel}" >
+										
+										<h2>
+											<h:outputText value="#{msg['lbl.foreignCurrencySale']}" />
+										</h2>
+										<p:panel styleClass="panel_border">
+											<p:panel styleClass="left_col">
+
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['lbl.receiptNo']}*"></h:outputText>
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:panelGrid style="width:100%;">
+												<p:row>
+
+													<p:column
+														style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+														<p:inputText id="financeYear"
+															value="#{beneficaryTransactionBean.finaceYear}"
+															required="true" requiredMessage="Enter Financial Year"
+															readonly="true">
+															<p:ajax event="blur" update="msgfinanceYear" />
+															<p:message for="financeYear" display="text"
+																id="msgfinanceYear" />
+														</p:inputText>
+													</p:column>
+													<p:column
+														style="width:70%; padding:0px 5px 0px 10px !important;">
+														<p:inputText id="documentSerialId"
+															value="#{beneficaryTransactionBean.documentSerialId}"
+															required="true"
+															requiredMessage="Enter Document Serial ID"
+															readonly="true">
+															<p:ajax event="blur" update="msgdocumentSerialId" />
+															<p:message for="documentSerialId" display="text"
+																id="msgdocumentSerialId" />
+														</p:inputText>
+													</p:column>
+												</p:row>
+											</p:panelGrid>
+										</p:panel>
+
+
+									</p:panel>
+
+									<p:panel styleClass="left_col">
+
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['lbl.date']}*"></h:outputText>
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputText id="currentDate" value="#{currentDate}"
+												readonly="true" size="8" required="true"
+												requiredMessage="Enter Current Date">
+												<p:ajax event="blur" update="msgcurrentDate" />
+												<p:message for="currentDate" display="text"
+													id="msgcurrentDate" />
+												<f:convertDateTime pattern="dd-MM-yyyy" type="date" />
+											</p:inputText>
+										</p:panel>
+
+									</p:panel>
+									
+									<h:panelGroup layout="block" class="clearfix" />
+
+									<p:panel styleClass="left_col">
+
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['lbl.location']}*"></h:outputText>
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{beneficaryTransactionBean.location}"
+												style="font-size:11px !important;" readonly="true" />
+										</p:panel>
+
+
+									</p:panel>
+
+
+								
+									<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['lbl.customerName']}"></h:outputText>
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputText id="name"
+												value="#{beneficaryTransactionBean.name}" readonly="true">
+												<p:tooltip for="name" value="#{msg['lbl.customername']}" />
+											</p:inputText>
+										</p:panel>
+
+									</p:panel>
+									
+									
+									<div class="clearfix"></div>
+
+										<h:panelGroup layout="block" styleClass="shadow_button">
+
+											
+											<p:commandButton value="#{msg['lbl.back']}" style="margin-left:10px;" process="@this"
+												action="#{beneficaryTransactionBean.backToRemitanceFirstPanel}" immediate="true" update="mainPanel"/>
+											<div class="clearfix"></div>
+										</h:panelGroup>
+									
+									
+									<h:panelGroup layout="block" class="clearfix" />
+
+
+	
+	</p:panel>
+	
+	</p:panel>
+	</p:panel>
+</h:panelGroup>
+							<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+						</h:panelGroup></td>
+				</tr>
+			</table>
+		</h:form>
+		<div class="clearfix"></div>
+	<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

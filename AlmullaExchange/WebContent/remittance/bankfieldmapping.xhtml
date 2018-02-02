@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	  <link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+</h:head>
+<p:confirmDialog id="remarksEmpty" widgetVar="remarksEmpty" width="400" height="17" resizable="false" style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+					showEffect="clip" header="#{msg['lbl.warningDailog']}" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.remarksShouldNotBeEmpty']}" >
+				</p:confirmDialog>	
+<p:confirmDialog id="datatable"
+										widgetVar="datatable" width="400" 
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="#{msg['lbl.recrdAlreadyExisted']}">
+									</p:confirmDialog>
+<p:dialog id="notSaved" widgetVar="notSaved" width="400" height="80" resizable="false" style="background-color: white !important;" styleClass="warning" header="#{msg['lbl.warningDailog']}" closable="false" showEffect="clip" hideEffect="clip">
+<p:outputLabel value="#{msg['lbl.dataNotSavedWhileSavingTimeExceptionOccured']}" style="text-align: center; font-size:15px !important;"  /><br />
+<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{bankFieldMappingBean.bankFieldMappingNotSaved}" style="margin-left: 150px !important;" process="@this"/>          
+</p:dialog>
+<p:confirmDialog id="noRecords" widgetVar="noRecords"
+										width="300"  resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="#{msg['lbl.noRecordFound']}">
+										</p:confirmDialog>
+<p:dialog id="approve" widgetVar="approve" width="400" height="80"
+		resizable="false" style="background-color: white !important;"
+		styleClass="success" header="#{msg['lbl.success']}" closable="false"
+		showEffect="clip" hideEffect="clip">
+		<p:outputLabel value="#{msg['lbl.approvedsuccessfully']}"
+			style="text-align: center; font-size:15px !important;" />
+		<br />
+		<p:commandButton value="#{msg['lbl.ok']}"
+			actionListener="#{bankFieldMappingBean.clickOnOKApprove}"
+			process="@this" style="margin-left: 150px !important;" />
+	</p:dialog>	
+	<p:dialog id="alreadyapprov" widgetVar="alreadyapprov" width="310" height="70" showHeader="false" resizable="false" style=" border:2px solid green !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+                      showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"  >
+            <p:outputLabel value="#{msg['lbl.thisrecordalreadyapprovedby']}"/><br/>
+            <p:spacer width="15px" />
+            <p:commandButton value="#{msg['lbl.ok']}" actionListener="#{bankFieldMappingBean.bankFieldMappingApprovedByOhterPerson}" process="@this"/>          
+</p:dialog>																			
+<h:body> 
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+							<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+						</td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+								<h:form id="form">
+							<h1>
+								<h:outputText value="#{msg['lbl.bankFieldMapping']}" />
+							</h1>
+							<p:panel styleClass="shadow" id="mainPanel">
+							
+							<p:dialog id="complete" widgetVar="complete" width="400"
+										height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="success" header="#{msg['lbl.success']}" closable="false"
+										showEffect="clip" hideEffect="clip">
+										<p:outputLabel
+											value="#{msg['lbl.recordsSuccessfullySaved']}  "
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{bankFieldMappingBean.clickOnOKSave}"
+											process="@this" style="margin-left: 150px !important;" />
+									</p:dialog>
+									<p:dialog id="pending" widgetVar="pending"
+										width="400" height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.warningDailog']}" closable="false"
+										showEffect="clip" hideEffect="clip">
+										<p:outputLabel
+											value="#{msg['lbl.plsApproveRecord']}"
+											 style="text-align: center; font-size:15px !important;"  />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											onclick="PF('pending').hide();" immediate="true"
+											style="margin-left: 150px !important;" />
+									</p:dialog>
+<p:dialog id="permanentDelete" widgetVar="permanentDelete" width="400" height="80" resizable="false" style="background-color: white !important;" styleClass="warning" header="#{msg['lbl.deleteRecrd']}" closable="false" showEffect="clip" hideEffect="clip">
+<p:outputLabel value="#{msg['lbl.douWantDeleteRecordPermentely']}" style="text-align: center; font-size:15px !important;" /><br />
+<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{bankFieldMappingBean.bankFieldMappingConformDelete}" process="@this" oncomplete="PF('permanentDelete').hide();" update="mainPanel" style="margin-left: 150px !important;" />
+<p:commandButton value="#{msg['lbl.cancel']}" onclick="PF('permanentDelete').hide();" immediate="true" style="margin-left:10px;" />
+</p:dialog>		
+<p:dialog id="activateRecord" widgetVar="activateRecord" width="400" height="80" resizable="false" style="background-color: white !important;" styleClass="warning" header="#{msg['lbl.activateRecrd']}" closable="false" showEffect="clip" hideEffect="clip">
+					<p:outputLabel value="#{msg['lbl.doyouactivaterecord']}" style="text-align: center; font-size:15px !important;" /><br />
+					<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{bankFieldMappingBean.activateRecord}" process="@this" oncomplete="PF('activateRecord').hide();" update="mainPanel" style="margin-left: 150px !important;" />
+					<p:commandButton value="#{msg['lbl.cancel']}" onclick="PF('activateRecord').hide();" immediate="true" style="margin-left:10px;" />
+			</p:dialog>								
+							<h2>
+											<h:outputText value="#{msg['lbl.bankFieldMapping']}" />
+										</h2>
+	<p:confirmDialog id="csp" widgetVar="csp" width="500"
+														showHeader="false" resizable="false"
+														header="Warning Message" styleClass="warning"
+														style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+														showEffect="explode" hideEffect="explode"
+														message="#{bankFieldMappingBean.errmsg}">
+													</p:confirmDialog>									
+		<p:dialog id="remarks" widgetVar="remarks" width="480" resizable="false" style="background-color: white !important;" styleClass="info" header="Remarks" closable="false" showEffect="clip" hideEffect="clip">
+                             		<p:panel>
+                             		<table>
+                             		<tr>
+                             		<td> <h:outputText value="#{msg['lbl.approvedDate']}" /></td>
+                             		<td><h:outputText value="#{bankFieldMappingBean.approvedDate}" style="color:red !important;"/> </td>
+                             		</tr>
+                             		<tr>
+                             		<td> <h:outputText value="#{msg['lbl.approvedBy']}" /> </td>
+                             		<td>	<h:outputText  value="#{bankFieldMappingBean.approvedBy}"  style="color:red !important;"/> </td>
+                             		</tr>
+                             		</table>
+                             		</p:panel>
+                             		<p:spacer height="10px"/>
+                             		<p:panel>
+                             		<h:outputText value="#{msg['lbl.enterremarks']}" /><h:outputText value="*" style="color:red !important;" />
+                             		</p:panel>
+                             		<p:spacer height="5px"/>
+                             		<p:panel>
+                             		<h:inputTextarea id="remarksId" value="#{bankFieldMappingBean.remarks}" validatorMessage="Maximum 255 charectors allowed" >
+                                           <f:validateLength maximum="255"/>
+                                            <p:ajax/>
+                                     </h:inputTextarea>
+                                    </p:panel>
+                                    <p:spacer height="5px"/>
+                                   	<p:panel style="padding-left:160px;">
+                                        <p:commandButton value="#{msg['lbl.ok']}" actionListener="#{bankFieldMappingBean.clickOkRemarks}" process="@this" /> 
+            							<p:commandButton value="#{msg['lbl.cancel']}" actionListener="#{bankFieldMappingBean.cancelRemarks}" process="@this"/> 
+                             </p:panel>
+                               </p:dialog>
+								<p:panel styleClass="panel_border">
+								
+									<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.TableName']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgtablenameid" for="tablenameid" display="text" />
+														<p:selectOneMenu id="tablenameid" value="#{bankFieldMappingBean.tableName}" filterMatchMode="startsWith" filter="true" required="true" requiredMessage="Please Enter Table name" disabled="#{bankFieldMappingBean.booRead}">
+														<f:selectItem itemLabel="#{msg['lbl.pleaseSelectTableName']}" itemValue="" />
+														<f:selectItems value="#{bankFieldMappingBean.lstDatabaseObjects }" var="c" itemLabel="#{c.objectName}" itemValue="#{c.objectName}"  />
+														<p:ajax event="change" update="msgtablenameid,tablefieldid" listener="#{bankFieldMappingBean.populateCoulumnName}" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+												
+										<p:panel styleClass="right_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.fieldname']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+												<p:panel styleClass="inner_right_col">
+														<p:message id="msgtablefieldid" for="tablefieldid" display="text" />
+														<p:selectOneMenu id="tablefieldid" value="#{bankFieldMappingBean.fieldName}" filterMatchMode="startsWith" filter="true"  required="true" requiredMessage="Please Enter Field Name" disabled="#{bankFieldMappingBean.booRead}">
+														<f:selectItem itemLabel="#{msg['lbl.pleaseSelectFieldName']}" itemValue="" />
+														<f:selectItems value="#{bankFieldMappingBean.lstTablecolumns}" var="c" itemLabel="#{c.columnName}" itemValue="#{c.columnName}"  />
+														<p:ajax event="change" update="msgtablefieldid,fieldValueId" listener="#{bankFieldMappingBean.populateFiledValue}" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+													</p:panel>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix"/>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.fieldValue']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgFieldValue" for="fieldValueId" display="text" />
+											<p:inputTextarea id="fieldValueId" value="#{bankFieldMappingBean.fieldvalue}" required="true" requiredMessage="Please Select Field Value" readonly="true" style="height:30px !important;" maxlength="100">
+												<p:ajax event="blur" update="msgFieldValue"/>
+											</p:inputTextarea>
+											<!-- <p:inputText id="fieldValueId" value="#{bankFieldMappingBean.fieldvalue}" required="true" requiredMessage="Please Select Field Value">
+											<p:ajax event="blur" update="msgFieldValue"/>
+											</p:inputText> -->
+											</p:panel>
+										</p:panel>
+									<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.additionalBankRule']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgAdditionalBankRule" for="additionalBankRuleId" display="text" />
+											<p:selectOneMenu id="additionalBankRuleId" value="#{bankFieldMappingBean.additionalBankRuleId}" filterMatchMode="startsWith" filter="true"  required="true" requiredMessage="Please Select Additional Bank Rule" disabled="#{bankFieldMappingBean.booRead}">
+														<f:selectItem itemLabel="#{msg['lbl.pleaseSelectAdditionalBankRule']}" itemValue="" />
+														<f:selectItems value="#{bankFieldMappingBean.lstAdditionalBankRuleMap}" var="c" itemLabel="#{c.fieldName}" itemValue="#{c.additionalBankRuleId}"  />
+														<p:ajax event="change" update="msgAdditionalBankRule" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+								
+										<h:panelGroup layout="block" class="clearfix"/>
+										<p:panel styleClass="right_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bank']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+														<p:message id="banknammsg" for="bankname" display="text" />
+														<p:selectOneMenu id="bankname" value="#{bankFieldMappingBean.bankId}" filterMatchMode="startsWith" filter="true"  required="true" requiredMessage="Please Enter Bank Name" disabled="#{bankFieldMappingBean.booRead}">
+														<f:selectItem itemLabel="#{msg['lbl.bank.pleaseSelectBank']}" itemValue="" />
+														<f:selectItems value="#{bankFieldMappingBean.bankList}" var="c" itemLabel="#{c.bankFullName}" itemValue="#{c.bankId}"  />
+														<p:ajax event="change" update="banknammsg"  onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+													</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bankValue']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgBankValue" for="bankValueId" display="text" />
+												<p:inputTextarea id="bankValueId" value="#{bankFieldMappingBean.bankValue}" required="true" requiredMessage="Please Select Bank Value" style="height:30px !important;" maxlength="100" validatorMessage="Please Enter English Language" readonly="#{bankFieldMappingBean.booRead}">
+											<f:validateRegex pattern="[a-zA-Z ]+"/>
+												<p:ajax event="blur" listener="#{bankFieldMappingBean.disableSubmit}"  update="msgBankValue"/>
+											</p:inputTextarea>
+											<!-- <p:inputText id="bankValueId" value="#{bankFieldMappingBean.bankValue}" required="true" requiredMessage="Please Select Bank Value">
+											<p:ajax event="blur" update="msgBankValue"/>
+											</p:inputText> -->
+											</p:panel>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix"/>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bankValueDescription']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgBankValueDesc" for="bankValueDescId" display="text" />
+												<p:inputTextarea id="bankValueDescId" value="#{bankFieldMappingBean.bankValueDesc}" required="true" requiredMessage="Please Select Bank Value Description" style="height:30px !important;" maxlength="60" validatorMessage="Please Enter English Language" readonly="#{bankFieldMappingBean.booRead}" >
+											<f:validateRegex pattern="[a-zA-Z ]+"/>
+												<p:ajax event="blur" update="msgBankValueDesc"  listener="#{bankFieldMappingBean.disableSubmit}" />
+											</p:inputTextarea>
+											<!-- <p:inputText value="#{bankFieldMappingBean.bankValueDesc}"/> -->
+											</p:panel>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix"/>
+												<p:panel styleClass="left_col" >
+										<h:outputText  id="mandatory" value=" #{msg['lbl.*filedsAreMandatory']}"  style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										<h:panelGroup layout="block" class="clearfix"/>
+										<h:outputText value="#{msg['lbl.arbicLanguaue']}"
+											style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix"/>
+										<p:spacer height="10px"/>
+											<h:panelGroup layout="block" styleClass="shadow_button" id="booClearPanel" rendered="#{bankFieldMappingBean.booAdd}" >						
+										<p:commandButton value="#{msg['lbl.add']}" action="#{bankFieldMappingBean.duplicateChekingBankFieldMapping}" style="margin-right:10px;" update="mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+										<p:commandButton value="#{msg['lbl.view']}" action="#{bankFieldMappingBean.viewAllBankFieldMapping}" style="margin-right:10px;" disabled="#{bankFieldMappingBean.booClearPanel}" update="mainPanel" process="@this" onstart="process.show();" onsuccess="process.hide();" />
+										<p:commandButton value="#{msg['lbl.clear']}" action="#{bankFieldMappingBean.clear}" style="margin-right:10px;" disabled="#{bankFieldMappingBean.booClearPanel}" immediate="true" process="@this" update="mainPanel" onstart="process.show();" onsuccess="process.hide();" /> 
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+									<h:panelGroup layout="block" class="clearfix"/>
+									<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{bankFieldMappingBean.booApproval}">						
+										<p:commandButton value="#{msg['lbl.approve']}" action="#{bankFieldMappingBean.bankFieldMappingApproveRecord}" style="margin-right:10px;" process="@this" immediate="true"/>
+										<p:commandButton value="#{msg['lbl.cancel']}" action="#{bankFieldMappingBean.bankFieldMappingCancel}" style="margin-right:10px;" update="mainPanel" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+									<h:panelGroup layout="block" class="clearfix"/>
+									<p:panel id="dataPanel">
+									<p:dataTable id="dataTable" styleClass="mydatatableclass" value="#{bankFieldMappingBean.lstBankFieldMappingDataTable}" 
+									rows="10" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="5,10,15" var="d" 
+									rowIndexVar="rowIndex" emptyMessage="#{msg['lbl.noRecordFound']}" paginatorPosition="bottom" rendered="#{bankFieldMappingBean.booRenderDataTable}" >
+									<p:column headerText="#{msg['lbl.sino']}" style="width:30px;">
+											<h:outputText value="#{rowIndex+1}" />
+										</p:column>
+
+												<p:column headerText="#{msg['lbl.TableName']}">
+													<h:outputText value="#{d.tableName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.fieldname']}">
+													<h:outputText value="#{d.fieldName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.fieldValue']}">
+													<h:outputText value="#{d.fieldvalue}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.additionalBankRule']}">
+													<h:outputText value="#{d.additionalBankRuleName}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.bankName']}">
+													<h:outputText value="#{d.bankName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.bankValue']}">
+													<h:outputText value="#{d.bankValue}" />
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.bankValueDescription']}">
+													<h:outputText value="#{d.bankValueDesc}" />
+												</p:column>
+												
+
+												<p:column headerText="#{msg['lbl.edit']}">
+											<p:commandButton id="imgEdit" styleClass="edit" value="" action="#{bankFieldMappingBean.edit(d)}" disabled="#{bankFieldMappingBean.booEditButton}" update="dataTable,:form:mainPanel" onstart="process.show();" onsuccess="process.hide();" process="@this"/>
+										</p:column> 
+										
+										<p:column headerText="#{msg['lbl.active/deactive']}" style="text-align:center !important;">
+			                              <p:commandLink action="#{bankFieldMappingBean.checkStatus(d)}" value="#{d.dynamicLabelForActivateDeactivate}" style="color:blue !important; text-decoration:underline !important;" update=":form:mainPanel,dataTable" onstart="process.show();" onsuccess="process.hide();" immediate="true" process="@this" />
+		                                 </p:column>  
+									</p:dataTable>
+									</p:panel>
+<h:panelGroup layout="block" class="clearfix"/>
+<p:spacer height="10px"/>
+									<h:panelGroup layout="block" class="clearfix"/>
+									<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{bankFieldMappingBean.booSaveOrExit}" id="booSubmitPanel">						
+										<p:commandButton id="submitPanel" value="#{msg['lbl.submit']}" action="#{bankFieldMappingBean.saveAllBankFieldMapping}" disabled="#{bankFieldMappingBean.booSubmitPanel}" immediate="true" update="mainPanel" style="margin-right:10px;" onstart="process.show();" onsuccess="process.hide();" />
+										<p:commandButton value="#{msg['lbl.exit']}"  style="margin-right:10px;" action="#{bankFieldMappingBean.exit}" process="@this" immediate="true" onstart="process.show();" onsuccess="process.hide();" />
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+									<h:panelGroup layout="block" class="clearfix"/>
+									<p:dialog modal="true" showHeader="false" widgetVar="process" id="process" width="300" height="60" resizable="false" draggable="false" closable="false"
+style=" border: 2px green solid !important;background-color: #FFF !important;">
+<div style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important; ">
+<p:graphicImage value="../images/processImg.gif" style="float: left !important; margin-right: 24px !important; "/>
+<p:outputLabel value="Please wait ........" style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" /></div>
+</p:dialog>		
+								</p:panel>
+								<h:panelGroup layout="block" class="clearfix"/>
+								</p:panel>
+								</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"/>
+					</h:panelGroup>
+					<h:panelGroup layout="block" class="clearfix"/>
+					</td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

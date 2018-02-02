@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+</h:head>
+
+<h:body> 
+
+	<f:view>
+	
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		
+		 <p:confirmDialog id="noFileUploded" widgetVar="noFileUploded" width="400"  resizable="false" 
+      style="background-color: white !important;" header="Warning Dailog" styleClass="warning"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="#{msg['lbl.pleaseUploadExcelFile']}">
+      </p:confirmDialog>
+      
+       <p:confirmDialog id="changeFile" widgetVar="changeFile"  width="400"  resizable="false" 
+      style="background-color: white !important;" header="Warning Dailog" styleClass="warning"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="#{msg['lbl.pleaseUploadBankAccTypeExcelFile']}">
+      </p:confirmDialog>
+
+   
+
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+							<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+						</td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+								<h:form id="accountType">
+									
+										<h1>
+								<h:outputText value="#{msg['lbl.BankAccTypeFileUpload']}" />
+							</h1>
+							
+							<p:confirmDialog id="imageupload" widgetVar="imageUpload"
+													width="300" height="20" resizable="false" style="background-color: white !important;"
+													styleClass="success" header="Success" message="#{msg['lbl.imageSuccessFullyUploaded']}"
+													showEffect="drop" hideEffect="explode" closeOnEscape="true"
+													closable="true" >
+							</p:confirmDialog>
+							<p:panel styleClass="shadow" id="mainPanel">
+
+									<p:dialog id="fileUploadSave" widgetVar="fileUploadSave"
+										width="400" height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="success" header="Success" closable="false"
+										showEffect="clip" hideEffect="clip">
+										<p:outputLabel
+											value=" #{bankAccountTypeBean.countNoOfSave}  #{msg['lbl.recrdSavedSuccessfully']}"
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{bankAccountTypeBean.navigateToFileUploadPage}"
+											process="@this" style="margin-left: 150px !important;" />
+									</p:dialog>
+
+
+									<h2>
+											<h:outputText value="#{msg['lbl.BankAccTypeFileUpload']}" />
+											<p:commandLink action="#{bankAccountTypeBean.gotoBack}"
+														 process="@this">
+														<p:graphicImage value="../images/return.jpg" width="25" height="25" id="imgEdit" styleClass="icon_right" style="float:right;" />
+														<p:tooltip for="imgEdit" value="Back" style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;"/>
+													</p:commandLink>
+									</h2>
+							
+							
+							<p:panel styleClass="panel_border" >
+								
+									
+									<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.fileUploaded']}" /><h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+													<p:fileUpload id="fileUplod"  
+													mode="advanced" fileUploadListener="#{bankAccountTypeBean.exportExcel}"
+													fileLimit="1" fileLimitMessage="one File is Allowed"
+													update="messages"
+													label="Choose a file"
+													sizeLimit="50485762222"
+													allowTypes="/(\.|\/)(xls|xlsx)$/"
+													required="true"
+													requiredMessage="Upload a File"
+													invalidSizeMessage="The maximum file size allowed is 1 Megabyte !"
+													invalidFileMessage="You are allowed to upload only XLS and XLSX !" oncomplete="PF('imageUpload').show()">
+											<p:message id="messages" for="fileUplod" value="File Not Selected" style="color:red;" />
+										</p:fileUpload>
+											</p:panel>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix"/>
+										
+										
+										<h:panelGroup layout="block" styleClass="shadow_button">
+										<p:commandButton value="#{msg['lbl.save']}" action="#{bankAccountTypeBean.uploadtoDatatable}" update=":accountType:mainPanel"/>		
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+									
+									<p:spacer height="20px"/>
+    <h:panelGroup layout="block" class="clearfix"/>
+    
+										<p:dataTable sortMode="multiple"
+											value="#{bankAccountTypeBean.bankAccountTypeList}" var="c"
+											rows="10" rendered="#{bankAccountTypeBean.renderDataTable}"
+											rowIndexVar="rowIndex"
+											styleClass="mydatatableclass" 
+											emptyMessage="#{msg['lbl.noRecordFound']}"
+											paginatorPosition="bottom" paginator="true"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="5,10,15">
+
+											<p:column headerText="#{msg['lbl.sNo']}" style="width:30px;">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.accountTypeCode']}">
+												<h:outputText value="#{c.accountTypeCode}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.accTypeDescLocal']}">
+												<h:outputText value="#{c.accountTypeDescLocal}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.accTypeDesc']}">
+												<h:outputText value="#{c.accountTypeDesc}" />
+											</p:column>
+
+
+											<p:column headerText="#{msg['lbl.enqStatus']}"
+												style="text-align:center !important;">
+												<p:commandLink value="#{c.statusCheck}" />
+											</p:column>
+										</p:dataTable>
+										<p:spacer height="20px"/>
+    <h:panelGroup layout="block" class="clearfix"/>
+											<h:panelGroup layout="block" styleClass="shadow_button"  rendered="#{bankAccountTypeBean.renderSaveButton}">
+										<p:commandButton value="#{msg['lbl.submit']}" style="margin-right:10px; " action="#{bankAccountTypeBean.savefileUploadRecords}"  immediate="true" update="mainPanel"/>		
+										<p:commandButton value="#{msg['lbl.exit']}"  action="#{bankAccountTypeBean.exit}" immediate="true"/>
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+									
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix"/>
+								</p:panel>
+								</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"/>
+					</h:panelGroup>
+					<h:panelGroup layout="block" class="clearfix"/>
+					</td>
+			</tr>
+		</table>
+		
+		<ui:include src="#{facesBean.footer}"></ui:include>
+		
+	</f:view>
+</h:body>
+</html>

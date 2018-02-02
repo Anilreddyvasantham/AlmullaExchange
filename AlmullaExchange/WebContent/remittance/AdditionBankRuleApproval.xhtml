@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<style type="text/css">
+.ui-confirm-dialog-message {
+	color: #007f30 !important;
+}
+
+.ui-icon-alert {
+	background-image: none !important;
+}
+</style>
+<script type="text/javascript">
+		var baseUri = "http://localhost:47289/SigWeb/";		
+		document.onkeydown = function(e) {
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+
+		 history.pushState(null, null, 'AdditionBankRuleApproval.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'AdditionBankRuleApproval.xhtml');
+		    });
+	</script>
+</h:head>
+<p:confirmDialog id="notApproved" widgetVar="notApproved" width="370"
+	styleClass="red" showHeader="false" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip"
+	message="#{msg['lbl.sameusernotabletoapprove']}">
+</p:confirmDialog>
+
+<p:confirmDialog id="notrecordfound" widgetVar="notrecordfound"  
+	styleClass="red" showHeader="false" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip"
+	message="#{msg['lbl.norecordfound']}">
+</p:confirmDialog>
+
+
+<p:confirmDialog id="pleaseselect" widgetVar="pleaseselect" width="370"
+	styleClass="red" showHeader="false" resizable="false"
+	style=" border:2px black !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip"
+	message="Please Select Country,Flexfield and Bank">
+</p:confirmDialog>
+
+
+
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<h:form id="approveForm">
+		
+		
+		
+		<p:dialog id="approved" widgetVar="approved" width="370" height="100"
+			showHeader="false" resizable="false"
+			style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+			showEffect="clip" hideEffect="clip" closeOnEscape="true"
+			closable="true" modal="true" >
+			<p:outputLabel value="#{msg['lbl.approvedsuccessfully']}" />
+			<p:outputLabel value="No Of Records Approved : #{additionBankRuleApprovalBean.noOfRecordsApproved}"   />
+ 
+			<br />
+			<p:spacer width="15px" />
+			<p:commandButton value="#{msg['lbl.ok']}"
+				actionListener="#{additionBankRuleApprovalBean.navigateToAdditionBankRuleApprovalPage}"
+				process="@this" />
+         </p:dialog>
+
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;">
+						<!-- <ui:include src="../common/fxdeal_menu.xhtml"></ui:include> -->
+						<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+					</td>
+
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle"
+										src="../images/toggle_plus.png" alt=""
+										onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+								<h1>
+									<h:outputText value="#{msg['lbl.additionalbankruleapproval']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="Please wait ........"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+
+
+
+									<h2>
+										<h:outputText value="#{msg['lbl.additionalbankruleapproval']}" />
+										<p:commandLink action="#{bankBranchDetails.cancel}"
+											process="@this">
+											<p:graphicImage value="../images/return.jpg" width="25"
+												height="25" id="imgEdit" styleClass="icon_right"
+												style="float:right;" />
+											<p:tooltip for="imgEdit" value="Go to Home" />
+										</p:commandLink>
+									</h2>
+									
+								 
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.country']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col"
+												 >
+												<p:message for="nationality" display="text" id="msgcountryId" />
+												<p:selectOneMenu value="#{additionBankRuleApprovalBean.countryId}"
+													filter="true" filterMatchMode="contains" id="nationality"
+													label="nationality" style="width:185px;text-align:left;"
+													required="true" requiredMessage="Please Select Country">
+													<f:selectItem itemLabel="#{msg['lbl.selectcountry']}"
+														itemValue="" />
+													<f:selectItems value="#{additionBankRuleApprovalBean.countryList}"
+														var="c" itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+														itemValue="#{c.fsCountryMaster.countryId}" />
+													<p:ajax update="flexfield,bankId" event="change" listener="#{additionBankRuleApprovalBean.fetchAllFlexFields}"  onstart="process.show();" onsuccess="process.hide();"/>
+
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.flexField']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col"
+												 >
+												<p:message for="flexfield" display="text" />
+												<p:selectOneMenu value="#{additionBankRuleApprovalBean.flexField}"
+													filter="true" filterMatchMode="contains" id="flexfield"
+													label="flexfield" style="width:185px;text-align:left;"
+													required="true" requiredMessage="please select flex field">
+													<f:selectItem itemLabel="#{msg['lbl.selectFlex']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{additionBankRuleApprovalBean.lstflexfieldsfromview}"
+														var="c" itemLabel="#{c.flexField}"
+														itemValue="#{c.flexField}" />
+													<p:ajax event="change" 	onstart="process.show();" onsuccess="process.hide();"/>
+
+												</p:selectOneMenu>
+											</p:panel>
+											</p:panel>
+											
+																	
+											
+											
+											<p:panel styleClass="left_col" id="pnlBank">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bank']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col"
+												 >
+												<p:message for="bankId" display="text" />
+												<p:selectOneMenu id="bankId"
+													value="#{additionBankRuleApprovalBean.bankId}" filter="true"
+													filterMatchMode="contains" required="true"
+													requiredMessage="Please Select Bank">
+													<f:selectItem itemLabel="#{msg['lbl.selectbank']}"
+														itemValue="" />
+													<f:selectItems value="#{additionBankRuleApprovalBean.bankList}"
+														var="c"
+														itemLabel="#{c.bankMaster.bankCode} - #{c.bankMaster.bankFullName}"
+														itemValue="#{c.bankMaster.bankId}" />
+													<p:ajax event="change"
+														 
+														   onstart="process.show();" onsuccess="process.hide();"/>
+												</p:selectOneMenu>
+											</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+									
+											<h:panelGroup layout="block" styleClass="shadow_button" >
+											
+											<p:commandButton value="#{msg['lbl.search']}" update="dataTab" action="#{additionBankRuleApprovalBean.search}" process="@this"  style="margin-right:10px;"  onstart="process.show();" onsuccess="process.hide();"  />
+																															
+											</h:panelGroup>
+									
+									
+
+
+									<p:panel styleClass="panel_border">
+										<p:dataTable var="c" rowIndexVar="rowIndex" id="dataTab"
+										styleClass="mydatatableclass"
+											paginatorPosition="bottom" rows="10" paginator="true"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="5,10,15"
+											value="#{additionBankRuleApprovalBean.addtionBankRuledataTableList}"
+											emptyMessage="#{msg['lbl.norecordfound']}">
+
+											<p:column headerText="#{msg['lbl.slNo']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.country']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.countryName}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.bank']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.bankName}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.flexField']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.flexField}" />
+											</p:column>
+
+
+											<p:column headerText="#{msg['lbl.bankCode']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.additionalData}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.bankdescription']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.additionalDescription}" />
+											</p:column>
+
+											<!-- <p:column headerText="#{msg['lbl.approve']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<p:commandLink
+													action="#{additionBankRuleApprovalBean.approveAMIECBank(c)}"
+													style="color:blue !important; text-decoration:underline !important;"
+													process="@this">
+													<p:graphicImage value="../images/approve.jpg" width="25"
+														height="25" id="imgEdit" />
+													<p:tooltip for="imgEdit" value="#{msg['lbl.approve']}" />
+												</p:commandLink>
+											</p:column> -->
+
+										</p:dataTable>
+										<div class="clearfix"></div>
+									</p:panel>
+
+			<h:panelGroup layout="block" styleClass="shadow_button" >
+											
+				<p:commandButton value="#{msg['lbl.approve']}" update="approved"   action="#{additionBankRuleApprovalBean.approve}"   process="@this"  style="margin-right:10px;"  onstart="process.show();" onsuccess="process.hide();"  />
+																																
+				</h:panelGroup>
+
+								</p:panel>
+								<div class="clearfix"></div>
+							</h:panelGroup>
+						</h:panelGroup></td>
+				</tr>
+				
+			</table>
+			
+		
+			
+			
+			
+		</h:form>
+		
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

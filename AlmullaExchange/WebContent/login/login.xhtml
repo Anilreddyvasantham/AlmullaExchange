@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript">
+		var baseUri = makeUri();
+		history.pushState(null, null, 'loginProcess.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'loginProcess.xhtml');
+		});
+
+		$(document).ready(function() {
+			$(window).scroll(function() {
+				if ($(this).scrollTop() > 100) {
+					$('#goTop').stop().animate({
+						bottom : '30px'
+					}, 300);
+				} else {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				}
+			});
+			$('#goTop').click(function() {
+				$('html, body').stop().animate({
+					scrollTop : 0
+				}, 500, function() {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				});
+			});
+		});
+	</script>
+	<style>
+.centeralign {
+	margin-left: auto;
+	margin-right: auto;
+	width: 6em
+}
+
+.ui-datatable .ui-state-highlight {
+	background-color: red;
+}
+</style>
+</h:head>
+
+<h:body dir="#{facesBean.direction}" scroll="no">
+
+	<f:view locale="#{facesBean.locale}">
+
+		<f:event listener="#{facesBean.userSessionCheck}" type="preRenderView" />
+		<ui:include src="../common/loginheader.xhtml"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<h:form id="form1"
+								onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'text') return false;}">
+
+								<h1>
+									<h:outputText value="Login Process (BRANCH REMITTANCE) " />
+								</h1>
+
+								<p:panel id="mainPanel" styleClass="shadow"
+									style="margin: 20px 10px !important; background-color:#FFF !important;">
+
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{loginBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="alertmsg" widgetVar="alertmsg"
+										header="Alert Message" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" showEffect="clip" hideEffect="clip"
+										closeOnEscape="true" closable="true"
+										message="#{loginBean.errorMessage}">
+									</p:confirmDialog>
+
+									<p:dialog id="dldInserCard" widgetVar="dldInserCard"
+										width="200" showHeader="false" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel value="#{msg['lbl.insertsmartcard']}" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											oncomplete="dldInserCard.hide()" process="@this" />
+									</p:dialog>
+
+									<p:panel style="padding:50px 100px 50px 100px !important;">
+										<fieldset
+											style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+											<legend
+												style="font-size: 15px; font-weight: bold; color: #037712;"
+												align="top">&nbsp;LOGIN&nbsp;</legend>
+
+											<p:growl id="growl" globalOnly="true" />
+
+											<p:panel styleClass="left_col" id="systemId" rendered="#{loginBean.booRenderUserDetails}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.employeeid']}"></h:outputText>
+													<h:outputText value=" *" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:200%;">
+														<p:row>
+															<p:message for="id" display="text" id="msgid" />
+															<p:column
+																style="width:50%; text-align:left; padding:0px 30px 0px 0px !important;">
+
+																<p:inputText id="system"
+																	value="#{loginBean.employeeNumber}" required="true"
+																	requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.employeeid']}"
+																	converterMessage="Please Enter Numbers">
+																	<f:validator
+																		validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+																	<p:ajax />
+																</p:inputText>
+															</p:column>
+															<p:column
+																style="width:25%; padding:0px 5px 0px 0px !important;">
+																<p:commandButton value="#{msg['lbl.smartCardNew']}"
+																	action="#{loginBean.checkEcNoWithHR('Y')}"
+																	process="@this" update="mainPanel"
+																	onstart="process.show();" onsuccess="process.hide();"
+																	rendered="#{!loginBean.booRenderAuthorization}" />
+															</p:column>
+															<p:column
+																style="width:50%; padding:0px 5px 0px 0px !important;">
+																<p:commandButton value="No #{msg['lbl.smartCardNew']}"
+																	action="#{loginBean.checkEcNoWithHR('N')}"
+																	update="mainPanel" onstart="process.show();"
+																	process="@this" onsuccess="process.hide();"
+																	rendered="#{!loginBean.booRenderAuthorization}" />
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col"
+												rendered="#{loginBean.booRenderCivilId}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.civilId']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+															<p:column style="width:95%; padding:0px !important;">
+																<p:message for="idNo" id="msgIdNo" display="text" />
+																<p:inputText id="idNo"
+																	value="#{loginBean.civilIdNumber}" required="true"
+																	readonly="#{loginBean.booRequiredCivilId}"
+																	requiredMessage="Please Enter ID Number">
+																	<p:ajax update="msgIdNo" />
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col"
+												rendered="#{loginBean.booRenderUserOTP}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.password']} (OTP)*" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:password id="passemp" value="#{loginBean.userPassword}"
+														required="true" maxlength="8"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.password']}">
+														<p:ajax update="msgpassemp" event="blur" />
+														<p:message for="passemp" display="text" id="msgpassemp" />
+													</p:password>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel id="authorizePanel"
+												rendered="#{loginBean.booRenderPartnerAuthorization}">
+
+												<p:commandButton value="Partner #{msg['lbl.smartCardNew']}"
+													action="#{loginBean.fetchPartnerCivilId}" process="@this"
+													update="mainPanel" onstart="process.show();"
+													onsuccess="process.hide();" />
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Partner #{msg['lbl.civilId']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:panelGrid style="width:100%;">
+															<p:row>
+																<p:column style="width:95%; padding:0px !important;">
+																	<p:message for="pidNo" id="msgpIdNo" display="text" />
+																	<p:inputText id="pidNo"
+																		value="#{loginBean.partnerCivilId}" readonly="true"
+																		maxlength="12">
+																		<p:ajax update="msgpIdNo" />
+																	</p:inputText>
+																</p:column>
+															</p:row>
+														</p:panelGrid>
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputLabel
+															value="Partner  #{msg['lbl.password']} (OTP)*" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:password id="ppassemp" maxlength="8"
+															value="#{loginBean.partnerPassword}" required="true"
+															requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.password']}">
+															<p:ajax update="msgppassemp" event="blur" />
+															<p:message for="ppassemp" display="text" id="msgppassemp" />
+														</p:password>
+													</p:panel>
+												</p:panel>
+
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup class="clearfix" />
+											<p:spacer height="20px" />
+
+											<p:panel styleClass="shadow_button" id="goexitId"
+												style=" background-color:#FFF !important;"
+												rendered="#{loginBean.booRenderAuthorization}">
+												<p:commandButton value="#{msg['lbl.login']}"
+													action="#{loginBean.checkOTPVerification}"
+													update="mainPanel" onstart="process.show();"
+													onsuccess="process.hide();" style="margin-right:10px;" />
+												<p:commandButton value="#{msg['lbl.exit']}" process="@this"
+													action="#{loginBean.redirectLogin}" update="mainPanel"
+													onstart="process.show();" onsuccess="process.hide();"
+													immediate="true" />
+											</p:panel>
+
+											<p:panel styleClass="shadow_button" id="clearexit"
+												style=" background-color:#FFF !important;"
+												rendered="#{!loginBean.booRenderAuthorization}">
+												<p:commandButton value="Generate OTP"
+													action="#{loginBean.validateCivilId}" update="mainPanel"
+													process="@this" onstart="process.show();"
+													rendered="#{!loginBean.booRequiredCivilId and loginBean.booRenderCivilId}"
+													onsuccess="process.hide();" style="margin-right:10px;"
+													immediate="true" />
+												<p:commandButton value="#{msg['lbl.login']}" rendered="#{loginBean.booRenderPartnerLogin}"
+													action="#{loginBean.checkPartnerOTPVerification}"
+													update="mainPanel" onstart="process.show();"
+													onsuccess="process.hide();" style="margin-right:10px;" />
+												<p:commandButton value="#{msg['lbl.clear']}"
+													action="#{loginBean.clearAll}" update="mainPanel"
+													process="@this" onstart="process.show();"
+													onsuccess="process.hide();" style="margin-right:10px;"
+													immediate="true" />
+												<p:commandButton value="#{msg['lbl.exit']}" process="@this"
+													action="#{loginBean.redirectLogin}" update="mainPanel"
+													onstart="process.show();" onsuccess="process.hide();"
+													immediate="true" />
+											</p:panel>
+
+											<h:panelGroup class="clearfix" />
+										</fieldset>
+									</p:panel>
+
+									<h:panelGroup layout="block" class="clearfix" />
+
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+		<a id="goTop" />
+	</f:view>
+</h:body>
+</html>

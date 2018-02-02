@@ -1,0 +1,325 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+
+
+
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script type="text/javascript">
+		 history.pushState(null, null, 'loginuser.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'loginuser.xhtml');
+		    });
+	</script>
+	<link href="css/style1.css" rel="stylesheet" type="text/css" />
+</h:head>
+<h:body dir="#{facesBean.direction}">
+	<f:view locale="#{facesBean.locale}">
+		<!-- <ui:include src="#{facesBean.header}"></ui:include> -->
+		<ui:include src="../common/onlineheader.xhtml"></ui:include>
+		<h:panelGroup layout="block" class="container"
+			style="margin-top:-24px;">
+			<h:panelGroup layout="block" class="main_div1">
+
+				<p:dialog id="openInfo" widgetVar="openInfo" width="600"
+					height="400" showHeader="true" resizable="false"
+					style=" border:2px solid #F33535 !important; padding:0px !important;  color:blue !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+					showEffect="clip" hideEffect="clip" closeOnEscape="true"
+					closable="true" modal="true">
+					<p:outputLabel value="#{msg['lbl.whydoask']}" />
+					<p:outputLabel value="#{msg['lbl.usermsg1']}" />
+					<p:outputLabel value="#{msg['lbl.usermsg2']}" />
+					<p:outputLabel value="#{msg['lbl.usermsg3']}" />
+					<p:outputLabel value="#{msg['lbl.usermsg4']}" />
+					<p:outputLabel value="#{msg['lbl.usermsg5']}" />
+					<p:outputLabel value="#{msg['lbl.usermsg6']}" />
+					<p:outputLabel value="#{msg['lbl.usermsg7']}" />
+				</p:dialog>
+				
+				<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important; ">
+												<p:graphicImage value="../images/processImg.gif" style="float: left !important; margin-right: 24px !important; "/>
+												<p:outputLabel value="Please wait ........" style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>	
+				
+        
+
+				<h:panelGroup layout="block" id="common">
+
+					
+
+
+					<h:form title="Login" id="loginuser" onkeypress="if(event.keyCode == 13){if(document.activeElement.type == 'text') return false;}">
+					
+					<p:defaultCommand target="save" />
+					
+					  <p:confirmDialog id="lockedAccount" header="Account Locked!"
+											widgetVar="lockedAccount" width="970" resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip"
+											message="You have exceeded the Maximum number of Attempts.
+											User Acccount has Locked for a Day.! Please, Try again Tommorrow....!">
+											<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{loginBean.clickOk}" update="loginUserPanel" immediate="true"/>
+										</p:confirmDialog>
+										<p:confirmDialog id="lastChancelogin" header="Warning!"
+											widgetVar="lastChancelogin" width="900" resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip"
+											message="Please Ensure ,This is the last chance to enter password .if your password incorrect ,Account  will be blocked for a Day.!.">
+											<p:commandButton value="#{msg['lbl.ok']}" oncomplete="lastChancelogin.hide()"/>
+										</p:confirmDialog>
+										
+										<p:confirmDialog id="lastChancequest" header="Warning!"
+											widgetVar="lastChancequest" width="950" resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip"
+											message="Please Ensure ,This is the last chance to enter Security Answer .if your Security Answer incorrect ,Account  will be blocked for a Day.!.">
+											<p:commandButton value="#{msg['lbl.ok']}" oncomplete="lastChancequest.hide()"/>
+										</p:confirmDialog>
+										
+						<p:panel id="loginUserPanel" styleClass="shadow"
+							style="background-color:#FFF !important;">
+							
+
+							<p:panel styleClass="panel_border" id="securityPanel"
+								rendered="#{loginBean.renderSecurityPanel}">
+								
+								<h1>#{msg['lbl.securityquestion']}</h1>
+
+                       <h2>#{msg['lbl.answersecurityques']} </h2>
+								
+        	<p:panel styleClass="left_col" 
+									style="width:65% !important;">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="Pass Question :" />
+									</p:panel>
+									<p:panel styleClass="inner_right_col">
+										
+										
+										<h:outputText value="#{loginBean.randomSecurityQuestion}" /> 
+										
+									</p:panel>
+								</p:panel>
+
+								<div class="clearfix"></div>
+								
+						
+        	<p:panel styleClass="left_col" 
+									style="width:65% !important;">
+							
+								
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.answer']} *" />
+									</p:panel>
+									<p:panel styleClass="inner_right_col"
+										style="width:40% !important;">
+
+
+										
+										<p:inputText value="#{loginBean.securityAnswer}" id="ans" 
+											tabindex="1" required="true" requiredMessage="Please Enter Answer" >
+										
+											<p:message for="ans" display="text" id="ansmsg"/>
+											<p:ajax update="ansmsg" />
+										</p:inputText>
+										
+										<p:outputLabel value="Incorrect Security Answer"
+														rendered="#{loginBean.renderSecurityAnswer}"
+														style="color:red;font-weight:bold;" />
+									</p:panel>
+									</p:panel>
+									
+									
+								
+								<div class="clearfix"></div>
+								<h:panelGroup layout="block" styleClass="shadow_button">
+
+									<p:commandButton value="#{msg['lbl.next']}" tabindex="2" type="submit" id="save"
+										style="margin-right:10px;"
+										action="#{loginBean.nextPhishing}"
+										update="loginUserPanel" onstart="process.show();" onsuccess="process.hide();">
+									</p:commandButton>
+
+									<p:commandButton value="#{msg['lbl.cancel']}"
+										action="#{loginBean.cancel}" ajax="false" tabindex="3"  type="submit"
+										immediate="true" >
+									</p:commandButton>
+
+
+									<div class="clearfix"></div>
+								</h:panelGroup>
+							</p:panel>
+							<div class="clearfix"></div>
+
+							
+
+							<div class="clearfix"></div>
+						
+
+							<p:panel id="phisingPanel" 
+								rendered="#{loginBean.renderPhisingImagepanel}">
+								
+								<h1>#{msg['lbl.phisingprotectionpass']}</h1>
+
+									<p:panel styleClass="panel_border">
+
+
+										<p:panel id="imageWrapper" style="margin: 10px auto !important;width: auto !important;display: table;text-align: center !important;padding: 10px !important;
+	background-color: #FFF !important;
+	-webkit-border-radius: 3px 3px 3px 3px !important;">
+											<p:graphicImage id="myImage"
+												value="#{loginBean.imageUrl}" width="60" height="60" />
+												
+										</p:panel>
+										<p:panel >
+										<p:outputLabel style="font-weight:bold;text-align: center;" value="#{loginBean.imageCaption}"/> 
+										<p:outputLabel style="font-weight:bold;text-align: center;" value="#{msg['lbl.pleaseconfirmimage']}" />
+										
+										</p:panel>
+								
+										<div class="clearfix"></div>
+
+									
+										<div class="clearfix"></div>
+										
+
+										<p:panel styleClass="shadow_button"
+											style="background-color:#FFF !important;">
+
+											<p:commandButton value="#{msg['lbl.yes']}"
+												style="margin-right:10px;" tabindex="25"
+												action="#{loginBean.nextLoginPassword}"
+												update="loginUserPanel" onstart="process.show();" onsuccess="process.hide();"/>
+
+
+                                       	<p:commandButton value="#{msg['lbl.no']}"  action="#{loginBean.noPhinising}"
+												style="margin-right:10px;" tabindex="25"
+											
+												update="loginUserPanel" />
+
+										</p:panel>
+
+										<p:panel>
+
+
+											<p:commandLink value="#{msg['lbl.whydoask']}"
+												style="font-size: 13px !important; text-decoration: underline; font-weight:bold; color:Blue; text-align:center !important; display:block;"
+												action="#{loginBean.popInfo}" immediate="true"
+												update="phisingPanel" />
+
+										</p:panel>
+									</p:panel>
+								
+
+								<div class="clearfix"></div>
+
+					
+
+							</p:panel>
+							
+							<p:panel id="passwordPanel" styleClass="panel_border" rendered="#{loginBean.renderPasswordpanel}">
+								<h1>#{msg['lbl.enterloginpw']}</h1>
+							
+						<!-- 	<p:panel styleClass="panel_border" style="font-weight:bold;"> -->
+						<p:panel>
+									<h2>#{msg['lbl.provideloginpw']}</h2>
+								</p:panel>
+														
+							<p:panel styleClass="left_col" 
+									style="width:65% !important;">
+									<p:panel style="width:45% !important;" styleClass="inner_left_col">
+										<h:outputLabel value="Password *" />
+									</p:panel>
+									<p:panel styleClass="inner_right_col"
+										style="width:40% !important;">
+										<p:message for="password" display="text" id="msg1st" />
+										<p:password value="#{loginBean.primaryPassword}" tabindex="6" id="password"
+											>
+											<p:ajax update="msg1st"/>
+										
+										</p:password>
+											<p:outputLabel value="Password is Incorrect"
+														rendered="#{loginBean.renderInvalidPassword}"
+														style="color:red;font-weight:bold;" />
+										<!--match="retypeprimarypassword"   -->
+											
+									</p:panel>
+								</p:panel>
+								<div class="clearfix"></div>
+								
+								<h:panelGroup layout="block" styleClass="shadow_button">
+
+									<p:commandButton value="#{msg['lbl.submit']}" tabindex="7"
+										style="margin-right:10px;"
+										action="#{loginBean.loginSubmit}"
+										update="loginUserPanel" onstart="process.show();" onsuccess="process.hide();">
+									</p:commandButton>
+
+									<p:commandButton value="#{msg['lbl.cancel']}"
+										action="#{loginBean.cancel}" ajax="false" tabindex="8"
+										immediate="true">
+									</p:commandButton>
+
+
+									<div class="clearfix"></div>
+								</h:panelGroup>
+							
+							
+						<!-- 	</p:panel> -->
+							
+							
+							 
+							</p:panel>
+							
+								<p:panel id="phisingalert" styleClass="panel_border" rendered="#{loginBean.renderPhisingAlert}">
+								<p:panel>
+								<h:outputLabel value="#{msg['lbl.warning']}" style="font-weight:bold; color:Blue;margin:20px;"/>
+								</p:panel>
+							
+							<p:panel styleClass="panel_border" style="font-weight:bold;background-color: #FFFF99 !important;">
+							<p:graphicImage value="../images/warning.png"
+												 />
+												<h:outputText  value="#{msg['lbl.warningmsg']}"/>
+							
+							
+							</p:panel>
+							
+							  <br/>
+							  <p:panel>
+							  <h:outputText value="#{msg['lbl.gobackpage']}" style="font-weight:bold; color:Blue;margin:20px;" />
+   					<p:commandButton value="#{msg['lbl.home']}" 
+   										action="#{loginBean.redirectLogin}" ajax="false" />
+					</p:panel>
+							
+							</p:panel>
+
+						</p:panel>
+					
+					</h:form>
+
+
+				</h:panelGroup>
+
+
+			</h:panelGroup>
+
+		</h:panelGroup>
+		<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+
+		<ui:include src="#{facesBean.footer}"></ui:include>
+
+	</f:view>
+</h:body>
+
+
+</html>

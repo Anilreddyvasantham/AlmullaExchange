@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script>
+.ui-chkbox.ui-chkbox-all.ui-widget {
+    display:none !important;
+$(document).ready(function(){
+    $("#chkAll").click(function(){
+        $(".chk").prop("checked",$("#chkAll").prop("checked"))
+       
+        
+    }) 
+    
+    
+     $(".chk").change(function(){
+ 
+        if($(".chk").length == $(".chk:checked").length) {
+        	
+          /*   $("#chkAll").attr("checked", "checked"); */
+        } else {
+            $("#chkAll").removeAttr("checked");
+           
+        }
+ 
+    });
+});
+</script>
+<script type="text/javascript">
+document.onkeydown = function(e) {
+	//Enter button pressed 
+	/* if (e.keyCode === 13) {
+		return false;
+	} */
+};
+
+ history.pushState(null, null, 'serviceapplicabilityruleapproval.xhtml');
+    window.addEventListener('popstate', function(event) {
+    history.pushState(null, null, 'serviceapplicabilityruleapproval.xhtml');
+    });
+</script>
+
+</h:head>
+
+<p:confirmDialog id="notapproved" header="Warning Message"
+	widgetVar="notapproved" width="370" styleClass="red" showHeader="false"
+	resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip"
+	message="#{msg['lbl.sameusernotabletoapprove']}">
+</p:confirmDialog>
+<p:dialog id="alreadyapprov" widgetVar="alreadyapprov" width="310"
+	height="70" showHeader="false" resizable="false"
+	style=" border:2px solid green !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.thisrecordalreadyapprovedby']}" />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{serviceApplicabilityRule.clickOnOkButton}"
+		process="@this" onstart="process.show();" onsuccess="process.hide();" />
+</p:dialog>
+<p:dialog id="approvedsucc" widgetVar="approvedsucc" width="260"
+	height="70" showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+
+	<p:outputLabel value="#{msg['lbl.approvedatasuccesfullmsg']}" />
+	<br />
+
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{serviceApplicabilityRule.clickOnOkToApprovel}" onstart="process.show();" onsuccess="process.hide();" />
+</p:dialog>
+<p:confirmDialog id="notabletoApprove" header="Warning Message"
+	widgetVar="notabletoApprove" width="370" styleClass="red"
+	showHeader="false" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip"
+	message="#{msg['lbl.sameusernotabletoapprove']}">
+</p:confirmDialog>
+<p:confirmDialog id="noRecord" header="Warning Message"
+	widgetVar="noRecord" width="370" styleClass="red" showHeader="false"
+	resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip"
+	message="#{msg['lbl.thereisnorecordforthesecombination']}">
+</p:confirmDialog>
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form1" prependId="false">
+								<h1>
+									<h:outputText value="#{msg['lbl.serviceapplicabiltyapproval']}" />
+								</h1>
+
+								<p:panel styleClass="shadow" id="mainPanel">
+								
+								<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"  
+resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" 
+showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{serviceApplicabilityRule.exceptionMessage} - #{msg['lbl.nullPonterExcepetion']}" >
+</p:confirmDialog>
+								
+								<p:confirmDialog id="slectOneRecord" widgetVar="slectOneRecord"   
+												resizable="false" style="background-color: white !important;" header="#{mag['lbl.warningDailog']}" styleClass="warning"
+													showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.plsselectatleastonerecord']}">
+									</p:confirmDialog>
+								
+									<p:confirmDialog id="saveerror" header="#{msg['lbl.warning']}"
+											widgetVar="saveerror" width="600" resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip"
+											message="#{serviceApplicabilityRule.exceptionMessage}">
+											
+											<p:commandButton value="#{msg['lbl.ok']}" onclick="saveerror.hide()" process="@this" update="mainPanel"/>
+												
+										</p:confirmDialog>
+
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+
+									<p:dialog id="selectApprove" widgetVar="selectApprove"
+										width="400" height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="Approve Record" closable="false"
+										showEffect="clip" hideEffect="clip">
+										<p:outputLabel value="Do you wan't Approve this record"
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.approve']}"
+											actionListener="#{serviceApplicabilityRule.approvalAllRecords}"
+											process="@this" oncomplete="PF('permanentDelete').hide();"
+											update="mainPanel" style="margin-left: 150px !important;" />
+										<p:commandButton value="#{msg['lbl.cancel']}"
+											onclick="PF('permanentDelete').hide();" immediate="true"
+											style="margin-left:10px;" />
+									</p:dialog>
+									<h2>
+										<h:outputText
+											value="#{msg['lbl.serviceapplicabiltyapproval']} " />
+										<p:commandLink action="#{bankBranchDetails.cancel}"
+											process="@this">
+											<p:graphicImage value="../images/return.jpg" width="25"
+												height="25" id="imgEdit" styleClass="icon_right"
+												style="float:right;" />
+											<p:tooltip for="imgEdit" value="Go to Home" />
+										</p:commandLink>
+									</h2>
+
+									<p:panel id="serviceapproval">
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.country']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="country" display="text" id="countrymsg" />
+												<p:selectOneMenu id="country"
+													value="#{serviceApplicabilityRule.countryId}"
+													tabindex="1" filter="true" filterMatchMode="contains">
+													<f:selectItem itemValue=""
+														itemLabel="#{msg['lbl.beleselect']}" />
+													<f:selectItems
+														value="#{serviceApplicabilityRule.lstCountryName}" var="c"
+														itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+														itemValue="#{c.fsCountryMaster.countryId}" />
+													<p:ajax event="change"
+														listener="#{serviceApplicabilityRule.getCurrencyList}"
+														update="country,countrymsg,currency" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currency']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="currency" display="text" id="currencymsg" />
+												<p:selectOneMenu id="currency"
+													value="#{serviceApplicabilityRule.currencyId}" tabindex="2"
+													filter="true" filterMatchMode="contains">
+													<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{serviceApplicabilityRule.lstCurrencyName}"
+														var="c" itemLabel="#{c.currencyCode} - #{c.currencyName}"
+														itemValue="#{c.currencyId}" />
+													<p:ajax event="change"
+														listener="#{serviceApplicabilityRule.getRemittanceList}"
+														update="currency,currencymsg,remittance" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.remittanc']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="remittance" display="text" id="remimsg" />
+												<p:selectOneMenu id="remittance" tabindex="3"
+													value="#{serviceApplicabilityRule.remittanceModeId}"
+													filter="true" filterMatchMode="contains">
+													<f:selectItem itemValue=""
+														itemLabel="#{msg['lbl.prehyphen']} #{msg['lbl.select']} #{msg['lbl.remittanc']} #{msg['lbl.posthyphen']}" />
+													<f:selectItems
+														value="#{serviceApplicabilityRule.lstRemittanceName}"
+														var="c"
+														itemLabel="#{c.remittanceModeMaster.remittance} - #{c.remittanceDescription}"
+														itemValue="#{c.remittanceModeMaster.remittanceModeId}" />
+													<p:ajax event="change"
+														listener="#{serviceApplicabilityRule.getDeliveryList}"
+														update="deliveryMode,remimsg" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.delivery']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="deliveryMode" display="text" id="delmsg" />
+												<p:selectOneMenu id="deliveryMode"
+													value="#{serviceApplicabilityRule.deliveryId}" tabindex="4"
+													filter="true" filterMatchMode="contains">
+													<f:selectItem itemValue=""
+														itemLabel="#{msg['lbl.prehyphen']} #{msg['lbl.select']} #{msg['lbl.delivery']} #{msg['lbl.posthyphen']}" />
+													<f:selectItems
+														value="#{serviceApplicabilityRule.lstDeliveryName}"
+														var="c"
+														itemLabel="#{c.deliveryMode.deliveryMode} - #{c.englishDeliveryName}"
+														itemValue="#{c.deliveryMode.deliveryModeId}" />
+													<p:ajax update="delmsg,deliveryMode" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.view']}"
+												action="#{serviceApplicabilityRule.addRecordsToDataTableToApprove}"
+												update="form1,buttonsId" onstart="process.show();" onsuccess="process.hide();" style="margin-right:10px;"/>
+											<p:commandButton value="#{msg['lbl.clear']}" update="form1,buttonsId" action="#{serviceApplicabilityRule.clearApprove}" process="@this"/>
+										</h:panelGroup>
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:dataTable id="dataTable" styleClass="mydatatableclass"
+											value="#{serviceApplicabilityRule.applicabilityListApprovalList}"
+											var="c" paginatorPosition="bottom" rows="10" paginator="true"
+											rendered="#{serviceApplicabilityRule.booRenberDataTableApprovalList}"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="10,20,30" rowIndexVar="rowIndex"
+											rowKey="#{c.fieldName}"
+											emptyMessage="#{msg['lbl.norecordfound']}">
+
+
+											<p:column headerText="#{msg['lbl.sino']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" >
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+
+
+											<p:column headerText="#{msg['lbl.country']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.countryName}">
+												<h:outputText value="#{c.countryName}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.currency']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.currency}">
+												<h:outputText value="#{c.currency}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.remittanc']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.remittance}">
+												<h:outputText value="#{c.remittance}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.delivery']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.delivery}">
+												<h:outputText value="#{c.delivery}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.fieldname']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"  sortBy="#{c.fieldName}">
+												<h:outputText value="#{c.fieldName}" />
+											</p:column>
+											
+											<p:column headerText="#{msg['lbl.fielddesc']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.fielDesc}">
+												<h:outputText value="#{c.fielDesc}" />
+											</p:column>
+											
+											<p:column headerText="#{msg['lbl.username']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.userName}">
+												<h:outputText value="#{c.userName}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.language']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'oddrow' : 'oddrow'}">
+													<h:outputText value="#{c.landuageName}" />
+												</p:column>
+											<p:column>
+												<f:facet name="header">
+													<p:outputLabel value="#{msg['lbl.selectAndDeselect']}" style="text-align:center;"></p:outputLabel>
+													<p:selectBooleanCheckbox
+														value="#{serviceApplicabilityRule.selectAll}"
+														style="border: 5px solid white;">
+														<p:ajax event="change"
+															listener="#{serviceApplicabilityRule.selecatAndDeselectAll}"
+															update=":form1:dataTable" />
+													</p:selectBooleanCheckbox>
+												</f:facet>
+
+												<p:selectBooleanCheckbox value="#{c.isCheck}" id="cheid" disabled="#{c.disableCheck}">
+													<p:ajax event="change" listener="#{serviceApplicabilityRule.addingServiceAppApprovalRecord(c)}" />
+												</p:selectBooleanCheckbox>
+											</p:column>
+											
+											<!-- <p:column headerText="Approve"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<p:commandLink
+													action="#{serviceApplicabilityRule.approvelCheck(c)}"
+													process="@this">
+													<p:graphicImage value="../images/approve.jpg" width="25"
+														height="25" id="imgEdit" />
+													<p:tooltip for="imgEdit" value="Approve" />
+												</p:commandLink>
+											</p:column> -->
+
+											<!-- <p:column headerText="Approved All" selectionMode="multiple" style="width:20px;" id="chkAll"   /> -->
+											<!-- <p:column headerText="#{msg['lbl.approveall']}" selectionMode="multiple"/>  -->
+
+										</p:dataTable>
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:outputText value="* Creator cannot able to approve" style="color:red; padding:15px !important; font-size:15px; font-weight:bold;" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup id="buttonsId" layout="block" styleClass="shadow_button" rendered="#{serviceApplicabilityRule.booRenberDataTableApprovalList}" >				
+										<p:commandButton value="#{msg['lbl.approve']}" style="margin-right:10px;" action="#{serviceApplicabilityRule.approvalAllRecords}" onstart="process.show();" oncomplete="process.hide();"/>
+										<p:commandButton value="#{msg['lbl.cancel']}" style="margin-right:10px;" action="#{serviceApplicabilityRule.clearApprove}" process="@this"/>
+										<h:panelGroup layout="block" class="clearfix"/>
+									    </h:panelGroup>
+										<h:panelGroup layout="block" class="clearfix" />
+									</p:panel>
+
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

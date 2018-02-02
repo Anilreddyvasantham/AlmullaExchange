@@ -1,0 +1,746 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+		history.pushState(null, null, 'CountryBranchMaster.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'CountryBranchMaster.xhtml');
+		});
+	</script>
+</h:head>
+<p:confirmDialog id="codeExist" widgetVar="codeExist" width="300"
+	showHeader="false" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip"
+	header="#{msg['lbl.warningDailog']}"
+	message="Country Branch Code Already Exist">
+</p:confirmDialog>
+<p:confirmDialog id="remarksEmpty" widgetVar="remarksEmpty" width="400"
+	height="17" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" header="#{msg['lbl.warningDailog']}"
+	hideEffect="clip" closeOnEscape="true" closable="true"
+	message="#{msg['lbl.remarksShouldNotBeEmpty']}">
+</p:confirmDialog>
+
+<p:dialog id="notSaved" widgetVar="notSaved" width="310" height="70"
+	showHeader="false" resizable="false"
+	style=" border:2px solid green !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}" process="@this" />
+</p:dialog>
+<p:dialog id="update" widgetVar="update" width="270" height="70"
+	showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background: 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.recordsupdatedsuccessfully']} " />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		action="#{countryBranchBean.viewCountryBranchMethod}" process="@this" />
+</p:dialog>
+
+<p:confirmDialog id="noRecords" widgetVar="noRecords" width="300"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.noRecordFound']}">
+</p:confirmDialog>
+<p:confirmDialog id="datatable" widgetVar="datatable" width="400"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.recrdAlreadyExisted']}">
+</p:confirmDialog>
+<p:confirmDialog id="assignedToAlreadyExist"
+	widgetVar="assignedToAlreadyExist" width="400" resizable="false"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.assignedToAlreadyExist']}">
+</p:confirmDialog>
+<p:dialog id="alreadyapprov" widgetVar="alreadyapprov" width="310"
+	height="70" showHeader="false" resizable="false"
+	style=" border:2px solid green !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.thisrecordalreadyapprovedby']}" />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}" process="@this" />
+</p:dialog>
+
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+		
+
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;"><ui:include
+							src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+							
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle"
+										src="../images/toggle_plus.png" alt=""
+										onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+								
+								<h1>
+									<h:outputText value=" #{msg['lbl.countrybranchmaster']}" />
+								</h1>
+								
+									<p:dialog modal="true" showHeader="true"
+											header="#{msg['lbl.bco.plswait']}" widgetVar="process"
+											id="process" width="300" height="50" resizable="false"
+											draggable="false" closable="false"
+											style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+											<div style="text-align: center;">
+												<p:graphicImage value="../images/preloader.gif" />
+											</div>
+										</p:dialog>
+								<h:form id="form">
+
+								<p:panel styleClass="shadow" id="mainPanel"
+									style="background-color:#FFF !important; ">
+									
+									
+									<h2>
+										<h:outputText value=" #{msg['lbl.countrybranchmaster']}" />
+									</h2>
+
+									<p:confirmDialog id="error" widgetVar="error" width="600"
+										showHeader="true" resizable="false" header="Warning Message"
+										styleClass="ui-confirmdialog-yes"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:green; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{countryBranchBean.errorMessage}">
+									</p:confirmDialog>
+
+									<p:dialog id="remarks" widgetVar="remarks" width="480"
+										resizable="false" style="background-color: white !important;"
+										styleClass="info" header="Remarks" closable="false"
+										showEffect="clip" hideEffect="clip" modal="true">
+										<p:panel>
+											<table>
+												<tr>
+													<td><h:outputText value="#{msg['lbl.approvedDate']}" /></td>
+													<td><h:outputText
+															value="#{countryBranchBean.approvedDate}"
+															style="color:red !important;" /></td>
+												</tr>
+												<tr>
+													<td><h:outputText value="#{msg['lbl.approvedBy']}" />
+													</td>
+													<td><h:outputText
+															value="#{countryBranchBean.approvedBy}"
+															style="color:red !important;" /></td>
+												</tr>
+											</table>
+										</p:panel>
+										<p:spacer height="10px" />
+										<p:panel>
+											<h:outputText value="#{msg['lbl.enterremarks']}" />
+											<h:outputText value="*" style="color:red !important;" />
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel>
+											<h:inputTextarea id="remarksId"
+												value="#{countryBranchBean.remarks}"
+												validatorMessage="Maximum 255 charectors allowed">
+												<f:validateLength maximum="255" />
+												<p:ajax />
+											</h:inputTextarea>
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel style="padding-left:160px;">
+											<p:commandButton value="#{msg['lbl.ok']}"
+												action="#{countryBranchBean.remarkSelectedRecord}"
+												process="@this" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												action="#{countryBranchBean.cancelRemarks}" process="@this" />
+										</p:panel>
+									</p:dialog>
+
+									<p:dialog id="permanentDelete" widgetVar="permanentDelete"
+										width="400" height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.deleteRecrd']}"
+										closable="false" showEffect="clip" hideEffect="clip"
+										modal="true">
+										<p:outputLabel
+											value="#{msg['lbl.douWantDeleteRecordPermentely']}"
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}" process="@this"
+											update="mainPanel"
+											action="#{countryBranchBean.confirmPermanentDelete}"
+											oncomplete="PF('permanentDelete').hide();"
+											style="margin-left: 150px !important;" />
+										<p:commandButton value="#{msg['lbl.cancel']}"
+											onclick="PF('permanentDelete').hide();" immediate="true"
+											style="margin-left:10px;" />
+									</p:dialog>
+
+									<p:dialog id="pending" widgetVar="pending" width="400"
+										height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.warningDailog']}"
+										closable="false" showEffect="clip" hideEffect="clip"
+										modal="true">
+										<p:outputLabel value="#{msg['lbl.plsApproveRecord']}"
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											onclick="PF('pending').hide();" immediate="true"
+											style="margin-left: 150px !important;" />
+									</p:dialog>
+
+									<p:dialog id="complete" widgetVar="complete" width="400"
+										height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="success" header="#{msg['lbl.success']}"
+										closable="false" showEffect="clip" hideEffect="clip"
+										modal="true">
+										<p:outputLabel value="#{msg['lbl.recrdSavedSuccessfully']} " />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}" process="@this"
+											action="#{countryBranchBean.countryBranchNavigation}"
+											style="margin-left: 150px !important;" />
+									</p:dialog>
+
+									<p:dialog id="activateRecord" widgetVar="activateRecord"
+										width="400" height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.activateRecrd']}"
+										closable="false" showEffect="clip" hideEffect="clip"
+										modal="true">
+										<p:outputLabel value="#{msg['lbl.doyouactivaterecord']}"
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}" process="@this"
+											actionListener="#{countryBranchBean.activateRecord}"
+											oncomplete="PF('activateRecord').hide();" update="mainPanel"
+											style="margin-left: 150px !important;" />
+										<p:commandButton value="#{msg['lbl.cancel']}"
+											onclick="PF('activateRecord').hide();" immediate="true"
+											style="margin-left:10px;" />
+									</p:dialog>
+
+									<p:confirmDialog id="exception" widgetVar="exception"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{countryBranchBean.errMsg}">
+									</p:confirmDialog>
+
+									<p:panel styleClass="panel_border" id="borderPanel">
+
+										<p:panel id="firstPanel"
+											rendered="#{countryBranchBean.booCountryBranchDetail}">
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.branchcode']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+
+
+													<p:message id="msgbranchCode" for="branchCode"
+														display="text" />
+													<p:message id="msgnum" for="branchCode" display="text" />
+													<!-- <p:autoComplete  id="branchCode"  value="#{countryBranchBean.branchCode}"  completeMethod="#{countryBranchBean.autoComplete}"  maxResults="10" required="true" requiredMessage="Please Select Positive Numbers" tabindex="1" > 
+														 <p:ajax update="msgbranchCode,msgnum" event="itemSelect"  listener="#{countryBranchBean.populate}"   />
+														 <p:ajax update="msgbranchCode,msgnum" event="blur"  listener="#{countryBranchBean.populate}"   process="@this"/>
+											             </p:autoComplete> -->
+													<p:inputText id="branchCode"
+														value="#{countryBranchBean.branchCode}" maxResults="10"
+														onkeyup="this.value=this.value.toUpperCase()"
+														required="true"
+														requiredMessage="#{msg['lbl.plsenterbranchcode']}"
+														converterMessage="Characters Not Allowed" maxlength="4"
+														tabindex="1">
+														<f:validator
+															validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+														<p:ajax event="blur"
+															listener="#{countryBranchBean.autoCompletePopulateValue}"
+															update="branchCode,msgbranchCode,msgnum,error" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.branchname']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgbranchName" for="branchName"
+														display="text" />
+													<p:inputText id="branchName"
+														value="#{countryBranchBean.branchName}"
+														onkeyup="this.value=this.value.toUpperCase()"
+														required="true"
+														requiredMessage="#{msg['lbl.plsenterbranchname']}"
+														vamaxlength="10"
+														validatorMessage="Please Enter Alphapet Only" tabindex="2">
+														<f:validateRegex pattern="[a-zA-Z0-9 ]+" />
+														<p:ajax event="blur" update="branchName,msgbranchName" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.accountcode']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgaccountCode" for="accountCode"
+														display="text" />
+													<p:inputText id="accountCode"
+														value="#{countryBranchBean.accountCode}" maxResults="10"
+														required="true"
+														requiredMessage="#{msg['lbl.plsenteracccode']}"
+														converterMessage="Characters Not Allowed" maxlength="10"
+														tabindex="3">
+														<f:validator
+															validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+														<p:ajax event="change" update="accountCode,msgaccountCode" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.corporatestatus']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcorporateStatus" for="corporateStatus"
+														display="text" />
+													<p:selectOneMenu id="corporateStatus"
+														value="#{countryBranchBean.corporateStatus}" filter="true"
+														required="true" filterMatchMode="startsWith"
+														requiredMessage="#{msg['lbl.plsselectcorporate']}"
+														tabindex="4">
+														<f:selectItem itemLabel=" #{msg['lbl.selectcorporate']} "
+															itemValue="" />
+														<f:selectItem itemLabel="#{msg['lbl.yes']}" itemValue="Y" />
+														<f:selectItem itemLabel="#{msg['lbl.no']}" itemValue="N" />
+
+														<p:ajax event="change"
+															update="corporateStatus,msgcorporateStatus" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.headofficeindicator']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgheadOfficeIndicator"
+														for="headOfficeIndicator" display="text" />
+
+													<p:selectOneMenu id="headOfficeIndicator"
+														value="#{countryBranchBean.headOfficeIndicator}"
+														filter="true" required="true" filterMatchMode="startsWith"
+														requiredMessage="#{msg['lbl.plshoi']}" tabindex="5">
+														<f:selectItem itemLabel="#{msg['lbl.plsselecthoi']}"
+															itemValue="" />
+														<f:selectItem itemLabel="#{msg['lbl.yes']}" itemValue="1" />
+														<f:selectItem itemLabel="#{msg['lbl.no']}" itemValue="0" />
+
+														<p:ajax event="change"
+															update="headOfficeIndicator,msgheadOfficeIndicator" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.telephoneNo']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgtelephoneNumber" for="telephoneNumber"
+														display="text" />
+
+													<p:inputText id="telephoneNumber"
+														value="#{countryBranchBean.telephoneNumber}"
+														required="true"
+														requiredMessage="#{msg['lbl.plstelephoneenter']}"
+														tabindex="6">
+
+														<p:ajax event="change"
+															update="telephoneNumber,msgtelephoneNumber" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.email']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgemailId" for="emailId" display="text" />
+													<p:inputText id="emailId"
+														onkeyup="this.value=this.value.toLowerCase()"
+														value="#{countryBranchBean.emailId}" maxResults="10"
+														required="true"
+														requiredMessage="#{msg['lbl.plsenteremail']} "
+														validatorMessage="#{msg['lbl.validlemailformat']}"
+														maxlength="39" tabindex="7">
+														<f:validateRegex
+															pattern="^([/^\\s+$/])||[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+														<p:ajax event="change" update="emailId,msgemailId" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.areacode']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgareaCode" for="areaCode" display="text" />
+
+													<!-- <p:selectOneMenu id="areaCode"
+														value="#{countryBranchBean.areaCode}" filter="true"
+														required="true" filterMatchMode="startsWith"
+														requiredMessage="#{msg['lbl.plsareacode']}" tabindex="8">
+														<f:selectItem itemLabel=" #{msg['lbl.selectareacode']} "
+															itemValue="" />
+														 <f:selectItem itemLabel="#{msg['lbl.yes']}" itemValue="Y" />
+														<f:selectItem itemLabel="#{msg['lbl.no']}" itemValue="N" />
+ 
+														<p:ajax event="change" update="areaCode,msgareaCode" />
+													</p:selectOneMenu> -->
+
+													<p:inputText id="areaCode"
+														value="#{countryBranchBean.areaCode}" maxResults="10"
+														required="true"
+														requiredMessage="#{msg['lbl.plsareacode']}" maxlength="10"
+														converterMessage="Characters Not Allowed" tabindex="8">
+														<f:validator
+															validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+														<p:ajax event="change" update="areaCode,msgareaCode" />
+													</p:inputText>
+
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.ecnumber']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgecNumeber" for="ecNumeber" display="text" />
+													<p:inputText id="ecNumeber"
+														value="#{countryBranchBean.ecNumeber}" maxResults="10"
+														required="true"
+														requiredMessage="#{msg['lbl.plsecnumber']}"
+														converterMessage="Characters Not Allowed" maxlength="6"
+														tabindex="9">
+														<f:validator
+															validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+														<p:ajax event="change" update="ecNumeber,msgecNumeber" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.ipaddress']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgipAddress" for="ipAddress" display="text" />
+													<p:inputText id="ipAddress"
+														value="#{countryBranchBean.ipAddress}" required="true"
+														requiredMessage="#{msg['lbl.plsipaddress']}"
+														maxlength="15" validatorMessage="IP address is not valid"
+														tabindex="10">
+														<f:validateRegex
+															pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.$"
+															for="ipAddress" />
+														<p:ajax event="change" update="ipAddress,msgipAddress" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.ScanIndicatorOrType']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgscanId" for="scanId" display="text" />
+													<!-- <p:inputText id="scanId"
+														value="#{countryBranchBean.scanIndicatorOrType}" required="true" onkeyup="this.value=this.value.toUpperCase()"
+														requiredMessage="Please Enter Scan Indicator/Type" validatorMessage="Please Enter D Or N">
+														<f:validateRegex pattern="D,N"/>
+														<p:ajax event="blur" update="msgscanId" />
+													</p:inputText> -->
+													<p:selectOneMenu id="scanId"
+														value="#{countryBranchBean.scanIndicatorOrType}"
+														required="true"
+														requiredMessage="Please Enter Scan Indicator/Type"
+														filter="startWith">
+														<f:selectItem itemLabel="#{msg['lbl.scanIndictorType']}" />
+														<f:selectItem itemLabel="A-ArchmetSystem" itemValue="A" />
+														<f:selectItem itemLabel="D-DbScan" itemValue="D" />
+														<f:selectItem itemLabel="N-NoScan" itemValue="N" />
+														<p:ajax event="change" update="msgscanId" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.digitalSignInd']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgDigitalScanIndId" for="digitalScanIndId"
+														display="text" />
+													<p:selectOneMenu id="digitalScanIndId"
+														value="#{countryBranchBean.digitalSignTypeInd}"
+														required="true"
+														requiredMessage="Please Enter Digital Sign Type"
+														filter="startWith">
+														<f:selectItem
+															itemLabel="-- Please select Digital Sign Type --" />
+														<f:selectItem itemLabel="Y - Yes" itemValue="Y" />
+														<f:selectItem itemLabel="N - No" itemValue="N" />
+														<p:ajax event="change" update="msgDigitalScanIndId" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="WU Account Code" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:message id="wuLocan" for="wuLocn"
+														display="text" />
+													<p:inputText id="wuLocn"
+														value="#{countryBranchBean.wuAccCode}" required="true"
+														requiredMessage="Please enter WU Account Code">
+														<p:ajax event="blur" update="wuLocan"></p:ajax>
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<h:outputText id="mandatory"
+													value=" #{msg['lbl.*filedsAreMandatory']}"
+													style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+												<h:panelGroup layout="block" class="clearfix" />
+												<h:outputText value="#{msg['lbl.arbicLanguaue']}"
+													style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+											</p:panel>
+											
+											<div class="clearfix"></div>
+											<div class="clearfix"></div>
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<h:panelGroup layout="block" styleClass="shadow_button"
+												id="booClearPanel">
+												<p:commandButton value="#{msg['lbl.add']}"
+													action="#{countryBranchBean.duplicateChekingComplaintRemarksCode}"
+													onstart="process.show();" onsuccess="process.hide();"
+													style="margin-right:10px;" update="mainPanel,error"
+													tabindex="11" />
+												<p:commandButton value="#{msg['lbl.view']}"
+													action="#{countryBranchBean.viewCountryBranchMethod}"
+													process="@this" style="margin-right:10px;"
+													update="mainPanel"
+													disabled="#{countryBranchBean.clearPanel}"
+													onstart="process.show();" onsuccess="process.hide();"
+													tabindex="12" />
+												<p:commandButton value="#{msg['lbl.clear']}"
+													action="#{countryBranchBean.clearAll}" process="@this"
+													onstart="process.show();" onsuccess="process.hide();"
+													style="margin-right:10px;" immediate="true"
+													disabled="#{countryBranchBean.clearPanel}"
+													update="mainPanel" tabindex="13" />
+												<h:panelGroup layout="block" class="clearfix" />
+											</h:panelGroup>
+											
+											<h:panelGroup layout="block" class="clearfix" />
+										
+
+										
+											<p:dataTable id="dataTable" styleClass="mydatatableclass" rendered="#{countryBranchBean.booCountryBranchDataTable}"
+												value="#{countryBranchBean.lstOfCOuntryBranchDataTables}"
+												rows="25" paginator="true" var="d"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10,15,25" rowIndexVar="rowIndex"
+												editable="true" editMode="cell"
+												emptyMessage="#{msg['lbl.norecordfound']}"
+												paginatorPosition="bottom">
+
+												<p:column headerText="#{msg['lbl.sino']}"
+													style="width:30px;">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.branchcode']}">
+													<h:outputLabel value="#{d.branchCode}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.branchname']}">
+													<h:outputLabel value="#{d.branchName}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.corporatestatus']}">
+													<h:outputLabel value="#{d.corporateStatusName}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.headofficeindicator']}">
+													<h:outputLabel value="#{d.headOfficeIndicatorName}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.telephoneNo']}">
+													<h:outputLabel value="#{d.telephoneNumber}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.email']}">
+													<h:outputLabel value="#{d.emailId}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.ScanIndicatorOrType']}">
+													<h:outputLabel value="#{d.scanIndicatorOrType}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.digitalSignInd']}">
+													<h:outputLabel value="#{d.digitalSignTypeInd}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.areacode']}">
+													<h:outputLabel value="#{d.areaCode}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.ipaddress']}">
+													<h:outputLabel value="#{d.ipAddress}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+												
+												<p:column headerText="WU Account Code">
+													<h:outputLabel value="#{d.wuAccCode}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.edit']}">
+													<p:commandButton id="imgEdit" styleClass="edit" value=""
+														action="#{countryBranchBean.editCountryBranchMethod(d)}"
+														onstart="process.show();" onsuccess="process.hide();"
+														disabled="#{countryBranchBean.booEdit}"
+														rendered="#{d.renderEditButton}" update=":form:firstPanel"
+														process="@this" />
+													<!-- 	<p:commandButton id="imgEdit" styleClass="edit" value=""
+														action="#{countryBranchBean.editCountryBranchMethod(d)}"
+														disabled="#{countryBranchBean.booEdit}" update="dataTable,:form:mainPanel"
+														process="@this" /> -->
+
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.active/deactive']}"
+													style="text-align:center !important;">
+													<p:commandLink
+														value="#{d.dynamicLabelForActivateDeactivate}"
+														action="#{countryBranchBean.checkStatusType(d)}"
+														immediate="true" update=":form:dataTable,:form:remarks"
+														onstart="process.show();" onsuccess="process.hide();"
+														style="color:blue !important; text-decoration:underline !important;">
+													</p:commandLink>
+													<!-- <p:commandLink
+															value="#{d.dynamicLabelForActivateDeactivate}"
+															update=":form"
+															action="#{countryBranchBean.checkStatusType(d)}" process="@this"
+															style="color:blue !important; text-decoration:underline !important;"
+															immediate="true" tabindex="15" /> -->
+
+												</p:column>
+											</p:dataTable>
+											</p:panel>
+										<p:panel id="secondPanel"
+											rendered="#{countryBranchBean.booCountryBranchDataTable}">
+											<div class="clearfix"></div>
+											<p:spacer height="10px" />
+											<div class="clearfix"></div>
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" styleClass="shadow_button"
+												id="booSubmitPanel">
+												<p:commandButton id="submitPanel"
+													action="#{countryBranchBean.saveCountryBranch}"
+													process="@this" value="#{msg['lbl.submit']}"
+													onstart="process.show();" onsuccess="process.hide();"
+													immediate="true" update="mainPanel"
+													disabled="#{countryBranchBean.submitPanel}"
+													style="margin-right:10px;" tabindex="16" />
+												<p:commandButton value="#{msg['lbl.exit']}"
+													action="#{countryBranchBean.exit}"
+													style="margin-right:10px;" process="@this" immediate="true"
+													update="mainPanel" tabindex="17" />
+												<h:panelGroup layout="block" class="clearfix" />
+											</h:panelGroup>
+
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+
+										
+									</p:panel>
+									<div class="clearfix"></div>
+								</p:panel>
+							</h:form>
+							</h:panelGroup>
+
+						</h:panelGroup></td>
+				</tr>
+			</table>
+	
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

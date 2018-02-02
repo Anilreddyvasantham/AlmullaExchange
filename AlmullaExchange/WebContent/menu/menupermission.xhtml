@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	
+	<script>
+	$(document).ready(function(){ 
+	    $("#selecctall").change(function(){
+	      $(".checkbox1").prop('checked', $(this).prop("checked"));
+	    	//$("input[type=checkbox1]").each(function() { this.checked = true; });
+	      });
+	});
+ </script>
+</h:head>
+<h:body>
+	<f:view>
+	
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form1">
+								<h1>
+									<h:outputText value="#{msg['lbl.rolewisemenu']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h2>
+										<h:outputText value="#{msg['lbl.rolewisemenu']}" />
+									</h2>
+								</p:panel>
+								<p:dialog id="update" widgetVar="update" width="270"
+										height="70" showHeader="false" resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background: 224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel
+											value="#{msg['lbl.recordsupdatedsuccessfully']} " />
+										<br />
+										<p:spacer width="15px" />
+										<p:commandButton value="#{msg['lbl.ok']}"
+										onclick="PF('permanentDelete').hide();" immediate="true"/>
+									</p:dialog>
+								<p:panel styleClass="panel_border" >
+								<fieldset>
+								<legend>Search Criteria</legend>
+								<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['lbl.role']}" /><h:outputText value="*" style="color:red;font-weight:bold;" />	
+										</p:panel>
+										<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_right_col">
+										
+										<p:message id="rolemsgId" for="role" display="text" />			
+											<p:selectOneMenu id="role" value="#{rolewiseMenuPermission.roleMasterId}" filter="true" filterMatchMode="startsWith"  required="true" requiredMessage="Please Select Role">
+												<f:selectItem itemLabel="#{msg['lbl.selectrole']}"/>
+												<f:selectItems value="#{rolewiseMenuPermission.roleMasterList}" var="c"  itemLabel="#{c.roleName}" itemValue="#{c.roleId}"/>
+												 <!-- <p:ajax update="role,dataTable,rolemsgId,menuGroupId" listener="#{rolewiseMenuPermission.saveRolewiseMenu}" event="change"/> -->
+												 <p:ajax></p:ajax>
+											</p:selectOneMenu>
+											</p:panel>												
+										</p:panel>
+										</p:panel>
+										<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['lbl.menugroup']}" />
+										</p:panel>
+										
+										<p:panel styleClass="inner_right_col"	>										
+											
+											<p:selectOneMenu id="menuGroupId" value="#{rolewiseMenuPermission.menuGroupId}" filter="true" filterMatchMode="startsWith">
+												<f:selectItem itemLabel="--Select Menu Group--"/>
+												<f:selectItems value="#{rolewiseMenuPermission.menuGroupList}" var="c"  itemLabel="#{c.englishDescription}" itemValue="#{c.menuGroupId}"/>
+												 <p:ajax event="change" update="menuGroupId"></p:ajax>
+												 <!-- <p:ajax update="menuGroupId,dataTable,menuGroupMsgId" listener="#{rolewiseMenuPermission.addToDataTable}" event="change"/> -->
+											</p:selectOneMenu>
+										</p:panel>							
+										
+										</p:panel>
+										
+										<div class="clearfix"></div>
+										<h:panelGroup layout="block" styleClass="shadow_button">											
+											<p:commandButton value="Get List"
+												action="#{rolewiseMenuPermission.saveRolewiseMenu}"
+												immediate="false" ajax="false" style="margin-right:10px; " update="mainPanel,role,dataTable,rolemsgId,roleMasterId">
+											</p:commandButton>
+										</h:panelGroup>											
+									</fieldset>	
+									
+											
+									<div class="clearfix"></div>									
+									<p:panel id="firstPanel" >									
+									<p:spacer height="5px" />
+									<p:panel rendered="#{not empty rolewiseMenuPermission.lstOfRoleWiseDataTable}">
+									
+										<p:dataTable id="dataTable" widgetVar="dataTableWV" var="c" 
+											styleClass="mydatatableclass" value="#{rolewiseMenuPermission.lstOfRoleWiseDataTable}" 
+											 rowIndexVar="rowIndex" 
+											editable="true" editMode="cell"
+											emptyMessage="#{msg['lbl.norecordfound']}"
+											>	
+											
+											
+											
+											<p:column headerText="#{msg['lbl.slNo']}" style="text-align: center !important;">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+											<!-- 
+											<p:column headerText="#{msg['lbl.role']}" 
+												style="text-align: center !important;">	
+												<h:outputText value="#{c.roleName}" />												
+											</p:column> 
+											
+											<p:column headerText="#{msg['lbl.menugroup']}"
+												style="text-align: center !important;">	
+													<h:outputText value="#{c.menuGroupDescription}" />										
+											</p:column> -->
+
+											<p:column headerText="#{msg['lbl.menu']} " 
+												style="text-align: center !important;">	
+																<h:outputText value="#{c.menuDescription}" />								
+											</p:column>
+											
+											 <p:column headerText="#{msg['lbl.grantrevoke']} " 
+												style="text-align: center !important;">	
+												<!-- <f:facet name="header">
+											        <input type="checkbox" id="selecctall"/>
+											    </f:facet>
+												
+														<input class="checkbox1" type="checkbox"  value="#{c.selectedrecord}">
+														
+														</input>  -->
+														
+														 <p:selectBooleanCheckbox  value="#{c.selectedrecord}">													 
+													</p:selectBooleanCheckbox> 
+											</p:column> 	
+																				
+										</p:dataTable>
+										<div class="clearfix"></div>									
+									<h:panelGroup layout="block" id="submit" styleClass="shadow_button" >							
+										  <p:commandButton value="#{msg['lbl.submit']}"  style="margin-right:10px;" action="#{rolewiseMenuPermission.UpdateToRolewiseMenu}"/>											
+									      <div class="clearfix"></div>
+									</h:panelGroup>
+									</p:panel>									
+									
+									
+								</p:panel>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

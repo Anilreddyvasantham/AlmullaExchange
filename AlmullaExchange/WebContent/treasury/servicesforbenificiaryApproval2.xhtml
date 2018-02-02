@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script type="text/javascript">
+		var baseUri = "http://localhost:47289/SigWeb/";		
+		document.onkeydown = function(e) {
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+
+		 history.pushState(null, null, 'servicesforbenificiaryApproval2.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'servicesforbenificiaryApproval2.xhtml');
+		    });
+	</script>
+</h:head>
+
+<p:dialog id="approve" widgetVar="approve" width="270" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+                showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+            	<p:outputLabel value="#{msg['lbl.approveSuccMessage']}" /><br/>
+            	<p:spacer width="15px" />
+            	<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{ benecountryservice.serviceBenificiaryApprovalNavigation}" process="@this"/>          
+</p:dialog>
+
+
+<!-- 
+<p:dialog id="notAuth" widgetVar="notAuth" width="270" height="100" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+                showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+            	<p:outputLabel value="#{msg['lbl.authoMessage']}" /><br/>
+            	<p:spacer width="15px" />
+            	<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{ benecountryservice.notAuthorized}" process="@this"/>          
+</p:dialog> -->
+ 
+<p:confirmDialog id="notAuth" widgetVar="notAuth" width="370" styleClass="red"  showHeader="false" resizable="false" 	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" message="Same User Not Able To Approve The Record">
+      </p:confirmDialog>
+      <p:dialog id="alreadyapprov" widgetVar="alreadyapprov" width="310" height="70" showHeader="false" resizable="false" style=" border:2px solid green !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"  >
+            											<p:outputLabel value="This Record Already Approved By Other Person"/><br/>
+            								<p:spacer width="15px" />
+            											<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{benecountryservice.clickOnOkButton}" process="@this"/>          
+</p:dialog>		
+
+<h:body> 
+          
+	<f:view id="main">
+	
+	
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+							<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+						</td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+								<h:form id="form">
+															<h1>
+								<h:outputText value="#{msg['lbl.benificiary']}" />
+							</h1>
+							<p:panel styleClass="shadow" id="mainPanel">
+							<h3>
+											<h:outputText value="#{msg['lbl.benecountryApproval']}" />
+										</h3>
+		
+								<p:panel styleClass="panel_border">
+								
+									<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.benecountry']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message for="country" display="text"
+														id="countrymsg" />
+										<p:inputText value="#{benecountryservice.countryName}" id="country"  label="Country" readonly="true" >
+										</p:inputText>		 
+													 
+									</p:panel>
+										</p:panel>
+								
+								<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.benecurrency']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message for="currency" display="text"
+														id="courrencymsg" />
+											
+											<p:inputText value="#{benecountryservice.countrycurr}" id="currency"  label="Currency" readonly="true"  >
+										</p:inputText>		
+											</p:panel>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix"/>
+										
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.beneservice']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message for="servic" display="text" id="servicemsg" />
+												
+												<p:inputText value="#{benecountryservice.serviceName}" id="servic"  label="Services" readonly="true" >
+										</p:inputText>
+											
+											
+											
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.beneremitancemode']}"  /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message for="remitance" display="text" id="remitancemsg" />
+									
+										<p:inputText value="#{benecountryservice.remittName}" id="remitance"  label="Remitance" readonly="true" >
+										</p:inputText>
+													
+													
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.benedeliverymode']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message for="delivery" display="text" id="deliverymsg" />
+											
+													
+										<p:inputText value="#{benecountryservice.deliveryName}" id="delivery"  label="Delivery" readonly="true" >
+										</p:inputText> 
+													
+											</p:panel>
+										</p:panel>
+																		
+										
+									<h:panelGroup layout="block" class="clearfix"/>
+									<p:spacer height="10px"/>
+									<h:panelGroup layout="block" class="clearfix"/>
+									<h:panelGroup layout="block" styleClass="shadow_button">
+									<p:commandButton value="#{msg['lbl.approve']}" action="#{benecountryservice.approveSelectedBeneCountryService}"   style="margin-right:10px;" update="mainPanel"/>
+									<p:commandButton value="#{msg['lbl.cancel']}" action="#{benecountryservice.serviceBenificiaryApprovalNavigation}"  style="margin-right:10px; "  immediate="true"/>	
+									<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+
+								
+
+						<h:panelGroup layout="block" class="clearfix"/>
+						<p:spacer height="20px"/>
+						
+						<h:panelGroup layout="block" class="clearfix"/>
+									<!-- <h:panelGroup layout="block" styleClass="shadow_button"  rendered="#{benecountryservice.datatable}">
+									    <p:commandButton value="Approve"  action="#{benecountryservice.save}"  update="mainPanel"   style="margin-right:10px;" process="@this"/>
+										
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup> -->
+									<h:panelGroup layout="block" class="clearfix"/>
+									
+									<h:panelGroup layout="block" class="clearfix"/>
+										<!-- <p:panel styleClass="left_col" >
+				<h:outputText   value=" #{msg['lbl.*filedsAreMandatory']}"  style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />-->								</p:panel>
+								<h:panelGroup layout="block" class="clearfix"/>
+								</p:panel>
+								</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"/>
+						
+					</h:panelGroup>
+					<h:panelGroup layout="block" class="clearfix"/>
+					</td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+
+		 history.pushState(null, null, 'highValueDealRequestEnquiry.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'highValueDealRequestEnquiry.xhtml');
+		    });
+	</script>
+
+</h:head>
+
+
+<h:body dir="#{facesBean.direction}">
+
+								
+
+	<f:view locale="#{facesBean.locale}">
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<f:event listener="#{searchCustomer.requestType}" type="preRenderView"/>
+		<table align="left" width="100%" style="height:100%;">
+    <tr>
+    <td align="left" valign="top" style="height:100%;" ><ui:include src="#{facesBean.fxdeal_menu}"></ui:include></td>
+    <td  class="rightColumn" valign="top">
+		<h:panelGroup layout="block" class="container">
+			<h:panelGroup layout="block" class="main_div">
+			<div class="menu_button"><img style="cursor: pointer;  position:relative; left:15px;" id="HideHandle" name="HideHandle" src="../images/toggle_plus.png" alt="" onclick='hideLeftCol("leftCol");closeMenus();'/></div>
+								<h1>
+									<h:outputText value="#{msg['lbl.highValueDealRequestEnquiry']}" />
+								</h1>
+				<h:form id="inputForm">
+
+
+<p:confirmDialog id="noRecords" widgetVar="noRecords" 
+		resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.nodatafound']} ">
+</p:confirmDialog>
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important; ">
+												<p:graphicImage value="../images/processImg.gif" style="float: left !important; margin-right: 24px !important; "/>
+												<p:outputLabel value="Please wait ........" style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+
+				
+					<p:panel id="mainPanel" styleClass="shadow" style="margin: 20px 10px !important; background-color:#FFF !important;">
+						
+								
+								
+								
+								
+								
+								<h2>
+									<h:outputText value="#{msg['lbl.highValueDealRequestEnquiry']}" />
+								</h2>
+								<p:panel styleClass="panel_border"  id="borderPanel">
+								<p:confirmDialog id="csp" widgetVar="csp"   showHeader="false" resizable="false" header="Warning Message" styleClass="warning"
+														style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="explode" hideEffect="explode" message="#{highVlaueDealRequestEnqBean.errorMsg}">
+	  						    </p:confirmDialog>
+							
+						        <p:confirmDialog id="nullPoiterId"
+                                                                     widgetVar="nullPoiterId" resizable="false"
+                                                                     style="background-color: white !important;"
+                                                                     header="#{msg['lbl.warningDailog']}" styleClass="warning"
+                                                                     showEffect="clip" hideEffect="clip" closeOnEscape="true"
+                                                                     closable="true"
+                                                                     message="#{highVlaueDealRequestEnqBean.errorMsg} - #{msg['lbl.nullPonterExcepetion']}">
+						       </p:confirmDialog>
+
+								
+							<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.exchangecountry']}" />
+												<h:outputText value="*" style="color:red;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgCountryId" for="countryId" display="text" />
+											<p:selectOneMenu id="countryId" value="#{highVlaueDealRequestEnqBean.exchangeCountryId}" required="true" requiredMessage="Please select exchange country" filter="true" filterMatchMode="contains">
+											<f:selectItem itemLabel="#{msg['lbl.pleaseSelectExchangeCountry']}" itemValue=""/>
+											<f:selectItems value="#{highVlaueDealRequestEnqBean.businessCountryList}" var="c" itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}" itemValue="#{c.fsCountryMaster.countryId}"/>
+											<p:ajax event="change" listener="#{highVlaueDealRequestEnqBean.populateCountryCurrency}" update="currencyPanel"/>
+											</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+								
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.date']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText
+													value="#{highVlaueDealRequestEnqBean.currentDate}"
+													id="validPanel" readonly="true">
+													<f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										<div class="clearfix"></div>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currency']}" />
+												<h:outputText value="*" style="color:red;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col" id="currencyPanel">
+											<p:message id="msgCurrencyId" for="currencyId" display="text" />
+											<p:selectOneMenu id="currencyId" value="#{highVlaueDealRequestEnqBean.currencyId}" required="true" requiredMessage="Please select exchange country" filter="true" filterMatchMode="contains">
+											<f:selectItem itemLabel="#{msg['lbl.plsSelectCurrency']}" itemValue=""/>
+											<f:selectItems value="#{highVlaueDealRequestEnqBean.countryCurrencyList}" var="c" itemLabel="#{c.currencyCode} - #{c.currencyName}" itemValue="#{c.currencyId}"/>
+											</p:selectOneMenu>
+												
+											</p:panel>
+										</p:panel>
+								
+								<div class="clearfix"></div>
+									<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.enquiry']}"  
+												action="#{highVlaueDealRequestEnqBean.populateHighValueDetails}"
+												update="borderPanel"
+												onclick="process.show();"
+												oncomplete="process.hide();" />
+											<p:commandButton value="#{msg['lbl.clear']}" action="#{highVlaueDealRequestEnqBean.clearAll}" 	update="borderPanel" />
+										</h:panelGroup>
+								
+								
+							
+								<p:dataTable value="#{highVlaueDealRequestEnqBean.highValDealReqEnqList}"  rendered="#{highVlaueDealRequestEnqBean.renderDataTable}"  styleClass="mydatatableclass"
+									var="o"  widgetVar="50" editable="true"  
+									emptyMessage="#{msg['lbl.norecordfound']}" paginatorPosition="bottom"
+											rows="10"  paginator="true"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  rowsPerPageTemplate="5,10,15">
+
+									<p:column headerText="#{msg['lbl.requestNumber']}">
+										<p:outputLabel value="#{o.requestNumber}" style="text-align:center;"/>
+									</p:column>
+
+									<p:column headerText="#{msg['lbl.beneficieryBank']}">
+										<p:outputLabel value="#{o.beneficieryBankName}" style="text-align:center;"/>
+									</p:column>
+
+									<p:column headerText="#{msg['lbl.fcamount']}">
+										<p:outputLabel value="#{o.fcAmount}" style="text-align:center;"/>
+									</p:column>
+
+									<p:column headerText="#{msg['lbl.valuedate']}">
+										<p:outputLabel value="#{o.valueDate}" style="text-align:center;">
+										<f:convertDateTime  pattern="dd/MM/YYYY"/>
+										</p:outputLabel>
+										
+										
+									</p:column>
+
+									<p:column headerText="#{msg['lbl.sellrate']}">
+										<p:outputLabel value="#{o.sellRate}" style="text-align:center;"/>
+									</p:column>
+									
+									<p:column headerText="#{msg['lbl.customerNumber']}">
+										<p:outputLabel value="#{o.customerName}" style="text-align:center;"/>
+									</p:column>
+									
+								</p:dataTable>
+									<div class="clearfix"></div>
+									</p:panel>
+								
+							</p:panel>
+						</h:form>
+					
+				
+			</h:panelGroup>
+		</h:panelGroup>
+		<div class="clearfix"></div>
+    				
+    				</td>
+    </tr>
+    </table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+
+
+</html>

@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<style>
+.ui-panel .shadow_button1 {
+	margin: 10px auto !important;
+	width: auto !important;
+	display: table;
+	text-align: center !important;
+	padding: 0px !important;
+	border: 0 !important;
+}
+
+.shadow_button1 {
+	margin: 10px auto !important;
+	width: auto !important;
+	display: table;
+	text-align: center !important;
+}
+
+.ui-panel .panel_border1 {
+	border: 1px solid #000000 !important;
+	padding: 0px 10px !important;
+	-webkit-border-radius: 0 4px 4px 4px !important;
+	border-radius: 0 4px 4px 4px !important;
+}
+*
+</style>
+<script type="text/javascript" language="javascript">
+	document.onkeydown = function(e) {
+		//Enter button pressed 
+		/* if (e.keyCode === 13) {
+			return false;
+		} */
+	};
+
+	 history.pushState(null, null, 'CurrencyGL_CountryLevel.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'CurrencyGL_CountryLevel.xhtml');
+	    });
+	    </script>
+</h:head>
+
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<h:form id="form">
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;"><ui:include
+							src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle"
+										src="../images/toggle_plus.png" alt=""
+										onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+								<h1>
+									<h:outputText value="#{msg['lbl.averageratebalanceinquiry']}" />
+								</h1>
+
+								<p:panel styleClass="shadow" id="mainPanel"
+									style="background-color:#FFF !important; ">
+
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{currencyGl_CountryLevelInquiry.exceptionMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="dataexception" widgetVar="dataexception"
+										header="Error Message" resizable="false" width="700"
+										style="background-color: white !important;"
+										styleClass="warning" showEffect="clip" hideEffect="clip"
+										closeOnEscape="true" closable="true"
+										message="#{currencyGl_CountryLevelInquiry.exceptionMessage}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="norecords" widgetVar="norecords" width="400"
+										height="20" resizable="false"
+										style=" border:2px solid green !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{msg['lbl.recordnotfound']}">
+									</p:confirmDialog>
+
+									<p:panel styleClass="panel_border1">
+
+										<p:spacer height="10px" />
+
+										<p:panel styleClass="left_col" id="pnlCurrency">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currency']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="currencyId" display="text" id="msgcurrencid" />
+												<p:selectOneMenu id="currencyId"
+													value="#{currencyGl_CountryLevelInquiry.currencyCode}"
+													filter="true" filterMatchMode="contains">
+													<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{currencyGl_CountryLevelInquiry.currencyList}"
+														var="c" itemLabel="#{c.currencyCode} - #{c.currencyName}"
+														itemValue="#{c.currencyCode}" />
+													<p:ajax update="msgcurrencid" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.selectoption']}" />
+													<h:outputText value="*" style="color:Red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="glcountrylevel" display="text" id="msgglcountrylevel" />
+													<p:selectOneMenu id="glcountrylevel"
+														value="#{currencyGl_CountryLevelInquiry.searchDetails}"
+														filter="true" filterMatchMode="contains" required="true"
+														requiredMessage="Please Select GL/COUNTRY Level">
+														<f:selectItem
+															itemLabel="#{msg['lbl.selectglcountry']}"
+															itemValue="" />
+														<f:selectItem itemValue="GL_LEVEL" itemLabel="GL LEVEL" />
+														<f:selectItem itemValue="COUNTRY_CURRENCY_LEVEL" itemLabel="COUNTRY/CURRENCY LEVEL" />
+														<p:ajax update="msgglcountrylevel"/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+										<div class="clearfix"></div>
+										<div class="clearfix"></div>
+										<div class="clearfix"></div>
+
+										<h:panelGroup layout="block" styleClass="shadow_button1">
+											<p:commandButton id="search" value="#{msg['lbl.search']}"
+												style="margin-right:10px;"
+												action="#{currencyGl_CountryLevelInquiry.searchCurrencyGLCountryDetails}"
+												update="mainPanel" onstart="process.show();"
+												onsuccess="process.hide();" />
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{currencyGl_CountryLevelInquiry.exit}" process="@this" />
+											<div class="clearfix"></div>
+										</h:panelGroup>
+										<div class="clearfix"></div>
+
+										<p:dataTable editable="true" id="currencyGL" rows="10"
+											value="#{currencyGl_CountryLevelInquiry.currencyGLLevelDataTable}"
+											paginator="true" editMode="cell" var="cfe"
+											rowIndexVar="rowIndex" rowsPerPageTemplate="10,20,30"
+											emptyMessage="#{msg['lbl.norecordfound']}"
+											styleClass="mydatatableclass" paginatorPosition="bottom"
+											rendered="#{currencyGl_CountryLevelInquiry.booRenderGLLevelDataTable}">
+											
+											<p:columnGroup type="header">
+													<p:row>
+														<p:column rowspan="2" headerText="#{msg['lbl.sino']}" />
+														<p:column colspan="2" headerText="#{msg['lbl.bank']}" />
+														<p:column colspan="2" headerText="#{msg['lbl.currency']}" />
+														<p:column rowspan="2" headerText="#{msg['lbl.glno']}" />
+														<p:column rowspan="2" headerText="#{msg['lbl.foreBal']} " />
+														<p:column rowspan="2" headerText="#{msg['lbl.currenctbalance']} " />
+														<p:column rowspan="2" headerText="#{msg['lbl.averagerate']} " />
+													</p:row>
+											</p:columnGroup>
+
+											<p:column style="width:3% !important; text-align:center !important; margin-left:10px;">
+													<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+											
+											<p:column style="width:4% !important; text-align:center !important; margin-left:10px;">
+												<p:outputLabel value="#{cfe.bankCode}" style="float:left;margin-left:7px;"  />
+											</p:column>
+											
+											<p:column style="width:15% !important; text-align:center !important; margin-left:10px;">
+												<p:outputLabel value="#{cfe.bankName}" style="float:left;margin-left:7px;" />
+											</p:column>
+											
+											<p:column style="width:3% !important; text-align:center !important; margin-left:10px;">
+												<p:outputLabel value="#{cfe.currencyCode}" style="float:left;margin-left:7px;" />
+											</p:column>
+											
+											<p:column style="width:8% !important; text-align:center !important; margin-left:10px;">
+												<p:outputLabel value="#{cfe.currencyName}" style="float:left;margin-left:7px;" />
+											</p:column>
+											
+											<p:column style="width:10% !important; text-align:center !important; margin-left:10px;">
+												<p:outputLabel value="#{cfe.glNo}" style="float:left;margin-left:7px;" />
+											</p:column>
+											
+											<p:column style="width:5% !important; text-align:center !important; margin-left:10px;">
+												<p:outputLabel value="#{cfe.foreignBalance}" style="float:right;margin-right:7px;" />
+											</p:column>
+											
+											<p:column style="width:5% !important; text-align:center !important; margin-left:10px;">
+												<p:outputLabel value="#{cfe.currentBalance}" style="float:right;margin-right:7px;" />
+											</p:column>
+											
+											<p:column style="width:5% !important; text-align:center !important; margin-left:10px;">
+												<p:outputLabel value="#{cfe.averageRate}" style="float:left;margin-left:7px;" />
+											</p:column>
+
+										</p:dataTable>
+										
+										<p:spacer height="10px" />
+										
+										<p:dataTable editable="true" id="currencyCountry" rows="10"
+											value="#{currencyGl_CountryLevelInquiry.currencyCountryLevelDataTable}"
+											paginator="true" editMode="cell" var="cfe"
+											rowIndexVar="rowIndex" rowsPerPageTemplate="10,20,30"
+											emptyMessage="#{msg['lbl.norecordfound']}"
+											styleClass="mydatatableclass" paginatorPosition="bottom"
+											rendered="#{currencyGl_CountryLevelInquiry.booRenderCountryCurrencyLevelDataTable}">
+											
+											<p:columnGroup type="header">
+													<p:row>
+														<p:column rowspan="2" headerText="#{msg['lbl.sino']}" />
+														<p:column colspan="2" headerText="#{msg['lbl.country']}" />
+														<p:column colspan="2" headerText="#{msg['lbl.currency']}" />
+														<p:column rowspan="2" headerText="#{msg['lbl.foreBal']} " />
+														<p:column rowspan="2" headerText="#{msg['lbl.currenctbalance']} " />
+														<p:column rowspan="2" headerText="#{msg['lbl.averagerate']} " />
+													</p:row>
+											</p:columnGroup>
+
+											<p:column style="width:3% !important; text-align:center !important; margin-left:10px;">
+													<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+											
+											<p:column style="width:4% !important; text-align:center !important; margin-left:10px;">
+												<p:outputLabel value="#{cfe.countryCode}" style="float:left;margin-left:7px;" />
+											</p:column>
+											
+											<p:column style="width:15% !important; text-align:center !important; margin-left:10px;">
+												<p:outputLabel value="#{cfe.countryName}" style="float:left;margin-left:7px;" />
+											</p:column>
+											
+											<p:column style="width:3% !important; text-align:center !important; margin-left:10px;">
+												<p:outputLabel value="#{cfe.currencyCode}" style="float:left;margin-left:7px;" />
+											</p:column>
+											
+											<p:column style="width:8% !important; text-align:center !important; margin-left:10px;">
+												<p:outputLabel value="#{cfe.currencyName}" style="float:left;margin-left:7px;" />
+											</p:column>
+											
+											<p:column style="width:5% !important; text-align:center !important; margin-left:10px;">
+												<p:outputLabel value="#{cfe.foreignBalance}" style="float:right;margin-right:7px;" />
+											</p:column>
+											
+											<p:column style="width:5% !important; text-align:center !important; margin-left:10px;">
+												<p:outputLabel value="#{cfe.currentBalance}" style="float:right;margin-right:7px;" />
+											</p:column>
+											
+											<p:column style="width:5% !important; text-align:center !important; margin-left:10px;">
+												<p:outputLabel value="#{cfe.averageRate}" style="float:left;margin-left:7px;" />
+											</p:column>
+
+										</p:dataTable>
+										
+										<p:spacer height="10px" />
+										<h:panelGroup layout="block" styleClass="shadow_button1"
+											rendered="#{currencyGl_CountryLevelInquiry.booRenderClear}">
+											<p:commandButton value="#{msg['lbl.clear']}"
+												action="#{currencyGl_CountryLevelInquiry.clearAllFields}"
+												process="@this" update="mainPanel"/>
+										</h:panelGroup>
+										
+										<p:spacer height="5px" />
+										
+										<p:panel styleClass="left_col">
+											<h:outputText value="#{msg['lbl.fieldaremandatory']}"
+												style="color:red; padding:10px !important; font-size:10px;" />
+										</p:panel>
+										
+										<p:spacer height="5px" />
+
+									</p:panel>
+
+									<p:spacer height="20px" />
+
+								</p:panel>
+
+								<p:spacer height="20px" />
+
+							</h:panelGroup>
+							<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+						</h:panelGroup></td>
+				</tr>
+			</table>
+		</h:form>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

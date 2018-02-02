@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+		history.pushState(null, null, 'loyaltypromotionsettings.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'loyaltypromotionsettings.xhtml');
+	    });
+	</script>
+</h:head>
+<p:confirmDialog id="dataNotFund" widgetVar="dataNotFund" width="400"
+	height="17" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background: 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.addAlteastOneRecordtoDataTable']}">
+</p:confirmDialog>
+<p:confirmDialog id="noRecords" widgetVar="noRecords" width="300" resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.noRecordFound']}">
+</p:confirmDialog>
+
+<p:confirmDialog id="selectOne" widgetVar="selectOne" width="300" resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="Please Select Loyalty Parameter">
+</p:confirmDialog>
+
+<p:confirmDialog id="datatable" widgetVar="datatable" width="300" showHeader="false" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" header="#{msg['lbl.warningDailog']}" message="#{msg['lbl.recrdAlreadyExisted']}">
+</p:confirmDialog>
+
+<p:confirmDialog id="codeExist" widgetVar="codeExist" width="300" showHeader="false" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" header="#{msg['lbl.warningDailog']}" message="#{msg['lbl.complaintTypeCodeAlreadyExist']}">
+</p:confirmDialog>
+
+<p:confirmDialog id="datevalid" widgetVar="datevalid" width="500" header="#{msg['lbl.warningDailog']}" height="20" resizable="false"
+	style=" border:2px solid gray !important; padding:0px !important;  color:solid green !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="explode" closeOnEscape="true" closable="true" message=" #{msg['lbl.effectiveToDateGreaterThanEffectiveFrom']} ">
+</p:confirmDialog>
+
+
+<p:confirmDialog header="#{msg['lbl.warningdialog']}" id="notDelete" widgetVar="notDelete" width="400" height="50" resizable="false"
+	style=" border:2px solid green !important; padding:0px !important;  color:green !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.couldNotAbleToDeleteRecord']}">
+</p:confirmDialog>
+
+<p:confirmDialog id="duplicate" widgetVar="duplicate" width="400" height="17" resizable="false"
+	style=" border:2px solid green !important; padding:0px !important;  color:green !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.recrdAlreadyAddedToDt']}">
+</p:confirmDialog>
+<p:dialog id="alreadyapprov" widgetVar="alreadyapprov" width="310" height="70" showHeader="false" resizable="false" style=" border:2px solid green !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+                      showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"  >
+            <p:outputLabel value="#{msg['lbl.thisrecordalreadyapprovedby']}"/><br/>
+            <p:spacer width="15px" />
+            <p:commandButton value="#{msg['lbl.ok']}" actionListener="#{loyaltyPromotionSetting.loyaltyPromotionApprovedByOhterPerson}" process="@this"/>          
+</p:dialog>
+<p:dialog id="approve" widgetVar="approve" width="400" height="80" resizable="false" style="background-color: white !important;" styleClass="success" header="#{msg['lbl.success']}" closable="false" showEffect="clip" hideEffect="clip" modal="true">
+<p:outputLabel value="#{msg['lbl.approvedsuccessfully']}" style="text-align: center; font-size:15px !important;" /><br />
+<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{loyaltyPromotionSetting.clickOnOKApprove}" process="@this" style="margin-left: 150px !important;" />
+	</p:dialog>	
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form">
+								<h1>
+									<h:outputText value="#{msg['lbl.loyaltyPromotionSettingMaster']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+								
+								
+									<h2>
+										<h:outputText value="#{msg['lbl.loyaltyPromotionSettingMaster']}" />
+									</h2>
+
+<p:dialog id="complete" widgetVar="complete" width="400" height="80" resizable="false" style="background-color: white !important;"
+styleClass="success" header="#{msg['lbl.success']}" closable="false" showEffect="clip" hideEffect="clip" modal="true">
+<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']}" style="text-align: center; font-size:15px !important;" /><br />
+<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{loyaltyPromotionSetting.clickOnOKSave}" process="@this" style="margin-left: 150px !important;" />
+</p:dialog>
+<p:dialog id="permanentDelete" widgetVar="permanentDelete" width="400" height="80" resizable="false" style="background-color: white !important;" styleClass="warning" header="#{msg['lbl.deleteRecrd']}" closable="false" showEffect="clip" hideEffect="clip" modal="true">
+<p:outputLabel value="#{msg['lbl.douWantDeleteRecordPermentely']}" style="text-align: center; font-size:15px !important;" /><br />
+<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{loyaltyPromotionSetting.confirmPermanentDelete}" process="@this" oncomplete="PF('permanentDelete').hide();" update="mainPanel" style="margin-left: 150px !important;" />
+<p:commandButton value="#{msg['lbl.cancel']}" onclick="PF('permanentDelete').hide();" immediate="true" style="margin-left:10px;" />
+</p:dialog>
+<p:dialog id="activateRecord" widgetVar="activateRecord" width="400" height="80" resizable="false" style="background-color: white !important;" styleClass="warning" header="#{msg['lbl.activateRecrd']}" closable="false" showEffect="clip" hideEffect="clip" modal="true">
+					<p:outputLabel value="#{msg['lbl.doyouactivaterecord']}" style="text-align: center; font-size:15px !important;" /><br />
+					<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{loyaltyPromotionSetting.activateRecord}" process="@this" oncomplete="PF('activateRecord').hide();" update="mainPanel" style="margin-left: 150px !important;" />
+					<p:commandButton value="#{msg['lbl.cancel']}" onclick="PF('activateRecord').hide();" immediate="true" style="margin-left:10px;" />
+</p:dialog>
+
+<p:dialog id="update" widgetVar="update" width="270" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background: 224px 45px no-repeat #FFF !important;"
+showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+<p:outputLabel value="#{msg['lbl.recordsupdatedsuccessfully']} " /><br />
+<p:spacer width="15px" />
+<p:commandButton value="#{msg['lbl.ok']}" process="@this" update="mainPanel" />
+</p:dialog>
+<p:dialog id="pending" widgetVar="pending" width="400" height="80" resizable="false" style="background-color: white !important;"
+styleClass="warning" header="#{msg['lbl.warningDailog']}" closable="false" showEffect="clip" hideEffect="clip" modal="true">
+<p:outputLabel value="#{msg['lbl.plsApproveRecord']}" style="text-align: center; font-size:15px !important;" /><br />
+<p:commandButton value="#{msg['lbl.ok']}" onclick="PF('pending').hide();" immediate="true" style="margin-left: 150px !important;" />
+</p:dialog>
+<p:dialog id="delete" widgetVar="delete" width="270" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background: 224px 45px no-repeat #FFF !important;"
+showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+<p:outputLabel value="#{msg['lbl.art.delsuccess']} " /><br /><p:spacer width="15px" />
+<p:commandButton value="#{msg['lbl.ok']}" process="@this" update="mainPanel" />
+</p:dialog>
+
+		<p:dialog id="remarks" widgetVar="remarks" width="480" resizable="false" style="background-color: white !important;" styleClass="info" header="Remarks" closable="false" showEffect="clip" hideEffect="clip" modal="true">
+                             		<p:panel>
+                             		<table>
+                             		<tr>
+                             		<td> <h:outputText value="#{msg['lbl.approvedDate']}" /></td>
+                             		<td><h:outputText value="#{loyaltyPromotionSetting.approvedDate}" style="color:red !important;"/> </td>
+                             		</tr>
+                             		<tr>
+                             		<td> <h:outputText value="#{msg['lbl.approvedBy']}" /> </td>
+                             		<td>	<h:outputText  value="#{loyaltyPromotionSetting.approvedBy}"  style="color:red !important;"/> </td>
+                             		</tr>
+                             		</table>
+                             		</p:panel>
+                             		<p:spacer height="10px"/>
+                             		<p:panel>
+                             		<h:outputText value="#{msg['lbl.enterremarks']}" /><h:outputText value="*" style="color:red !important;" />
+                             		</p:panel>
+                             		<p:spacer height="5px"/>
+                             		<p:panel>
+                             		<h:inputTextarea id="remarksId" value="#{loyaltyPromotionSetting.remarks}" validatorMessage="Maximum 255 charectors allowed" >
+                                           <f:validateLength maximum="255"/>
+                                            <p:ajax/>
+                                     </h:inputTextarea>
+                                    </p:panel>
+                                    <p:spacer height="5px"/>
+                                   	<p:panel style="padding-left:160px;">
+                                        <p:commandButton value="#{msg['lbl.ok']}" actionListener="#{loyaltyPromotionSetting.remarkSelectedRecord}" process="@this" /> 
+            							<p:commandButton value="#{msg['lbl.cancel']}" actionListener="#{loyaltyPromotionSetting.cancelRemarks}" process="@this"/> 
+                             </p:panel>
+                               </p:dialog>
+
+									<p:panel styleClass="panel_border">
+										<p:confirmDialog id="error" widgetVar="error"  
+											resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" 
+											showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{loyaltyPromotionSetting.errorMessage}" >
+											</p:confirmDialog>
+											
+											<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"  
+												resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" 
+												showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{loyaltyPromotionSetting.errorMessage} - #{msg['lbl.nullPonterExcepetion']}" >
+												</p:confirmDialog>
+										<!-- <p:panel id="firstPanel"> -->
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.templateCode']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:message id="msgTemplateCode"  for="templateCode" display="text" />
+												<p:message id="msgTemplate"  for="templateCode" display="text" />
+											 <p:autoComplete  id="templateCode"  value="#{loyaltyPromotionSetting.templateCode}"  completeMethod="#{loyaltyPromotionSetting.autoComplete}"  maxResults="10" required="true" requiredMessage="Please Select Positive Numbers"  
+							 readonly="#{loyaltyPromotionSetting.booRead}" tabindex="1" > 
+														<p:ajax update="msgTemplateCode,msgTemplate,error" event="itemSelect"  listener="#{loyaltyPromotionSetting.populate}"   />
+														<p:ajax update="msgTemplateCode,msgTemplate,error" event="blur"  listener="#{loyaltyPromotionSetting.populate}"   process="@this"/>
+											</p:autoComplete>
+											</p:panel>
+										</p:panel>
+											
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.parameter']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="loyaltyParameterId" display="text"
+														id="loyaltyParameterIdmsg" />
+													<p:selectOneMenu id="loyaltyParameterId"
+														value="#{loyaltyPromotionSetting.loyaltyParameterId}"
+														filter="true" required="true" filterMatchMode="constains"
+														requiredMessage="Please Select Loyalty Parameter " tabindex="2" disabled="#{loyaltyPromotionSetting.booRead}">
+														<f:selectItem
+															itemLabel="#{msg['lbl.selectLoyaltyParameter']}"
+															itemValue="" />
+															
+													<f:selectItems value="#{loyaltyPromotionSetting.lstOfLoyaltyParameter}" var="c" itemLabel="#{c.templateCriteria}" itemValue="#{c.loyaltyParameterId}" />
+														 <p:ajax event="change" update="loyaltyParameterId,loyaltyParameterIdmsg" /> 	
+												
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.branch']} " />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="branchId" display="text" id="branchIdmsg" />
+													<p:selectOneMenu id="branchId" value="#{loyaltyPromotionSetting.branchId}" filter="true" filterMatchMode="constains"  required="true" requiredMessage="#{msg['lbl.plsSelectFromLocation']}" disabled="#{loyaltyPromotionSetting.booRead}" tabindex="3">
+													<f:selectItem
+															itemLabel="#{msg['lbl.selectbranch']}"
+															itemValue="" />
+													<f:selectItems value="#{loyaltyPromotionSetting.lstOfCountryBranch}" var="c" itemLabel="#{c.branchId} - #{c.branchName}" itemValue="#{c.countryBranchId}" />
+														 <p:ajax event="change" update="branchId,branchIdmsg,booSubmitPanel" listener="#{loyaltyPromotionSetting.disableSubmit}"/> 	
+												
+												</p:selectOneMenu>
+													
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.description']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="templateDescription" display="text"
+														id="templateDescriptionmsg" />
+													<p:inputText id="templateDescription"
+														value="#{loyaltyPromotionSetting.templateDescription}"
+														required="true" requiredMessage="Please enter Field Name"
+														maxlength="10" readonly="#{loyaltyPromotionSetting.booRead}" tabindex="4">
+														<p:ajax event="change"
+															update="templateDescription,templateDescriptionmsg" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.effectiveFrom']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="startDate" display="text" id="msgstartDate" />
+													<p:calendar id="startDate"
+														value="#{loyaltyPromotionSetting.startDate}"
+														required="true"
+														requiredMessage="Please select Effective Start Date"
+														readonlyInput="true" navigator="true"
+														maxdate="#{java.util.Date()}+0" pattern="dd/MM/yyyy" disabled="#{loyaltyPromotionSetting.booRead}" tabindex="5">
+
+														<p:ajax event="dateSelect" update="msgstartDate" />
+													</p:calendar>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.effectiveTo']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="endDate" display="text" id="msgendDate" />
+													<p:calendar id="endDate"
+														value="#{loyaltyPromotionSetting.endDate}" required="true"
+														requiredMessage="Please select End Date" navigator="true"
+														readonlyInput="true" mindate="#{java.util.Date()}+0"
+														pattern="dd/MM/yyyy" disabled="#{loyaltyPromotionSetting.booRead}" tabindex="6">
+														<p:ajax event="dateSelect"
+															listener="#{loyaltyPromotionSetting.checkToDateValidator}"
+															update="msgendDate" />
+													</p:calendar>
+												</p:panel>
+											</p:panel>
+
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.releaseFlag']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="releaseFlag" display="text" id="releaseFlagmsg" />
+													<p:selectOneMenu id="releaseFlag"
+														value="#{loyaltyPromotionSetting.releaseFlag}" filter="true"
+														required="true" filterMatchMode="startsWith"
+														requiredMessage="Please Select Release FLag"
+														disabled="#{loyaltyPromotionSetting.booRead}" tabindex="7">
+														<f:selectItem itemLabel="#{msg['lbl.selectReleaseFlag']}"
+															itemValue="" />
+														<f:selectItem itemLabel="#{msg['lbl.yes']}" itemValue="Y" />
+														<f:selectItem itemLabel="#{msg['lbl.no']}" itemValue="N" />
+
+														<p:ajax event="change" update="releaseFlagmsg" listener="#{loyaltyPromotionSetting.disableSubmit}"/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<h:outputText id="mandatory"
+													value=" #{msg['lbl.*filedsAreMandatory']}"
+													style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+												<h:panelGroup layout="block" class="clearfix" />
+												<h:outputText value="#{msg['lbl.arbicLanguaue']}"
+													style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+											</p:panel>
+
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" styleClass="shadow_button" id="booClearPanel" rendered="#{loyaltyPromotionSetting.booAdd}" >						
+										<p:commandButton value="#{msg['lbl.add']}" action="#{loyaltyPromotionSetting.duplicateChekingLoyaltyCatagoryCode}" style="margin-right:10px;" update="mainPanel" tabindex="8"/>
+										<p:commandButton value="#{msg['lbl.view']}" action="#{loyaltyPromotionSetting.viewLoyaltyCatagoryMethod}" style="margin-right:10px;" disabled="#{loyaltyPromotionSetting.booClearPanel}" update="mainPanel" process="@this" onstart="process.show();" onsuccess="process.hide();" tabindex="9"/>
+										<p:commandButton value="#{msg['lbl.clear']}" action="#{loyaltyPromotionSetting.clearAll}" style="margin-right:10px;" disabled="#{loyaltyPromotionSetting.booClearPanel}" immediate="true" process="@this" update="mainPanel" tabindex="10" /> 
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+									<h:panelGroup layout="block" class="clearfix"/>
+									<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{loyaltyPromotionSetting.booApproval}">						
+										<p:commandButton value="#{msg['lbl.approve']}" action="#{loyaltyPromotionSetting.loyaltyPromotionSettingApproveRecord}" style="margin-right:10px;" process="@this" immediate="true"/>
+										<p:commandButton value="#{msg['lbl.cancel']}" action="#{loyaltyPromotionSetting.loyaltyPromotionSettingCancel}" style="margin-right:10px;" update="mainPanel" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+									
+										
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										
+											<p:panel id="dataPanel">
+												<p:dataTable id="dataTable" var="c" rows="10"
+													styleClass="mydatatableclass"
+													value="#{loyaltyPromotionSetting.lstLoyaltyPromotionSettingDataTables}"
+													paginator="true"
+													paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+													rowsPerPageTemplate="5,10,15" rowIndexVar="rowIndex"
+													emptyMessage="#{msg['lbl.norecordfound']}"
+													paginatorPosition="bottom" rendered="#{loyaltyPromotionSetting.booRenderDataTable}">
+
+													<p:column headerText="#{msg['lbl.sino']}"
+														style="width:50px;">
+														<h:outputText value="#{rowIndex+1}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.templateCode']}">
+														<h:outputText value="#{c.templateCode}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.parameter']}">
+														<h:outputText value="#{c.description}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.branch']}">
+														<h:outputText value="#{c.branchName}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.description']}">
+														<h:outputText value="#{c.templateDescription}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.effectiveFrom']}">
+														<h:outputText value="#{c.startDate}"  >
+														<f:convertDateTime pattern="dd/MM/yyyy" timeZone="GMT+7"/></h:outputText>
+													</p:column>
+													
+													<p:column headerText="#{msg['lbl.releaseFlag']}">
+														<h:outputText value="#{c.releaseFlag}"/>
+													</p:column>
+													
+
+													<p:column headerText="#{msg['lbl.effectiveTo']}">
+														<h:outputText value="#{c.endDate}" >
+														<f:convertDateTime pattern="dd/MM/yyyy" timeZone="GMT+7"/>
+														</h:outputText>
+													</p:column>													
+
+													<p:column headerText="#{msg['lbl.edit']}">
+														<p:commandButton id="imgEdit" styleClass="edit" value=""
+															action="#{loyaltyPromotionSetting.editLoyaltyCatagoryMethod(c)}"
+															disabled="#{loyaltyPromotionSetting.booEditButton}"
+															update="dataTable,:form:mainPanel" process="@this" />
+
+													</p:column>
+													
+													
+
+													<p:column headerText="#{msg['lbl.active/deactive']}"
+														style="text-align:center !important;">
+														<p:commandLink
+															value="#{c.dynamicLabelForActivateDeactivate}"
+															update="dataTable,:form:mainPanel"
+															action="#{loyaltyPromotionSetting.checkStatusType(c)}"
+															process="@this"
+															style="color:blue !important; text-decoration:underline !important;"
+															immediate="true" />
+													</p:column>
+												</p:dataTable>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:spacer height="10px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{loyaltyPromotionSetting.booSaveOrExit}"
+												id="booSubmitPanel">
+												<p:commandButton value="#{msg['lbl.submit']}"
+													action="#{loyaltyPromotionSetting.saveAllLoyaltyCatagoryMethod}"
+													style="margin-right:10px; " process="@this" tabindex="11"
+													disabled="#{loyaltyPromotionSetting.booSubmitPanel}" />
+												<p:commandButton value="#{msg['lbl.exit']}"
+													action="#{loyaltyPromotionSetting.exit}" process="@this"
+													tabindex="12" />
+											</h:panelGroup>
+										<!-- </p:panel> -->
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" class="clearfix" />
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+									<p:dialog modal="true" showHeader="true"
+										header="#{msg['lbl.bco.plswait']}" widgetVar="process"
+										id="process" width="300" height="50" resizable="false"
+										draggable="false" closable="false"
+										style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+										<div style="text-align: center;">
+											<p:graphicImage value="../images/preloader.gif" />
+										</div>
+									</p:dialog>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

@@ -1,0 +1,596 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link href="css/style1.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript">
+
+$(function(){
+		    /*
+		     * this swallows backspace keys on any non-input element.
+		     * stops backspace -> back
+		     */
+		    var rx = /INPUT|SELECT|TEXTAREA/i;
+
+		    $(document).bind("keydown keypress", function(e){
+		        if( e.which == 8 ){ // 8 == backspace
+		            if(!rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly ){
+		                e.preventDefault();
+		            }
+		        }
+		    });
+		});
+</script>
+
+	<script type="text/javascript">
+		$(document).on("keypress", ".dropdown", function(event) {
+			if (event.keyCode == 32) {
+				$('.ui-selectonemenu-trigger', this).click();
+			}
+		});
+	</script>
+
+</h:head>
+
+
+
+<p:confirmDialog id="recnotfound" widgetVar="recnotfound"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.customernotavailable']}">
+</p:confirmDialog>
+
+<p:confirmDialog id="successfullydeactive"
+	widgetVar="successfullydeactive" resizable="false"
+	style="background-color: white !important;" header=" Success Message"
+	styleClass=" success" showEffect="clip" hideEffect="clip"
+	closeOnEscape="true" closable="true"
+	message="#{msg['lbl.customersuccessfullydeactivated']}">
+</p:confirmDialog>
+<p:confirmDialog id="successfullyactive" widgetVar="successfullyactive"
+	resizable="false" style="background-color: white !important;"
+	header="Success Message" styleClass="success" showEffect="clip"
+	hideEffect="clip" closeOnEscape="true" closable="true"
+	message="#{msg['lbl.customeractivatedsuccessfully']}">
+</p:confirmDialog>
+
+
+
+<h:body dir="#{facesBean.direction}">
+
+
+
+	<f:view locale="#{facesBean.locale}">
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:panelGroup layout="block" class="heading1">
+								<h:outputText value="#{msg['lbl.custactivatedeactivate']}" />
+							</h:panelGroup>
+							<h:form id="inputForm">
+
+
+
+								<p:panel id="mainPanel" styleClass="shadow"
+									style="margin: 20px 10px !important; background-color:#FFF !important;">
+
+
+									<p:dialog id="remarks" widgetVar="remarks" width="480"
+										resizable="false" style="background-color: white !important;"
+										styleClass="info" header="Remarks" closable="false"
+										showEffect="clip" hideEffect="clip" modal="true">
+										<p:panel>
+											<table>
+												<tr>
+													<td><h:outputText value="#{msg['lbl.approvedDate']} :" /></td>
+													<td><h:outputText
+															value="#{customerActivateDeActivateBean.approvedDate}"
+															style="color:red !important;" /></td>
+												</tr>
+												<tr>
+													<td><h:outputText value="#{msg['lbl.approvedBy']} :" /></td>
+													<td><h:outputText
+															value="#{customerActivateDeActivateBean.approvedBy}"
+															style="color:red !important;" /></td>
+												</tr>
+											</table>
+										</p:panel>
+										<p:spacer height="10px" />
+										<p:panel>
+											<h:outputText value="#{msg['lbl.enterremarks']}" />
+											<h:outputText value="*" style="color:red !important;" />
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel>
+											<h:inputTextarea id="remarksId"
+												value="#{customerActivateDeActivateBean.remarks}"
+												validatorMessage="Maximum 255 charectors allowed">
+												<p:ajax />
+												<f:validateLength maximum="100"></f:validateLength>
+											</h:inputTextarea>
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel style="padding-left:160px;">
+											<p:commandButton value="#{msg['lbl.ok']}"
+												style="margin-right:10px; "
+												actionListener="#{customerActivateDeActivateBean.remarksEntered}"
+												process="@this" oncomplete="PF('remarks').hide();"
+												update="mainPanel" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												actionListener="#{customerActivateDeActivateBean.clearRemarks}"
+												process="@this" update="mainPanel" />
+										</p:panel>
+									</p:dialog>
+
+									<p:dialog id="remarksactivate" widgetVar="remarksactivate"
+										width="480" resizable="false"
+										style="background-color: white !important;" styleClass="info"
+										header="Remarks" closable="false" showEffect="clip"
+										hideEffect="clip" modal="true">
+										<p:panel>
+											<table>
+												<tr>
+													<td><h:outputText value="#{msg['lbl.approvedDate']} :" /></td>
+													<td><h:outputText
+															value="#{customerActivateDeActivateBean.approvedDate}"
+															style="color:red !important;" /></td>
+												</tr>
+												<tr>
+													<td><h:outputText value="#{msg['lbl.approvedBy']} :" /></td>
+													<td><h:outputText
+															value="#{customerActivateDeActivateBean.approvedBy}"
+															style="color:red !important;" /></td>
+												</tr>
+											</table>
+										</p:panel>
+										<p:spacer height="10px" />
+										<p:panel>
+											<h:outputText value="#{msg['lbl.enterremarks']}" />
+											<h:outputText value="*" style="color:red !important;" />
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel>
+											<h:inputTextarea id="remarksId1"
+												value="#{customerActivateDeActivateBean.remarks}"
+												validatorMessage="Maximum 255 charectors allowed">
+												<p:ajax />
+												<f:validateLength maximum="100"></f:validateLength>
+											</h:inputTextarea>
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel style="padding-left:160px;">
+											<p:commandButton value="#{msg['lbl.ok']}"
+												style="margin-right:10px; "
+												actionListener="#{customerActivateDeActivateBean.remarksEnteredActivate}"
+												process="@this" oncomplete="PF('remarksactivate').hide();"
+												update="mainPanel" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												actionListener="#{customerActivateDeActivateBean.clearRemarks}"
+												process="@this" update="mainPanel" />
+										</p:panel>
+									</p:dialog>
+
+
+
+
+									<p:dialog modal="true" showHeader="true"
+										header="#{msg['lbl.pleasewait']}" widgetVar="process"
+										id="process" width="300" height="50" resizable="false"
+										draggable="false" closable="false"
+										style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+										<div style="text-align: center;">
+											<p:graphicImage value="../images/preloader.gif" />
+										</div>
+									</p:dialog>
+									<h2>
+										<h:outputText value="#{msg['lbl.custactivatedeactivate']}" />
+									</h2>
+
+									<p:panel styleClass="panel_border">
+
+										<p:confirmDialog id="errormsg" widgetVar="errormsg"
+											height="60" resizable="false"
+											style=" border:2px solid red  !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true"
+											message="#{customerActivateDeActivateBean.errorMessage}"
+											header="#{msg['lbl.warningDailog']}">
+										</p:confirmDialog>
+
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.nationality']}" />
+												<!-- <h:outputText value="*" style="color:red !important;" /> -->
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+
+												<p:message id="nationalitymsg" for="nationality"
+													display="text" />
+												<p:selectOneMenu id="nationality" styleClass="dropdown"
+													tabindex="1"
+													value="#{customerActivateDeActivateBean.nationality}"
+													filter="true" filterMatchMode="contains"
+													requiredMessage="Please Select Nationality"
+													required="false">
+													<f:selectItem itemLabel="#{msg['lbl.selectnationality']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{customerActivateDeActivateBean.nationalityNameList}"
+														var="c"
+														itemLabel="#{c.fsCountryMaster.countryCode} - #{c.nationality}"
+														itemValue="#{c.fsCountryMaster.countryId}" />
+													<p:ajax update="nationalitymsg" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+
+
+
+
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.idtype']}" />
+												<!-- <h:outputText value="*" style="color:red !important;" /> -->
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="idtypemsg" for="idtype_0" display="text" />
+												<p:selectOneMenu id="idtype_0" styleClass="dropdown"
+													tabindex="2"
+													value="#{customerActivateDeActivateBean.idType}"
+													filter="true" filterMatchMode="contains"
+													style="width:180px;"
+													requiredMessage="Please Select Id Type" required="false">
+													<f:selectItem itemLabel="#{msg['lbl.selectIdType']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{customerActivateDeActivateBean.idTypeValues.entrySet()}"
+														var="c" itemLabel="#{c.value}" itemValue="#{c.key}" />
+													<p:ajax update="idtypemsg" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.idNumber']}" />
+												<!-- <h:outputText value="*" style="color:red !important;" /> -->
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgfulldescid" for="idnum" display="text" />
+												<p:inputText id="idnum" styleClass="dropdown" tabindex="3"
+													value="#{customerActivateDeActivateBean.idNumber}"
+													required="false" requiredMessage="Please  Select ID Number">
+
+													<p:ajax update="msgfulldescid" />
+												</p:inputText>
+											</p:panel>
+
+										</p:panel>
+										
+										<div class="clearfix"></div>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.customerRef']}" />
+												<!-- <h:outputText value="*" style="color:red !important;" /> -->
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgcustomerRef" for="customerRef" display="text" />
+												<p:inputText id="customerRef"
+													value="#{customerActivateDeActivateBean.customerReference}"
+													required="false" requiredMessage="Please  Select ID Number">
+
+													<p:ajax update="msgfulldescid" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+										<div class="clearfix"></div>
+
+										<div class="clearfix"></div>
+
+
+										<h:panelGroup id="acceptid" layout="block"
+											styleClass="shadow_button">
+
+											<p:commandButton value="#{msg['lbl.search']}" styleClass="dropdown" tabindex="4" id="addTable"
+												update="mainPanel,tablePanel" style="margin-right:10px;"
+												action="#{customerActivateDeActivateBean.search}"
+												onstart="process.show();" onsuccess="process.hide();">
+											</p:commandButton>
+											<p:commandButton value="#{msg['lbl.clear']}" styleClass="dropdown" tabindex="5"
+												update="mainPanel,inputForm" process="@this"
+												action="#{customerActivateDeActivateBean.clearAll}"
+												style="margin-right:10px;">
+											</p:commandButton>
+											<p:commandButton value="#{msg['lbl.exit']}" styleClass="dropdown" tabindex="6"
+												action="#{customerActivateDeActivateBean.exit}"
+												process="@this">
+											</p:commandButton>
+										</h:panelGroup>
+										<h:outputText id="mandatory"
+											value=" #{msg['lbl.*filedsAreMandatory']}"
+											style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+									</p:panel>
+
+
+									<div class="clearfix"></div>
+
+									<div class="clearfix"></div>
+									<p:panel id="tablePanel">
+										<p:dataTable
+											value="#{customerActivateDeActivateBean.finalData}"
+											rowIndexVar="rowIndex" var="o"
+											style=" font-family: Arial; font-size: 13px;"
+											paginatorPosition="bottom" widgetVar="50" editable="true"
+											id="datatable" styleClass="mydatatableclass"
+											emptyMessage="#{msg['lbl.norecordfound']}" rows="10"
+											paginator="true"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="5,10,15">
+
+											<p:column headerText="#{msg['lbl.sNo']}"
+												styleClass="auto_width">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+
+
+											<p:column styleClass="auto_width">
+												<f:facet name="header">
+													<h:outputText value="#{msg['lbl.name']}" />
+												</f:facet>
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{o.firstName}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText value="#{o.firstName}" />
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+
+
+											<p:column styleClass="auto_width">
+												<f:facet name="header">
+													<h:outputText value="#{msg['lbl.customerId']}" />
+												</f:facet>
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{o.customerTyId}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText value="#{o.customerTyId}" />
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+
+
+											<p:column styleClass="auto_width">
+												<f:facet name="header">
+													<h:outputText value="#{msg['lbl.customerRef']}" />
+												</f:facet>
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{o.customerRef}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText value="#{o.customerRef}" />
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+
+
+											<p:column styleClass="auto_width">
+												<f:facet name="header">
+													<h:outputText value="#{msg['lbl.nationality']}" />
+												</f:facet>
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{o.nationality}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText value="#{o.nationality}" />
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+											
+											<p:column styleClass="auto_width">
+												<f:facet name="header">
+													<h:outputText value="#{msg['lbl.idType']}" />
+												</f:facet>
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{o.idTypeName}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText value="#{o.idTypeName}" />
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+
+											<p:column styleClass="auto_width">
+												<f:facet name="header">
+													<h:outputText value="#{msg['lbl.idNumber']}" />
+												</f:facet>
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{o.idNumber}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText value="#{o.idNumber}" />
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+
+											<p:column styleClass="auto_width">
+												<f:facet name="header">
+													<h:outputText value="#{msg['lbl.dob']}" />
+												</f:facet>
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{o.dob}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText value="#{o.dob}" />
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+
+											<p:column styleClass="auto_width">
+												<f:facet name="header">
+													<h:outputText value="#{msg['lbl.mobile']}" />
+												</f:facet>
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{o.mob}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText value="#{o.mob}" />
+													</f:facet>
+												</p:cellEditor>
+
+											</p:column>
+
+											<p:column styleClass="auto_width">
+												<f:facet name="header">
+													<h:outputText value="#{msg['lbl.email']}" />
+												</f:facet>
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{o.email}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText value="#{o.email}" />
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+
+											<p:column styleClass="auto_width">
+												<f:facet name="header">
+													<h:outputText value="#{msg['lbl.dateofexpiry']}" />
+												</f:facet>
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{o.idExpiryDate}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText value="#{o.idExpiryDate}" />
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+
+
+											<p:column styleClass="auto_width">
+												<f:facet name="header">
+													<h:outputText value="#{msg['lbl.amlstatus']}" />
+												</f:facet>
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{o.AMLStatus}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText value="#{o.AMLStatus}" />
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+
+											<p:column styleClass="auto_width">
+												<f:facet name="header">
+													<h:outputText value="#{msg['lbl.currentstatus']}" />
+												</f:facet>
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{o.currentStatus}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText value="#{o.currentStatus}" />
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+
+
+
+											<p:column styleClass="auto_width">
+												<f:facet name="header">
+													<h:outputText value="#{msg['lbl.createdBy']}" />
+												</f:facet>
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{o.createdBy}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText value="#{o.createdBy}" />
+													</f:facet>
+												</p:cellEditor>
+
+											</p:column>
+											<p:column styleClass="auto_width">
+												<f:facet name="header">
+													<h:outputText value="#{msg['lbl.createddate']}" />
+												</f:facet>
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{o.createdDate}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText value="#{o.createdDate}" />
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.action']}"
+												style="width:15% !important; ">
+												<p:commandButton value="#{o.dynamicLabelActivateDeactivate}"
+													actionListener="#{customerActivateDeActivateBean.customerActivateDeactivate(o)}"
+													process="@this" immediate="true" onstart="process.show();"
+													onsuccess="process.hide();" update=":inputForm:mainPanel">
+												</p:commandButton>
+											</p:column>
+
+
+										</p:dataTable>
+									</p:panel>
+								</p:panel>
+
+
+							</h:form>
+
+
+						</h:panelGroup>
+					</h:panelGroup>
+					<div class="clearfix"></div></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+
+
+</html>

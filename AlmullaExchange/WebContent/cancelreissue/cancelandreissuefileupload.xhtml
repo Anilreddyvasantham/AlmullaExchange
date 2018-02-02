@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link href="css/style1.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+</h:head>
+
+<p:dialog id="uploadfile" widgetVar="uploadfile" width="250" height="40"
+	resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" header="upload message">
+	<p:outputLabel value="#{msg['lbl.fileUploadedSuccess']}" />
+</p:dialog>
+<p:dialog id="complete" widgetVar="complete" width="400" height="80"
+	resizable="false" style="background-color: white !important;"
+	styleClass="success" header="#{msg['lbl.success']}" closable="false"
+	showEffect="clip" hideEffect="clip">
+	<p:outputLabel value="#{msg['lbl.recrdSavedSuccessfully']} "
+		style="text-align: center; font-size:15px !important;" />
+	<br />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{cancelAndReIssueFileUploadBean.pageNavigationToCancelAndReIssueFileUpload}"
+		process="@this" style="margin-left: 150px !important;" />
+</p:dialog>
+
+
+
+<p:confirmDialog id="upload" widgetVar="upload" width="450" height="17"
+	resizable="false"
+	style=" border:2px solid red !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true"
+	message="Both  Bank Selection and File Upload Required "
+	header="#{msg['lbl.warningDailog']}">
+</p:confirmDialog>
+
+<p:confirmDialog id="nodata" widgetVar="nodata" width="450" height="17"
+	resizable="false"
+	style=" border:2px solid red !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="Please Load The Data to DataTable"
+	header="#{msg['lbl.warningDailog']}">
+</p:confirmDialog>
+<p:confirmDialog id="proceErr" widgetVar="proceErr" width="400"
+	resizable="false"
+	visible="#{cancelAndReIssueFileUploadBean.booProcedureDialog}"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{cancelAndReIssueFileUploadBean.errMsg}"></p:confirmDialog>
+
+<p:confirmDialog id="selectBank" widgetVar="selectBank"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all" message="Please Select Bank!">
+</p:confirmDialog>
+
+<p:confirmDialog id="noRecordsInExcel" widgetVar="noRecordsInExcel"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all" message="No records in excel sheet!">
+</p:confirmDialog>
+
+<p:confirmDialog id="countryCodeInvalid" widgetVar="countryCodeInvalid"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all" message="Country code is invalid in excel sheet!">
+</p:confirmDialog>
+
+<p:confirmDialog id="companyCodeInvalid" widgetVar="companyCodeInvalid"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all" message="Company code is invalid in excel sheet!">
+</p:confirmDialog>
+
+<p:confirmDialog id="transYrInvalid" widgetVar="transYrInvalid"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all" message="Transaction year is invalid in excel sheet!">
+</p:confirmDialog>
+
+<p:confirmDialog id="transNoInvalid" widgetVar="transNoInvalid"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all" message="Transaction number is invalid in excel sheet!">
+</p:confirmDialog>
+
+
+<h:body dir="#{facesBean.direction}">
+
+
+	<f:view locale="#{facesBean.locale}">
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:panelGroup layout="block" class="heading1">
+								<h:outputText value="#{msg['lbl.cancelandreissue']}" />
+							</h:panelGroup>
+							<h:form id="inputForm">
+
+
+								<p:dialog modal="true" widgetVar="statusDialog"
+									id="statusDialog" draggable="false" closable="false"
+									showHeader="false">
+									<p:graphicImage value="../images/loaderImage.gif" />
+								</p:dialog>
+								<p:dialog modal="true" showHeader="true"
+									header="#{msg['lbl.pleasewait']}" widgetVar="process"
+									id="process" width="300" height="50" resizable="false"
+									draggable="false" closable="false"
+									style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+									<div style="text-align: center;">
+										<p:graphicImage value="../images/preloader.gif" />
+									</div>
+								</p:dialog>
+
+
+								<p:panel id="mainPanel" styleClass="shadow"
+									style="margin: 20px 10px !important; background-color:#FFF !important;">
+
+									<!-- <p:dialog id="procedureError" widgetVar="procedureError"
+										width="400" height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="success" header="Error" closable="false"
+										showEffect="clip" hideEffect="clip">
+										<p:outputLabel
+											value="#{cancelAndReIssueFileUploadBean.errorMessage}"
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{cancelAndReIssueFileUploadBean.pageNavigationToCancelAndReIssueFileUpload}"
+											process="@this" style="margin-left: 150px !important;" />
+									</p:dialog> -->
+									
+									<p:confirmDialog id="procedureError"
+										header="#{msg['lbl.warning']}" widgetVar="procedureError"
+										width="500" resizable="false" height="100"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{cancelAndReIssueFileUploadBean.errorMessage}">
+
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{cancelAndReIssueFileUploadBean.pageNavigationToCancelAndReIssueFileUpload}"
+											process="@this" style="margin-left: 150px !important;" />
+
+									</p:confirmDialog>
+
+									<p:dialog id="savingError" widgetVar="savingError" width="400"
+										height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="success" header="#{msg['lbl.warningDailog']}"
+										closable="false" showEffect="clip" hideEffect="clip">
+										<p:outputLabel
+											value="#{msg['lbl.dataNotSavedWhileSavingTimeExceptionOccured']}:#{cancelAndReIssueFileUploadBean.errorMessage}"
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{cancelAndReIssueFileUploadBean.pageNavigationToCancelAndReIssueFileUpload}"
+											process="@this" style="margin-left: 150px !important;" />
+									</p:dialog>
+
+									<p:dialog id="nullPointerId" widgetVar="nullPointerId"
+										width="400" height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="success" header="#{msg['lbl.warningDailog']}"
+										closable="false" showEffect="clip" hideEffect="clip">
+										<p:outputLabel
+											value="#{cancelAndReIssueFileUploadBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}"
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{cancelAndReIssueFileUploadBean.pageNavigationToCancelAndReIssueFileUpload}"
+											process="@this" style="margin-left: 150px !important;" />
+									</p:dialog>
+
+
+									<h2>
+										<h:outputText value="#{msg['lbl.cancelandreissue']}" />
+									</h2>
+									<p:panel styleClass="panel_border">
+
+
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bank']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgBank" for="bank" display="text" />
+												<p:selectOneMenu id="bank"
+													value="#{cancelAndReIssueFileUploadBean.bankId}"
+													filter="true" filterMatchMode="contains" required="false"
+													requiredMessage="Please select bank">
+													<f:selectItem itemLabel="#{msg['lbl.selectBank']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{cancelAndReIssueFileUploadBean.bankList}" var="c"
+														itemLabel="#{c.bankDecs}-#{c.bankCode}"
+														itemValue="#{c.bankId}" />
+													<p:ajax update="msgBank" />
+
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										<div class="clearfix"></div>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.cancelandreissuefile']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											
+											<p:panel styleClass="inner_right_col">
+												<p:fileUpload id="fileUplod" mode="advanced"
+													fileUploadListener="#{cancelAndReIssueFileUploadBean.exportExcel}"
+													fileLimit="1" fileLimitMessage="one File is Allowed"
+													update="messages" label="Choose a file"
+													sizeLimit="50485762222" allowTypes="/(\.|\/)(xls|xlsx)$/"
+													required="true" requiredMessage="Upload a File"
+													invalidSizeMessage="The maximum file size allowed is 1 Megabyte !"
+													invalidFileMessage="You are allowed to upload only XLS and XLSX !"
+													oncomplete="PF('imageUpload').show()">
+													<p:message id="messages" for="fileUplod"
+														value="File Not Selected" style="color:red;" />
+												</p:fileUpload>
+
+											</p:panel>
+										</p:panel>
+
+
+
+										<div class="clearfix"></div>
+
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.load']}"
+												action="#{cancelAndReIssueFileUploadBean.uploadtoDatatable}"
+												update="mainPanel" process="@this" immediate="true" onstart="process.show();" onsuccess="process.hide();"/>
+
+
+										</h:panelGroup>
+
+
+
+										<p:dataTable var="c" editable="true" id="datatable"
+											value="#{cancelAndReIssueFileUploadBean.cancelReIssueFinalList}"
+											rows="10" rowIndexVar="rowIndex" paginator="true"
+											styleClass="mydatatableclass">
+											<p:column headerText="#{msg['lbl.sino']}">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.transactionyearno']}">
+												<h:outputText
+													value="#{c.transactionYear}/#{c.transactionNo} " />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.amount']}">
+												<h:outputText value="#{c.tranxAmount}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.customername']}">
+												<h:outputText value="#{c.customerName}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.errorMessage']}">
+												<h:outputText value="#{c.errorMessage}" />
+											</p:column>
+
+										</p:dataTable>
+										<p:panel styleClass="shadow_button"
+											style=" background-color:#FFF !important;">
+
+											<p:commandButton value="#{msg['lbl.accept']}"  
+												action="#{cancelAndReIssueFileUploadBean.acceptButton}"
+												process="@this" style="margin-right:10px;" update="mainPanel"
+												onstart="process.show();" onsuccess="process.hide();" />
+											<p:commandButton value="#{msg['lbl.clear']}"
+												action="#{cancelAndReIssueFileUploadBean.clearAll}"
+												process="@this" immediate="true" style="margin-right:10px;"
+												update="mainPanel" onstart="process.show();"
+												onsuccess="process.hide();" />
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{cancelAndReIssueFileUploadBean.exit}" />
+										</p:panel>
+
+									</p:panel>
+
+
+									<div class="clearfix"></div>
+								</p:panel>
+							</h:form>
+
+
+						</h:panelGroup>
+					</h:panelGroup>
+					<div class="clearfix"></div></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+
+
+</html>

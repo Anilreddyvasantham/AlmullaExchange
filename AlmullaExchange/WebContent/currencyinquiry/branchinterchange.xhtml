@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+</h:head>
+
+<h:body  >
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<p:spacer height="5px"/>
+		<h:form id="cashForm" >
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+			
+			<td align="left" valign="top" style="height: 100%;">
+			<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+			</td>
+				<td class="rightColumn" valign="top">
+				<h:panelGroup layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+						
+								<p:dialog modal="true" showHeader="true" header="#{msg['lbl.pleasewait']}"  widgetVar="process"  id="process"   width="300" height="50" resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+							    	</p:dialog>	
+							
+
+							<h1>
+									<h:outputText value="#{msg['lbl.employeebranchinterchange']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h2>
+										<h:outputText value="#{msg['lbl.employeebranchinterchange']}" />
+										
+											
+									</h2>
+									
+									
+									<p:confirmDialog id="error" widgetVar="error" resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" update="@all"
+									message="#{branchInterchangeBean.errorMessage}">
+									</p:confirmDialog>
+									
+<p:confirmDialog id="noRecords" widgetVar="noRecords"
+										width="300"  resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="#{msg['lbl.noRecordFound']}">
+									</p:confirmDialog>
+									
+									<p:dialog id="complete" widgetVar="complete" width="270" height="70"
+	showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background: 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.recrdSavedSuccessfully']} ...." />
+	<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{branchInterchangeBean.branchInterchangeNavigation}" style="margin-right:10px;" process="@this" />	
+	<br />
+      
+				</p:dialog>					<p:panel styleClass="panel_border" >
+								
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.employee']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message for="employeeId" display="text" id="msgemployeeId"/>
+												<p:selectOneMenu id="employeeId" value="#{branchInterchangeBean.employeeId}" filter="true" filterMatchMode="contains"  required="true" requiredMessage="#{msg['lbl.plsSelectFromLocation']}" tabindex="1">
+												<f:selectItem
+															itemLabel="#{msg['lbl.selectemployee']}"
+															itemValue="" />
+												<f:selectItems value="#{branchInterchangeBean.employeeList}" var="c" itemLabel="#{c.employeeNumber} - #{c.employeeName}" itemValue="#{c.employeeId}" />
+															<p:ajax event="change" listener="#{branchInterchangeBean.getcountryBranchList}" update="branchId,employeeName,userName,existLocation,error"/> 			
+													
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.existlocation']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgexistLocation" for="existLocation" display="text" />
+													<p:inputText id="existLocation" readonly="true" styleClass="readonly"
+														value="#{branchInterchangeBean.existLocation}" required="true"
+														maxlength="10"
+														>
+														<p:ajax event="blur" update="existLocation,msgexistLocation" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.employeename']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgemployeeName" for="employeeName" display="text" />
+													<p:inputText id="employeeName" readonly="true" styleClass="readonly"
+														value="#{branchInterchangeBean.employeeName}" maxResults="10"
+														required="true"
+														maxlength="10">
+														<p:ajax event="blur" update="employeeName,msgemployeeName" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.username']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msguserName" for="userName" display="text" />
+													<p:inputText id="userName" readonly="true" styleClass="readonly"
+														value="#{branchInterchangeBean.userName}" required="true"
+														maxlength="10"
+														>
+														<p:ajax event="blur" update="userName,msguserName" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.newlocation']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message for="branchId" display="text" id="msgbranchId"/>
+												<p:selectOneMenu id="branchId" value="#{branchInterchangeBean.branchId}" filter="true" filterMatchMode="contains"  required="true" requiredMessage="#{msg['lbl.plsSelectFromLocation']}" tabindex="1">
+													<f:selectItem
+															itemLabel="#{msg['lbl.selectbranch']}"
+															itemValue="" />
+													<f:selectItems value="#{branchInterchangeBean.countryBranchList}" var="c" itemLabel="#{c.branchId} - #{c.branchName}" itemValue="#{c.countryBranchId}" />
+														 <p:ajax event="change" update="branchId,mainPanel"/> 	
+												
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										
+			<div class="clearfix"></div>
+											<p:spacer height="10px" />
+											<div class="clearfix"></div>
+											<h:panelGroup layout="block" class="clearfix" />
+				
+			<p:panel styleClass="shadow_button" style=" background-color:#FFF !important;">
+							<p:commandButton value="#{msg['lbl.submit']}" action="#{branchInterchangeBean.save}" style="margin-right:10px;" update="mainPanel,error" onclick="process.show();" oncomplete="process.hide();"/>							
+							 <p:commandButton value="#{msg['lbl.exit']}" action="#{branchInterchangeBean.exit}" immediate="true" onclick="process.show();" oncomplete="process.hide();"/>
+							</p:panel>
+									
+									</p:panel>
+					</p:panel>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+					</h:panelGroup></td>
+			</tr>
+		</table>
+</h:form>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

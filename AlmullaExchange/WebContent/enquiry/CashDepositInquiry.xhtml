@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+		history.pushState(null, null, 'CashDepositInquiry.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'CashDepositInquiry.xhtml');
+	    });
+	</script>
+</h:head>
+<h:body>
+    <p:confirmDialog id="norecordsfound" widgetVar="norecordsfound" width="350" height="20"  
+		resizable="false" style="background-color: white !important;" header="#{mag['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.norecordfound']}">
+	</p:confirmDialog>	
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+		<h:form id="form">
+
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;"><ui:include
+							src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle"
+										src="../images/toggle_plus.png" alt=""
+										onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+								<h1>
+									<h:outputText value="#{msg['lbl.cashdepositdocument']}" />
+								</h1>
+
+
+								<p:panel styleClass="shadow" id="mainPanel"
+									style="background-color:#FFF !important; ">
+
+									<h2>
+										<h:outputText value="#{msg['lbl.cashdepositdocument']}" />
+									</h2>
+
+
+									<p:panel styleClass="panel_border">
+									
+									    <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.cashTransfer']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message for="cashTransferId" display="text" id="msgcashTransferId"/>	
+											    <p:selectOneMenu id="cashTransferId" value="#{cashDepositInquiryBean.cashTransfer}" filter="true" filterMatchMode="startsWith" required="true" requiredMessage="Please Select to Cashier">
+													<f:selectItem itemLabel = "#{msg['lbl.selectToCashier']}" itemValue="" />
+													<f:selectItems value="#{cashDepositInquiryBean.lstToCashier}" var="c" />
+													<p:ajax update="msgcashTransferId"/>
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currency']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgcurrency" for="currencyId" display="text" />
+												<p:selectOneMenu id="currencyId" value="#{cashDepositInquiryBean.currencyId}" filter="true" filterMatchMode="startsWith" required="true" requiredMessage="Please Select Currency" >
+													<f:selectItem itemLabel="#{msg['lbl.benecurruncyselect']}" itemValue="" />
+													<f:selectItems value="#{cashDepositInquiryBean.lstCurrencyMaster}" var="c" itemLabel="#{c.currencyCode} - #{c.currencyName}" itemValue="#{c.currencyId}" />
+													<p:ajax update="msgcurrency" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.fromdate']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message for="fromDate" display="text" id="msgfromDate" /> 
+											<p:calendar id="fromDate" value="#{cashDepositInquiryBean.fromDocumentDate}" mode="popup" pattern="dd/MM/yyyy" maxdate="#{cashDepositInquiryBean.effectiveMinDate}" navigator="true" readonlyInput="true" required="true" requiredMessage="Enter From Date">
+        										<p:ajax update="msgfromDate,fromDate" event="dateSelect" />
+    										</p:calendar>																							
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.todate']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message for="toDate" display="text" id="msgtoDate" /> 
+											<p:calendar id="toDate" value="#{cashDepositInquiryBean.toDocumentDate}" mode="popup" pattern="dd/MM/yyyy" maxdate="#{cashDepositInquiryBean.effectiveMinDate}" navigator="true" readonlyInput="true" required="true" requiredMessage="Enter To Date">
+        										<p:ajax update="msgtoDate,toDate" event="dateSelect" />
+    										</p:calendar>																							
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.location']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message for="locationId" display="text" id="msglocationId"/>	
+											    <p:selectOneMenu id="locationId" value="#{cashDepositInquiryBean.locationName}" filter="true" filterMatchMode="startsWith" required="true" requiredMessage="Please Select From Branch Name">
+													<f:selectItem itemLabel = "#{msg['lbl.selectBranch']}" itemValue="" />
+													<f:selectItems value="#{cashDepositInquiryBean.lstFromBranchName}" var="c" />
+													<p:ajax update="msglocationId"/>
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										
+																		
+										<h:panelGroup layout="block" class="clearfix" />							    
+									    <h:panelGroup layout="block" class="clearfix" />
+									    
+									    <div class="clearfix"></div>
+										<p:spacer height="10px" />
+										<div class="clearfix"></div>
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton id="search" value="#{msg['lbl.search']}" action="#{cashDepositInquiryBean.searchForCashDepositInquiry}" update="mainPanel" style="margin-right:10px;"/>
+											<p:commandButton id="clear" value="#{msg['lbl.clear']}" action="#{cashDepositInquiryBean.cashDepositInquiryNavigation}" immediate="true" update="mainPanel"  style="margin-right:10px;"/>
+											<p:commandButton id="exit" value="#{msg['lbl.exit']}"	style="margin-right:10px;" action="#{cashDepositInquiryBean.exit}" process="@this"	immediate="true" />
+										</h:panelGroup>
+										<h:panelGroup layout="block" class="clearfix" />
+										<div class="clearfix"></div>
+										<p:spacer height="10px" />
+										<div class="clearfix"></div>
+
+										<p:panel id="dataPanel">
+											<p:dataTable id="dataTable" styleClass="mydatatableclass" value="#{cashDepositInquiryBean.lstforDataTable}"
+												rows="10" paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10,15" var="d" rowIndexVar="rowIndex"
+												emptyMessage="#{msg['lbl.noRecordFound']}"
+												paginatorPosition="bottom" rendered="#{cashDepositInquiryBean.booRenderDataTablePrint}">
+
+												<p:column headerText="#{msg['lbl.sino']}"
+													style="width:30px;">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.branch']}">
+													<h:outputText value="#{d.branchName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.documentNum']}">
+													<h:outputText value="#{d.documentNo}" />
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.docCode']}">
+													<h:outputText value="#{d.documentCode}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.docFinYear']}">
+													<h:outputText value="#{d.documentFinancialYr}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.currency']}">
+													<h:outputText value="#{d.currencyDesc}" />
+												</p:column>
+ 
+												<p:column headerText="#{msg['lbl.amountdeposited']}">
+													<h:outputText value="#{d.amountDeposited}" />
+												</p:column>
+
+											</p:dataTable>
+										</p:panel>
+										
+										
+										<div class="clearfix"></div>
+										<p:spacer height="10px" />
+										<div class="clearfix"></div>
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button"	id="booSubmitPanel" rendered="#{cashDepositInquiryBean.booRenderDataTablePrint}">
+											<p:commandButton id="submitPanel" value="#{msg['lbl.print']}"	action="#{cashDepositInquiryBean.printCashDepositInquiry}" process="@this" update="mainPanel" style="margin-right:10px;"/>
+										</h:panelGroup>
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:dialog modal="true" showHeader="true"
+											header="#{msg['lbl.bco.plswait']}" widgetVar="process"
+											id="process" width="300" height="50" resizable="false"
+											draggable="false" closable="false"
+											style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+											<div style="text-align: center;">
+												<p:graphicImage value="../images/preloader.gif" />
+											</div>
+										</p:dialog>
+									</p:panel>
+									<div class="clearfix"></div>
+								</p:panel>
+
+							</h:panelGroup>
+
+						</h:panelGroup></td>
+				</tr>
+			</table>
+		</h:form>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

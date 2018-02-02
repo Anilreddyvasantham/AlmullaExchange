@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script src="../js/SigWeb.js" type="text/javascript"></script>
+	<script src="../js/digitalsignature.js"></script>
+	<script type="text/javascript">
+		var baseUri = "http://localhost:47289/SigWeb/";
+	</script>
+	<script >
+		 history.pushState(null, null, 'citymasterapprovallist.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'citymasterapprovallist.xhtml'); 
+		    });
+</script>
+	
+</h:head>
+<p:confirmDialog id="notabletoApprove" widgetVar="notabletoApprove" width="370" styleClass="red"  showHeader="false" resizable="false" 	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" message="#{msg['lbl.sameUserNotApproved']}">
+      </p:confirmDialog>
+
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form">
+							<h1>
+								<h:outputText value="#{msg['lbl.cityMasterApprovalList']}" />
+							</h1>
+							<p:panel styleClass="shadow" id="mainPanel">
+								<h2>
+									<h:outputText value="#{msg['lbl.cityMasterApprovalList']}" />
+									<p:commandLink action="#{cityMasterBean.exit}"
+										process="@this">
+										<p:graphicImage value="../images/return.jpg" width="25"
+											height="25" id="imgEdit" styleClass="icon_right"
+											style="float:right;" />
+										<p:tooltip for="imgEdit" value="Go to Home" />
+									</p:commandLink>
+								</h2>
+
+
+								<p:panel styleClass="panel_border">
+								
+<p:confirmDialog id="mandatoryfields" widgetVar="mandatoryfields" 
+	width="400" height="20" resizable="false"
+	style="background-color: white !important;"
+	header="#{mag['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.selectCountryAndStateAndDistrict']}">
+</p:confirmDialog>
+
+										<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.country']}" />
+													<h:outputText style="color:red" value="*" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="country" display="text" id="countrymsg" />
+													<p:selectOneMenu id="country"
+														value="#{cityMasterBean.countryId}" required="true"
+														requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.country']}"
+														tabindex="1" filter="true" filterMatchMode="contains">
+														<f:selectItem itemValue=" "
+															itemLabel="--#{msg['lbl.select']} #{msg['lbl.country']}--" />
+														<f:selectItems value="#{cityMasterBean.countryList}"
+															var="c" itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+															itemValue="#{c.fsCountryMaster.countryId}" />
+											 	  	<p:ajax event="change" listener="#{cityMasterBean.populateState}" update="countrymsg,state" onstart="process.show();" onsuccess="process.hide();" process="@this" />
+ 
+  
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											
+
+											<p:panel styleClass="right_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.state']}" />
+													<h:outputText style="color:red" value="*" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+ 										<p:message for="state" display="text" id="statemsg" />
+													<p:selectOneMenu id="state" tabindex="27"
+														value="#{cityMasterBean.stateId}" required="true" requiredMessage="Please Select State"
+														filterMatchMode="contains" filter="true" >
+														<f:selectItem
+															itemLabel="--#{msg['lbl.select']} #{msg['lbl.state']}--"
+															itemValue=" " />
+														<f:selectItems value="#{cityMasterBean.stateList}" var="c"
+															itemLabel="#{c.fsStateMaster.stateCode} - #{c.stateName}"
+															itemValue="#{c.fsStateMaster.stateId}" />
+														<p:ajax update="district,statemsg"
+															listener="#{cityMasterBean.populateDistrict}" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.district']}" />
+													<h:outputText style="color:red" value="*" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="district" display="text" id="distmsg" />
+													<p:selectOneMenu id="district" tabindex="28"
+														value="#{cityMasterBean.districtId}" required="true" requiredMessage="Please Select District"
+														filterMatchMode="contains" filter="true" >
+														<f:selectItem
+															itemLabel="--#{msg['lbl.select']} #{msg['lbl.district']}--"
+															itemValue=" " />
+														<f:selectItems value="#{cityMasterBean.districtList}"
+															var="c" itemLabel="#{c.fsDistrictMaster.districtCode} - #{c.district}"
+															itemValue="#{c.fsDistrictMaster.districtId}" />
+															<p:ajax  update="distmsg"
+															listener="#{cityMasterBean.fetchDistrictCode}" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											
+											<p:spacer height="10px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												
+												<p:commandButton value="#{msg['lbl.view']}"
+													action="#{cityMasterBean.getUnApprovalRecords}" update="mainPanel"
+													style="margin-right:10px;" onstart="process.show();" onsuccess="process.hide();" />
+													<p:commandButton value="#{msg['lbl.clear']}"
+													action="#{cityMasterBean.clearAllFields}" update="mainPanel"
+													style="margin-right:10px;" onstart="process.show();" onsuccess="process.hide();" />
+												<h:panelGroup layout="block" class="clearfix" />
+											</h:panelGroup>
+
+										<!-- </p:panel> -->
+										<p:panel id="dataTable">
+											<p:dataTable id="dataTableId" styleClass="mydatatableclass" value="#{cityMasterBean.cityListForAproval}" 
+									rows="10" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="5,10,15" var="d" 
+									rowIndexVar="rowIndex" emptyMessage="#{msg['lbl.noRecordFound']}" paginatorPosition="bottom" rendered="#{cityMasterBean.booRenderApprovalDataTable}" >
+									 
+
+										<p:column headerText="#{msg['lbl.sNo']}" style="width:30px;"
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputText value="#{rowIndex+1}" />
+										</p:column>
+
+										<p:column headerText="#{msg['lbl.country']}"
+											sortBy="#{d.countryName}"
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputText value="#{d.countryName} " />
+										</p:column>
+
+										<p:column headerText="#{msg['lbl.state']}"
+											sortBy="#{d.satateName}"
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputText value="#{d.stateName}" />
+										</p:column>
+
+										<p:column headerText="#{msg['lbl.district']}"
+											sortBy="#{d.districtName}"
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputText value="#{d.districtName}" />
+										</p:column>
+										
+											<p:column headerText="#{msg['lbl.englishCityDesc']}"
+											sortBy="#{d.cityName}"
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputText value="#{d.cityName}" />
+										</p:column>
+										
+										
+										
+										<p:column headerText="#{msg['lbl.localCityDesc']}"
+											sortBy="#{d.cityNameLocal}"
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputText value="#{d.cityNameLocal}" />
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.cityCode']}"
+											sortBy="#{d.cityCode}"
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputText value="#{d.cityCode}" />
+										</p:column>
+
+										<p:column headerText="#{msg['lbl.approve']}"
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<p:commandLink
+												action="#{cityMasterBean.goToApproval(d)}"
+												style="color:blue !important; text-decoration:underline !important;"
+												process="@this"  onstart="process.show();" onsuccess="process.hide();">
+												<p:graphicImage value="../images/approve.jpg" width="25"
+													height="25" id="imgEdit" />
+												<p:tooltip for="imgEdit" value="Approve" />
+											</p:commandLink>
+										</p:column>
+
+
+
+									</p:dataTable>
+									</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:dialog modal="true" showHeader="false" widgetVar="process" id="process" width="300" height="60" resizable="false" draggable="false" closable="false"
+style=" border: 2px green solid !important;background-color: #FFF !important;">
+<div style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important; ">
+<p:graphicImage value="../images/processImg.gif" style="float: left !important; margin-right: 24px !important; "/>
+<p:outputLabel value="Please wait ........" style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" /></div>
+</p:dialog>	
+								</p:panel>
+							</p:panel>
+</h:form>
+						</h:panelGroup>
+
+
+
+						<h:panelGroup layout="block" class="clearfix" />
+
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

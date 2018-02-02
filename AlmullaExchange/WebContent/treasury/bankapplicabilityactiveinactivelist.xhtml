@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script src="../js/SigWeb.js"  type="text/javascript"></script>
+	<script src="../js/digitalsignature.js"></script>
+	<script type="text/javascript">
+		var baseUri = "http://localhost:47289/SigWeb/";		
+		
+		
+		history.pushState(null, null, 'bankapplicabilityactiveinactivelist.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'bankapplicabilityactiveinactivelist.xhtml');
+	    });
+		
+	</script>
+</h:head>
+
+<h:body> 
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+							<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+						</td>
+
+				<td class="rightColumn" valign="top">
+				<h:panelGroup layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form1">
+								<h1>
+									<h:outputText
+										value="#{msg['lbl.bankapplicabilityactivedeactive']}" />
+								</h1>
+
+							<p:panel styleClass="shadow" id="mainPanel">
+							
+							<p:confirmDialog id="csp" widgetVar="csp"   showHeader="false" resizable="false" header="Warning Message" styleClass="warning"
+														style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="explode" hideEffect="explode" message="#{bankApplicabilityManagedBean.errorMsg}">
+	  						 </p:confirmDialog>
+							
+<p:confirmDialog id="nullPoiterId"
+                                                                     widgetVar="nullPoiterId" resizable="false"
+                                                                     style="background-color: white !important;"
+                                                                     header="#{msg['lbl.warningDailog']}" styleClass="warning"
+                                                                     showEffect="clip" hideEffect="clip" closeOnEscape="true"
+                                                                     closable="true"
+                                                                     message="#{bankApplicabilityManagedBean.errorMsg} - #{msg['lbl.nullPonterExcepetion']}">
+	</p:confirmDialog>
+							
+							<p:dialog id="remarks" widgetVar="remarks"  width="480"
+										 resizable="false"
+										style="background-color: white !important;"
+										styleClass="info" header="#{msg['lbl.remarks']}" closable="false"
+										showEffect="clip" hideEffect="clip">
+										<p:panel>
+											<table>
+												<tr>
+													<td><h:outputText value="#{msg['lbl.activateddate']}     :" /></td>
+													<td><h:outputText
+															value= "#{bankApplicabilityManagedBean.createdDate}"
+															style="color:red !important;" /></td>
+												</tr>
+												<tr>
+													<td><h:outputText value="#{msg['lbl.activatedby']}     :" /></td>
+													<td><h:outputText
+															value="#{bankApplicabilityManagedBean.createdBy}"
+															style="color:red !important;" /></td>
+												</tr>
+											</table>
+										</p:panel>
+										<p:spacer height="10px" />
+										<p:panel>
+											<h:outputText value="#{msg['lbl.pleaseenterremarks']}" />
+											<h:outputText value="*" style="color:red !important;" />
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel>
+											<h:inputTextarea id="remarksId"
+												value="#{bankApplicabilityManagedBean.remarks}"
+												validatorMessage="Maximum 255 charectors allowed">
+												<p:ajax />
+												<f:validateLength maximum="255"></f:validateLength>
+											</h:inputTextarea>
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel style="padding-left:160px;">
+											<p:commandButton value="#{msg['lbl.ok']}"  actionListener="#{bankApplicabilityManagedBean.updateRemarks}"   process="@this"  update="bankApproval" onstart="process.show();" onsuccess="process.hide();"/>
+											<p:commandButton value="#{msg['lbl.cancel']}"  actionListener="#{bankApplicabilityManagedBean.clickOnOKActivate()}"   process="@this"  style="margin-left:10px;"/>
+										</p:panel>
+									</p:dialog>
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+												id="process" width="300" height="60" resizable="false"
+												draggable="false" closable="false"
+												style=" border: 3px green solid !important;background-color: #FFF !important;">
+												<div
+													style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+													<p:graphicImage value="../images/processImg.gif"
+														style="float: left !important; margin-right: 24px !important; " />
+													<p:outputLabel value="Please wait ........"
+														style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+												</div>
+										</p:dialog>
+							
+ <p:dialog id="deactivate" widgetVar="deactivate" width="400" height="80"  resizable="false" 
+	style="background-color: white !important;" styleClass="success" header="Success" closable="false" showEffect="clip" hideEffect="clip" >
+           <p:outputLabel value="#{msg['lbl.successfullydeactivated']}" style="text-align: center; font-size:15px !important;"/><br/>
+           <p:commandButton value="#{msg['lbl.ok']}" actionListener="#{bankApplicabilityManagedBean.activeNavigation}" process="@this" style="margin-left: 150px !important;"/>          
+     </p:dialog>							
+							
+							<p:dialog id="unupprove" widgetVar="unupprove" width="400" height="80"  resizable="false" 
+	style="background-color: white !important;" header="Warning Dailog" styleClass="warning" closable="false" showEffect="clip" hideEffect="clip" >
+           <p:outputLabel value="#{msg['lbl.doyouactivaterecord']}" style="text-align: center; font-size:15px !important;"/><br/>
+           <p:commandButton value="#{msg['lbl.ok']}" actionListener="#{bankApplicabilityManagedBean.clickOnOKDeActivate}" process="@this" style="margin-left: 150px !important;"/>
+           <p:commandButton value="#{msg['lbl.cancel']}" onclick="PF('unupprove').hide();" process="@this" style="margin-left:10px;"/>          
+     </p:dialog>
+							
+       						 
+								<h2>
+								<h:outputText
+											value="#{msg['lbl.bankapplicabilityactivedeactivelist']}" />
+											
+											<p:commandLink action="#{bankApplicabilityManagedBean.exit}"
+														 process="@this">
+														<p:graphicImage value="../images/return.jpg" width="25" height="25" id="imgEdit" styleClass="icon_right" style="float:right;" />
+														<p:tooltip for="imgEdit" value="Go to Home" style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;"/>
+													</p:commandLink>
+								</h2>
+								
+								<p:panel id="bankApproval" styleClass="panel_border">
+											
+										
+												<p:dataTable id="dataTableId" var="o"  sortMode="multiple" styleClass="mydatatableclass"
+												rows="10" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  rowsPerPageTemplate="5,10,15"
+												value="#{bankApplicabilityManagedBean.activationList}" rowIndexVar="rowIndex" emptyMessage="#{msg['lbl.recordnotfound']}"    paginatorPosition="bottom" rowStyleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:column headerText="#{msg['lbl.sino']}" style="width:30px;" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+
+												<!-- <p:column headerText="Company" sortBy="#{o.bankId}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.companyName}" />
+												</p:column>
+												<p:column headerText="Country" sortBy="#{o.countryId}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.countryName}" />
+												</p:column> -->
+												<p:column headerText="#{msg['lbl.bankCode']}" sortBy="#{o.bankId}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.bankCode}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.bankName']}" sortBy="#{o.bankId}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.bankName}" />
+												</p:column>
+
+												
+												<p:column headerText="#{msg['lbl.bankindicator']}" sortBy="#{o.countryId}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.bankTypeName}" />
+												</p:column>
+											
+												<p:column headerText="#{msg['lbl.status']}" sortBy="#{o.isActive}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													
+													
+													<p:panel rendered="#{o.isActive eq 'D'}">
+													<div style="text-align:center;">
+														<p:commandLink action="#{bankApplicabilityManagedBean.getActiveInactive(o)}"
+														 process="@this" update=":form1:mainPanel">
+														<p:graphicImage  value="../images/unlock.jpg"   width="25" height="25" id="imgLock"  />
+														<p:tooltip for="imgLock" value="Lock" style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;"/>
+													</p:commandLink>
+													</div>
+													</p:panel>
+													<p:panel rendered="#{o.isActive eq 'Y'}">
+													<div style="text-align:center;">
+														<p:commandLink action="#{bankApplicabilityManagedBean.getActiveInactive(o)}"
+														 process="@this" update=":form1:mainPanel">
+														<p:graphicImage value="../images/lock.jpg"  width="25" height="25" id="imgUnlock"  />
+														<p:tooltip for="imgUnlock" value="Un Lock" style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;"/>
+													</p:commandLink>
+													</div>
+													</p:panel>
+													
+												</p:column>
+
+											</p:dataTable>
+										</p:panel>
+								
+							</p:panel>
+						</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"/>
+					</h:panelGroup>
+					<h:panelGroup layout="block" class="clearfix"/>
+					</td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

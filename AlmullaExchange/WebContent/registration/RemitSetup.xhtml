@@ -1,0 +1,2125 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script src="../js/SigWeb.js"  type="text/javascript"></script>
+	<script src="../js/digitalsignature.js"></script>
+	<script type="text/javascript">
+		var baseUri = "http://localhost:47289/SigWeb/";
+		
+		
+	</script>
+	
+	<style type="text/css">
+	.ui-dialog.dialogsuccess .ui-widget-content{ border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 10px 10px no-repeat #FFF !important; padding:0px 0px 0px 30px !important;}
+	.ui-dialog.dialogsuccess .ui-widget-content label {
+   margin-right:0px !important;
+}
+	.ui-dialog .ui-widget-content{background:url(../images/warning.png) 10px center no-repeat #FFF !important; padding-left:40px; font-weight:bold; color: #000; border:3px solid red !important; }
+	.ui-dialog.image .ui-widget-content{background:#FFF !important; padding-left:10px; font-weight:bold; color: #000; border:3px solid red !important; }
+.ui-dialog .ui-dialog-titlebar{ background: #F0F0F0 !important;}
+label {
+   margin-right: 26px !important;
+}
+</style>
+	
+</h:head>
+
+<h:body>
+	  <!--  mail changes -->
+<!--  <p:confirmDialog id="succ" widgetVar="succ" width="260" height="17" resizable="false" style=" font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+             showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="mail sent successfully">
+</p:confirmDialog> -->
+ 
+<!--  mail-->
+				
+	<f:view>
+	
+	
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+				
+				<!-- <ui:include
+						src="../common/common_menu.xhtml"></ui:include> -->
+						<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+						</td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup layout="block" class="container">
+
+
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h1>
+								<h:outputText value="#{msg['lbl.customerreg']}" />
+							</h1>
+							<h:panelGroup layout="block" class="table_bg">
+								<h:form id="form1" enctype="multipart/form-data" style="padding:0!important; background:none !important;">
+								<!-- 	
+								<p:dialog id="showimageid" header="Images" widgetVar="showimage" modal="true" styleClass="image" draggable="false" resizable="true" width="600" height="400">
+									 <p:graphicImage value="#{branchRegistration.myImage}" cache="false" width="100%" height="80%"/>
+									 <div class="clearfix"></div>
+									 <h:panelGroup layout="block" styleClass="shadow_button">
+									 <p:commandButton id="confirm" value="Yes" oncomplete="showimage.hide()" ajax="false" immediate="true"/>
+									 <p:commandButton id="decline" value="No" oncomplete="showimage.hide()" action="#{branchRegistration.verifyValIfNO}" ajax="false" immediate="true"/>                
+									 <div class="clearfix"></div>
+									 </h:panelGroup>
+									</p:dialog>
+ -->
+									
+									<p:panel id="mainPanel"
+										style="border: 0px; padding:0px!important; background:none !important;">
+										
+										 <p:dialog id="dlgAlready" widgetVar="dlgAlready"  width="480" showHeader="false" resizable="false" style=" font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+            											
+            											<p:outputLabel value="This Customer is Already Registered Through Online but Not Verified "/><br/>
+            								
+            											<p:commandButton value="Go To Verify" actionListener="#{branchRegistration.clickOnOK}" process="@this"/>  <p:spacer width="10px"/>
+            											<p:commandButton value="Go To Registration" actionListener="#{branchRegistration.clickRegistration}" process="@this"/>          
+        </p:dialog>
+        
+         <p:dialog id="dlgSmartcard" widgetVar="dlgSmartcard"  width="480" showHeader="false" resizable="false" style=" font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+            											
+            											<p:outputLabel value="This Customer is Already Registered Through Smart Card Please Go through Smart Card"/><br/>
+            								
+            											<p:commandButton value="OK" actionListener="#{branchRegistration.clickOnokManual}" process="@this"/>
+        </p:dialog>
+        
+         <p:dialog id="dlgverified" widgetVar="dlgverified"  width="480" showHeader="false" resizable="false" style=" font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+            											
+            											<p:outputLabel value="This Customer is Already Update Details but not Verified"/><br/>
+            								
+            											<p:commandButton value="OK" actionListener="#{branchRegistration.clickOnokVerified}" process="@this"/>
+        </p:dialog>
+        
+        	
+								<p:dialog id="showimageid" header="Images" widgetVar="showimage" modal="true" styleClass="image" draggable="false" resizable="true" width="600" height="400">
+									 <p:graphicImage value="#{branchRegistration.myImage}" cache="false" width="100%" height="80%"/>
+									 <div class="clearfix"></div>
+									 <h:panelGroup layout="block" styleClass="shadow_button">
+									 <p:commandButton id="confirm" value="Yes" oncomplete="showimage.hide()" ajax="false" immediate="true"/>
+									 <p:commandButton id="decline" value="No" oncomplete="showimage.hide()" action="#{branchRegistration.verifyValIfNO}" ajax="false" immediate="true"/>                
+									 <div class="clearfix"></div>
+									 </h:panelGroup>
+									</p:dialog>
+        
+
+										<p:panel id="iddetails"
+											style="padding:10px!important; background:none !important;"
+											rendered="#{branchRegistration.booIdDetail}">
+											<p:panel styleClass="shadow">
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+													<!-- 	<h:outputText id="lbl_validselect" /> -->
+													<h:outputText value="#{msg['lbl.modeofoperation']} *" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col" style="padding-top:10px;">
+														<p:message for="validselect" display="text" />
+												 <h3>Grid</h3>
+    <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
+        <p:outputLabel for="city" value="City:" />
+        <p:selectOneRadio id="city" value="#{radioView.city}"  layout="grid" columns="3">
+            <f:selectItems value="#{radioView.cities}" var="c" itemLabel="#{city}" itemValue="#{city}"/>
+        </p:selectOneRadio>
+    </h:panelGrid>		
+								
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="right_col" id="smart"
+													rendered="#{branchRegistration.boosmartCardAppear}">
+													<p:panel styleClass="inner_left_col">
+														<p:graphicImage url="../images/reader_icon.jpg" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+													</p:panel>
+												</p:panel>
+                                              	<div class="clearfix"></div>
+												<p:panel id="idPanel"
+													style="padding:0px !important; border:none !important;"
+													rendered="#{branchRegistration.booManual}">
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText id="lbl_idtype_0" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message for="idtype_0" display="text" />
+															<p:selectOneMenu id="idtype_0"
+																value="#{branchRegistration.idType}"
+																style="width:180px;" label="Identity Type">
+
+																<p:ajax event="change"
+																	listener="#{branchRegistration.getIDTypeValue}"
+																	update="mainPanel" />
+															</p:selectOneMenu>
+														</p:panel>
+													</p:panel>
+
+													<p:panel styleClass="right_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText id="lbl_idnumber_0" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:outputLabel value="#{msg['lbl.validwrongcivil']}" 
+																rendered="#{branchRegistration.booIdTypeCheck}"
+																style="color: red; font-weight:bold;" />
+															<p:inputText value="#{branchRegistration.idNumber}"
+																id="idnumber_0" label="Id Number">
+																<p:message for="idnumber_0" display="text" />
+																<p:ajax event="blur"
+																	listener="#{branchRegistration.onblurId}"
+																	update="mainPanel" />
+
+															</p:inputText>
+
+														</p:panel>
+													</p:panel>
+													
+												<!-- 	<p:panel styleClass="right_col" rendered="#{branchRegistration.renderverifiedTokenNumber}">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText id="Verified Token Number" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															
+															<p:inputText value="#{branchRegistration.verifiedTokenNumber}"
+																label="Id Number">
+																
+																
+															</p:inputText>
+
+														</p:panel>
+													</p:panel>
+ -->
+
+												</p:panel>
+												<div class="clearfix"></div>
+											</p:panel>
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+
+<p:commandButton value="#{msg['lbl.go']}" style="margin-right:10px;"
+													action="#{branchRegistration.nextRemitterInfo}"
+													update="mainPanel" >
+												</p:commandButton>
+
+												<p:commandButton value="#{msg['lbl.clear']}"
+													
+													action="#{branchRegistration.clearFirst}"
+													update="mainPanel" process="@this">
+												</p:commandButton>
+												
+
+												<div class="clearfix"></div>
+											</h:panelGroup>
+
+										</p:panel>
+										<p:panel id="customdetail"
+											rendered="#{branchRegistration.booCustomerDetails}">
+											<p:panel styleClass="shadow">
+
+
+												<h2>
+													<h:outputText value="#{msg['lbl.customerdetails']}" />
+												</h2>
+
+												   <p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Civil Id" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{branchRegistration.civilId}"/>
+													</p:panel>
+												</p:panel>
+												<div class="clearfix"></div>
+												
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Serial Number" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{branchRegistration.serialno}"/>
+													</p:panel>
+												</p:panel>
+												
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Document Number" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{branchRegistration.documentno}"/>
+													</p:panel>
+												</p:panel>
+												<div class="clearfix"></div>
+												<p:spacer height="20"/>
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.title']} " />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{branchRegistration.titleEn}"/>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Full Name" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{branchRegistration.fullNameEn}"/>
+													</p:panel>
+												</p:panel>
+												
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.firstname']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{branchRegistration.firstNameAr}"/>
+													</p:panel>
+												</p:panel>
+
+												
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Surname" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{branchRegistration.arabicSurname}"/>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="right_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Father First Name" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{branchRegistration.fatherNameArabic}"/>
+													</p:panel>
+												</p:panel>
+												
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Full Name Local" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{branchRegistration.fullNameAr}"/>
+													</p:panel>
+												</p:panel>
+												
+
+											
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="First GF Name" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{branchRegistration.arabicGFName}"/>
+													</p:panel>
+												</p:panel>
+
+												
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.nationality']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{branchRegistration.nationalityLatin}"/>
+													</p:panel>
+												</p:panel>
+												
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Nationality Local" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{branchRegistration.nationalityAr}"/>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="right_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.gender']} " />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{branchRegistration.genderLatin}"/>
+													</p:panel>
+												</p:panel>
+												
+												<p:panel styleClass="right_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Gender Local" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{branchRegistration.genderAr}"/>
+													</p:panel>
+												</p:panel>
+												
+													<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Issuing Date" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{branchRegistration.issuedate}"/>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="ID Expiry Date:" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{branchRegistration.expirydate}"/>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.dob']}" />
+														
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{branchRegistration.birthdate}" />
+													</p:panel>
+												</p:panel>
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Telephone Number1" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{branchRegistration.telephone1}"/>
+													</p:panel>
+												</p:panel>
+												
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Telephone Number2" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{branchRegistration.telephone2}"/>
+													</p:panel>
+												</p:panel>
+												
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Email Id" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{branchRegistration.scardemail}"/>
+													</p:panel>
+												</p:panel>
+												
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Blood Type" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{branchRegistration.bloodType}"/>
+													</p:panel>
+												</p:panel>
+												
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Building Number" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{branchRegistration.building_no}"/>
+													</p:panel>
+												</p:panel>
+												
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Unit Type" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{branchRegistration.unit_type}"/>
+													</p:panel>
+												</p:panel>
+												
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Unit Number" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+															<p:inputText value="#{branchRegistration.unit_no}"/>
+													</p:panel>
+												</p:panel>
+												
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Floor Number" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+															<p:inputText value="#{branchRegistration.scardfloor}"/>
+													</p:panel>
+												</p:panel>
+												
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Street Number" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{branchRegistration.scardstreet}"/>
+													</p:panel>
+												</p:panel>
+												
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Block Number" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{branchRegistration.sCardblock}"/>
+													</p:panel>
+												</p:panel>
+												
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="District" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{branchRegistration.scarddistrict}"/>
+													</p:panel>
+												</p:panel>
+												
+												
+												
+					
+											
+												
+												<div class="clearfix"></div>
+												<p:spacer height="20"/>
+												<div class="clearfix"></div>
+
+<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Guardian Civil Id" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{branchRegistration.guardianCivilId}"/>
+													</p:panel>
+												</p:panel>
+												
+												
+<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Additional Field1" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{branchRegistration.additinal1}"/>
+													</p:panel>
+												</p:panel>
+												
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Additional Field2" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{branchRegistration.additinal2}"/>
+													</p:panel>
+												</p:panel>
+												
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Address Unique Key" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{branchRegistration.addressRef}"/>
+													</p:panel>
+												</p:panel>
+
+
+											</p:panel>
+											<div class="clearfix"></div>
+										<p:panel styleClass="left_col">
+											<h:outputText value="#{msg['lbl.fieldaremandatory']}"  style="color:red; padding:10px !important; font-size:10px;"/>
+										</p:panel>
+<div class="clearfix"></div>
+
+	<h:panelGroup layout="block" styleClass="shadow_button">
+
+	<p:commandButton value="Display"
+													action="#{branchRegistration.fetchSmartCardData}"
+													update="mainPanel">
+												</p:commandButton>
+
+												
+											
+												<div class="clearfix"></div>
+											</h:panelGroup>
+
+											<h:panelGroup layout="block" styleClass="shadow_button"
+												rendered="#{branchRegistration.booCustomerDetails}">
+
+	<p:commandButton value="#{msg['lbl.next']}" style="margin-right:10px;" 
+													action="#{branchRegistration.nextContactDetailsFromSmartCardInfo}"
+													update="mainPanel">
+												</p:commandButton>
+
+												<p:commandButton value="#{msg['lbl.back']}"
+													action="#{branchRegistration.idInfo}" update="mainPanel"
+													style="margin-right:10px; ">
+												</p:commandButton>
+
+												<p:commandButton value="#{msg['lbl.clear']}"
+													update="mainPanel" action="#{branchRegistration.clearSmartCardInfo}" >
+												</p:commandButton>
+
+											
+												<div class="clearfix"></div>
+											</h:panelGroup>
+										</p:panel>
+
+										<p:panel styleClass="shadow" id="remitterinfo" rendered="#{branchRegistration.booRemitterInfo}">
+											
+											
+											
+
+											<h2>
+												<h:outputText value="#{msg['lbl.remitterInfo']} " />
+											</h2>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_title" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="title" display="text" />
+													<p:selectOneMenu id="title"
+														value="#{branchRegistration.title}" label="Title">
+														<p:ajax event="change" update="gender,titleL" listener="#{branchRegistration.changeGender}" />
+                                                 
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_firstname" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="firstname"
+														value="#{branchRegistration.firstName}" label="First Name">
+														<p:ajax update="fnameMsg, amlStatus" event="blur"/>
+														<p:message id="fnameMsg" for="firstname" display="text"/>
+														<f:validator validatorId="com.amg.exchange.validator.AMLValidator"/>
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="right_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_midname" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="midname"
+														value="#{branchRegistration.middleName}"
+														label="Middle Name">
+
+														<p:ajax update="middlenameMsg" event="blur" />
+														<p:message id="middlenameMsg" for="midname" display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_lastname" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="lastname"
+														value="#{branchRegistration.lastName}" label="Last Name">
+
+
+														<p:ajax update="lnameMsg" event="blur" />
+														<p:message id="lnameMsg" for="lastname" display="text" />
+
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="right_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_shortname" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="shortname"
+														value="#{branchRegistration.shortName}" label="Short Name">
+
+														<p:ajax update="snameMsg" event="blur" />
+														<p:message id="snameMsg" for="shortname" display="text" />
+
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_titleL" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="titleL" display="text" />
+													<!--  <p:selectOneMenu id="titleL"
+														value="#{branchRegistration.titlel}" label="Local Title">
+														<p:ajax event="change" update="gender" listener="#{branchRegistration.changeGender}" />
+													</p:selectOneMenu>  -->
+													 <p:inputText id="titleL"
+														value="#{branchRegistration.titlel}" readonly="true"/>
+			
+												
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_firstnameL" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="firstnameL"
+														value="#{branchRegistration.firstNamel}" lang="AR"
+														label="Local First Name">
+
+														<p:ajax update="fnamelMsg" event="blur" />
+														<p:message id="fnamelMsg" for="firstnameL" display="text" />
+
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="right_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_middlenameL" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="middlenameL"
+														value="#{branchRegistration.middleNamel}" lang="AR"
+														label="Local Middle name">
+														<p:ajax update="mnamelMsg" event="blur" />
+														<p:message id="mnamelMsg" for="middlenameL" display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_lastnameL" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="lastnameL"
+														value="#{branchRegistration.lastNamel}" lang="AR"
+														label="Local Last Name">
+
+														<p:ajax update="lnamelMsg" event="blur" />
+														<p:message id="lnamelMsg" for="lastnameL" display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="right_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_shortnameL" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="shortnameL"
+														value="#{branchRegistration.shortNamel}" lang="AR"
+														label="Local Short Name">
+
+														<p:ajax update="snamelMsg" event="blur" />
+														<p:message id="snamelMsg" for="shortnameL" display="text" />
+
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_nationality" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="nationality" display="text" />
+													<p:selectOneMenu value="#{branchRegistration.nationality}"
+														filter="true" filterMatchMode="startsWith"
+														id="nationality" label="Nationality"
+														style="width:185px;text-align:left;">
+														<f:selectItem itemLabel="#{msg['lbl.select']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{branchRegistration.nationalityNameList}" var="c"
+															itemLabel="#{c.nationality}"
+															itemValue="#{c.fsCountryMaster.countryId}" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="right_col">
+												<p:panel styleClass="inner_left_col">
+													<!-- <h:outputText value="Gender *" /> -->
+													<h:outputText id="lbl_gender"/>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="gender" display="text" />
+													<!--  <p:selectOneMenu id="gender"
+														value="#{branchRegistration.gender}" label="Gender" disabled="true">
+														<p:ajax event="change" update="title" listener="#{branchRegistration.changeLocalTitle}" />
+													</p:selectOneMenu> -->
+													 <p:inputText id="gender"
+														value="#{branchRegistration.gender}" readonly="true">
+													
+													</p:inputText> 
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_mobile" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:outputLabel value="This Mobile Already Exist"
+														rendered="#{branchRegistration.booMobilecheck}"
+														style="color:red;" />
+													<p:inputText id="mobile"
+														value="#{branchRegistration.mobile}" label="Mobile No">
+
+														<p:ajax update="mainPanel,mobMsg" event="blur" listener="#{branchRegistration.checkMobile}"/>
+														<p:message id="mobMsg" for="mobile" display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="right_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_email" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:outputLabel value="This Email Already Exist"
+														rendered="#{branchRegistration.booEmailCheck}"
+														style="color:red;" />
+													<p:inputText id="email" value="#{branchRegistration.email}"
+														label="Email"
+														validatorMessage="#{msg['lbl.validlemailformat']}"
+														style="">
+
+														<f:validateRegex
+															pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+
+														<p:ajax update="mainPanel,emailMsg" event="blur" listener="#{branchRegistration.checkEmail}" process="@this"/>
+											
+														<p:message id="emailMsg" for="email" display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_alternatemail" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="alternatemail"
+														value="#{branchRegistration.alternativeEmail}"
+														label="Alternate Email"
+														validatorMessage="#{msg['lbl.validationprefix']} #{msg['lbl.validalternatemail']}">
+
+														<f:validateRegex
+															pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+
+														<p:ajax update="alternateemailMsg" event="blur" />
+														<p:message id="alternateemailMsg" for="alternatemail"
+															display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											
+
+											<p:panel styleClass="left_col" id="amlStatus">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_amlstatus" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="amlstatus"
+														value="#{branchRegistration.AMLStatus}" label="AML Status"
+														readonly="true" />
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="right_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_numberHits" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="numberHits"
+														value="#{branchRegistration.numberofhits}"
+														label="Hit Count" readonly="true" />
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="right_col" id="pnlDob">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_dob" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col" rendered="#{branchRegistration.booCivilId}">
+													<p:inputText id="dobCivil" value="#{branchRegistration.showDob}" navigator="true" readonly="#{branchRegistration.booReadonly}"/>
+												</p:panel>
+												<p:panel styleClass="inner_right_col" rendered="#{branchRegistration.booOtherId}" >
+													<p:calendar id="dob" value="#{branchRegistration.dob}"  
+														label="Date of Birth" 
+														style="font-weight :normal; text-align: left;"
+														navigator="true" maxdate="calwidget.today()">
+														<!-- <p:ajax update="dobMsg" event="blur" /> -->
+														<p:message for="dob" display="text" />
+													</p:calendar>
+													<div class="clearfix"></div>
+													<p:spacer height="3px"/>
+													
+													
+												</p:panel>
+												<div class="clearfix"></div>
+												<p:panel id="checkDobPanel"  rendered="#{branchRegistration.changeDobPass}">
+													<p:selectBooleanCheckbox value="#{branchRegistration.booChangeDob}">
+													<p:ajax event="change" update="pnlDob" listener="#{branchRegistration.enableDob}" />
+													</p:selectBooleanCheckbox>
+													 &nbsp; <h:outputText value="#{msg['lbl.changedobmsg']}"/>
+													 </p:panel>
+											</p:panel>
+
+                                         <div class="clearfix"></div>
+                                         
+                                      
+										<p:panel styleClass="left_col">
+											<h:outputText value="#{msg['lbl.fieldaremandatory']}"  style="color:red; padding:10px !important; font-size:10px;"/>
+										</p:panel>
+<div class="clearfix"></div>
+											<h:panelGroup layout="block" styleClass="shadow_button">
+											
+											<p:commandButton value="#{msg['lbl.next']}" style="margin-right:10px;"
+													action="#{branchRegistration.nextContactDetails}"
+													update="mainPanel" />
+
+												<p:commandButton value="#{msg['lbl.back']}"
+													action="#{branchRegistration.idInfo}" update="mainPanel"
+													immediate="true" style="margin-right:10px; ">
+												</p:commandButton>
+
+												<p:commandButton value="#{msg['lbl.clear']}"
+													
+													action="#{branchRegistration.clearRemitterInfo}"
+													update="mainPanel" process="@this">
+													<p:resetInput target="@form" />
+												</p:commandButton>
+
+												
+												<div class="clearfix"></div>
+											</h:panelGroup>
+
+										</p:panel>
+
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="shadow" id="contdetails"
+											rendered="#{branchRegistration.booContactDetails}">
+
+											<h2>
+												<h:outputText value="#{msg['lbl.contactdetails']}" />
+											</h2>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_contacttype" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="contacttype" display="text" />
+													<p:selectOneMenu id="contacttype"
+														value="#{branchRegistration.contactTypeId}"  rendered="#{branchRegistration.rendercontactTypeId}"
+														style="width: 180px;text-align:left;" label="Contact Type">
+														<p:ajax event="select" listener="#{branchRegistration.selectIdentityType}"/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="right_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_flatno" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="flatno" value="#{branchRegistration.flat}"
+														label="Flat">
+														<p:ajax update="flatMsg" event="blur" />
+														<p:message id="flatMsg" for="flatno" display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_state_0" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="state_0" display="text" />
+													<p:selectOneMenu id="state_0"
+														value="#{branchRegistration.stateId}"
+														filterMatchMode="startsWith" filter="true" label="State">
+														<f:selectItem itemLabel="#{msg['lbl.select']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{branchRegistration.stateListFromDB}" var="c"
+															itemLabel="#{c.stateName}"
+															itemValue="#{c.fsStateMaster.stateId}" />
+														<p:ajax update="district_0"
+															listener="#{branchRegistration.popDistrict}" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="right_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_block_0" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="block_0"
+														value="#{branchRegistration.block}" label="Block">
+														<p:ajax update="blkMsg" event="blur" />
+														<p:message id="blkMsg" for="block_0" display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_district_0" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="district_0" display="text" />
+													<p:selectOneMenu id="district_0"
+														value="#{branchRegistration.districtId}"
+														filterMatchMode="startsWith" filter="true"
+														label="District">
+														<f:selectItem itemLabel="#{msg['lbl.select']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{branchRegistration.districtListFromDB}" var="c"
+															itemLabel="#{c.district}"
+															itemValue="#{c.fsDistrictMaster.districtId}" />
+														<p:ajax update="city_0"
+															listener="#{branchRegistration.popCity}" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="right_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_street_0" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="street_0"
+														value="#{branchRegistration.street}" label="Street">
+														<p:ajax update="strMsg" event="blur" />
+														<p:message id="strMsg" for="street_0" display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_city_0" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="city_0" display="text" />
+													<p:selectOneMenu id="city_0"
+														value="#{branchRegistration.cityId}"
+														filterMatchMode="startsWith" filter="true" label="City">
+														<f:selectItem itemLabel="#{msg['lbl.select']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{branchRegistration.cityListFromDB}" var="c"
+															itemLabel="#{c.cityName}"
+															itemValue="#{c.fsCityMaster.cityId}" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="right_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_localarea" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="localarea"
+														value="#{branchRegistration.localArea}" label="Local Area">
+
+														<p:ajax update="lareaMsg" event="blur" />
+														<p:message id="lareaMsg" for="localarea" display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<div class="clearfix"></div>
+											
+											
+
+											<p:panel styleClass="right_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_telephone" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="telephone"
+														value="#{branchRegistration.telephone}"
+														label="Telephone Number">
+
+														<p:ajax update="telMsg" event="blur" />
+														<p:message id="telMsg" for="telephone" display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+											
+
+										<p:panel styleClass="left_col">
+											<h:outputText value="#{msg['lbl.fieldaremandatory']}"  style="color:red; padding:10px !important; font-size:10px;"/>
+										</p:panel>
+											<div class="clearfix"></div>
+
+	
+
+
+											<h:panelGroup layout="block" styleClass="button_align">
+											
+<h:outputText value="#{msg['lbl.contactdetailadd']}"
+														rendered="#{branchRegistration.contactlistcheck}"
+														style="white-space:nowrap !important; color:red;" />
+												<p:commandButton value="#{msg['lbl.add']}" style="float:right; margin-left:10px;"
+													action="#{branchRegistration.addContactDetailsDataTable}"
+													update="mainPanel">
+												</p:commandButton>
+												<p:outputLabel value="#{msg['lbl.duplicate']}"  rendered="#{branchRegistration.booContactDetailsDuplicate}" style="color: red; float:right; padding-right:10px;"/>
+												
+
+												<div class="clearfix"></div>
+											</h:panelGroup>
+											<br />
+											<br />
+											<p:dataTable value="#{branchRegistration.contactList}"
+												var="o" rendered="#{branchRegistration.contactDataTable}"
+												style="width:1220;" editable="true" id="datatable"
+												emptyMessage="#{msg['lbl.norecordfound']}">
+
+												
+												<p:column>
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.contacttype']}" />
+													</f:facet>
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{o.contType}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText value="#{o.contType}" />
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+												<!-- <p:column>
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.country']}" />
+													</f:facet>
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{o.country}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText value="#{o.country}" />
+														</f:facet>
+													</p:cellEditor>
+												</p:column> -->
+												<p:column>
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.state']}" />
+													</f:facet>
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{o.state}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText value="#{o.state}" />
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+												<p:column>
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.district']}" />
+													</f:facet>
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{o.dist}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText value="#{o.dist}" />
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+												<p:column>
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.city']}" />
+													</f:facet>
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{o.city}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText value="#{o.city}" />
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+
+<p:column>
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.flatno']}" />
+													</f:facet>
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{o.flat}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText value="#{o.flat}" style="width:100%" />
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+												
+												<p:column>
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.block']}" />
+													</f:facet>
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{o.block}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText value="#{o.block}" />
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+												<p:column>
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.street']}" />
+													</f:facet>
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{o.street}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText value="#{o.street}" />
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+												
+												<p:column>
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.localarea']}" />
+													</f:facet>
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{o.area}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText value="#{o.area}" />
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+												
+												<p:column>
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.telephone']}" />
+													</f:facet>
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{o.tel}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText value="#{o.tel}" style="width:100%" />
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+												<p:column style="width:50px; text-align:center !important;">
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.delete']}" />
+													</f:facet>
+													<p:commandButton styleClass="delete" value=""
+														actionListener="#{branchRegistration.removeContactDetail(o)}"
+														ajax="false" immediate="true"></p:commandButton>
+												</p:column>
+
+											</p:dataTable>
+
+
+											<div class="clearfix"></div>
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+											
+											<p:commandButton value="#{msg['lbl.next']}" style="margin-right:10px;"
+													action="#{branchRegistration.nextEmploymentDetails}"
+													update="mainPanel" immediate="true">
+												</p:commandButton>
+
+												<p:commandButton value="#{msg['lbl.back']}"
+													action="#{branchRegistration.backRemitterInfo}"
+													update="mainPanel" process="@this"
+													style="margin-right:10px; ">
+												</p:commandButton>
+
+												<p:commandButton value="#{msg['lbl.clear']}"
+													
+													action="#{branchRegistration.clearContactDetail}"
+													update="mainPanel" process="@this">
+													<p:resetInput target="@form" />
+												</p:commandButton>
+
+												<div class="clearfix"></div>
+											</h:panelGroup>
+											<div class="clearfix"></div>
+										</p:panel>
+
+										<p:panel styleClass="shadow"
+											rendered="#{branchRegistration.booEmploymentDetails}"
+											id="empdetails">
+
+											<h2>
+												<h:outputText value="#{msg['lbl.transactionlimitsetting']}" />
+											</h2>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_article" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="article" display="text" />
+													<p:selectOneMenu id="article"
+														value="#{branchRegistration.article}" label="Article">
+														<f:selectItem itemLabel="#{msg['lbl.select']}" itemValue="" />
+														<f:selectItems value="#{branchRegistration.articleData}"
+															var="c" itemLabel="#{c.articleName}"
+															itemValue="#{c.articleId}" />
+														<p:ajax event="change" update="level"
+															listener="#{branchRegistration.generateLevel}" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+<div class="clearfix"></div>
+											
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_level" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="level" display="text" />
+													<p:selectOneMenu id="level"
+														value="#{branchRegistration.level}" label="Level">
+														<f:selectItem itemLabel="select" itemValue="" />
+														<f:selectItems value="#{branchRegistration.levelData}"
+															var="c" itemLabel="#{c.articleDesc}"
+															itemValue="#{c.articleDetailId}" />
+															<p:ajax event="change" update="incomeRange"
+															listener="#{branchRegistration.generateIncomeRange}" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											
+											
+											<div class="clearfix"></div>
+											
+											
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.incomerange']} *" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="incomeRange" display="text" />
+													<p:selectOneMenu id="incomeRange" required="true" requiredMessage="#{msg['lbl.icomemsg']}"
+														value="#{branchRegistration.incomeRange}" label="Level">
+														<f:selectItem itemLabel="select" itemValue="" />
+														<f:selectItems value="#{branchRegistration.lstIncomeRange}"
+															var="c" itemLabel="#{c.monthlyIncome}"
+															itemValue="#{c.incomeRangeId}" />
+															<p:ajax/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+											
+											<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="dailyLimit" value="#{msg['lbl.dailylimit']} *" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+													<p:message id="msgdailyLimitId" for="dailyLimitId" display="text"/>
+														<p:inputText id="dailyLimitId" value="#{branchRegistration.dailyLimit}" required="true" requiredMessage="Please Enter Daily">
+															<p:ajax event="blur" update="msgdailyLimitId,dailyLimitId"/>
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="weeklyLimit" value="#{msg['lbl.weeklylimit']} *"  />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+													<p:message id="msgweeklyLimitId" for="weeklyLimitId" display="text"/>
+														<p:inputText id="weeklyLimitId" value="#{branchRegistration.weeklyLimit}" required="true" requiredMessage="Please Enter Weekly" validator="#{branchRegistration.comparingDailyWeekly}">
+															 <p:ajax event="blur" update="msgweeklyLimitId,:form1:weeklyLimitId" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="monthlyLimit" value="#{msg['lbl.monthlylimit']} *"/>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+													<p:message id="msgmonthlyLimitId" for="monthlyLimitId" display="text" />
+														<p:inputText id="monthlyLimitId" value="#{branchRegistration.monthlyLimit}" required="true" requiredMessage="Please Enter Monthly Limit" validator="#{branchRegistration.comparingWeeklyMonthly}">
+														    <p:ajax event="blur" update="msgmonthlyLimitId,monthlyLimitId"/>
+														</p:inputText>
+													</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="quarterlyLimit" value="#{msg['lbl.quarterlylimit']} *" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+													<p:message id="msgquarterlyLimitId" for="quarterlyLimitId" display="text" />
+														<p:inputText id="quarterlyLimitId" value="#{branchRegistration.quarterlyLimit}" required="true" requiredMessage="Please Enter Quarterly" validator="#{branchRegistration.comparingMonthlyQuarterly}">
+															 <p:ajax event="blur"  update="msgquarterlyLimitId,quarterlyLimitId"/>
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+											
+												
+													<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="halfLimit" value="#{msg['lbl.halfyearly']} *" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col"> 
+													    <p:message id="msghalfLimitId" for="halfLimitId" display="text"/>
+														<p:inputText id="halfLimitId" value="#{branchRegistration.halfyearly}" required="true" requiredMessage="Please Enter Half" validator="#{branchRegistration.comparingQuarterlyHalfYearly}" >
+															<p:ajax event="blur" update="msghalfLimitId,halfLimitId"/>
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												
+												
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="annualLimit" value="#{msg['lbl.annuallimit']} *" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+													<p:message id="msgannualLimitId" for="annualLimitId" display="text" />
+														<p:inputText id="annualLimitId" value="#{branchRegistration.annualLimit}" required="true" requiredMessage="Please Enter Annual" validator="#{branchRegistration.comparingHalfYearlyAnnually}">
+															<p:ajax event="blur" update="msgannualLimitId,annualLimitId"/>
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+											
+
+											<div class="clearfix"></div>
+
+                                            <p:panel  id="empPanel1" >
+											<h2>
+												<h:outputText value="#{msg['lbl.employementdetails']}" />
+											</h2>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_employmenttype" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="employmenttype" display="text" />
+													<p:selectOneMenu id="employmenttype"
+														value="#{branchRegistration.employmentType}"
+														label="Employment Type">
+
+														<p:ajax event="change" update="empPanel1"
+															listener="#{branchRegistration.getEmploymentStatus}" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+											<p:panel id="empPanel"
+												rendered="#{branchRegistration.booEmploymentPanel}">
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_occupation" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="occupation" display="text" />
+														<p:selectOneMenu id="occupation"
+															value="#{branchRegistration.occupation}"
+															label="Occupation">
+															<p:ajax/>
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="right_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_employer" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="employer"
+															value="#{branchRegistration.employer}"
+															label="Employer Name">
+
+															<p:ajax update="empMsg" event="blur" />
+															<p:message id="empMsg" for="employer" display="text" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<div class="clearfix"></div>
+												
+												
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_block_1" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="block_1"
+															value="#{branchRegistration.empInfoBlock}" label="Block">
+
+															<p:ajax update="empblkMsg" event="blur" />
+															<p:message id="empblkMsg" for="block_1" display="text" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="right_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_street_1" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="street_1"
+															value="#{branchRegistration.empInfoStreet}"
+															label="Street">
+
+															<p:ajax update="empstrMsg" event="blur" />
+															<p:message id="empstrMsg" for="street_1" display="text" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_area" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="area"
+															value="#{branchRegistration.emparea}" label="Area">
+
+															<p:ajax update="empareaMsg" event="blur" />
+															<p:message id="empareaMsg" for="area" display="text" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="right_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_officetelno" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="officetelno"
+															value="#{branchRegistration.officeTel}"
+															label="Office Telephone">
+
+															<p:ajax update="emptelMsg" event="blur" />
+															<p:message id="emptelMsg" for="officetelno"
+																display="text" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+<div class="clearfix"></div>
+												<!-- <p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_country_1" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="country_1" display="text" />
+														<p:selectOneMenu id="country_1"
+															filterMatchMode="startsWith" filter="true"
+															value="#{branchRegistration.empCountryId}"
+															label="Nationality">
+															<f:selectItem itemLabel="#{msg['lbl.select']}"
+																itemValue="" />
+															<f:selectItems
+																value="#{branchRegistration.countryNameList}" var="c"
+																itemLabel="#{c.countryName}"
+																itemValue="#{c.fsCountryMaster.countryId}" />
+															<p:ajax event="change" update="state_1"
+																listener="#{branchRegistration.popEmpState}" />
+
+														</p:selectOneMenu>
+														
+														<p:inputText id="country_1" value="#{branchRegistration.countryName}" readonly="true"/> 
+													</p:panel>
+												</p:panel> -->
+
+												<p:panel styleClass="right_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_state_1" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="state_1" display="text" />
+														<p:selectOneMenu id="state_1"
+															value="#{branchRegistration.empStateId}"
+															filterMatchMode="startsWith" filter="true" label="State">
+															<f:selectItem itemLabel="#{msg['lbl.select']}"
+																itemValue="" />
+															<f:selectItems
+																value="#{branchRegistration.lstEmpStateList}" var="c"
+																itemLabel="#{c.stateName}"
+																itemValue="#{c.fsStateMaster.stateId}" />
+															<p:ajax update="district_1"
+																listener="#{branchRegistration.popEmpDistrict}" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_district_1" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="district_1" display="text" />
+														<p:selectOneMenu id="district_1"
+															value="#{branchRegistration.empDistrictId}"
+															filterMatchMode="startsWith" filter="true"
+															label="District">
+															<f:selectItem itemLabel="#{msg['lbl.select']}"
+																itemValue="" />
+															<f:selectItems
+																value="#{branchRegistration.lstEmpDistrictList}" var="c"
+																itemLabel="#{c.district}"
+																itemValue="#{c.fsDistrictMaster.districtId}" />
+															<p:ajax update="city_1"
+																listener="#{branchRegistration.popEmpCity}" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="right_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_city_1" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="city_1" display="text" />
+														<p:selectOneMenu id="city_1"
+															value="#{branchRegistration.empCityId}"
+															filterMatchMode="startsWith" filter="true" label="City">
+															<f:selectItem itemLabel="#{msg['lbl.select']}"
+																itemValue="" />
+															<f:selectItems
+																value="#{branchRegistration.lstEmpCityList}" var="c"
+																itemLabel="#{c.cityName}"
+																itemValue="#{c.fsCityMaster.cityId}" />
+															<p:ajax event="change"
+																listener="#{branchRegistration.getCity}" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_postalcode" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="postalcode"
+															value="#{branchRegistration.postalCode}"
+															label="Postal Code">
+
+															<p:ajax update="postalMsg" event="blur" />
+															<p:message id="postalMsg" for="postalcode" display="text" />
+
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="right_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_department" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="department"
+															value="#{branchRegistration.department}"
+															label="Department">
+
+															<p:ajax update="departmentMsg" event="blur" />
+															<p:message id="departmentMsg" for="department"
+																display="text" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+											</p:panel></p:panel>
+											<div class="clearfix"></div>
+										<p:panel styleClass="left_col">
+											<h:outputText value="#{msg['lbl.fieldaremandatory']}"  style="color:red; padding:10px !important; font-size:10px;"/>
+										</p:panel>
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+
+<p:commandButton value="#{msg['lbl.next']}"  style="margin-right:10px; "
+													action="#{branchRegistration.nextProofDetails}"
+													update="mainPanel">
+												</p:commandButton>
+
+												<p:commandButton value="#{msg['lbl.back']}"
+													action="#{branchRegistration.backContactDetails}" process="@this"
+													update="mainPanel" style=" margin-right:10px; ">
+												</p:commandButton>
+
+												<p:commandButton value="#{msg['lbl.clear']}"
+													update="mainPanel"
+													action="#{branchRegistration.clearEmploymentInfo}"
+													process="@this">
+													<p:resetInput target="@form" />
+												</p:commandButton>
+
+												
+												<div class="clearfix"></div>
+											</h:panelGroup>
+											<div class="clearfix"></div>
+
+										</p:panel>
+
+										<p:panel id="idproofs"
+											rendered="#{branchRegistration.booProof}" styleClass="shadow">
+
+
+											<h2>Proof</h2>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_idfor" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="idfor" display="text" />
+													<p:selectOneMenu id="idfor"
+														value="#{branchRegistration.idFor}" label="ID For">
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="right_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_idtype_1" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="idtype_1" display="text" />
+													<p:selectOneMenu id="idtype_1"
+														value="#{branchRegistration.idTypeproof}"
+														label="Identity Type">
+                                                 	<p:ajax event="change"
+																	listener="#{branchRegistration.getIDTypeProofValue}"
+																	update="expdatePanel,idnumber_1" />
+
+													</p:selectOneMenu>
+
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col" id="idPanelProof">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_idnumber_1" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:message id="idnosMsg" for="idnumber_1" display="text" />
+													<p:inputText id="idnumber_1"
+														value="#{branchRegistration.idnumberProof}"
+														label="Id Number">
+
+														<!-- <p:ajax update="idnosMsg" event="blur" /> -->
+														
+														<p:ajax event="blur" listener="#{branchRegistration.onblurIdProof}" update="idPanelProof" />
+																	
+																	<p:outputLabel value="#{msg['lbl.validwrongcivil']}" 
+																rendered="#{branchRegistration.booIdTypeCheck}"
+																style="color: red; font-weight:bold;" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="right_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_dateofexpiry" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col" id="expdatePanel">
+													<p:calendar id="dateofexpiry" size="24"
+														value="#{branchRegistration.dateExp}" mode="popup"
+														readonlyInput="true" label="Expiry Date"
+														pattern="dd/MM/yyyy" navigator="true"
+														mindate="#{branchRegistration.expDateCheck}">
+														<p:message for="dateofexpiry" display="text" />
+													</p:calendar>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+											<p:panel styleClass="left_col">
+											
+												<p:dialog id="imageupload" styleClass="dialogsuccess" widgetVar="imageUpload" resizable="false"
+																						showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true">
+												<p:outputLabel value="Image is Successfully Uploaded"/>										
+    								</p:dialog>
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.scanupload']} *" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													
+											 <p:fileUpload id="fileUplod"  fileUploadListener="#{branchRegistration.handleFileUpload}"
+													mode="advanced" 
+													fileLimit="1" fileLimitMessage="one File is Allowed"
+													update="messages"
+													label="Choose a file"
+													sizeLimit="1048576"
+													allowTypes="/(\.|\/)(gif|jpe?g|png)$/"
+													required="true"
+													requiredMessage="#{msg['lbl.uploadfile']}"
+													invalidSizeMessage="#{msg['lbl.filemaxsize']}"
+													invalidFileMessage="#{msg['lbl.allowTypes']}" oncomplete="PF('imageUpload').show()">
+											<p:message id="messages" for="fileUplod" value="#{msg['lbl.fileNotSelected']}" style="color:red;" />
+										</p:fileUpload>
+													<h:outputText
+														value="#{msg['lbl.uploadfile']} (.jpg/.png/.doc/.docx/.pdf/.jpeg)"
+														rendered="#{branchRegistration.uploadFileVisibility}"
+														style="color:red;" />
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+										<p:panel styleClass="left_col">
+											<h:outputText value="#{msg['lbl.fieldaremandatory']}"  style="color:red; padding:10px !important; font-size:10px;"/>
+										</p:panel>
+
+											<div class="clearfix"></div>
+											<h:panelGroup layout="block" styleClass="button_align">
+											
+											<h:outputText
+													value="#{msg['lbl.duplicateIdProof']}"
+													style="white-space:nowrap !important; color:red;padding-right:10px;"
+													rendered="#{branchRegistration.renderIdProofVissibility}" />
+											
+                                
+												<p:commandButton value="#{msg['lbl.add']}" style=" float:right; margin-left:10px;"
+													action="#{branchRegistration.addRows}" ajax="false"
+													update="mainPanel" id="btnGlobal">
+												</p:commandButton>
+
+												
+													 <h:outputText value="#{msg['lbl.idproofdetailadd']}"
+														rendered="#{branchRegistration.idListcheck}"
+														style="color:red; float:right; padding-right:10px;" />
+												
+
+												<div class="clearfix"></div>
+											</h:panelGroup>
+											
+											<p:dataTable value="#{branchRegistration.createProofList}"
+												var="o" widgetVar="50" style="width: 100%; font-size:12px;"
+												editable="true"
+												rendered="#{branchRegistration.booidproofDatatable}"
+												id="datatable1" emptyMessage="#{msg['lbl.norecordfound']}">
+
+												<p:ajax update="datatable1" event="cellEdit"
+													listener="#{branchRegistration.modifiedProofList(o)}" />
+
+												<p:column>
+													<h:outputText />
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.idfor']}" />
+													</f:facet>
+
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{o.idFor}" />
+														</f:facet>
+
+														<f:facet name="input">
+															<h:selectOneMenu value="#{o.id_for}">
+
+															</h:selectOneMenu>
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+
+												<p:column>
+													<!-- <h:outputText value="#{o.idType}"/> -->
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.idtype']}" />
+													</f:facet>
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{o.idType}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText value="#{o.idType}" />
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+
+												<p:column>
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.idnumber']}" />
+													</f:facet>
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{o.id_number}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText value="#{o.id_number}" />
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+
+												<p:column>
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.dateofexpiry']}" />
+													</f:facet>
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{o.date_expiary}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText value="#{o.date_expiary}" />
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+
+												<!-- <p:column headerText="#{msg['lbl.download']}"
+													style="text-align:center; width:50px;">
+													<p:commandLink id="downloadLink" title="download"
+														ajax="false"
+														action="PrimeFaces.monitorDownload(start, stop)"
+														icon="ui-icon-arrowthichk-s" immediate="true">
+														<p:graphicImage value="../images/download.png" />
+														<p:fileDownload	value="#{branchRegistration.downloadFile(o.imageId)}" />
+													</p:commandLink>
+												</p:column> -->
+												
+												<p:column headerText="#{msg['lbl.download']}"
+													style="text-align:center; width:50px;">
+													<p:commandLink id="downloadLink" title="download" ajax="false" action="PrimeFaces.monitorDownload(start, stop)"	icon="ui-icon-arrowthichk-s" immediate="true">
+														<p:graphicImage value="../images/download.png" />
+														<p:fileDownload	value="#{branchRegistration.downloadFile(o.imageId)}"/>
+													</p:commandLink>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.verified']}"
+													style="text-align:center; width:50px;">
+													<p:selectBooleanCheckbox value="#{o.checked}" >
+														<p:ajax event="change" listener="#{branchRegistration.showImage(o)}" update=":form1:showimageid"/>
+													</p:selectBooleanCheckbox>
+												</p:column>
+
+												<p:column style="text-align:center; width:50px;">
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.delete']}" />
+													</f:facet>
+													<p:commandButton value="" styleClass="delete"
+														actionListener="#{branchRegistration.removeIdProof(o)}"
+														process="@this" update="datatable1">
+													</p:commandButton>
+												</p:column>
+												
+												
+											</p:dataTable>
+											<div class="clearfix"></div>
+										</p:panel>
+											
+											<div class="clearfix"></div>
+											<p:spacer height="10px" />
+											<div class="clearfix"></div>
+											<p:panel id="verifyallpanel" rendered="#{branchRegistration.booVerifyAllRen}">
+											<h:outputText value="#{msg['lbl.verifiedall']}" />
+											<p:spacer width="10px" />
+											<p:selectBooleanCheckbox id="verifyall" value="#{branchRegistration.approved}" >
+												<p:ajax event="change" update="datatable1" listener="#{branchRegistration.veryfiAllClick}" />
+											</p:selectBooleanCheckbox>
+											</p:panel>
+												
+											<div class="clearfix"></div>
+											
+											
+											<p:spacer width="20px;" />
+											<h:panelGroup layout="block">
+											<h:outputText
+													value="#{msg['lbl.dobchangemsg']}"
+													style="white-space:nowrap !important; color:red;padding-right:10px;"
+													rendered="#{branchRegistration.renderDobChangeMessage}" />
+
+										</h:panelGroup>
+										<div class="clearfix"></div>
+
+										<!-- 	<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{branchRegistration.booProof}">
+											
+											<p:commandButton value="#{msg['lbl.next']}" style="margin-right:10px;"
+													action="#{branchRegistration.nextDigitalSignature}"
+													update="mainPanel" immediate="true" ajax="false">
+												</p:commandButton>
+
+													<p:commandButton value="#{msg['lbl.back']}"
+													action="#{branchRegistration.backEmploymentDetails}"
+													ajax="false" immediate="true"
+													style="float:right; margin-right:10px; ">
+												</p:commandButton>
+												<p:commandButton value="#{msg['lbl.clear']}"
+													action="#{branchRegistration.clearProofInfo}" ajax="false" immediate="true"
+													style="float:right; margin-right:10px; ">
+													<p:resetInput target="@form" />
+												</p:commandButton>
+												<div class="clearfix"></div>
+											</h:panelGroup> -->
+											
+											<div class="clearfix"></div>
+											<div class="clearfix"></div>
+												<div class="clearfix"></div>
+
+										<p:panel styleClass="shadow" id="signaturePanels"
+											rendered="#{branchRegistration.booProof}">
+											
+											<h2>
+												<h:outputText value="#{msg['lbl.digisign']}" />
+											</h2>
+											
+											<!-- Digital Signature Capture Here  -->
+									<p:panel id="signaturePanel"  styleClass="left_col" style="background-color:none !important; padding:0px !important;" >									
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Signature*"></h:outputText>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+							
+										
+												<form name="FORM1">
+													<table width="100%" height="20%" border="0" color="#CCC">
+														<tr>
+															<td style="border: 1px solid #CCC;"><canvas id="cnv"
+																	width="280" height="100"></canvas></td>																	
+														</tr>
+													</table>
+													<!-- <p:panel id="signatureSpecimenPanel" rendered="#{branchRegistration.signaturePanelRender}" styleClass="left_col" style="background-color:none !important; padding:0px !important;">
+										
+											<p:panel styleClass="inner_right_col">
+											<h:graphicImage url="data:image/gif;base64,#{branchRegistration.signatureSpecimen}" width="400"/>		
+   	
+											</p:panel>
+										</p:panel>	 -->
+													
+													<input type="button" value="Sign" id="SignBtn" class="button1" name="SignBtn" onClick="javascript:onSign()" />&nbsp;&nbsp;&nbsp;
+													<input type="button" value="Clear" id="button1" class="button1" name="ClearBtn" onClick="javascript:onClear()" />&nbsp;&nbsp;&nbsp; 
+													<input type="button" value="Done" id="button2" class="button1" name="DoneBtn" onClick="javascript:onDone()" />&nbsp;&nbsp;&nbsp;
+													<input type="hidden" name="bioSigData" /> 
+													<input type="hidden" name="sigImgData" /> 
+													<input type="hidden" name="sigImageData" /> 
+													<input type="hidden" name="sigStringData" />
+												</form>
+											<!-- 	<p:inputTextarea id="digitalsign" value="#{branchRegistration.digitalSignature}"/> -->
+													<h:inputHidden id="digitalsign" value="#{branchRegistration.digitalSignature}" >
+													
+													</h:inputHidden>								
+												
+											</p:panel>	
+											
+											 <p:panel id="signatureSpecimenPanel"  styleClass="left_col" style="background-color:none !important; padding:0px !important;">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="&nbsp;&nbsp;Signature Specimen"></h:outputText>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<h:graphicImage url="data:image/gif;base64,#{branchRegistration.signatureSpecimen}" width="200"/>		
+   	
+											</p:panel>
+										</p:panel>	 
+											
+											
+										</p:panel>
+											</p:panel>
+											
+											<div class="clearfix"></div>
+
+
+											<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{branchRegistration.booProof}">
+											
+											
+
+												<p:commandButton value="#{msg['lbl.submit']}"
+													style="float:right;"
+													action="#{branchRegistration.mainSave}" ajax="false">
+												</p:commandButton>
+												
+													<p:commandButton value="#{msg['lbl.back']}"
+													action="#{branchRegistration.backEmploymentDetails}"
+													ajax="false" immediate="true"
+													style="float:right; margin-right:10px; ">
+												</p:commandButton>
+												
+												<!-- <p:commandButton value="#{msg['lbl.back']}"
+													action="#{branchRegistration.backFromDigitalSignature}"
+													ajax="false" immediate="true"
+													style="float:right; margin-right:10px; ">
+												</p:commandButton> -->
+												<!-- <p:commandButton value="#{msg['lbl.clear']}"
+													action="#{branchRegistration.clearProofInfo}" ajax="false" immediate="true"
+													style="float:right; margin-right:10px; ">
+													<p:resetInput target="@form" />
+												</p:commandButton> -->
+
+
+												<div class="clearfix"></div>
+											</h:panelGroup>
+											
+									</p:panel>
+								</h:form>
+							</h:panelGroup>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+					</h:panelGroup></td>
+			</tr>
+		</table>
+		<div class="clearfix"></div>
+
+		<ui:include src="#{facesBean.footer}"></ui:include>
+
+	</f:view>
+</h:body>
+</html>

@@ -1,0 +1,1078 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />	
+	<script type="text/javascript">
+		history.pushState(null, null, 'wutranxfileuploaddetail.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'wutranxfileuploaddetail.xhtml');
+		});
+	</script>
+</h:head>
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+		<h:form id="form1" enctype="multipart/form-data" onkeypress="if (event.keyCode == 13) { return false; }">
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;"><ui:include
+							src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle"
+										src="../images/toggle_plus.png" alt=""
+										onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+
+								<h1>
+									<h:outputText value="Western Union File Upload" />
+								</h1>
+
+								<p:panel styleClass="shadow" id="mainPanel"
+									style="background-color:#FFF !important; ">
+
+									<p:dialog id="idNotFound" widgetVar="idNotFound"
+										showHeader="false" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+
+										<p:outputLabel value="#{msg['lbl.custnotregistereddoyou']}" />
+										<br />
+
+										<p:commandButton value="#{msg['lbl.yes']}"
+											oncomplete="idNotFound.hide()" process="@this"
+											action="#{wuTranxFileUploadBean.redirectToCustomerFirstPage}"
+											onstart="process.show();" onsuccess="process.hide();" />
+										<p:commandButton value="#{msg['lbl.no']}"
+											oncomplete="idNotFound.hide()" process="@this" />
+									</p:dialog>
+									
+									<p:confirmDialog id="expiredCustomer"
+										widgetVar="expiredCustomer" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{wuTranxFileUploadBean.errorMessage}">
+
+										<p:outputLabel value="Do you want to go Customer Registration" />
+										<br />
+
+										<p:commandButton value="#{msg['lbl.yes']}"
+											oncomplete="expiredCustomer.hide()" process="@this"
+											action="#{wuTranxFileUploadBean.redirectToCustomerFirstPage}"
+											onstart="process.show();" onsuccess="process.hide();" />
+										<p:commandButton value="#{msg['lbl.no']}"
+											oncomplete="expiredCustomer.hide()" process="@this" />
+
+									</p:confirmDialog>
+									
+									<p:confirmDialog id="nomapid" widgetVar="nomapid" height="20"
+										resizable="false" width="500"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{msg['lbl.relmapnot']}">
+									</p:confirmDialog>
+									
+									<p:dialog id="customerregproceed"
+										widgetVar="customerregproceed" showHeader="false"
+										resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+
+										<p:outputLabel
+											value="This Customer Partially Registered Do You want to Continue Registration" />
+										<br />
+
+										<p:commandButton value="#{msg['lbl.yes']}"
+											oncomplete="customerregproceed.hide()" process="@this"
+											action="#{wuTranxFileUploadBean.redirectToCustomerFirstPage}"
+											onstart="process.show();" onsuccess="process.hide();" />
+										<p:commandButton value="#{msg['lbl.no']}"
+											oncomplete="customerregproceed.hide()" process="@this" />
+									</p:dialog>
+
+									<p:confirmDialog id="idNumbernotenter"
+										widgetVar="idNumbernotenter" height="20" resizable="false"
+										width="300" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Please enter the ID NUMBER">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="stockNotAvailable"
+										widgetVar="stockNotAvailable" height="20" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{msg['lbl.stockNotAvailable']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="errorPage" widgetVar="errorPage"
+										resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{wuTranxFileUploadBean.errorMessage} ">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="netamountgreater"
+										widgetVar="netamountgreater" height="20" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{msg['lbl.totalCashReceivedShouldBeEqualToToalCash']} ">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="refundamounterror"
+										widgetVar="refundamounterror" height="20" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{msg['lbl.refundAmountAndTotalRefundAmountNotMatching']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="denominationerror"
+										widgetVar="denominationerror" height="20" resizable="false"
+										width="350" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{msg['lbl.denominationDetailsNotAvailable']}">
+									</p:confirmDialog>
+
+									<!-- wu delete -->
+									<p:confirmDialog id="deleteBeneAcc" widgetVar="deleteBeneAcc"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{wuTranxFileUploadBean.errorMessage}">
+										<br />
+
+										<p:commandButton value="#{msg['lbl.yes']}" update="mainPanel"
+											oncomplete="deleteBeneAcc.hide()" process="@this"
+											onstart="process.show();" onsuccess="process.hide();"
+											action="#{wuTranxFileUploadBean.deleteBeneficiaryAccount}" />
+										<p:commandButton value="#{msg['lbl.no']}"
+											oncomplete="deleteBeneAcc.hide()" process="@this" />
+
+									</p:confirmDialog>
+
+									<p:dialog id="clearrefunddenominationexceed"
+										widgetVar="clearrefunddenominationexceed" modal="true"
+										width="400" height="100" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.warningDailog']}"
+										closable="false" showEffect="clip" hideEffect="clip">
+										<p:outputLabel
+											value="#{msg['lbl.totalRefundAmountReceivedExcedThanRefundAmount']}" />
+										<br />
+										<h:panelGroup style="display:block; text-align:center">
+											<p:commandButton value="#{msg['lbl.ok']}"
+												onclick="PF('clearrefunddenominationexceed').hide();"
+												update="mainPanel" process="@this" />
+										</h:panelGroup>
+									</p:dialog>
+
+									<p:dialog id="cleardenominationexceed"
+										widgetVar="cleardenominationexceed" modal="true" width="400"
+										height="100" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.warningDailog']}"
+										closable="false" showEffect="clip" hideEffect="clip">
+										<p:outputLabel
+											value="#{msg['lbl.pleaseEnsureDenominationAmountShouldTallyWithCollectedAmount']}" />
+										<br />
+										<h:panelGroup style="display:block; text-align:center">
+											<p:commandButton value="#{msg['lbl.ok']}"
+												onclick="PF('cleardenominationexceed').hide();"
+												process="@this" update="mainPanel" />
+										</h:panelGroup>
+									</p:dialog>
+
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+
+									<p:dialog id="beneCurrencyPanel" width="50%" overflow="auto"
+										widgetVar="beneCurrencyPanel"
+										header="Beneficiary Bank Country - Currency" resizable="false"
+										styleclass="ui-dialog-content ui-widget-content"
+										style="height: auto; bottom:auto !important; border:3px solid #00a53e !important; font-weight:bold; background: #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText
+													value="#{msg['lbl.benebank']} - #{msg['lbl.country']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgCountry" for="country" display="text" />
+												<p:selectOneMenu id="country"
+													value="#{wuTranxFileUploadBean.benifisCountryId}"
+													filterMatchMode="contains" filter="true" required="true"
+													requiredMessage="Please Select Beneficiary Country">
+													<f:selectItem itemLabel="#{msg['lbl.selectCountry']}"
+														itemValue="" />
+													<f:selectItems value="#{wuTranxFileUploadBean.lstCountry}"
+														var="c"
+														itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+														itemValue="#{c.fsCountryMaster.countryId}" />
+													<p:ajax update="country,msgCountry,currency,currencypanel" />
+													<p:ajax event="valueChange"
+														listener="#{wuTranxFileUploadBean.benServiceCurrencyListDetails}"
+														update="currencypanel" process="mainPanel"
+														onstart="process.show();" onsuccess="process.hide();" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col" id="currencypanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currency']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgCurrency" for="currency" display="text" />
+												<p:selectOneMenu id="currency"
+													value="#{wuTranxFileUploadBean.benifisCurrencyId}"
+													filterMatchMode="contains" filter="true" required="true"
+													requiredMessage="Please Select Currency">
+													<f:selectItem itemLabel="#{msg['lbl.benecurruncyselect']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{wuTranxFileUploadBean.beneServiceCurrencyList}"
+														var="c" itemLabel="#{c.currencyCode} - #{c.currencyName}"
+														itemValue="#{c.currencyId}" />
+													<p:ajax update="msgCurrency,currency" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											style="">
+											<p:commandButton value="#{msg['lbl.save']}"
+												oncomplete="beneCurrencyPanel.hide()"
+												update="beneCurrencyPanel,errorPage,mainPanel"
+												action="#{wuTranxFileUploadBean.differentCurrencyData}"
+												onstart="process.show();" onsuccess="process.hide();"
+												process="@this" immediate="true" />
+											<div class="clearfix"></div>
+										</h:panelGroup>
+
+									</p:dialog>
+
+									<p:panel
+										rendered="#{wuTranxFileUploadBean.booRenderBenificaryFirstPanel}">
+
+										<h2>
+											<h:outputText value="Western Union File Upload" />
+										</h2>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel value="Sender Name" style="color:#05000a;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText styleClass="ui-state-disabled"
+													value="#{wuTranxFileUploadBean.senderName}" readonly="true"
+													style="font-size:12px !important;">
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel value="Receiver Name" style="color:#05000a;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText styleClass="ui-state-disabled"
+													value="#{wuTranxFileUploadBean.receiverName}"
+													readonly="true">
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel value="Destination Country"
+													style="color:#05000a;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText styleClass="ui-state-disabled"
+													value="#{wuTranxFileUploadBean.destinationCountry}"
+													readonly="true" style="font-size:12px !important;">
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel value="Destination Currency"
+													style="color:#05000a;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText styleClass="ui-state-disabled"
+													value="#{wuTranxFileUploadBean.desctinationCurnecy}"
+													readonly="true" style="font-size:12px !important;">
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel value="MTCNO" style="color:#05000a;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText styleClass="ui-state-disabled"
+													value="#{wuTranxFileUploadBean.mtcNO}" readonly="true"
+													style="font-size:12px !important;">
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel value="Collected Amount"
+													style="color:#05000a;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText styleClass="ui-state-disabled"
+													value="#{wuTranxFileUploadBean.netAmount}" readonly="true"
+													style="font-size:12px !important;">
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="left_col" id="source"
+											rendered="#{wuTranxFileUploadBean.booSourceEnable}">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.sourceOfFund']}"
+													style="color:#05000a;" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="sourceofincome" display="text" />
+												<p:selectOneMenu id="sourceofincome"
+													value="#{wuTranxFileUploadBean.sourceOfIncome}"
+													required="true"
+													requiredMessage="#{msg['lbl.choosesource']}" filter="true"
+													filterMatchMode="contains">
+													<f:selectItem itemLabel="#{msg['lbl.selectsourceoffunds']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{wuTranxFileUploadBean.lstSourceOfIncomes}"
+														var="s"
+														itemLabel="#{s.sourceOfIncomeId.sourceCode} - #{s.sourceOfIncomeFullDesc}"
+														itemValue="#{s.sourceOfIncomeId.sourceCode}" />
+													<p:ajax update="msgpurposeoftransaction"></p:ajax>
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col" id="purpose"
+											rendered="#{wuTranxFileUploadBean.booPurposeEnable}">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.purpose']}"
+													style="color:#05000a;" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="purposeoftransaction" display="text"
+													id="msgpurposeoftransaction" />
+												<p:selectOneMenu id="purposeoftransaction"
+													value="#{wuTranxFileUploadBean.purposeOfTransactions}"
+													required="true"
+													requiredMessage="#{msg['lbl.choosepurpose']}" filter="true"
+													filterMatchMode="contains">
+													<f:selectItem itemLabel="#{msg['lbl.selectpurpose']} "
+														itemValue="" />
+													<f:selectItems
+														value="#{wuTranxFileUploadBean.lstPurposeOfTransactions}"
+														var="p" itemValue="#{p.purposeShortDesc}"
+														itemLabel="#{p.purposeShortDesc} - #{p.purposeFullDesc}"></f:selectItems>
+													<p:ajax update="msgpurposeoftransaction"></p:ajax>
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.idType']}"
+													style="color:#05000a;" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="cardtype" display="text" id="msgcardtype" />
+												<p:selectOneMenu id="cardtype"
+													value="#{wuTranxFileUploadBean.selectCard}" required="true"
+													requiredMessage="Please Select Any One Option">
+													<f:selectItem itemLabel="#{msg['lbl.selectidtype']}" />
+													<f:selectItems
+														value="#{wuTranxFileUploadBean.mapcomIdentityType.entrySet()}"
+														var="entry" itemValue="#{entry.key}"
+														itemLabel="#{entry.value}" />
+													<p:ajax event="change" update="mainPanel" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.idNumber']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:panelGrid style="width:100%;">
+													<p:row>
+														<p:column style="width:95%; padding:0px !important;">
+															<p:message for="idNo" id="msgIdNo" display="text" />
+															<p:inputText id="idNo"
+																validatorMessage="Enter Only Alphanumeric Characters"
+																value="#{wuTranxFileUploadBean.idNo}" required="false"
+																requiredMessage="Please Enter ID Number" maxlength="12"
+																style="text-transform: uppercase">
+																<f:validateRegex pattern="^[0-9a-zA-Z]+$" />
+																<p:ajax update="msgIdNo,beneficiaryListId,mainPanel,expiredCustomer,customerregproceed"
+																	event="blur"
+																	listener="#{wuTranxFileUploadBean.goFromOldSmartCardpanel}" />
+															</p:inputText>
+														</p:column>
+														<p:column
+															style="width:20%; text-align:right !important;padding:4px 0px 0px 8px !important;">
+															<p:commandButton id="customerSearchButton" value=""
+																styleClass="search_icon"
+																action="#{wuTranxFileUploadBean.searchClicked}"
+																process="@this">
+																<p:tooltip for="customerSearchButton"
+																	value="#{msg['lbl.clickToSearch']}" />
+															</p:commandButton>
+														</p:column>
+													</p:row>
+												</p:panelGrid>
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel value="Customer Name" style="color:#05000a;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText styleClass="ui-state-disabled"
+													value="#{wuTranxFileUploadBean.customerName}"
+													readonly="true" style="font-size:12px !important;">
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix"></div>
+
+										<p:panel id="beneficiaryListId" styleClass="shadow"
+											style=" background-color:#FFF !important;margin-top:-5px!important"
+											rendered="#{wuTranxFileUploadBean.booRenderBeniListPanel}">
+
+											<h2>
+												<h:outputText value="Beneficiary Details" />
+											</h2>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value=" #{msg['lbl.benecountryremit']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:selectOneMenu id="bencountryid"
+														value="#{wuTranxFileUploadBean.beneficiaryCountryId}"
+														filter="true" filterMatchMode="contains">
+														<f:selectItem itemLabel="#{msg['lbl.beleselect']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{wuTranxFileUploadBean.allBeneCountryList}"
+															var="c" itemLabel="#{c.populateCode} - #{c.populateName}"
+															itemValue="#{c.populateId}" />
+														<p:ajax event="change"
+															listener="#{wuTranxFileUploadBean.populateCustomerDetailsFromBeneRelation(c)}"
+															process="@this" update=":form1:dataTable,mainPanel"
+															onstart="process.show();" onsuccess="process.hide()" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+											<p:spacer height="10px" />
+											<div class="clearfix"></div>
+
+											<p:dataTable id="dataTable" widgetVar="dataTable"
+												styleClass="mydatatableclass"
+												value="#{wuTranxFileUploadBean.coustomerBeneficaryDTList}"
+												var="d" rowIndexVar="rowIndex" rowKey="#{d.idNo}"
+												emptyMessage="#{msg['lbl.norecordfound']}" rows="5"  
+												paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10,15" paginatorPosition="bottom">
+												<f:facet name="header">
+										            #{msg['lbl.benedet']}
+										    </f:facet>
+
+												<p:column selectionMode="single" headerText="Select"
+													style="width:5%;text-align:center" id="radio"/>
+
+												<p:ajax event="rowSelectRadio"
+													listener="#{wuTranxFileUploadBean.onRowSelect}"
+													style="width:5%;text-align:center" update=":form1:errorPage"
+													onstart="process.show();" onsuccess="process.hide()" />
+
+												<p:column headerText="#{msg['lbl.sNo']}" style="width:5%;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.benificaryName']}"
+													filterBy="#{d.benificaryName}" filterValue="contains"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+													style="width:30%;">
+													<p:outputLabel value="#{d.benificaryName}"
+														style="float:left;margin-left:7px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.relation']}"
+													filterBy="#{d.relationShipName}" filterValue="contains"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+													style="width:10%;">
+													<p:outputLabel value="#{d.relationShipName}"
+														style="float:left;margin-left:7px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.bankcountry']}"
+													filterBy="#{d.countryName}" filterValue="contains"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+													style="width:15%;">
+													<p:outputLabel value="#{d.countryName}"
+														style="float:left;margin-left:7px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.currency']}"
+													filterBy="#{d.currencyName}" filterValue="contains"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+													style="width:15%;">
+													<p:outputLabel value="#{d.currencyName}"
+														style="float:left;margin-left:7px;" />
+												</p:column>
+
+												<!--  NEW for bene edit-->
+												<p:column headerText="#{msg['lbl.differentcurrency']}"
+													style="width:10%;">
+													<p:commandButton value="" id="imgEdit1" styleClass="edit1"
+														onstart="process.show();" onsuccess="process.hide()"
+														action="#{wuTranxFileUploadBean.differentCurrencyDetails(d)}"
+														update=":form1:beneCurrencyPanel" process="@this"></p:commandButton>
+												</p:column>
+
+
+												<p:column headerText="#{msg['lbl.edit']}" style="width:3%;">
+													<p:commandButton value="" id="imgEdit" styleClass="edit"
+														onstart="process.show();" onsuccess="process.hide()"
+														action="#{wuTranxFileUploadBean.editWUBenificary(d)}"
+														update=":form1:errorPage,dataTable" process="@this"
+														immediate="true">
+													</p:commandButton>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.delete']}"
+													style="width:2% !important; text-align:center !important; margin-left:10px;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:commandButton value="" styleClass="delete"
+														onstart="process.show();" onsuccess="process.hide()"
+														actionListener="#{wuTranxFileUploadBean.deleteBeneRelationIsActive(d)}"
+														process="@this" update=":form1:deleteBeneAcc,:form1:errorPage"
+														immediate="true" />
+												</p:column>
+											</p:dataTable>
+
+											<div class="clearfix" />
+											<p:spacer height="10px" />
+											<div class="clearfix"></div>
+
+											<p:panel>
+												<p:commandLink value="Create New Beneficiary"
+													action="#{wuTranxFileUploadBean.gotToNewBenificaryCreation}"
+													style="color:blue !important; text-decoration:underline !important;float:right"
+													onstart="process.show();" onsuccess="process.hide();"
+													process="@this" />
+											</p:panel>
+
+										</p:panel>
+
+										<div class="clearfix" />
+										<p:spacer height="10px" />
+										<div class="clearfix"></div>
+
+										<h:panelGroup layout="block" styleClass="shadow_button">
+
+											<p:commandButton value="#{msg['lbl.back']}"
+												style="margin-right:10px;" process="@this"
+												action="#{wuTranxFileUploadBean.backToUploadFile}"
+												immediate="true" update="mainPanel"
+												onstart="process.show();" onsuccess="process.hide();" />
+
+											<p:commandButton value="Next"
+												action="#{wuTranxFileUploadBean.fetchPaymentDetails}"
+												process="@this" update="mainPanel" onstart="process.show();"
+												onsuccess="process.hide();" />
+
+
+											<div class="clearfix"></div>
+										</h:panelGroup>
+
+									</p:panel>
+
+									<!-- Payment Panel  -->
+									<p:panel id="paymentpanelid"
+										rendered="#{wuTranxFileUploadBean.booRenderPaymentDetails}">
+										<fieldset
+											style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+											<legend
+												style="font-size: 15px; font-weight: bold; color: #037712;"
+												align="top">&nbsp;#{msg['lbl.pmtdet']}&nbsp;</legend>
+											<p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Currency" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="collectioncurrency"
+															styleClass="ui-state-disabled"
+															value="#{wuTranxFileUploadBean.colCurrency}"
+															readonly="true" required="true">
+															<p:ajax />
+														</p:inputText>
+
+													</p:panel>
+												</p:panel>
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Net Amount" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="netamountid"
+															styleClass="ui-state-disabled"
+															value="#{wuTranxFileUploadBean.calNetAmountPaid}"
+															readonly="true" required="true">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+											</p:panel>
+										</fieldset>
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="10px" />
+										<fieldset
+											style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+											<legend
+												style="font-size: 15px; font-weight: bold; color: #037712;"
+												align="top">&nbsp;#{msg['lbl.collection']}&nbsp; / &nbsp;#{msg['lbl.refund']}&nbsp;</legend>
+											<p:panel>
+
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.pymtmode']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="paymentmode" display="text"
+															id="msgpaymentmode" />
+														<p:inputText id="paymentmode"
+															styleClass="ui-state-disabled"
+															value="#{wuTranxFileUploadBean.colpaymentmodeName}"
+															readonly="true" required="true">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel>
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.amount']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message for="cashid" display="text" id="msgcashid" />
+															<p:inputText id="cashid"
+																value="#{wuTranxFileUploadBean.cashAmount}"
+																required="true" requiredMessage="Please Enter Amount"
+																converterMessage="Please Enter Numbers ">
+																<f:validator
+																	validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+																<p:ajax event="blur"
+																	listener="#{wuTranxFileUploadBean.checkcashcollection}"
+																	update="cashid,msgcashid" onstart="process.show();"
+																	onsuccess="process.hide();" />
+															</p:inputText>
+
+														</p:panel>
+													</p:panel>
+												</p:panel>
+
+											</p:panel>
+										</fieldset>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h:panelGroup layout="block" styleClass="shadow_button">
+
+											<p:commandButton value="#{msg['lbl.back']}"
+												style="margin-left:5px;" process="@this"
+												action="#{wuTranxFileUploadBean.backToBeneficiaryDetails}"
+												update=":form1:dataTable,mainPanel"
+												onstart="process.show();" onsuccess="process.hide();" />
+
+											<p:commandButton value="#{msg['lbl.next']}"
+												style="margin-left:5px;" onstart="process.show();"
+												onsuccess="process.hide()"
+												action="#{wuTranxFileUploadBean.nextpaneltoPaymentDetails}"
+												update="mainPanel,paymentmode,cashid" process="@this" />
+
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+
+									</p:panel>
+
+									<p:panel id="denomid"
+										rendered="#{wuTranxFileUploadBean.booRenderCurrencyAdjust}">
+
+										<p:panel styleClass="full_col">
+											<p:panelGrid style="width:100%;">
+												<p:row>
+
+													<p:column
+														style="width:16%; padding:0px 5px 0px 10px !important;">
+														<h:outputText value="Net Amount" />
+													</p:column>
+
+													<p:column
+														style="width:16%; padding:0px 5px 0px 10px !important;">
+														<p:inputText styleClass="ui-state-disabled"
+															value="#{wuTranxFileUploadBean.calNetAmountPaid}"
+															readonly="true" />
+													</p:column>
+													<p:column
+														style="width:16%; padding:0px 5px 0px 10px !important;">
+														<h:outputText value="#{msg['lbl.totalAmount']}" />
+													</p:column>
+
+													<p:column
+														style="width:16%; padding:0px 5px 0px 10px !important;">
+														<p:inputText
+															value="#{wuTranxFileUploadBean.toalUsedAmount}"
+															styleClass="ui-state-disabled" readonly="true" />
+													</p:column>
+
+													<p:column
+														style="width:16%; padding:0px 5px 0px 10px !important;">
+														<h:outputText
+															value="#{wuTranxFileUploadBean.refundORcollect}" />
+													</p:column>
+
+													<p:column
+														style="width:16%; padding:0px 5px 0px 10px !important;">
+														<p:inputText styleClass="ui-state-disabled"
+															value="#{wuTranxFileUploadBean.totalrefundAmount}"
+															readonly="true" />
+													</p:column>
+
+												</p:row>
+											</p:panelGrid>
+
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel id="denominationPanel"
+											rendered="#{wuTranxFileUploadBean.booRendercashdenomination}">
+											<div class="clearfix" />
+											<!-- <fieldset
+											style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;"> -->
+											<h2
+												style="font-size: 15px; font-weight: bold; color: #037712;"
+												align="top">&nbsp;
+												#{msg['lbl.remtdenominationdetails']} &nbsp;</h2>
+
+											<p:panel styleClass="panel_border" id="denominationid">
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<table cellpadding="0" cellspacing="0" border="0"
+													width="100%" class="mytable">
+													<tr>
+														<th>#{msg['lbl.fclocalpurchaseserialno']}</th>
+														<th>#{msg['lbl.fclocalpurchasedenominationname']}</th>
+														<th>#{msg['lbl.fclocalpurchasenoofnotes']}</th>
+														<th>#{msg['lbl.fclocalpurchasecashamount']}</th>
+													</tr>
+
+													<ui:repeat value="#{wuTranxFileUploadBean.lstData}"
+														var="ooo" id="uirepeat">
+
+														<tr>
+															<td style="width: 15% ! important;"><h:outputText
+																	value="#{ooo.serial}." /></td>
+															<td style="width: 15% ! important;"><h:outputText
+																	value="#{ooo.denominationDesc}" /></td>
+
+															<td style="width: 15% ! important;"><p:message
+																	for="q" display="text"
+																	style="text-shadow:none !important;" id="msg" /> <p:inputText
+																	style="text-align:center;" id="q" value="#{ooo.qty}">
+
+																	<p:ajax event="change" onstart="process.show();"
+																		onsuccess="process.hide()" onerror="alert('error')"
+																		listener="#{wuTranxFileUploadBean.onCellEdit(ooo)}"
+																		update=":form1:denominationid,price,q,:form1:denomid" />
+																	<f:validator
+																		validatorId="com.amg.exchange.validator.FcQValidator" />
+																</p:inputText></td>
+															<td style="width: 15% ! important;"><h:outputText
+																	value="#{ooo.price==0?'':ooo.price}" id="price" /></td>
+														</tr>
+													</ui:repeat>
+
+
+												</table>
+
+												<p:spacer height="20px" />
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panelGrid style="width:80%;margin-left:100px;">
+													<p:row>
+
+														<p:column style="width:20% !important ;">
+															<h:outputText value="#{msg['lbl.toatalcash']}" />
+														</p:column>
+														<p:column style="width:20% !important ;">
+															<p:inputText id="totalcashrecid"
+																styleClass="ui-state-disabled"
+																value="#{wuTranxFileUploadBean.cashAmount}"
+																readonly="true">
+																<p:ajax />
+															</p:inputText>
+														</p:column>
+
+														<p:column style="width:20% !important ;">
+															<h:outputText value="#{msg['lbl.totalcahrcvd']}" />
+														</p:column>
+														<p:column style="width:20% !important ;">
+															<p:inputText id="totalcashid"
+																styleClass="ui-state-disabled"
+																value="#{wuTranxFileUploadBean.denomtotalCash}"
+																readonly="true">
+																<p:ajax />
+															</p:inputText>
+														</p:column>
+
+													</p:row>
+												</p:panelGrid>
+
+											</p:panel>
+										</p:panel>
+										<!-- </fieldset> -->
+									</p:panel>
+
+									<!--  Refund denomination -->
+									<p:panel
+										rendered="#{wuTranxFileUploadBean.boorefundPaymentDetails}">
+										<h2
+											style="font-size: 15px; font-weight: bold; color: #037712;"
+											align="top">&nbsp; #{msg['lbl.refundDenomination']}
+											&nbsp;</h2>
+
+										<p:panel styleClass="panel_border" id="refunddenomId">
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h3>#{wuTranxFileUploadBean.denominationchecking}</h3>
+
+											<table cellpadding="0" cellspacing="0" border="0"
+												width="100%" class="mytable">
+												<tr>
+													<th>#{msg['lbl.fclocalpurchaseserialno']}</th>
+													<th>#{msg['lbl.fclocalpurchasedenominationname']}</th>
+													<th>#{msg['lbl.fclocalpurchasecurrentstock']}</th>
+													<th>#{msg['lbl.fclocalpurchasenoofnotes']}</th>
+													<th>#{msg['lbl.fclocalpurchasecashamount']}</th>
+
+												</tr>
+												<ui:repeat value="#{wuTranxFileUploadBean.lstRefundData}"
+													var="o">
+
+													<tr>
+														<td style="width: 15% ! important;"><h:outputText
+																value="#{o.serial}." /></td>
+														<td style="width: 15% ! important;"><h:outputText
+																value="#{o.denominationDesc}" /></td>
+
+														<td style="width: 15% ! important;"><h:outputText
+																value="#{o.stock}" /></td>
+														<td style="width: 15% ! important;"><p:message
+																for="q1" display="text" /> <p:inputText id="q1"
+																style="text-align:center;" value="#{o.qty}">
+																<p:ajax event="change" onstart="process.show();"
+																	onsuccess="process.hide();"
+																	listener="#{wuTranxFileUploadBean.onRefundCellEdit(o)}"
+																	update=":form1:mainPanel,refundprice,q1" />
+																<!-- <f:validator
+																			validatorId="com.amg.exchange.validator.FcQValidator" /> -->
+
+															</p:inputText></td>
+
+														<td style="width: 15% ! important;"><h:outputText
+																value="#{o.price}" id="refundprice" /></td>
+													</tr>
+												</ui:repeat>
+
+
+											</table>
+
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+										</p:panel>
+
+										<p:panel id="refundDetailsId">
+
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panelGrid style="width:80%;margin-left:100px;">
+												<p:row>
+
+													<p:column style="width:20% !important ;">
+														<h:outputText value="Refund Amount" />
+													</p:column>
+													<p:column style="width:20% !important ;">
+														<p:inputText id="refundamountid"
+															styleClass="ui-state-disabled"
+															value="#{wuTranxFileUploadBean.refundAmount}"
+															readonly="true">
+															<p:ajax />
+														</p:inputText>
+													</p:column>
+
+													<p:column style="width:20% !important ;">
+														<h:outputText value="#{msg['lbl.totrefund']}" />
+													</p:column>
+													<p:column style="width:20% !important ;">
+														<p:inputText id="collectrefundid"
+															styleClass="ui-state-disabled"
+															value="#{wuTranxFileUploadBean.collectedRefundAmount}"
+															readonly="true">
+															<p:ajax />
+														</p:inputText>
+													</p:column>
+
+												</p:row>
+											</p:panelGrid>
+
+										</p:panel>
+
+									</p:panel>
+
+									<p:panel id="saveallpanel"
+										rendered="#{wuTranxFileUploadBean.booSaveAll}">
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h:panelGroup layout="block" styleClass="shadow_button">
+
+											<p:commandButton value="#{msg['lbl.back']}"
+												action="#{wuTranxFileUploadBean.backFromFinal}"
+												update="mainPanel" process="@this"
+												style="margin-right:10px; " onstart="process.show();"
+												onsuccess="process.hide();" />
+											<p:commandButton
+												value="#{wuTranxFileUploadBean.nextOrSaveButton}"
+												action="#{wuTranxFileUploadBean.saveAll}" process="@this"
+												update="mainPanel" style="margin-right:10px; "
+												onstart="process.show();" onsuccess="process.hide();" />
+										</h:panelGroup>
+									</p:panel>
+
+									<h:panelGroup layout="block" class="clearfix" />
+
+									<!--  Save All Panel -->
+									<p:panel id="savesuccesspanel1"
+										rendered="#{wuTranxFileUploadBean.booSaveDenomRender}"
+										style="padding:20px 100px 60px 100px !important;">
+										<fieldset
+											style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+											<legend
+												style="font-size: 18px; font-weight: bold; color: #037712;"
+												align="top">&nbsp;#{msg['lbl.success']}&nbsp;</legend>
+											<p:outputLabel value="#{msg['lbl.dataissuccessfullysaved']}"
+												style="font-size: 20px !important; font-weight: bold; color: #00a53e !important; text-align:center !important;" />
+
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="Exit" onstart="process.show();"
+													onsuccess="process.hide()"
+													action="#{wuTranxFileUploadBean.fetchWuFileList}" process="@this"
+													update="mainPanel" />
+											</h:panelGroup>
+										</fieldset>
+									</p:panel>
+
+								</p:panel>
+
+							</h:panelGroup>
+							<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+						</h:panelGroup></td>
+				</tr>
+			</table>
+		</h:form>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

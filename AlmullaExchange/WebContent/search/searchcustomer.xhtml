@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	
+	<script type="text/javascript">
+		$(document).on("keypress", ".dropdown", function(event) {
+			if (event.keyCode == 32) {
+				$('.ui-selectonemenu-trigger', this).click();
+			}
+		});
+	</script>
+	
+</h:head>
+
+
+<h:body dir="#{facesBean.direction}">
+
+
+	<p:confirmDialog id="idNotFound" widgetVar="idNotFound" width="400"
+		height="17" resizable="false"
+		style="background-color: white !important;"
+		header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.pleaseSelectAnyOne']}">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="empty" widgetVar="empty" width="400" height="17"
+		resizable="false" style="background-color: white !important;"
+		header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.nocustomeravailable']}">
+	</p:confirmDialog>
+
+
+	<f:view locale="#{facesBean.locale}">
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<f:event listener="#{searchCustomer.requestType}" type="preRenderView" />
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h1>
+								<h:outputText value="#{msg['lbl.searchcustomer']}" />
+							</h1>
+							<h:form id="inputForm">
+
+
+								<!-- <p:dialog modal="true" widgetVar="statusDialog" id="statusDialog" draggable="false" closable="false" showHeader="false">
+									<p:graphicImage value="../images/loaderImage.gif" />
+								</p:dialog> -->
+
+								<p:dialog modal="true" showHeader="true"
+									header="#{msg['lbl.pleasewait']}" widgetVar="statusDialog"
+									id="statusDialog" width="300" height="50" resizable="false"
+									draggable="false" closable="false"
+									style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+									<div style="text-align: center;">
+										<p:graphicImage value="../images/preloader.gif" />
+									</div>
+								</p:dialog>
+
+
+								<p:dialog id="searchCriteria" widgetVar="searchCriteria"
+									width="470" height="160" resizable="false" closeOnEscape="true"
+									style="background-color: white !important;"
+									styleClass="warning" header="#{msg['lbl.searchCriteria']}"
+									closable="true" showEffect="clip" hideEffect="clip">
+									<p:outputLabel>
+
+										<div
+											style="font-size: 14px; font-weight: bold; font-style: underline">
+											<u>"#{msg['lbl.followingCombinations']}"</u>
+										</div>
+										<br />
+										<div class="size">
+											<!-- 1.  Nationality and Date of Birth <br/> 
+          									2.  Nationality and First Name 2 Character or Last Name 2 Character <br/>
+          								 	3.  ID Type and Id Number<br/>
+          								 	4.  Mobile Number -->
+											1."#{msg['lbl.nationalityanddob']}" <br />
+											2."#{msg['lbl.nationalityandfirstlastnames']}" <br />
+											3."#{msg['lbl.idTypeandIdNumber']}" <br />
+											4."#{msg['lbl.mobileNumber']}"
+										</div>
+									</p:outputLabel>
+									<br />
+									<br />
+								</p:dialog>
+
+								<p:panel id="mainPanel" styleClass="shadow"
+									style="margin: 20px 10px !important; background-color:#FFF !important;">
+
+									<h2>
+										<h:outputText value="#{msg['lbl.searchcustomer']}" />
+									</h2>
+									
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{searchCustomer.errorMessage}">
+									</p:confirmDialog>
+									
+									<p:panel styleClass="panel_border">
+										<div class="ui-grid-a ui-responsive">
+											<div class="ui-block-a" style="padding-top: 15px;">
+												<h:outputText id="lbl_nationality" />
+											</div>
+											<div class="ui-block-b">
+												<p:message for="nationality" display="text" />
+												<p:selectOneMenu id="nationality" styleClass="dropdown"
+													value="#{searchCustomer.nationality}" filter="true"
+													label="Nationality" filterMatchMode="contains">
+													<f:selectItem itemLabel="#{msg['lbl.selectnationality']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{searchCustomer.nationalityNameList}" var="c"
+														itemLabel="#{c.fsCountryMaster.countryCode} - #{c.nationality}"
+														itemValue="#{c.fsCountryMaster.countryId}" />
+
+												</p:selectOneMenu>
+											</div>
+
+										</div>
+										<div class="clearfix"></div>
+
+										<div class="ui-grid-e ui-responsive">
+											<div class="ui-block-a">
+												<h:outputText id="lbl_idtype" />
+											</div>
+											<div class="ui-block-b">
+												<p:message for="idtype" display="text" />
+												<p:selectOneMenu id="idtype" styleClass="dropdown"
+													value="#{searchCustomer.idType}" label="Identity Type">
+
+												</p:selectOneMenu>
+											</div>
+											<div class="ui-block-c">
+												<h:outputText value="#{msg['lbl.idnumber']}" />
+											</div>
+											<div class="ui-block-d">
+												<p:inputText id="idNo" value="#{searchCustomer.idNumber}">
+												</p:inputText>
+											</div>
+											<div class="ui-block-e"></div>
+										</div>
+										<div class="clearfix"></div>
+
+
+
+
+										<div class="ui-grid-e ui-responsive">
+											<div class="ui-block-a">
+												<h:outputText value="#{msg['lbl.firstname']}" />
+											</div>
+											<div class="ui-block-b">
+												<p:inputText id="firstName"
+													value="#{searchCustomer.firstName}"
+													onkeyup="this.value=this.value.toUpperCase()"
+													validator="#{searchCustomer.validateName}">
+													<p:ajax update="firstNameMsg" />
+													<p:message id="firstNameMsg" for="firstName" display="text" />
+												</p:inputText>
+											</div>
+											<div class="ui-block-c">
+												<h:outputText value="#{msg['lbl.lastname']}" />
+											</div>
+											<div class="ui-block-d">
+												<p:inputText id="lstName" value="#{searchCustomer.lastName}"
+													onkeyup="this.value=this.value.toUpperCase()"
+													validator="#{searchCustomer.validateName}">
+													<p:ajax update="lstNameMsg" />
+													<p:message id="lstNameMsg" for="lstName" display="text" />
+												</p:inputText>
+											</div>
+											<div class="ui-block-e"></div>
+										</div>
+										<div class="clearfix"></div>
+
+
+
+										<div class="ui-grid-e ui-responsive">
+											<div class="ui-block-a">
+												<h:outputText value="#{msg['lbl.dob']}" />
+											</div>
+											<div class="ui-block-b">
+												<p:calendar id="dob" value="#{searchCustomer.dob}"
+													yearRange="c-50:c+50" mode="popup" navigator="true"
+													pattern="dd/MM/yyyy">
+												</p:calendar>
+											</div>
+											<div class="ui-block-c">
+												<h:outputText value="#{msg['lbl.mobile']}" />
+											</div>
+											<div class="ui-block-d">
+												<p:inputText id="mobNo" value="#{searchCustomer.mob}">
+												</p:inputText>
+											</div>
+											<div class="ui-block-e"></div>
+										</div>
+										<div class="clearfix"></div>
+
+
+										<p:spacer height="20px" />
+										<p:panel styleClass="shadow_button"
+											style=" background-color:#FFF !important;">
+
+											<p:commandButton value="#{msg['lbl.search']}" id="addTable"
+												update="mainPanel,tablePanel,error" style="margin-right:10px;"
+												action="#{searchCustomer.showCustomerDetails}"
+												onclick="statusDialog.show();"
+												onsuccess="statusDialog.hide();">
+											</p:commandButton>
+											<p:commandButton value="#{msg['lbl.clear']}"
+												update="mainPanel,tablePanel" process="@this"
+												actionListener="#{searchCustomer.resetValue}"
+												style="margin-right:10px;">
+											</p:commandButton>
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{searchCustomer.exit}" process="@this">
+											</p:commandButton>
+										</p:panel>
+
+										<p:ajaxStatus id="usernamestatuspanel">
+											<f:facet name="start">
+												<h:graphicImage value="../images/ajax_loader.gif" />
+											</f:facet>
+											<f:facet name="start">
+												<h:graphicImage value="" />
+											</f:facet>
+										</p:ajaxStatus>
+
+										<p:panel id="tablePanel">
+											<p:dataTable value="#{searchCustomer.finalData}"
+												styleClass="mydatatableclass" var="o" widgetVar="50"
+												editable="true" id="datatable"
+												rendered="#{searchCustomer.booPass}"
+												emptyMessage="#{msg['lbl.norecordfound']}"
+												paginatorPosition="bottom" rows="10" paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10,15">
+
+												<p:column
+													rendered="#{searchCustomer.booforeignCurrencyPurchase}"
+													headerText="#{msg['lbl.idnumber']}" style="width:5%;">
+													<p:commandLink action="#{searchCustomer.showDataFc(o)}" disabled="#{o.disableLink}"
+														ajax="false" value="#{o.idNumber}" style="color:blue !important; text-decoration:underline !important;" />
+												</p:column>
+
+												<p:column
+													rendered="#{searchCustomer.boospecialCustomerDealRequest}"
+													headerText="#{msg['lbl.customerRef']}" style="width:5%;">
+													<p:commandLink
+														action="#{searchCustomer.showSpCustomerData(o)}" disabled="#{o.disableLink}"
+														ajax="false" value="#{o.customerRef}" style="color:blue !important; text-decoration:underline !important;" />
+												</p:column>
+
+												<p:column
+													rendered="#{searchCustomer.boospecialCustomerDealRequest}"
+													headerText="#{msg['lbl.idnumber']}" style="width:5%;">
+													<p:outputLabel value="#{o.idNumber}" style="text-align:center !important;" />
+												</p:column>
+
+												<p:column rendered="#{searchCustomer.boosupplier}"
+													headerText="#{msg['lbl.customerRef']}" style="width:5%;">
+													<p:commandLink
+														action="#{searchCustomer.showSpplierData(o)}" ajax="false" disabled="#{o.disableLink}"
+														value="#{o.customerRef}" style="color:blue !important; text-decoration:underline !important;" />
+												</p:column>
+
+												<p:column rendered="#{searchCustomer.boosupplier}"
+													headerText="#{msg['lbl.customerRef']}" style="width:5%;">
+													<p:outputLabel value="#{o.customerRef}" />
+												</p:column>
+
+												<p:column rendered="#{searchCustomer.booSearchCustomer}"
+													headerText="#{msg['lbl.idnumber']}" style="width:5%;">
+													<p:outputLabel value="#{o.idNumber}" style="text-align:center;" />
+												</p:column>
+												
+												<p:column
+													rendered="#{searchCustomer.boopersonalRemittanceBean}"
+													headerText="#{msg['lbl.idnumber']}" style="width:5%;">
+													<p:commandLink action="#{searchCustomer.showDataPersonalRemittance(o)}" disabled="#{o.disableLink}"
+														ajax="false" value="#{o.idNumber}" style="color:blue !important; text-decoration:underline !important;" />
+												</p:column>
+												
+												<p:column
+													rendered="#{searchCustomer.booPlaceOrder}"
+													headerText="#{msg['lbl.idnumber']}" style="width:5%;">
+													<p:commandLink action="#{searchCustomer.showDataPlaceOrder(o)}" disabled="#{o.disableLink}"
+														ajax="false" value="#{o.idNumber}" style="color:blue !important; text-decoration:underline !important;" />
+												</p:column>
+												<p:column
+													rendered="#{searchCustomer.booWUFileUpload}"
+													headerText="#{msg['lbl.idnumber']}" style="width:5%;">
+													<p:commandLink action="#{searchCustomer.showWuFileUpload(o)}" disabled="#{o.disableLink}"
+														ajax="false" value="#{o.idNumber}" style="color:blue !important; text-decoration:underline !important;" />
+												</p:column>
+												
+												<p:column
+													rendered="#{searchCustomer.boowuBean}"
+													headerText="#{msg['lbl.idnumber']}" style="width:5%;">
+													<p:commandLink action="#{searchCustomer.showDataWesternUnion(o)}" disabled="#{o.disableLink}"
+														ajax="false" value="#{o.idNumber}" style="color:blue !important; text-decoration:underline !important;" />
+												</p:column>
+												
+												<p:column
+													rendered="#{searchCustomer.booInterCompanyTrnx}"
+													headerText="#{msg['lbl.idnumber']}" style="width:5%;">
+													<p:commandLink action="#{searchCustomer.showDataInterCompanyTrnx(o)}" disabled="#{o.disableLink}"
+														ajax="false" value="#{o.idNumber}" style="color:blue !important; text-decoration:underline !important;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.idtype']}" style="width:5%;">
+													<p:outputLabel value="#{o.idTypeName}" style="text-align:center;" />
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.customerName']}" style="width:12%;">
+													<p:outputLabel value="#{o.customerName}" style="text-align:center;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.nationality']}" style="width:5%;">
+													<p:outputLabel value="#{o.nationality}"
+														style="text-align:center;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.dob']}" style="width:5%;">
+													<p:outputLabel value="#{o.dob}" style="text-align:center;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.mobile']}" style="width:5%;">
+													<p:outputLabel value="#{o.mob}" style="text-align:center;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.companyname']}" style="width:7%;">
+													<p:outputLabel value="#{o.companyName}" style="text-align:center;" />
+												</p:column>
+												
+												<p:column headerText="Current Status" style="width:7%;">
+													<p:outputLabel value="#{o.currentStatus}" style="text-align:center;" />
+												</p:column>
+
+											</p:dataTable>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<h:outputText value="#{msg['lbl.searchCriteria']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:outputText value="#{msg['lbl.nationalityanddob']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:outputText
+												value="#{msg['lbl.nationalityandfirstlastnames']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:outputText value="#{msg['lbl.idTypeandIdNumber']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:outputText value="#{msg['lbl.mobileNumber']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+											<h:panelGroup layout="block" class="clearfix" />
+											<div class="clearfix"></div>
+										</p:panel>
+										<div class="clearfix"></div>
+									</p:panel>
+									<p:dialog modal="true" showHeader="true" header="Please wait.."
+										widgetVar="process" id="process" width="300" height="50"
+										resizable="false" draggable="false" closable="false"
+										style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+										<div style="text-align: center;">
+											<p:graphicImage value="../images/preloader.gif" />
+										</div>
+									</p:dialog>
+								</p:panel>
+							</h:form>
+
+
+						</h:panelGroup>
+					</h:panelGroup>
+					<div class="clearfix"></div></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+
+
+</html>

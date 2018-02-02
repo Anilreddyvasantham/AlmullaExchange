@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+</h:head>
+<p:confirmDialog id="dataNotFund" widgetVar="dataNotFund" width="400" height="17" resizable="false" style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="#{msg['lbl.addAlteastOneRecordtoDataTable']}">
+   </p:confirmDialog>
+   
+   <p:dialog id="complete" widgetVar="complete" width="270" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+            											<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} "/><br/>
+            								<p:spacer width="15px" />
+            											<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{incomeRangeBean.clickOnOK}" process="@this"/>          
+</p:dialog>
+
+ <p:dialog id="active" widgetVar="active" width="270" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+            											<p:outputLabel value="#{msg['lbl.recrdSuccessfullyActivated']} "/><br/>
+            								<p:spacer width="15px" />
+            											<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{incomeRangeBean.clickOnOK}" process="@this"/>          
+</p:dialog>
+
+
+
+
+ <p:dialog id="equaldialog" widgetVar="equaldialog" width="260"
+		height="90" showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+
+		<p:outputLabel value="#{msg['lbl.bothareequal']}" /> <p:outputLabel value="#{incomeRangeBean.dialogToAmount}" />
+		
+
+		<p:commandButton value="#{msg['lbl.ok']}"
+			oncomplete="equaldialog.hide()" />
+	</p:dialog> 
+	 <p:confirmDialog header="#{msg['lbl.warningdialog']}" id="maxgreater" widgetVar="maxgreater" width="400" height="50" resizable="false" style=" border:2px solid green !important; padding:0px !important;  color:green !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="#{msg['lbl.toAmountMaxShouleBeGreFromAmount']}">
+      </p:confirmDialog>
+      <p:confirmDialog header="#{msg['lbl.warningdialog']}" id="notDelete" widgetVar="notDelete" width="400" height="50" resizable="false" style=" border:2px solid green !important; padding:0px !important;  color:green !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="#{msg['lbl.couldNotAbleToDeleteRecord']}">
+      </p:confirmDialog>
+      <p:confirmDialog id="duplicate" widgetVar="duplicate" width="400" height="17" resizable="false" style=" border:2px solid green !important; padding:0px !important;  color:green !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="#{msg['lbl.recrdAlreadyAddedToDt']}">
+      </p:confirmDialog>
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form">
+								<h1>
+									<h:outputText value="#{msg['lbl.incomeRangeMaster']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h3>
+										<h:outputText value="#{msg['lbl.incomeRangeMaster']}" />
+									</h3>
+									 <p:dialog id="isExist" widgetVar="isExist" width="270" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+            											<p:outputLabel value="#{msg['lbl.bankchargesChecking']}"/><br/>
+            								<p:spacer width="15px" />
+            											<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{incomeRangeBean.clearDuplicate}" process="@this" update="mainPanel"/>          
+</p:dialog>
+
+							 <p:dialog id="isExist1" widgetVar="isExist1" width="270" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+            											<p:outputLabel value="#{msg['lbl.bankchargesChecking']}"/><br/>
+            								<p:spacer width="15px" />
+            											<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{incomeRangeBean.clearDuplicatewithoutDB}" process="@this" update="mainPanel"/>          
+</p:dialog>
+				
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+									
+									<p:confirmDialog id="csp" widgetVar="csp" width="500"
+														showHeader="false" resizable="false"
+														header="Warning Message" styleClass="warning"
+														style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+														showEffect="explode" hideEffect="explode"
+														message="#{incomeRangeBean.errMsg}">
+													</p:confirmDialog>
+									
+									
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{incomeRangeBean.errorMessage}">
+									</p:confirmDialog>
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{incomeRangeBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+<p:dialog id="remarks" widgetVar="remarks" width="550" height="205" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+            					<p:panel styleClass="shadow">
+									 <p:panel >
+            							<h:outputText value="#{msg['lbl.approvedDate']}" />&nbsp;<h:outputText value="#{incomeRangeBean.approvedBy}" />&nbsp;&nbsp;&nbsp;
+            							<h:outputText value="#{msg['lbl.approvedBy']}" />&nbsp;<h:outputText value="#{incomeRangeBean.approvedDate}" />
+									</p:panel> 
+									<div class="clearfix" />
+									<hr></hr>
+									<p:panel >
+										<h:outputText value="#{msg['lbl.enterremarks']}" />
+									</p:panel>
+										<p:panel >
+									
+											<h:inputTextarea value="#{incomeRangeBean.remarks}"   rows="5" cols="50">
+											<p:ajax />
+											</h:inputTextarea>
+										</p:panel>
+            						<p:spacer width="15px" />
+            						<div class="clearfix" />
+            						<h:panelGroup styleClass="shadow">
+            						<div class="clearfix" />
+            							<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{incomeRangeBean.remarkSelectedRecord}"   process="@this"  update="mainPanel"/> 
+            							<p:commandButton value="#{msg['lbl.cancel']}" actionListener="#{incomeRangeBean.remarkCancel}" process="@this"  /> 
+            						</h:panelGroup>
+            					</p:panel>         
+       					    </p:dialog>
+       					    <p:dialog id="delete" widgetVar="delete" width="270" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background: 224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+            											<p:outputLabel value="#{msg['lbl.recrdDeletedSuccess']} "/><br/>
+            								<p:spacer width="15px" />
+            											<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{incomeRangeBean.clickOnOK}" process="@this"/>          
+</p:dialog>
+									<p:panel styleClass="panel_border">
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.article']} " />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="article" display="text" id="articlemsg" />
+												<p:selectOneMenu id="article"
+													value="#{incomeRangeBean.article}" filter="true" filterMatchMode="contains"
+													required="true" 
+													requiredMessage="Please select article" tabindex="1">
+													<f:selectItem itemLabel="#{msg['lbl.selectArticle']}"
+														itemValue="" />
+													<f:selectItems value="#{incomeRangeBean.articleData}"
+														var="c" itemLabel="#{c.articleMaster.articleCode} - #{c.articleeDescription}"
+														itemValue="#{c.articleMaster.articleId}" />
+													<p:ajax event="change" update="level,articlemsg"
+														listener="#{incomeRangeBean.generateLevel}" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col" id="articleDetail">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.level']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message for="level" display="text" id="levelmsg"/>
+												<p:selectOneMenu id="level" value="#{incomeRangeBean.level}"
+													filter="true" filterMatchMode="contains" required="true" 
+													requiredMessage="Please select level" tabindex="2">
+													<f:selectItem
+														itemLabel="#{msg['lbl.selectLevel']}"
+														itemValue="" />
+													<f:selectItems value="#{incomeRangeBean.levelData}" var="c"
+														itemLabel="#{c.articleDetails.articleDetailCode} - #{c.articleDetailDesc}"
+														itemValue="#{c.articleDetails.articleDetailId}" />
+														<p:ajax event="change" update="article,levelmsg"
+															listener="#{incomeRangeBean.generateLevel}"/>
+												</p:selectOneMenu>
+											</p:panel> 
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<!-- <h3>
+											<h:outputText value="Income Range" />
+										</h3> -->
+										<h:panelGroup layout="block" class="clearfix" />
+										
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.incomeRangeFromAmount']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:message for="fromAmount" display="text" id="fromAmountmsg"/>
+													<p:inputText id="fromAmount"
+														value="#{incomeRangeBean.fromAmount}" required="true"
+														requiredMessage="Please enter from amount" maxlength="10"
+														tabindex="3">
+														<!-- <f:convertNumber integerOnly="true" /> -->
+																<!-- <f:validateLongRange minimum="1" /> -->
+																<f:validator
+																validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" converterMessage="Please Enter number only" />
+													
+																<p:ajax event="blur" update="mainPanel,fromAmountmsg"
+																	listener="#{incomeRangeBean.checkMin}" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.incomeRangeToAmount']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:message for="toAmount" display="text" id="toAmountmsg"/>
+													<p:inputText id="toAmount"
+														value="#{incomeRangeBean.toAmount}" required="true"
+														requiredMessage="Please enter from amount"  converterMessage="Please Enter number only" maxlength="10"
+														tabindex="4">
+														<!-- <f:convertNumber integerOnly="true" /> -->
+																<!-- <f:validateLongRange minimum="1" /> -->
+																<f:validator
+																validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+													
+																<p:ajax event="blur" update="mainPanel,toAmount,isExist"
+																	listener="#{incomeRangeBean.checkMax}" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" class="clearfix" />
+										
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.add']}"
+												action="#{incomeRangeBean.addRecordDataTable}" 
+												update="mainPanel" style=" margin-right:10px;"
+												tabindex="5" onstart="process.show();" onsuccess="process.hide();" />
+											<p:commandButton value="#{msg['lbl.view']}" action="#{incomeRangeBean.view}" process="@this"
+												update="mainPanel" style=" margin-right:10px; " tabindex="6" onstart="process.show();" onsuccess="process.hide();" />
+											<p:commandButton value="#{msg['lbl.clear']}" 
+												action="#{incomeRangeBean.clear}" process="@this"
+												update="mainPanel" style=" margin-right:10px; " tabindex="7" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel rendered="#{incomeRangeBean.booIncomeRangeDetails}">
+											<p:spacer height="20px" />
+											<p:panel>
+												<p:dataTable id="dataTable" var="c" rows="10" value="#{incomeRangeBean.incomeRangeList}" styleClass="mydatatableclass"
+													paginator="true"
+													paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+													rowsPerPageTemplate="5,10,15" rowIndexVar="rowIndex"
+													editable="true" editMode="cell"
+													emptyMessage="#{msg['lbl.norecordfound']}"
+													paginatorPosition="bottom">
+
+													<p:column headerText="#{msg['lbl.sino']}"
+														style="width:50px;">
+														<h:outputText value="#{rowIndex+1}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.article']} " sortBy="#{c.articleName}">
+														<h:outputText value="#{c.articleName}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.level']}" sortBy="#{c.articalDeatialName}">
+														<h:outputText value="#{c.articalDeatialName}" />
+													</p:column>
+													
+													<p:column headerText="#{msg['lbl.incomerange']}" sortBy="#{c.monthlyIncome}">
+														<h:outputText value="#{c.monthlyIncome}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.edit']}">
+														<p:commandLink action="#{incomeRangeBean.editRecord(c)}" update=":form"
+														disabled="#{incomeRangeBean.booEdit}" process="@this" tabindex="8">
+															<p:graphicImage value="../images/edit.png" id="imgEdit" />
+															<p:tooltip for="imgEdit" value="#{msg['lbl.edit']}" />
+														</p:commandLink>
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.active/deactive']}" sortBy="#{c.dynamicLabelForActivateDeactivate}"
+														style="text-align:center !important;">
+														<p:commandLink action="#{incomeRangeBean.remove(c)}"  value="#{c.dynamicLabelForActivateDeactivate}" update=":form" process="@this"
+															style="color:blue !important; text-decoration:underline !important;"
+															immediate="true" tabindex="9" />
+													</p:column>
+												</p:dataTable>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:spacer height="10px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" styleClass="shadow_button"
+												id="submitpanel">
+												<p:commandButton value="#{msg['lbl.submit']}" action="#{incomeRangeBean.save}" disabled="#{incomeRangeBean.isdisable}" update="mainPanel,csp"
+													style="margin-right:10px; " process="@this" tabindex="10" onstart="process.show();" onsuccess="process.hide();" />
+												<p:commandButton value="#{msg['lbl.exit']}" immediate="true"  action="#{incomeRangeBean.exit}"
+													tabindex="11" />
+											</h:panelGroup>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<h:outputText id="mandatory"
+												value=" #{msg['lbl.*filedsAreMandatory']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<style>
+	
+	.ui-panel .shadow_button1 {
+    margin: 10px auto !important;
+    width: auto !important;
+    display: table;
+    text-align: center !important;
+    padding:0px !important;
+    border: 0 !important;
+}
+.shadow_button1 {
+    margin: 10px auto !important;
+    width: auto !important;
+    display: table;
+    text-align: center !important;
+
+}
+.ui-panel .panel_border1 {
+    border: 1px solid #000000 !important;
+    padding: 0px 10px !important;
+    -webkit-border-radius: 0 4px 4px 4px !important;
+    border-radius: 0 4px 4px 4px !important;
+}
+* 
+	</style>
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+
+		 history.pushState(null, null, 'fundestimationDealAlert.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'fundestimationDealAlert.xhtml');
+		    });
+	</script>
+</h:head>
+
+<h:body>
+	
+	
+
+	<p:confirmDialog id="dataNotFund" widgetVar="dataNotFund" width="400"
+		height="20" resizable="false"
+		style="background-color: white !important;" header="Warning Dailog"
+		styleClass="warning" showEffect="clip" hideEffect="clip"
+		closeOnEscape="true" closable="true"
+		message="#{msg['lbl.sorryandbankaccount']}">
+	</p:confirmDialog>
+
+	
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+	
+		<h:form id="form">
+		
+			<!-- amount greater than dialog start -->
+		 <p:dialog id="valDialog"  widgetVar="valDialog"  
+		 						   width="260" height="70" 
+		 						   showHeader="true" 
+		 						   resizable="false" 
+		 						   header="Warning"
+		 						   style=" border:3px solid #ba1021 !important; font-weight:bold;
+		 						   background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+                      			   showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+           <p:outputLabel value="#{fundEstimationDealAlertBean.msg}"/><br></br>
+        </p:dialog>
+         
+         <p:dialog id="complete" widgetVar="complete" width="400" height="80"
+			resizable="false" style="background-color: white !important;"
+			styleClass="success" header="Success" closable="false"
+			showEffect="clip" hideEffect="clip">
+			<p:outputLabel value="#{msg['lbl.dataissuccessfullysaved']}"
+				style="text-align: center; font-size:16px !important;" />
+			<br />
+		<p:commandButton value="#{msg['lbl.ok']}"
+			action="#{fundEstimationDealAlertBean.closeClear}" 
+			style="margin-left: 150px !important;" onclick="PF('alertDetails').hide();"  />
+		<p:spacer height="10px"  />
+	</p:dialog>
+		
+		
+		
+			<p:dialog id="alertDetails" widgetVar="alertDetails" resizable="false"
+				width="60%" style="background-color: white !important;"
+				styleClass="info" header="Set Deal Alerts" showHeader="true"
+				showEffect="clip" hideEffect="clip" closable="false" modal="true">
+				<p:panel>
+				<p:dataTable editable="true" id="fundEstiRateAlertDt" rows="10"
+													 value="#{fundEstimationDealAlertBean.fundEstimationBeanForDealAlertSaveList}"
+													 editMode="cell"
+													 var="cfealert" rowIndexVar="rowIndex"
+													 emptyMessage="#{msg['lbl.norecordfound']}" styleClass="mydatatableclass"
+													 rendered="#{not empty  fundEstimationDealAlertBean.fundEstimationBeanForDealAlertSaveList}">	
+													
+										 <p:ajax event="cellEdit" listener="#{fundEstimationDealAlertBean.onCellEditSave}" 
+										 		 update=":form:fundEstiRateAlertDt" />			
+											
+											<p:column headerText="SR#" >
+												<p:outputLabel value="#{rowIndex+1}" style="text-align:center;" />
+											</p:column>
+										
+										
+											<p:column headerText="#{msg['lbl.treBankName']}" sortBy="#{cfealert.bankShortName}">
+												<p:outputLabel value="#{cfealert.bankShortName}" style="text-align:center;" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.totalFundEsti']}" sortBy="#{cfealert.totalSalesProjectionAmount}">
+												<p:outputLabel value="#{cfealert.totalSalesProjectionAmount}"
+													style="text-align:center;" />
+											</p:column>
+											
+											
+											
+											<p:column headerText="#{msg['lbl.projectAmount']}" sortBy="#{cfealert.salesProjAmnt}">
+											  <p:cellEditor>
+												<f:facet name="output"><p:outputLabel value="#{cfealert.salesProjAmnt}"
+													style="text-align:center;" />
+													</f:facet>
+												<f:facet name="input"><p:inputText id="salesProjAmnt"  value="#{cfealert.salesProjAmnt}" 
+													style="text-align:center;"  converterMessage="#{msg['valmsg.numberOnly']}"  
+													disabled="#{not empty cfealert.emailDate}">
+													
+													<f:validateLongRange for="salesProjAmnt"/>
+													<f:ajax event="blur" render="salesProjAmntMsg"/>	
+													</p:inputText>
+														<p:message id="salesProjAmntMsg" for="salesProjAmnt" />
+													</f:facet>
+											</p:cellEditor> 
+											</p:column>
+											<p:column headerText="#{msg['lbl.exchangeRate']}" sortBy="#{cfealert.exchangeRate}">
+											 <p:cellEditor>
+											<f:facet name="output">
+												<p:outputLabel value="#{cfealert.exchangeRate}"
+													style="text-align:center;" />
+												</f:facet>	
+												<f:facet name="input">
+												<p:inputText id="exchangeRate" value="#{cfealert.exchangeRate}"
+													style="text-align:center;" converterMessage="#{msg['valmsg.numberOnly']}" 
+													disabled="#{not empty cfealert.emailDate}">
+													<f:validateLongRange for="exchangeRate"/>
+													<f:ajax event="blur" render="exchangeRateMsg"/>	
+													</p:inputText>
+													<p:message id="exchangeRateMsg" for="exchangeRate" />
+												</f:facet>	
+													</p:cellEditor>
+											</p:column>
+											<p:column style="width:100px" headerText="#{msg['lbl.actLbl']}">
+											<p:commandButton  value="#{cfealert.actionType}" action="#{fundEstimationDealAlertBean.addRow(cfealert.actionType,cfealert)}"
+												update=":form:fundEstiRateAlertDt,:form:valDialog" 
+												disabled="#{not empty cfealert.emailDate}" process="@this" 
+												onstart="process.show();" onsuccess="process.hide();" 
+												>
+							</p:commandButton> <!-- icon="#{cfealert.icon}" value="#{cfealert.salesProjAmnt eq 0 or cfealert.exchangeRate eq 0?cfealert.actionType:'DEL'}"-->
+						</p:column>
+						
+				
+						
+				</p:dataTable>
+				</p:panel>
+		
+									<div class="clearfix"></div>
+				<h:panelGroup layout="block" styleClass="shadow_button1" style="width:15% !important">
+				
+				
+				<h:panelGroup layout="block" style="float:left !important;">
+					<p:commandButton id="alertSave" value="#{msg['lbl.save']}"
+									action="#{fundEstimationDealAlertBean.saveAlertDetails}"
+						 onstart="process.show();" style="margin-right:10px;" onsuccess="process.hide();"/>
+						 </h:panelGroup>
+						 
+						 <h:panelGroup layout="block" >
+						<p:commandButton style="margin-right:10px;"  value="Close" action="#{fundEstimationDealAlertBean.closeClear}" onclick="chargeDialog.hide()" process="@this">
+						</p:commandButton>	
+						
+							</h:panelGroup>
+						
+					
+				</h:panelGroup>	
+				
+			</p:dialog>
+
+			
+
+			
+
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;">
+			
+								
+								<ui:include
+							src="#{facesBean.fxdeal_menu}"></ui:include>
+					</td>
+
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle"
+										src="../images/toggle_plus.png" alt=""
+										onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+								<h1>
+									<h:outputText value="#{msg['lbl.fundestimationDealAlert']}" />
+								</h1>
+
+								<p:panel styleClass="shadow" id="mainPanel"
+									style="background-color:#FFF !important; ">
+									
+									<p:confirmDialog id="sqlexception" widgetVar="sqlexception"
+									header="#{msg['lbl.warningDailog']}"
+									resizable="false" width="700"
+									style="background-color: white !important;"
+									styleClass="warning" showEffect="clip" hideEffect="clip"
+									closeOnEscape="true" closable="true"
+									message="#{fundEstimationBean.exceptionMessage}">
+		</p:confirmDialog>
+		
+		<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"  
+	resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" 
+	showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{fundEstimationBean.exceptionMessage} - #{msg['lbl.nullPonterExcepetion']}" >
+	</p:confirmDialog>
+
+									<h2>
+										<h:outputText value="#{msg['lbl.fundestimationDealAlert']}" />
+									</h2>
+
+									<p:panel styleClass="panel_border1">
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.projectionDate']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:calendar id="projDate"
+													value="#{fundEstimationDealAlertBean.projectionDate}" 
+													pattern="dd/MM/yyyy"
+													disabled="true"></p:calendar>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.exchangecountry']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText value="#{fundEstimationDealAlertBean.countryName}"
+													readonly="true" 
+													styleClass="ui-state-disabled"/>
+											</p:panel>
+										</p:panel>
+										<div class="clearfix"></div>
+										<p:panel styleClass="left_col" id="pnlBankCountry">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bankcountry']}" />
+												<h:outputText value="*" style="color:red;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="bankCountry" display="text" id="msgCountry" />
+												<p:selectOneMenu id="bankCountry"
+													value="#{fundEstimationDealAlertBean.bankCountry}" filter="true"
+													filterMatchMode="contains" required="true"
+													requiredMessage="Please Select Bank Country">
+													<f:selectItem itemLabel="#{msg['lbl.selectbankcountry']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{fundEstimationDealAlertBean.bankCountryList}" var="c"
+														itemLabel="#{c.bankCountryCode} - #{c.bankCountryName}"
+														itemValue="#{c.bankCountryId}" />
+													<p:ajax event="change"
+														listener="#{fundEstimationDealAlertBean.showHideSales}"
+														update="mainPanel" onstart="process.show();"
+														onsuccess="process.hide();" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col" id="pnlCurrency">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currency']}" />
+												<h:outputText value="*" style="color:red;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="currencyId" display="text" id="msgcurrencid" />
+												<p:selectOneMenu id="currencyId"
+													value="#{fundEstimationDealAlertBean.currencyId}" filter="true"
+													filterMatchMode="contains" required="true"
+													requiredMessage="Please Select currency">
+													<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{fundEstimationDealAlertBean.countryCurrencyList}" var="c"
+														itemLabel="#{c.currencyCode} - #{c.currencyName}" itemValue="#{c.currencyId}" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>		
+										<div class="clearfix"></div>
+										
+											<p:panel styleClass="left_col">
+											<h:outputText value="#{msg['lbl.fieldaremandatory']}"
+												style="color:red; padding:10px !important; font-size:10px;" />
+										</p:panel>
+										<div class="clearfix"></div>
+										
+										<h:panelGroup layout="block" styleClass="shadow_button1">
+											<p:commandButton id="search" value="#{msg['lbl.search']}"
+												style="margin-right:10px;"
+												action="#{fundEstimationDealAlertBean.searchFundEstimationForDealAlert}" update="mainPanel"
+												disabled="#{fundEstimationDealAlertBeann.booSaveButton}"
+												onstart="process.show();" onsuccess="process.hide();" />
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{fundEstimationDealAlertBean.exit}" process="@this" />
+											<div class="clearfix"></div>
+										</h:panelGroup>
+										<div class="clearfix"></div>
+										
+										
+
+										<p:dataTable editable="true" id="fundEstiDt" rows="10"
+													 value="#{fundEstimationDealAlertBean.fundEstimationBeanForDealAlertList}"
+													 paginator="true"
+													  editMode="cell"
+													var="cfe" rowIndexVar="rowIndex"
+													emptyMessage="#{msg['lbl.norecordfound']}" styleClass="mydatatableclass"
+													rendered="#{not empty  fundEstimationDealAlertBean.fundEstimationBeanForDealAlertList}">	
+													
+										<!-- <p:ajax event="cellEdit" listener="#{fundEstimationDealAlertBean.onCellEditSave}" update=":form:fundEstiDt"/> -->			
+											
+											<p:column headerText="SR#" >
+												<p:outputLabel value="#{rowIndex+1}" style="text-align:center;" />
+											</p:column>
+										
+											<p:column headerText="#{msg['lbl.treBankName']}" sortBy="#{cfe.bankShortName}">
+												<p:outputLabel value="#{cfe.bankShortName}" style="text-align:center;" />
+											</p:column>
+
+										
+
+											<p:column headerText="#{msg['lbl.SalesProjAmt']}" sortBy="#{cfe.salesProjAmnt}">
+												<p:outputLabel value="#{cfe.salesProjAmnt}"
+													style="text-align:center;" />
+											</p:column>
+											
+											<p:column headerText="#{msg['lbl.setDealAlert']}">
+											    <p:commandLink
+														style="color:blue !important; text-decoration:underline !important;"
+														actionListener="#{fundEstimationDealAlertBean.setDealAlert(cfe)}"
+														update=":form:alertDetails"
+														>
+														<p:graphicImage value="../images/approve.jpg" width="25"
+														height="25" id="imgEdit" />
+														<p:tooltip for="imgEdit" value="Set Alert" />
+													</p:commandLink>
+										</p:column>
+
+										</p:dataTable>
+										<h:panelGroup layout="block" styleClass="shadow_button1" rendered="#{not empty  fundEstimationDealAlertBean.fundEstimationList}">
+											<p:commandButton id="save"  value="#{msg['lbl.save']}" style="margin-right:10px;" 
+															action="#{fundEstimationDealAlertBean.commonSave}" update="mainPanel" disabled="#{fundEstimationDealAlertBean.booSaveButton}" 
+															onstart="process.show();" onsuccess="process.hide();"/>
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{fundEstimationDealAlertBean.exit}" process="@this" />
+											<div class="clearfix"></div>
+										</h:panelGroup>
+									</p:panel>
+									
+									<p:dialog modal="true" showHeader="true" header="Please wait.."
+										widgetVar="process" id="process" width="300" height="50"
+										resizable="false" draggable="false" closable="false"
+										style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+										<div style="text-align: center;">
+											<p:graphicImage value="../images/preloader.gif" />
+										</div>
+									</p:dialog>
+								</p:panel>
+
+								<div class="clearfix"></div>
+
+							</h:panelGroup>
+							<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+						</h:panelGroup></td>
+				</tr>
+			</table>
+		</h:form>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

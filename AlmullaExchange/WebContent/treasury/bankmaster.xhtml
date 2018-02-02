@@ -1,0 +1,1205 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">     
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+
+		 history.pushState(null, null, 'bankmaster.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'bankmaster.xhtml');
+		    });
+	</script>
+	
+	<script>
+		$(document).ready(function() {
+			$(window).scroll(function() {
+				if ($(this).scrollTop() > 100) {
+					$('#goTop').stop().animate({
+						bottom : '30px'
+					}, 300);
+				} else {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				}
+			});
+			$('#goTop').click(function() {
+				$('html, body').stop().animate({
+					scrollTop : 0
+				}, 500, function() {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				});
+			});
+		});
+	</script>
+	
+</h:head>
+
+<h:body>
+	<f:view>
+	
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<h:form id="bankMasterFrm">
+		<p:confirmDialog id="alreadyExist" widgetVar="alreadyExist" width="300"  resizable="false" 
+      style="background-color: white !important;" header="Warning Dailog" styleClass="warning"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="The Zone is Already Exist">
+      </p:confirmDialog>
+      
+      <p:dialog id="success" widgetVar="success" width="400" height="80"  resizable="false" 
+	style="background-color: white !important;" styleClass="success" header="Success" closable="false" showEffect="clip" hideEffect="clip" modal="true">
+           <p:outputLabel value="Bank Master Created Successfully" style="text-align: center; font-size:15px !important;"/><br/>
+           <p:commandButton value="#{msg['lbl.ok']}" actionListener="#{bankMaster.clickOnOKSave}" process="@this" style="margin-left: 150px !important;"/>          
+     </p:dialog>
+     
+      <p:dialog id="complete" widgetVar="complete" width="400" height="80"  resizable="false" 
+	style="background-color: white !important;" styleClass="success" header="Success" closable="false" showEffect="clip" hideEffect="clip" >
+           <p:outputLabel value="Bank Master Details Created Successfully" style="text-align: center; font-size:15px !important;"/><br/>
+           <p:commandButton value="#{msg['lbl.ok']}"
+					actionListener="#{bankMaster.clickOnOKSave}" process="@this" style="margin-left: 150px !important;"/>          
+     </p:dialog>
+     
+     <p:confirmDialog id="duplicate" widgetVar="duplicate" width="300"  resizable="false" 
+      style="background-color: white !important;" header="Warning Dailog" styleClass="warning"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="This Bank Length Already Exist">
+      </p:confirmDialog>
+      
+      <p:confirmDialog id="remarksEmpty" widgetVar="remarksEmpty" width="400" height="17" resizable="false" style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+					showEffect="clip" header="#{msg['lbl.warningDailog']}" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.remarksShouldNotBeEmpty']}" >
+				</p:confirmDialog>	
+      
+      <p:confirmDialog id="duplicatecode" widgetVar="duplicatecode" width="300"  resizable="false" 
+      style="background-color: white !important;" header="Warning Dailog" styleClass="warning"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="This Bank Code Already Exist">
+      </p:confirmDialog>
+      
+       <p:confirmDialog id="checklength" widgetVar="checklength" width="300"  resizable="false" 
+      style="background-color: white !important;" header="Warning Dailog" styleClass="warning"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="Bank Length is Required">
+      </p:confirmDialog>
+      
+      <p:confirmDialog id="checkZone" widgetVar="checkZone" width="300"  resizable="false" 
+      style="background-color: white !important;" header="Warning Dailog" styleClass="warning"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="This Zone Already Existed.">
+      </p:confirmDialog>
+      
+      <p:confirmDialog id="lengthclear" widgetVar="lengthclear" width="400"  resizable="false" 
+      style="background-color: white !important;" header="Warning Dailog" styleClass="warning"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="Bank Length is Entered. Please click on Add button!!!">
+      </p:confirmDialog>
+      <p:confirmDialog id="accountLength" widgetVar="accountLength" width="300"  resizable="false" 
+      style="background-color: white !important;" header="Warning Dailog" styleClass="warning"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="Bank Length is Mandatory">
+      </p:confirmDialog>
+		
+       								 
+			<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+						<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+						</td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h1>
+								<h:outputText value="#{msg['lbl.bankmaster']}" />
+							</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+
+									<p:confirmDialog id="nullPoiterId"
+										widgetVar="nullPoiterId" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{bankMaster.warningMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+									
+									<p:confirmDialog id="warningDailogId"
+										widgetVar="warningDailogId" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{bankMaster.warningMessage}">
+									</p:confirmDialog>
+									
+
+									<p:confirmDialog id="alreadyApproved" widgetVar="alreadyApproved"
+										width="400" resizable="false"
+										style="background-color: white !important;"
+										header="Warning Dailog" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="Bank Code Already Exists With Approved Status">
+									</p:confirmDialog>
+
+									<p:dialog id="deactive" widgetVar="deactive" width="500"
+										height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="Warning Message" closable="false"
+										showEffect="clip" hideEffect="clip">
+										<p:outputLabel value="This record already deactivated , do you wnat to Active"
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton id="yes" value="Yes"
+										onclick="deactive.hide()"
+										actionListener="#{bankMaster.deactiveYes}"
+										process="@this"  update="mainPanel"
+											style="margin-left: 150px !important;" />
+											
+											<p:commandButton id="No" value="No" style="margin-left:10px;"
+										onclick="deactive.hide()"
+										actionListener="#{bankMaster.deactiveNo}"
+										process="@this"  update="mainPanel"/>
+									</p:dialog>
+									
+									<p:dialog id="pending" widgetVar="pending" width="400" height="80" resizable="false"
+										style="background-color: white !important;" styleClass="warning" header="#{msg['lbl.warningDailog']}" closable="false" showEffect="clip" hideEffect="clip" modal="true">
+										<p:outputLabel value="#{msg['lbl.plsApproveRecord']}" style="text-align: center; font-size:15px !important;"  /><br />
+										<p:commandButton value="#{msg['lbl.ok']}" onclick="PF('pending').hide();" immediate="true" style="margin-left: 150px !important;" />
+									</p:dialog>
+									
+									
+									<p:dialog id="permanentDelete" widgetVar="permanentDelete" width="400" height="80" resizable="false" style="background-color: white !important;" styleClass="warning" header="#{msg['lbl.deleteRecrd']}" closable="false" showEffect="clip" hideEffect="clip" modal="true">
+										<p:outputLabel value="#{msg['lbl.douWantDeleteRecordPermentely']}" style="text-align: center; font-size:15px !important;" /><br />
+										<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{bankMaster.bankAccountLengthDelete}" process="@this" oncomplete="PF('permanentDelete').hide();" update="mainPanel" style="margin-left: 150px !important;" onstart="process.show();" onsuccess="process.hide();"/>
+										<p:commandButton value="#{msg['lbl.cancel']}" actionListener="#{bankMaster.cancelDelete}" process="@this" oncomplete="PF('permanentDelete').hide();" update="mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+									</p:dialog>
+										<p:dialog id="activateRecord" widgetVar="activateRecord" width="400" height="80" resizable="false" style="background-color: white !important;" styleClass="warning" header="#{msg['lbl.activateRecrd']}" closable="false" showEffect="clip" hideEffect="clip" modal="true">
+												<p:outputLabel value="#{msg['lbl.doyouactivaterecord']}" style="text-align: center; font-size:15px !important;" /><br />
+												<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{bankMaster.activateRecord}" process="@this" oncomplete="PF('activateRecord').hide();" update="mainPanel" style="margin-left: 150px !important;" onstart="process.show();" onsuccess="process.hide();"/>
+												<p:commandButton value="#{msg['lbl.cancel']}" onclick="PF('activateRecord').hide();" immediate="true" style="margin-left:10px;" />
+										</p:dialog>	
+										
+                             		<p:dialog id="remarks" widgetVar="remarks" width="480" resizable="false" style="background-color: white !important;" styleClass="info" header="Remarks" closable="false" showEffect="clip" hideEffect="clip" modal="true">
+			                             		<p:panel>
+			                             		<!-- <table>
+			                             		<tr>
+			                             		<td> <h:outputText value="#{msg['lbl.approvedDate']}" /></td>
+			                             		<td><h:outputText value="#{loyaltyParameterSettingBean.approvedDate}" style="color:red !important;"/> </td>
+			                             		</tr>
+			                             		<tr>
+			                             		<td> <h:outputText value="#{msg['lbl.approvedBy']}" /> </td>
+			                             		<td>	<h:outputText  value="#{loyaltyParameterSettingBean.approvedBy}"  style="color:red !important;"/> </td>
+			                             		</tr>
+			                             		</table> -->
+			                             		</p:panel>
+			                             		<p:spacer height="10px"/>
+			                             		<p:panel>
+			                             		<h:outputText value="#{msg['lbl.enterremarks']}" /><h:outputText value="*" style="color:red !important;" />
+			                             		</p:panel>
+			                             		<p:spacer height="5px"/>
+			                             		<p:panel>
+			                             		<h:inputTextarea id="remarksId" value="#{bankMaster.remarks}" validatorMessage="Maximum 255 charectors allowed" >
+			                                           <f:validateLength maximum="255"/>
+			                                            <p:ajax/>
+			                                     </h:inputTextarea>
+			                                    </p:panel>
+			                                    <p:spacer height="5px"/>
+			                                   	<p:panel style="padding-left:160px;">
+			                                        <p:commandButton value="#{msg['lbl.ok']}" actionListener="#{bankMaster.clickOkRemarksBankLenth}" process="@this" onstart="process.show();" onsuccess="process.hide();"/> 
+			            							<p:commandButton value="#{msg['lbl.cancel']}" actionListener="#{bankMaster.cancelRemarks}" process="@this" onstart="process.show();" onsuccess="process.hide();"/> 
+			                             		</p:panel>
+                               </p:dialog>
+
+
+								
+								<p:panel rendered="#{bankMaster.booRenderBankMasterPanel}" id="firstPanel">
+										<h2>
+											<h:outputText value="#{msg['lbl.bankmaster']}" />
+										</h2>
+											<p:panel styleClass="panel_border">
+									
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_bankCode"/>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgbankCode" for="bankCode" display="text" />
+													<!-- <p:autoComplete value="#{bankMaster.bankCode}" completeMethod="#{bankMaster.autoCompleteBankCode}" id="bankCode"  required="true" maxlength="10" requiredMessage="Please Enter Bank Code" onkeyup="this.value=this.value.toUpperCase()" > -->
+													<p:autoComplete value="#{bankMaster.bankCode}" completeMethod="#{bankMaster.autoCompleteBankCode}" id="bankCode"  required="true" requiredMessage="Please Enter Bank Code" onkeyup="this.value=this.value.toUpperCase()" >
+													<p:ajax event="itemSelect" listener="#{bankMaster.fetchBankMasterInfo}" update="mainPanel,msgbankCode,warningDailogId" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+													<!-- <p:ajax event="change" listener="#{bankMaster.fetchBankMasterInfo}" update="mainPanel,msgbankCode,warningDailogId" process="@this" onstart="process.show();" onsuccess="process.hide();"/> -->
+													<!-- <p:ajax event="blur" listener="#{bankMaster.fetchBankMasterInfo}" update="mainPanel,msgbankCode,bankCode,warningDailogId" process="@this" onstart="process.show();" onsuccess="process.hide();"/> -->
+													<p:ajax/>
+													</p:autoComplete>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_bankFullName" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="bankFullName"  onkeyup="this.value=this.value.toUpperCase()" 
+														value="#{bankMaster.fullName}" label="Bank Full Name">
+														<p:ajax update="fullNameMsg" event="blur" />
+														
+														<p:message id="fullNameMsg" for="bankFullName"
+															display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+										<div class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_bankShortName" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="bankShortName" onkeyup="this.value=this.value.toUpperCase()" 
+														value="#{bankMaster.shortName}" label="Bank Short Name">
+														<p:ajax update="shortnameMsg" event="blur" />
+														<p:message id="shortnameMsg" for="bankShortName"
+															display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_language" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="language" display="text"  id="msglanguage"/>
+													<p:selectOneMenu id="language"
+														value="#{bankMaster.languageBank}" label="Bank Language">
+												<!-- started 30-01-2015 added @Koti  -->
+														<f:selectItem itemLabel="#{msg['lbl.selectLanguage']}" itemValue="" />
+														<!-- ended 30-01-2015 added @Koti  -->
+														<f:selectItem itemLabel="English" itemValue="1" />
+														<f:selectItem itemLabel="Arabic" itemValue="2" />
+														<p:ajax update="msglanguage" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_telephone" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="telephone" value="#{bankMaster.telephone}" validatorMessage="#{msg['lbl.allownumbers']}"
+														>
+														<f:validateRegex pattern="[0-9,-]+" />
+														<p:ajax update="telephoneMsg" event="blur" />
+														<p:message id="telephoneMsg" for="telephone"
+															display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_fax" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="fax" value="#{bankMaster.fax}" validatorMessage="#{msg['lbl.allownumbers']}">
+													<f:validateRegex pattern="[0-9,-]+" />
+														<p:ajax update="faxMsg" event="blur" />
+														<!-- <f:validator validatorId="allowOnlyNumber" /> -->
+														<p:message id="faxMsg" for="fax" display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_email" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="email" value="#{bankMaster.email}"
+													
+														label="Email">
+														<p:ajax update="emailMsg" event="blur" />
+														<p:message id="emailMsg" for="email" display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+							
+
+										<!-- 	<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<p:ajaxStatus id="ajaxStatusPanel">
+														<f:facet name="start">
+															<h:graphicImage value="../images/ajax_loader.gif" />
+														</f:facet>
+														<f:facet name="complete">
+															<h:outputText value="" />
+														</f:facet>
+													</p:ajaxStatus>
+												</p:panel>
+												
+											</p:panel> -->
+											
+											
+										<!-- 	<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="#{msg['lbl.next']}"
+													actionListener="#{bankMaster.bankInfoPanelNext}"
+													update="mainPanel" />
+											</h:panelGroup> -->
+										
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_country" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="country" display="text" id="msgcountry"/>
+													<p:selectOneMenu id="country"
+														value="#{bankMaster.countryId}" filter="true"
+														filterMatchMode="contains" label="Country">
+														<f:selectItem itemLabel="#{msg['lbl.selectcountry']}"
+															itemValue="" />
+														<f:selectItems value="#{bankMaster.countryNameList}"
+															var="c" itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+															itemValue="#{c.fsCountryMaster.countryId}" />
+														<p:ajax event="change"
+															listener="#{bankMaster.generateStateList}" update="msgcountry" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											
+											<!-- <p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_bankState" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="bankState" display="text" />
+													<p:selectOneMenu id="bankState" label="State"
+														value="#{bankMaster.stateId}" filter="true"
+														filterMatchMode="contains">
+														<f:selectItem itemLabel="#{msg['lbl.selectState']}"
+															itemValue="" />
+														<f:selectItems value="#{bankMaster.lstStateList}" var="c"
+															itemLabel="#{c.stateName}"
+															itemValue="#{c.fsStateMaster.stateId}" />
+														<p:ajax event="change" update="bankDistrict, city"
+															listener="#{bankMaster.generateDistrictList}" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+												
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_bankDistrict" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="bankDistrict" display="text" />
+													<p:selectOneMenu id="bankDistrict"
+														value="#{bankMaster.districtId}" label="District">
+															started 30-01-2015 added @Koti 
+														<f:selectItem itemLabel="#{msg['lbl.selectDistrict']}"
+															itemValue="" />
+															ended 30-01-2015 added @Koti 
+														<f:selectItems value="#{bankMaster.lstDistrictList}"
+															var="c" itemLabel="#{c.district}"
+															itemValue="#{c.fsDistrictMaster.districtId}" />
+														<p:ajax event="change" update="city"
+															listener="#{bankMaster.generateCityList}" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+								
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_city" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="city" display="text" />
+													<p:selectOneMenu id="city" value="#{bankMaster.cityId}"
+														label="City">
+														<f:selectItem itemLabel="#{msg['lbl.selectCity']}"
+															itemValue="" />
+														<f:selectItems value="#{bankMaster.lstCityList}" var="c"
+															itemLabel="#{c.cityName}"
+															itemValue="#{c.fsCityMaster.cityId}" />
+														<p:ajax event="change" listener="#{bankMaster.getCity}" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel> -->
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_zip" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												
+													<p:inputText id="zip" value="#{bankMaster.zip}" label="zip" ><!--required="true" requiredMessage="Please Enter Zip Code"  -->
+														<p:message for="zip" id="msgZip" display="text"/>
+														<p:ajax update="msgZip" event="blur" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_address1" /> <h:outputText value="*" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:message id="address1Msg" for="address1" display="text" />
+													<p:inputText id="address1" value="#{bankMaster.address1}" required="true" requiredMessage="Please Enter Address1"><!--  label="Bank first address"-->
+														<p:ajax update="address1Msg" event="blur" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_address2" /> <h:outputText value="*" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:message id="address2Msg" for="address2" display="text" />
+													<p:inputText id="address2" value="#{bankMaster.address2}" required="true" requiredMessage="Please Enter Address2"><!--  label="Bank second address"-->
+														<p:ajax update="address2Msg" event="blur" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+										<!-- 	<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.currency']}"/>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+											
+													<p:selectOneMenu id="currency"
+														value="#{bankMaster.currencyId}" filter="true"
+														filterMatchMode="contains" label="Currency">
+														<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}"
+															itemValue="" />
+														<f:selectItems value="#{bankMaster.lstCountryCurrencyList}"
+															var="c" itemLabel="#{c.currencyName}"
+															itemValue="#{c.currencyId}" />
+														<p:ajax />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel> -->
+											
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText id="lbl_bankFullNamel_1" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="bankFullNamel_1"
+																value="#{bankMaster.localFullName}" lang="AR"
+																label="Bank local Full Name">
+																<p:ajax update="localfullnameMsg" event="blur" />
+																<p:message id="localfullnameMsg" for="bankFullNamel_1"
+																	display="text" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+
+													<div class="clearfix" />
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText id="lbl_bankShortNamel_1" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="bankShortNamel_1"
+																value="#{bankMaster.localShortname}" lang="AR"
+																label="Bank local Short Name">
+																<p:ajax update="localshortnameMsg" event="blur" />
+																<p:message id="localshortnameMsg" for="bankShortNamel_1"
+																	display="text" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+											
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText id="lbl_addressl1_1" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="addressl1_1"
+																value="#{bankMaster.localAddress1}" lang="AR"
+																label="Bank local first address">
+																<p:ajax update="localfirstAddressMsg" event="blur" />
+																<p:message id="localfirstAddressMsg" for="addressl1_1"
+																	display="text" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+													<div class="clearfix" />
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText id="lbl_addressl2_1" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="addressl2_1"
+																value="#{bankMaster.localAddress2}" lang="AR" 
+																label="Bank local second address">
+																<p:ajax update="localsecondAddressMsg" event="blur" />
+																<p:message id="localsecondAddressMsg" for="addressl2_1"
+																	display="text" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+												
+									<!-- 		
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="#{msg['lbl.next']}"
+													actionListener="#{bankMaster.bankAddressInfoPanelNext}"
+													update="mainPanel" style="float:right;" />
+												<p:commandButton value="#{msg['lbl.back']}"
+													actionListener="#{bankMaster.bankAddressInfoPanelBack}"
+													update="mainPanel" process="@this"
+													style="float:right; margin-right:10px;" />
+											</h:panelGroup>
+											<div class="clearfix"></div>
+										 -->
+							
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_ifscLength" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="ifscLength"
+														value="#{bankMaster.IFSCLength}" label="IFSC Length">
+														<p:ajax update="ifscLenMsg" event="blur" />
+														<p:message id="ifscLenMsg" for="ifscLength" display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+														<div class="clearfix" />	
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_reutersBankName" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="reutersBankName"
+														value="#{bankMaster.reutersBankNname}"
+														label="Reuters Bank Name">
+														<p:ajax update="reuterBankNameMsg" event="blur" />
+														<p:message id="reuterBankNameMsg" for="reutersBankName"
+															display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+										
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_fileSpecific" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="fileSpecific" display="text" id="msgfileSpecific"/>
+													<p:selectOneMenu id="fileSpecific"
+														value="#{bankMaster.fileSpecificOrAll}"
+														label="File Specific">
+														<!-- stared koti 30/01/2015 -->
+														<f:selectItem itemLabel="#{msg['lbl.fileSpecificselect']}" itemValue="" />
+														<!-- ended koti 30/01/2015 -->
+														<f:selectItem itemLabel="Specified File" itemValue="S" />
+														<f:selectItem itemLabel="All File" itemValue="A" />
+														<!-- <f:selectItem itemLabel="Web Service" itemValue="W" /> -->
+														<p:ajax update="msgfileSpecific" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+												<div class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_fileBranchWise" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="fileBranchWise" display="text" id="msgfileBranchWise"/>
+													<p:selectOneMenu id="fileBranchWise"
+														value="#{bankMaster.fileBranchWiseYOrN}"
+														label="File Branch Wise">
+														<!-- stared koti 30/01/2015 -->
+														<f:selectItem itemLabel="#{msg['lbl.fileBranchWiseselect']}" itemValue="" />
+														<!-- ended koti 30/01/2015 -->
+														<f:selectItem itemLabel="Yes" itemValue="Y" />
+														<f:selectItem itemLabel="No" itemValue="N" />
+														<p:ajax update="msgfileBranchWise" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_remmiterModeWise" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="remmiterModeWise" display="text" id="msgremmiterModeWise"/>
+													<p:selectOneMenu id="remmiterModeWise"
+														value="#{bankMaster.remmiterModeYOrN}"
+														label="Remmiter Mode">
+														<!-- stared koti 30/01/2015 -->
+														<f:selectItem itemLabel="#{msg['lbl.remittanceMode']}" itemValue="" />
+														<!-- ended koti 30/01/2015 -->
+														<f:selectItem itemLabel="Yes" itemValue="Y" />
+														<f:selectItem itemLabel="No" itemValue="N" />
+														<p:ajax update="msgremmiterModeWise" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											
+												<div class="clearfix" />
+												<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.allnobank']}"/> <h:outputText value="*" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+											<p:message id="msgallowBank" for="allowBank" display="text"/>
+													<p:selectOneMenu id="allowBank" required="true" requiredMessage="Please Select Allow No Bank"
+														value="#{bankMaster.allowNoBank}" filter="true"
+														filterMatchMode="contains">
+														<f:selectItem itemLabel="--Select Allow No Bank --"
+															itemValue="" />
+														<f:selectItem itemLabel="Yes" itemValue="Y" />
+														<f:selectItem itemLabel="No" itemValue="N" />
+														<p:ajax update="msgallowBank" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.bankbranchcheck']}" />
+													<h:outputText value="*" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgBankBranchCheck" for="bankBranchCheck" display="text" />
+													<p:selectOneMenu id="bankBranchCheck" required="true"
+														requiredMessage="Please Select Allow No Bank"
+														value="#{bankMaster.bankBranchCheck}" filter="true"
+														filterMatchMode="contains">
+														<f:selectItem itemLabel="--Select Bank Branch check--"
+															itemValue="" />
+														<f:selectItem itemLabel="Yes" itemValue="Y" />
+														<f:selectItem itemLabel="No" itemValue="N" />
+														<p:ajax update="msgBankBranchCheck" onstart="process.show();"
+															onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix" />	
+									
+										<p:panel styleClass="left_col" >
+									<h:outputText  id="mandatory" value=" #{msg['lbl.*filedsAreMandatory']}"  style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+								</p:panel>
+								<div class="clearfix" />
+							</p:panel>
+							<div class="clearfix" />
+							<!-- </p:panel> -->
+							
+							<div class="clearfix" />
+							<p:panel id="banklength" >
+							<div class="clearfix" />
+							
+							<p:panel  id="banklenPanel" rendered="#{bankMaster.bankLangthRendered}">	
+							<h2>
+								<h:outputText value="#{msg['lbl.bankLength']}" />
+							</h2>
+							<p:panel styleClass="panel_border">
+								<p:panel styleClass="left_col">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText id="lbl_bankLength" />
+									</p:panel>
+									<p:panel styleClass="inner_right_col">
+									<p:message for="bankLength" display="text" id="msgbankLength"/>
+										<p:inputText value="#{bankMaster.bankLength}" id="bankLength" >
+										<f:validator for="bankLength" validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator"/>
+										<p:ajax update="msgbankLength"/>
+										</p:inputText>
+									</p:panel>
+								</p:panel>
+								<!-- <div class="clearfix"></div> -->
+								<h:panelGroup layout="block" styleClass="shadow_button">
+										<p:commandButton value="#{msg['lbl.add']}"
+													action="#{bankMaster.checkAndAddBankLength}" 
+													update=":bankMasterFrm:mainPanel"  onstart="process.show();" onsuccess="process.hide();"/>
+							
+												<div class="clearfix" />
+								</h:panelGroup>
+							<div class="clearfix" />
+							</p:panel>	
+							<div class="clearfix" />
+							</p:panel>
+							
+							
+							<p:panel id="bankLenghPanel" rendered="#{bankMaster.bankLengthPanelRendered}">
+											
+									<!-- <p:dataTable styleClass="mydatatableclass" 
+									value="#{bankMaster.bankLengthList}"
+									var="o"
+									
+									rowIndexVar="rowIndex" editable="true" id="datatable"
+									emptyMessage="#{msg['lbl.norecordfound']}"> -->
+									
+									<p:dataTable id="datatable" styleClass="mydatatableclass" value="#{bankMaster.bankLengthList}" 
+									rows="10" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="5,10,15" var="o" 
+									rowIndexVar="rowIndex" emptyMessage="#{msg['lbl.noRecordFound']}" paginatorPosition="bottom" >
+									
+
+									<p:column headerText="#{msg['lbl.sino']}">
+										<h:outputText value="#{rowIndex+1}" />
+									</p:column>
+
+									<p:column headerText="#{msg['lbl.bankLength']}">
+										<h:outputText value="#{o.bankLength}" />
+									</p:column>
+								
+									
+									<p:column headerText="#{msg['lbl.edit']}">
+							  			 <p:commandButton action="#{bankMaster.editBankLength(o)}" disabled="#{bankMaster.booEditButton}" rendered="#{o.renderEditButton}" update=":bankMasterFrm" process="@this" styleClass="edit" value="" onstart="process.show();" onsuccess="process.hide();"/>   
+									</p:column>
+									
+									<!-- <p:column headerText="#{msg['lbl.delete']}">
+							           	<p:commandLink  actionListener="#{bankMaster.removeBankLength(o)}" ajax="false" immediate="true" styleClass="delete"  update="dataTable">
+							           		<p:graphicImage value="../images/delete_icon.png"  width="25" height="25" id="imgDelete" style="float:center;">
+														<p:tooltip for="imgDelete" value="Delete" />
+											</p:graphicImage>
+							           	</p:commandLink>
+							        </p:column> -->
+							        
+							        <p:column headerText="#{msg['lbl.enqStatus']}">
+							        <h:outputText value="#{o.recordStatus}" />
+									</p:column>
+									
+									 <p:column headerText="#{msg['lbl.actionToBeTaken']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+										 <p:commandLink action="#{bankMaster.checkStatus(o)}" value="#{o.dynamicLabelForActivateDeactivate}" style="color:blue !important; text-decoration:underline !important;" update=":bankMasterFrm:mainPanel,datatable" immediate="true" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+									</p:column>
+									
+									<p:column headerText="#{msg['lbl.delete']}">
+												<p:commandButton styleClass="delete" value=""
+													actionListener="#{bankMaster.deleteRecordPermentely(o)}"
+													update=":bankMasterFrm:mainPanel" process="@this" immediate="true"/>
+											</p:column>
+							        
+							       <!--  <p:column headerText="#{msg['lbl.delete']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+										<p:commandButton value="#{o.statusRecord}" actionListener="#{bankMaster.removeBankLength(o)}" process="@this" update=":bankMasterFrm:mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+									</p:column> -->
+
+									</p:dataTable>
+								</p:panel>
+													
+							
+							<div class="clearfix"></div><!-- rendered="#{bankMaster.bankLengthPanelRendered}" -->
+								<h:panelGroup layout="block" styleClass="shadow_button" >
+											
+												<!-- <p:commandButton value="#{msg['lbl.save']}"
+													action="#{bankMaster.save}" ajax="false"  style=" margin-right:10px;" /> -->
+					   								
+												<p:commandButton value="#{msg['lbl.next']}"
+													action="#{bankMaster.nextToContactDetailsPanel}"
+													update="mainPanel" style=" margin-right:10px;" onstart="process.show();" onsuccess="process.hide();"/>
+										<!-- 		<p:commandButton value="#{msg['lbl.cancel']}"
+													action="#{bankMaster.cancel}" immediate="true" ajax="false"
+													style="margin-right:10px;" /> -->
+												<p:commandButton value="#{msg['lbl.clear']}"
+													action="#{bankMaster.clear}" update=":bankMasterFrm:mainPanel"
+													process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+												
+												
+												<div class="clearfix" />
+											</h:panelGroup>
+											<div class="clearfix"></div>
+							
+							
+							
+							</p:panel>		
+							</p:panel>
+							
+							
+							<!-- BANK Contact Details By RAHMATHALI SHAIK  -->
+							<p:panel rendered="#{bankMaster.booRenderContactDeatailsPanel}" id="secondPanel">
+										<h2>
+											<h:outputText value="#{msg['lbl.contactdetails']}" />
+										</h2>
+		
+								<p:panel styleClass="panel_border">
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Bank Code" /><h:outputText value="*" />
+											</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{bankMaster.contactBankCode}" readonly="true">
+													</p:inputText>
+												</p:panel>
+							<!-- 				
+											<p:panel styleClass="inner_right_col">
+												<p:message for="bank" display="text" />
+												<p:selectOneMenu id="bank" label="Bank Id"
+													value="#{bankMaster.contactBankId}"
+													filter="true" filterMatchMode="startsWith">
+													<f:selectItem itemLabel="#{msg['lbl.selectbank']}"/>
+													<f:selectItems
+														value="#{bankMaster.bankDetails}" var="c"
+														itemLabel="#{c.bankFullName}" itemValue="#{c.bankId}" />
+													<p:ajax event="change"
+														listener="#{bankMaster.fetchBankContactInfo}"
+														update="mainPanel" />
+												</p:selectOneMenu>
+											</p:panel> -->
+										</p:panel>
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_zone" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgZone" for="zone" display="text"/>
+											<p:selectOneMenu id="zone"
+													value="#{bankMaster.contactZone}" required="true" requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.zone']}"
+													filterMatchMode="contains" filter="true">
+													<f:selectItem itemLabel="#{msg['lbl.selectZone']}" itemValue="" />
+													<f:selectItems value="#{bankMaster.getZoneLists()}"
+														var="c" itemLabel="#{c.zone.zoneCode} - #{c.zoneDescription}"
+														itemValue="#{c.zone.zoneId}" />
+														<p:ajax update="msgZone,secondPanel" event="change" listener="#{bankMaster.duplicateCheckingZone}" onstart="process.show();" onsuccess="process.hide();"/>
+														</p:selectOneMenu>
+											
+											</p:panel>
+										</p:panel>
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_contperson_1" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="contperson_1"
+													value="#{bankMaster.contactPersonForContactDetails}" 
+													label="Contact Person">
+													<p:ajax update="contactPersonMsg" event="blur" />
+													<p:message id="contactPersonMsg" for="contperson_1"
+														display="text" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_department_1" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="department_1"
+													value="#{bankMaster.contactDep}"
+													label="Contact Dep">
+													<p:ajax update="contactDepartmentMsg" event="blur" />
+													<p:message id="contactDepartmentMsg" for="department_1"
+														display="text" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_designation_1" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="designation_1"
+													value="#{bankMaster.contactDesignation}"
+													label="Contact Designation">
+													<p:ajax update="contactDesignationMsg" event="blur" />
+													<p:message id="contactDesignationMsg" for="designation_1"
+														display="text" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_mobile" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="mobile"
+													value="#{bankMaster.contactMobile}"
+													label="Mobile">
+													<p:ajax update="mobileMsg" event="blur" />
+													<p:message id="mobileMsg" for="mobile" display="text" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+
+
+										<p:panel id="localPanel"
+											style="padding:0px!important;border:none !important;">
+											<p:panel
+												style="padding:0px!important;border:none !important;"
+												rendered="#{bankMaster.booLocal}">
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_contpersonl" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="contpersonl"
+															value="#{bankMaster.localContactPersonForContactDetails}" lang="AR"
+															label="Local Contact Person">
+															<p:ajax update="localContactPersonMsg" event="blur" />
+															<p:message id="localContactPersonMsg" for="contpersonl"
+																display="text" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_departmentl"
+															value="#{msg['lbl.departmentl']} #{bankMaster.viewBehaviorBean('Local Contact Dep','MANDATORY')}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="departmentl"
+															value="#{bankMaster.localContactDepartment}" lang="AR"
+															label="Local Contact Dep">
+															<p:ajax update="localContactDepMsg" event="blur" />
+															<p:message id="localContactDepMsg" for="departmentl"
+																display="text" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="lbl_designationl" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="designationl"
+															value="#{bankMaster.localContactDesignation}" lang="AR"
+															label="Local Contact Des">
+															<p:ajax update="localContactDesMsg" event="blur" />
+															<p:message id="localContactDesMsg" for="designationl"
+																display="text" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+											</p:panel>
+										</p:panel>
+										
+										
+										
+										<div class="clearfix"></div>
+										
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											 <p:commandButton value="#{msg['lbl.back']}"
+													action="#{bankMaster.backToBankMasterPanel}" immediate="true" update=":bankMasterFrm:mainPanel"
+													style="margin-right:10px;" onstart="process.show();" onsuccess="process.hide();"/> 
+											<p:commandButton value="#{msg['lbl.add']}" action="#{bankMaster.add}" style="margin-right:10px;" update=":bankMasterFrm:mainPanel,datatableContact" onstart="process.show();" onsuccess="process.hide();"/>
+											<p:commandButton value="#{msg['lbl.clear']}" action="#{bankMaster.clearContactDetails}" style="margin-right:10px;" update=":bankMasterFrm:mainPanel,datatableContact" process="@this" onstart="process.show();" onsuccess="process.hide();"/> 
+													</h:panelGroup>
+										
+										
+											<p:dataTable value="#{bankMaster.listContact}" var="o" styleClass="mydatatableclass" 
+												
+												rowIndexVar="rowIndex" editable="true" id="datatableContact"
+												emptyMessage="#{msg['lbl.norecordfound']}" rows="10"
+                         paginator="true"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" rendered="#{bankMaster.boorender}" paginatorPosition="bottom" >
+
+												<p:column headerText="#{msg['lbl.sino']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column headerText="Contact Person" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.contactPerson}" />
+												</p:column>
+												
+												<p:column headerText="Department" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.contactDep}" />
+												</p:column>
+												
+												<p:column headerText="Designation" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.contactDegign}" />
+												</p:column>
+												
+													
+												<p:column headerText="Mobile No " styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.mobile}" />
+												</p:column>
+												
+													<p:column headerText="Contact Person (L)  " styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.contactpersonAr}" />
+												</p:column>
+												
+												<p:column headerText="Zone Name " styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.zoneName}" />
+												</p:column>
+												
+												<p:column headerText="Edit " styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:commandButton styleClass="edit" value="" actionListener="#{bankMaster.edit(o)}" process="@this" update=":bankMasterFrm:mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+												</p:column>
+												
+												<!-- <p:column headerText="Delete" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" rendered="#{bankMaster.booRenderDelete}">
+													<p:commandButton  styleClass="delete" value="" actionListener="#{bankMaster.delete(o)}" process="@this" update=":bankMasterFrm:mainPanel"/>
+												</p:column> -->
+												
+												<p:column headerText="Delete" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:commandButton value="#{o.status}" actionListener="#{bankMaster.delete(o)}" process="@this" update=":bankMasterFrm:mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+												</p:column>
+												
+												
+												
+
+
+											</p:dataTable>
+								
+										
+										
+
+										<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{bankMaster.boorender}">
+											 
+											<!-- <p:commandButton value="#{msg['lbl.back']}"
+													action="#{bankMaster.backToBankMasterPanel}" immediate="true" ajax="false" update=":bankMasterFrm:mainPanel"
+													style="margin-right:10px;" />  -->
+											<!-- 	
+											<p:commandButton value="#{msg['lbl.add']}" update=":bankMasterFrm:mainPanel" style="margin-right:10px;"  action="#{bankMaster.addRecordsToDataTable}" rendered="#{bankMaster.booBankAddRender}"/>
+											-->
+											<p:commandButton value="#{msg['lbl.save']}" style="margin-right:10px;"
+												action="#{bankMaster.saveContactAndBankMaster}" partialSubmit="true" onstart="process.show();" onsuccess="process.hide();" update=":bankMasterFrm:mainPanel"
+												process="@this" />
+											<p:commandButton value="APPROVE"
+													action="#{bankMaster.bankApprove}" onstart="process.show();" onsuccess="process.hide();"  update=":bankMasterFrm:mainPanel"
+													style="margin-right:10px;"  rendered="#{bankMaster.booBankApprovalRender}"/>
+											<p:commandButton value="CANCEL"
+													action="#{bankMaster.cancelForContactDetails}" immediate="true" ajax="false" update=":bankMasterFrm:mainPanel" onstart="process.show();" onsuccess="process.hide();"
+													style="margin-right:10px;"  />
+											<div class="clearfix"></div>
+										</h:panelGroup>
+										<div class="clearfix"></div>
+										
+<!--  Code commented by Viswa  -->
+<!-- 										
+<p:spacer height="20px"/>
+<div class="clearfix"></div>
+			<p:panel rendered="#{bankMaster.booRenderDataTable}">
+										<p:dataTable
+											value="#{bankMaster.lstBankMasterContactDetails}"
+											id="datatable" var="o"
+											emptyMessage="#{msg['lbl.norecordfound']}">
+											<p:column headerText="#{msg['lbl.bank']}">
+												<h:outputText value="#{o.bank}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.zone']}">
+												<h:outputText value="#{o.zoneName}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.contperson']}">
+												<h:outputText value="#{o.contactPerson}" />
+											</p:column>
+
+											<p:column
+												headerText="#{msg['lbl.contperson']} #{msg['lbl.department']}">
+												<h:outputText value="#{o.contactDep}" />
+											</p:column>
+
+											<p:column
+												headerText="#{msg['lbl.contperson']} #{msg['lbl.designation']}">
+												<h:outputText value="#{o.contactDesignation}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.mobile']}">
+												<h:outputText value="#{o.mobile}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.contperson']}(L)" >
+												<h:outputText value="#{o.localContactPerson}" />
+											</p:column>
+
+											<p:column
+												headerText="#{msg['lbl.contperson']} #{msg['lbl.departmentl']}" >
+												<h:outputText value="#{o.localContactDepartment}" />
+											</p:column>
+
+											<p:column
+												headerText="#{msg['lbl.contperson']} #{msg['lbl.designationl']}" >
+												<h:outputText value="#{o.localContactDesignation}" />
+											</p:column>
+											
+											<p:column headerText="#{msg['lbl.edit']}">
+													<p:commandButton   styleClass="edit" value="" action="#{bankMaster.editRecord(o)}"  update=":bankMasterFrm:mainPanel" immediate="true" process="@this">
+													</p:commandButton>
+											</p:column>
+											<p:column headerText="#{msg['lbl.delete']}">
+												<p:commandButton styleClass="delete" value=""
+													actionListener="#{bankMaster.remove(o)}"
+													update=":bankMasterFrm:mainPanel" process="@this" immediate="true"/>
+											</p:column>
+
+										</p:dataTable>
+										</p:panel>
+<div class="clearfix"></div>
+<p:spacer height="20px"/>
+<div class="clearfix"></div>
+
+-->
+									<!-- 
+										<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{bankMaster.booRenderSavePanel}">
+										
+										
+										<p:commandButton value="#{msg['lbl.save']}" style="margin-right:10px;"
+												action="#{bankMaster.saveContactAndBankMaster}" 
+												process="@this" />
+											
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{bankMaster.cancelForContactDetails}" immediate="true"
+												ajax="false" />
+										
+												
+											<div class="clearfix"></div>
+										</h:panelGroup>
+										
+									-->	
+										
+										
+										
+										<div class="clearfix"></div>
+							<p:panel styleClass="left_col" >
+									<h:outputText value=" #{msg['lbl.*filedsAreMandatory']}"  style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+								</p:panel>
+							
+							</p:panel>
+							</p:panel>
+							<p:dialog modal="true" showHeader="true" header="#{msg['lbl.bco.plswait']}"  widgetVar="process"  id="process"   width="300" height="50" resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+							    	</p:dialog>	
+							</p:panel>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+					</h:panelGroup>
+					<div class="clearfix"></div></td>
+			</tr>
+		</table>
+		</h:form>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+		<a id="goTop" />
+	</f:view>
+</h:body>
+</html>

@@ -1,0 +1,557 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script src="../js/SigWeb.js" type="text/javascript"></script>
+	<script src="../js/digitalsignature.js"></script>
+	<script type="text/javascript">
+		//var baseUri = "http://localhost:47289/SigWeb/";
+		var baseUri = makeUri();
+	</script>
+</h:head>
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<h:form id="form1" target="_blank">
+			<p:confirmDialog id="succ1" widgetVar="succ1" width="400" height="17" resizable="false" style="background-color: white !important;" header="Warning Dailog" styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"
+				message="TRANSACTION LIMIT IS #{foreignCurrencyPurchaseEnquiryBean.limitationAmount}">
+			</p:confirmDialog>
+			<p:dialog id="limitValidation" widgetVar="limitValidation" width="400" height="80" resizable="false" style="background-color: white !important;" styleClass="warning" header="Warning Dailog" closable="false" showEffect="clip" hideEffect="clip">
+				<p:outputLabel value="Transaction limit exceed #{foreignCurrencyPurchaseEnquiryBean.neededPurchaseAmount}" style="text-align: center; font-size:15px !important;" />
+				<br />
+				<p:outputLabel value="#{msg['lbl.doyouwanttosave']}" style="text-align: center; font-size:15px !important;" />
+				<br />
+				<p:commandButton value="#{msg['lbl.yes']}" actionListener="#{foreignCurrencyPurchaseEnquiryBean.limitYes}" process="@this" oncomplete="limitValidation.hide()" style="margin-left: 150px !important;" />
+				<p:commandButton value="#{msg['lbl.no']}" actionListener="#{foreignCurrencyPurchaseEnquiryBean.limitNo}" process="@this" oncomplete="limitValidation.hide()" />
+			</p:dialog>
+			<p:dialog id="idNotF" widgetVar="idNotF" width="300" height="80" resizable="false" style="background-color: white !important;" styleClass="warning" header="Warning Dailog" closable="false" showEffect="clip" hideEffect="clip">
+				<p:outputLabel value="#{msg['lbl.iDNotFound']}" style="text-align: center; font-size:15px !important;" />
+				<br />
+				<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{foreignCurrencyPurchaseEnquiryBean.idNotFound}" process="@this" style="margin-left: 150px !important;" />
+			</p:dialog>
+			<p:dialog id="complete" widgetVar="complete" width="400" height="80" resizable="false" style="background-color: white !important;" styleClass="success" header="Success" closable="false" showEffect="clip" hideEffect="clip">
+				<p:outputLabel value="#{msg['lbl.printoption']}" style="text-align: center; font-size:15px !important;" />
+				<br />
+				<p:commandButton value="#{msg['lbl.print']}" actionListener="#{foreignCurrencyPurchaseEnquiryBean.reportexecute}" onclick="PF('complete').hide()" style="margin-left: 150px !important;">
+					<p:ajax event="click" update=":form1:mainPanel" />
+				</p:commandButton>
+			</p:dialog>
+			<p:dialog id="denaminationComplete" widgetVar="denaminationComplete" width="300" height="80" resizable="false" style="background-color: white !important;" styleClass="warning" header="Warning Dailog" closable="false" showEffect="clip" hideEffect="clip">
+				<p:outputLabel value="#{msg['lbl.denaminationValid']}" style="text-align: center; font-size:15px !important;" />
+				<br />
+				<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{foreignCurrencyPurchaseEnquiryBean.clickDenaminationOK}" process="@this" style="margin-left: 150px !important;" />
+			</p:dialog>
+			<p:confirmDialog id="showValid" widgetVar="showValid" width="600" height="17" resizable="false" style="background-color: white !important;" header="Warning Dailog" styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"
+				message="#{msg['lbl.totalamountcantsmallerthansaleamount']}  #{foreignCurrencyPurchaseEnquiryBean.saleAmount}">
+			</p:confirmDialog>
+			<p:dialog id="success" widgetVar="success" width="400" height="80" resizable="false" style="background-color: white !important;" styleClass="success" header="Success" closable="false" showEffect="clip" hideEffect="clip">
+				<p:outputLabel value="#{msg['lbl.dataissuccessfullysaved']}" style="text-align: center; font-size:15px !important;" />
+				<br />
+				<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{foreignCurrencyPurchaseEnquiryBean.clickOnOKSave}" process="@this" style="margin-left: 150px !important;" />
+			</p:dialog>
+			<p:confirmDialog id="idNotFound" widgetVar="idNotFound" width="400" height="17" resizable="false" style="background-color: white !important;" header="Warning Dailog" styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.iDNotFound']}">
+			</p:confirmDialog>
+			<p:confirmDialog id="dlgNegNotAllowed" widgetVar="dlgNegNotAllowed" width="700" height="17" resizable="false" style="background-color: white !important;" header="Warning Dailog" styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"
+				message="#{msg['lbl.noofnotescantbenegative']}">
+			</p:confirmDialog>
+			<p:confirmDialog id="dlgSaleCannotZero" widgetVar="dlgSaleCannotZero" width="700" height="17" resizable="false" style="background-color: white !important;" header="Warning Dailog" styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"
+				message="#{msg['lbl.totalsaleshouldbemorethanzero']}">
+			</p:confirmDialog>
+			<p:confirmDialog id="dlgRefundCashMessage" widgetVar="dlgRefundCashMessage" width="600" height="17" resizable="false" style="background-color: white !important;" header="Warning Dailog" styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"
+				message="#{msg['lbl.totallocalcashcantsmallerthantotalfundreceipt']}  #{foreignCurrencyPurchaseEnquiryBean.totalRefundCashRecipt}">
+			</p:confirmDialog>
+			<p:confirmDialog id="notapprove" widgetVar="notapproved" width="500" height="17" resizable="false" style="background-color: white !important;" header="Warning Dailog" styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"
+				message="Your Exceed Limit #{foreignCurrencyPurchaseEnquiryBean.neededPurchaseAmount}">
+			</p:confirmDialog>
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;"><ui:include src="#{facesBean.fxdeal_menu}"></ui:include></td>
+					<td class="rightColumn" valign="top"><h:panelGroup layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;" id="HideHandle" name="HideHandle" src="../images/toggle_plus.png" alt="" onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+								<p:confirmDialog id="invalidNoOFNotes" widgetVar="invalidNoOFNotes" width="700" height="17" resizable="false" style="background-color: white !important;" header="Warning Dailog" styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"
+									message="#{msg['lbl.enternoofnoteswithincurrentstock']} : #{foreignCurrencyPurchaseEnquiryBean.validNoOFQuantity} !!!!!">
+								</p:confirmDialog>
+								<p:confirmDialog id="noRecord" widgetVar="noRecord" header="#{msg['lbl.warningDailog']}" width="400" height="17" resizable="false"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"
+									message="#{msg['lbl.noRecordForTheseCombination']}">
+								</p:confirmDialog>
+								<h1>
+									<h:outputText value="#{msg['lbl.foreignCurrencyPurchase']} Enquiry" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<p:panel rendered="#{foreignCurrencyPurchaseEnquiryBean.fcPurchageLabel}">
+										<h2>
+											<h:outputText value="#{msg['lbl.foreignCurrencyPurchase']}" />
+										</h2>
+									</p:panel>
+									<p:panel rendered="#{foreignCurrencyPurchaseEnquiryBean.localcashpaidtoCustomerLabel}">
+										<h2>
+											<h:outputText value="#{msg['lbl.localCashPaidToCustomer']}" />
+										</h2>
+									</p:panel>
+										<p:panel id="firstheaderPanel" rendered="#{foreignCurrencyPurchaseEnquiryBean.booRenderFirstPanel}">
+											<p:panel styleClass="shadow">
+												<p:panel styleClass="panel_border">
+													<p:panel style="padding:50px 100px 50px 100px !important;">
+														<fieldset style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+															<legend style="font-size: 15px; font-weight: bold; color: #037712;" align="top"></legend>
+															<p:panel styleClass="left_col">
+																<p:panel styleClass="inner_left_col">
+																	<h:outputText value="#{msg['lbl.documentYear']} " />
+																	<h:outputText value="*" style="color:red !important;" />
+																</p:panel>
+																<p:panel styleClass="inner_right_col">
+																	<p:message id="msgDocumentYear" for="document" display="text" />
+																	<p:selectOneMenu id="document" value="#{foreignCurrencyPurchaseEnquiryBean.documentFinanceYear}" filter="true" filterMatchMode="startsWith" required="true" requiredMessage="Please Select Document Year">
+																		<f:selectItem itemLabel="#{msg['lbl.selectDocumentYear']}" itemValue="" />
+																		<f:selectItems value="#{foreignCurrencyPurchaseEnquiryBean.userFinancialYearList}" var="c" itemLabel="#{c.financialYear}" itemValue="#{c.financialYear}" />
+																		<p:ajax event="change" update="msgDocumentYear" onstart="process.show();" onsuccess="process.hide();"/>
+																	</p:selectOneMenu>
+																</p:panel>
+															</p:panel>
+															<p:panel styleClass="right_col">
+																<p:panel styleClass="inner_left_col">
+																	<h:outputText value="#{msg['lbl.receiptNo']}" />
+																	<h:outputText value="*" style="color:red !important;" />
+																</p:panel>
+																<p:panel styleClass="inner_right_col">
+																	<p:message id="msgDocumentNo" for="documentNo" display="text" />
+																	<p:inputText value="#{foreignCurrencyPurchaseEnquiryBean.documentNo}" id="documentNo" required="true" requiredMessage="Please Enter Document Number">
+																		<p:ajax event="blur" update="msgDocumentNo" onstart="process.show();" onsuccess="process.hide();"/>
+																	</p:inputText>
+																</p:panel>
+															</p:panel>
+															<h:panelGroup layout="block" class="clearfix" />
+															<p:spacer height="20px" />
+															<h:panelGroup layout="block" styleClass="shadow_button">
+																<p:commandButton value="#{msg['lbl.enquiry']}" action="#{foreignCurrencyPurchaseEnquiryBean.fetchData}" update="mainPanel" type="submit" onstart="process.show();" onsuccess="process.hide();" />
+																<p:commandButton value="#{msg['lbl.clear']}" action="#{foreignCurrencyPurchaseEnquiryBean.clearInputData}" update="mainPanel" process="@this" onstart="process.show();" onsuccess="process.hide();" />
+																<!-- <p:commandButton value="#{msg['lbl.exit']}" action="#{foreignCurrencyPurchaseEnquiryBean.clickOnExit}" process="@this" /> -->
+															</h:panelGroup>
+														</fieldset>
+													</p:panel>
+										
+										
+										
+										
+										<p:spacer height="50px" />
+										
+										<p:panel  >
+										
+										
+										
+										<p:panel id="secondPanel"
+											rendered="#{foreignCurrencyPurchaseEnquiryBean.booRenderSecondPanel}">
+											
+											<h2>
+											<h:outputText value="#{msg['lbl.foreignCurrencyPurchase']} Enquiry Details" />
+										</h2>
+											
+											<p:panel styleClass="left_col">
+
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.receiptNo']}*"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<p:column
+																style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText id="financeYear"
+																	value="#{foreignCurrencyPurchaseEnquiryBean.documentFinanceYear}"
+																	required="true" requiredMessage="Enter Financial Year"
+																	readonly="true">
+																	<p:ajax event="blur" update="msgfinanceYear"  />
+																	<p:message for="financeYear" display="text"
+																		id="msgfinanceYear" />
+																</p:inputText>
+															</p:column>
+															<p:column
+																style="width:70%; padding:0px 5px 0px 10px !important;">
+																<p:inputText id="documentSerialId"
+																	value="#{foreignCurrencyPurchaseEnquiryBean.documentSerialId}"
+																	required="true"
+																	requiredMessage="Enter Document Serial ID"
+																	readonly="true">
+																	<p:ajax event="blur" update="msgdocumentSerialId" />
+																	<p:message for="documentSerialId" display="text"
+																		id="msgdocumentSerialId" />
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.date']}*"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="currentDate" value="#{currentDate}"
+														readonly="true" size="8" required="true"
+														requiredMessage="Enter Current Date">
+														<p:ajax event="blur" update="msgcurrentDate" />
+														<p:message for="currentDate" display="text"
+															id="msgcurrentDate" />
+														<f:convertDateTime pattern="dd-MM-yyyy" type="date" />
+													</p:inputText>
+												</p:panel>
+
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.location']}*"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText
+														value="#{foreignCurrencyPurchaseEnquiryBean.location}"
+														 readonly="true" />
+												</p:panel>
+
+
+											</p:panel>
+
+
+											<p:panel styleClass="left_col">
+
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.customerId']}*"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText
+														value="#{foreignCurrencyPurchaseEnquiryBean.customerId}"
+														 readonly="true" />
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.customerName']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="name"
+														value="#{foreignCurrencyPurchaseEnquiryBean.name}"
+														readonly="true">
+														<p:tooltip for="name" value="#{msg['lbl.customername']}" />
+													</p:inputText>
+												</p:panel>
+
+											</p:panel>
+
+
+											<p:panel styleClass="left_col">
+
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.telephone']}*"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="telephone"
+														value="#{foreignCurrencyPurchaseEnquiryBean.mobile}"
+														readonly="true" />
+												</p:panel>
+
+											</p:panel>
+
+										</p:panel>
+										
+										
+										
+										
+										
+										</p:panel>
+										
+										
+										<p:panel id="purchasePanel" rendered="#{foreignCurrencyPurchaseEnquiryBean.booPurchasePanel}" style="background-color:none !important; padding:0px !important;">
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.purchaseCurrency']}*"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="msgpurchasecurrency" value="#{foreignCurrencyPurchaseEnquiryBean.foreignCurrencyName}" readonly="true" tabindex="3">
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.saleCurrency']}*"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{msg['lbl.kuwaitiDinar']}" readonly="true" />
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.neededPurchaseAmount']}*"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="neededPurchaseAmount" value="#{foreignCurrencyPurchaseEnquiryBean.totalPurchaseAmount}" readonly="true" >
+														<p:ajax event="blur" listener="#{foreignCurrencyPurchaseEnquiryBean.checkLimit}" update="notapprove" process="@this" />
+														<p:message for="neededPurchaseAmount" display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="30px;" />
+											<p:panel id="pnlDataTable" style="border:none !important; padding-right:5px; padding-bottom:15px; margin:5px; background-color:none !important; " >
+												<p:dataTable var="d" styleClass="mydatatableclass" value="#{foreignCurrencyPurchaseEnquiryBean.denominationBeanList}" rowIndexVar="rowIndex" id="denominationTable" editMode="cell" editable="true" emptyMessage="#{msg['lbl.norecordfound']}">
+													<p:column headerText="#{msg['lbl.fclocalpurchaseserialno']}" style="width:30px;">
+														<h:outputText value="#{rowIndex+1}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.fclocalpurchasedenominationname']}" sortBy="#{d.denominationAmount}">
+														<h:outputText id="denominationDesc" value="#{d.denominationDesc} " />
+														<!-- <h:outputText id="denominationDesc" value="#{d.denominationDesc}" /> -->
+													</p:column>
+													<p:column headerText="#{msg['lbl.fclocalpurchasenoofnotes']}">
+														<p:cellEditor>
+															<f:facet name="output">
+																<h:outputText value="#{d.noOfNotes}" />
+															</f:facet>
+															<f:facet name="input">
+																<p:inputText id="noOfNotes" value="#{d.noOfNotes}" style="text-align:center !important;" readonly="true">
+																</p:inputText>
+															</f:facet>
+														</p:cellEditor>
+													</p:column>
+													<p:column headerText="#{msg['lbl.purchaseAmount']}">
+														<h:outputText id="purchaseAmount" value="#{d.purchaseAmount}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.exchangeRate']}">
+														<p:cellEditor>
+															<f:facet name="output">
+																<h:outputText value="#{d.exchangeRate}" />
+															</f:facet>
+															<f:facet name="input">
+																<p:inputText id="exchangeRate" value="#{d.exchangeRate}" style="text-align:center !important;" readonly="true">
+																</p:inputText>
+															</f:facet>
+														</p:cellEditor>
+													</p:column>
+													<p:column headerText="#{msg['lbl.saleAmount']}">
+														<h:outputText value="#{d.salesAmount}" />
+													</p:column>
+												</p:dataTable>
+												<p:spacer height="10px" />
+												<p:panelGrid style="width:100%;" id="pnlgdtotpuramt">
+													<p:row>
+														<p:column style="width:46%; text-align:right;">
+															<h:outputText style="font-weight:bold;" value="#{msg['lbl.totalPurchaseAmount']}"></h:outputText>
+														</p:column>
+														<p:column style="width:18%;">
+															<p:inputText id="totalPurchaseAmount" value="#{foreignCurrencyPurchaseEnquiryBean.totalPurchaseAmount}" readonly="true" />
+														</p:column>
+														<p:column style="width:18%; text-align:right;">
+															<h:outputText style="font-weight:bold;" value="#{msg['lbl.totalSaleAmount']}"></h:outputText>
+														</p:column>
+														<p:column style="width:18%;">
+															<p:inputText id="totalSellAmount" value="#{foreignCurrencyPurchaseEnquiryBean.saleAmount}" readonly="true" />
+														</p:column>
+													</p:row>
+												</p:panelGrid>
+											</p:panel>
+											<h2>
+												<h:outputText value="#{msg['lbl.foreignCurrencyPurchase']}"></h:outputText>
+											</h2>
+											<p:panel styleClass="left_col" id="pnlForeignCurrencyName">
+												<p:panelGrid style="width:100%;">
+													<p:row>
+														<p:column style="width:30%;">
+															<h:outputText value="#{msg['lbl.exchangeRate']}*"></h:outputText>
+														</p:column>
+														<p:column style="width:20%; padding-left:15px !important;">
+															<p:inputText id="foreignCurrencyName" value="#{foreignCurrencyPurchaseEnquiryBean.foreignCurrencyName}"  readonly="true"/>
+														</p:column>
+														<p:column style="width:5%;">
+															<h:outputText value="@"></h:outputText>
+														</p:column>
+														<p:column style="width:50%; padding-top:5px !important; padding-right:18px !important;">
+															<p:panel id="avgRateColumn" style="padding:0px !important; margin:0px !important;">
+																<p:inputText id="avgExchageRate" value="#{foreignCurrencyPurchaseEnquiryBean.avgExchageRate}" readonly="true" />
+															</p:panel>
+														</p:column>
+													</p:row>
+												</p:panelGrid>
+											</p:panel>
+											<div class="clearfix"></div>
+											<p:panel styleClass="left_col">
+												<p:panelGrid style="width:100%;">
+													<p:row>
+														<p:column style="width:30%;">
+															<h:outputText value="#{msg['lbl.remarks']}"></h:outputText>
+														</p:column>
+														<p:column style="width:70%;">
+															<p:inputText id="remksId" value="#{foreignCurrencyPurchaseEnquiryBean.remarks}" readonly="true" />
+														</p:column>
+													</p:row>
+												</p:panelGrid>
+											</p:panel>
+											<div class="clearfix"></div>
+											<p:panel styleClass="left_col">
+												<p:panelGrid style="width:100%;">
+													<p:row>
+														<p:column style="width:30%;">
+															<h:outputText value="#{msg['lbl.sourceOfFund']}*"></h:outputText>
+														</p:column>
+														<p:column style="width:70%;">
+															<p:inputText id="sourceOfIncomesId" value="#{foreignCurrencyPurchaseEnquiryBean.sourceOfIncomes}" readonly="true" />
+														</p:column>
+													</p:row>
+												</p:panelGrid>
+											</p:panel>
+											<div class="clearfix"></div>
+											<p:panel styleClass="left_col">
+												<p:panelGrid style="width:100%;">
+													<p:row>
+														<p:column style="width:30%;">
+															<h:outputText value="#{msg['lbl.purpose']}*"></h:outputText>
+														</p:column>
+														<p:column style="width:70%;">
+															<p:inputText id="purposeIIId" value="#{foreignCurrencyPurchaseEnquiryBean.purposeOfTransactions}" readonly="true" />
+														</p:column>
+													</p:row>
+												</p:panelGrid>
+											</p:panel>
+											<div class="clearfix"></div>
+											
+											<p:panel rendered="#{foreignCurrencyPurchaseEnquiryBean.booEnableCollectionPanel}">
+										<h2>
+											<h:outputText value="#{msg['lbl.foreignCurrencyPurchase']} Collection Details" />
+										</h2>
+									
+											
+											<p:panel id="pnlCollectionDataTable" style="border:none !important; padding-right:5px; padding-bottom:15px; margin:5px; background-color:none !important; " >
+												<p:dataTable var="d" styleClass="mydatatableclass" value="#{foreignCurrencyPurchaseEnquiryBean.denominationCollectionBeanList}" rowIndexVar="rowIndex" id="denominationTable1" editMode="cell" editable="true" emptyMessage="#{msg['lbl.norecordfound']}">
+													<p:column headerText="#{msg['lbl.fclocalpurchaseserialno']}" style="width:30px;">
+														<h:outputText value="#{rowIndex+1}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.fclocalpurchasedenominationname']}" sortBy="#{d.denominationAmount}">
+														<h:outputText id="denominationDesc1" value="#{d.denominationDesc} " />
+														<!-- <h:outputText id="denominationDesc" value="#{d.denominationDesc}" /> -->
+													</p:column>
+													<p:column headerText="#{msg['lbl.fclocalpurchasenoofnotes']}">
+														<p:cellEditor>
+															<f:facet name="output">
+																<h:outputText value="#{d.noOfNotes}" />
+															</f:facet>
+															<f:facet name="input">
+																<p:inputText id="noOfNotes1" value="#{d.noOfNotes}" style="text-align:center !important;" readonly="true">
+																</p:inputText>
+															</f:facet>
+														</p:cellEditor>
+													</p:column>
+													<p:column headerText="#{msg['lbl.purchaseAmount']}">
+														<h:outputText id="purchaseAmount1" value="#{d.purchaseAmount}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.exchangeRate']}">
+														<p:cellEditor>
+															<f:facet name="output">
+																<h:outputText value="#{d.exchangeRate}" />
+															</f:facet>
+															<f:facet name="input">
+																<p:inputText id="exchangeRate1" value="#{d.exchangeRate}" style="text-align:center !important;" readonly="true">
+																</p:inputText>
+															</f:facet>
+														</p:cellEditor>
+													</p:column>
+													<p:column headerText="#{msg['lbl.saleAmount']}">
+														<h:outputText value="#{d.salesAmount}" />
+													</p:column>
+												</p:dataTable>
+											</p:panel>
+											
+											</p:panel>
+											
+												<p:panel rendered="#{foreignCurrencyPurchaseEnquiryBean.booEnableRefundPanel}">
+										<h2>
+											<h:outputText value="#{msg['lbl.foreignCurrencyPurchase']} Refund Details" />
+										</h2>
+									
+											
+											<p:panel id="pnlRefundDataTable" style="border:none !important; padding-right:5px; padding-bottom:25px; margin:5px; background-color:none !important; " >
+												<p:dataTable var="d" styleClass="mydatatableclass" value="#{foreignCurrencyPurchaseEnquiryBean.denominationRefundBeanList}" rowIndexVar="rowIndex" id="denominationTable2" editMode="cell" editable="true" emptyMessage="#{msg['lbl.norecordfound']}">
+													<p:column headerText="#{msg['lbl.fclocalpurchaseserialno']}" style="width:30px;">
+														<h:outputText value="#{rowIndex+2}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.fclocalpurchasedenominationname']}" sortBy="#{d.denominationAmount}">
+														<h:outputText id="denominationDesc2" value="#{d.denominationDesc} " />
+														<!-- <h:outputText id="denominationDesc" value="#{d.denominationDesc}" /> -->
+													</p:column>
+													<p:column headerText="#{msg['lbl.fclocalpurchasenoofnotes']}">
+														<p:cellEditor>
+															<f:facet name="output">
+																<h:outputText value="#{d.noOfNotes}" />
+															</f:facet>
+															<f:facet name="input">
+																<p:inputText id="noOfNotes2" value="#{d.noOfNotes}" style="text-align:center !important;" readonly="true">
+																</p:inputText>
+															</f:facet>
+														</p:cellEditor>
+													</p:column>
+													<p:column headerText="#{msg['lbl.purchaseAmount']}">
+														<h:outputText id="purchaseAmount2" value="#{d.purchaseAmount}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.exchangeRate']}">
+														<p:cellEditor>
+															<f:facet name="output">
+																<h:outputText value="#{d.exchangeRate}" />
+															</f:facet>
+															<f:facet name="input">
+																<p:inputText id="exchangeRate2" value="#{d.exchangeRate}" style="text-align:center !important;" readonly="true">
+																</p:inputText>
+															</f:facet>
+														</p:cellEditor>
+													</p:column>
+													<p:column headerText="#{msg['lbl.saleAmount']}">
+														<h:outputText value="#{d.salesAmount}" />
+													</p:column>
+												</p:dataTable>
+											</p:panel>
+											
+											</p:panel>
+											
+											
+											
+											
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="Collection" action="#{foreignCurrencyPurchaseEnquiryBean.showCollectionDetails}" update="mainPanel" />
+												<p:commandButton value="Refund" action="#{foreignCurrencyPurchaseEnquiryBean.showRefundDetails}" update="mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+												<p:commandButton value="Exit" action="#{foreignCurrencyPurchaseEnquiryBean.clickOnExit}" update="mainPanel" onstart="process.show();" onsuccess="process.hide();" />
+												<h:panelGroup layout="block" class="clearfix" />
+											</h:panelGroup>
+											<h:panelGroup layout="block" class="clearfix" />
+										</p:panel>
+										</p:panel>
+										</p:panel>
+											</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:dialog modal="true" showHeader="true" header="#{msg['lbl.bco.plswait']}"  widgetVar="process"  id="process"   width="300" height="50" resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+							    	</p:dialog>
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+							</h:panelGroup>
+							<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+						</h:panelGroup></td>
+				</tr>
+			</table>
+		</h:form>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

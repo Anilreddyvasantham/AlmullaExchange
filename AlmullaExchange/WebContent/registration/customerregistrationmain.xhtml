@@ -1,0 +1,649 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script type="text/javascript">
+		 history.pushState(null, null, 'customerregistrationmain.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'customerregistrationmain.xhtml');
+		    });
+	</script>
+
+	<script type="text/javascript">
+		$(document).on("keypress", ".dropdown", function(event) {
+			if (event.keyCode == 32) {
+				$('.ui-selectonemenu-trigger', this).click();
+			}
+		});
+	</script>
+
+
+
+	<link href="../css/new_style.css" rel="stylesheet" type="text/css" />
+
+	<style type="text/css">
+.ui-dialog.dialogsuccess .ui-widget-content {
+	border: 3px solid #00a53e !important;
+	font-weight: bold;
+	padding: 0px 0px 0px 30px !important;
+}
+
+.ui-dialog.dialogsuccess .ui-widget-content label {
+	margin-right: 0px !important;
+}
+
+label {
+	margin-right: 26px !important;
+}
+</style>
+
+</h:head>
+
+<h:body>
+
+	<f:view>
+
+
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+					<!-- <ui:include
+						src="../common/common_menu.xhtml"></ui:include> --> <ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include>
+				</td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+
+
+						<h:panelGroup layout="block" class="main_div3">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:panelGroup layout="block" class="heading3">
+								<h:outputText value="#{msg['lbl.customerreg']}" />
+								<!-- 	<p:ajaxStatus id="usernamestatuspanel" style="float:right;">
+										<f:facet name="start">
+											<h:graphicImage value="../images/progress.GIF" />
+										</f:facet>
+										<f:facet name="start">
+											<h:graphicImage value="" />
+										</f:facet>
+									</p:ajaxStatus> -->
+							</h:panelGroup>
+
+							<h:panelGroup layout="block" class="table_bg">
+								<h:form id="form1" enctype="multipart/form-data"
+									style="padding:0!important; background:none !important;"
+									onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'text') return false;}">
+
+									<p:dialog id="validToken" widgetVar="validToken" width="400"
+										height="140" showHeader="true" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+
+										<p:outputLabel value="#{msg['lbl.validToken']}" />
+										<br />
+										<div class="clearfix"></div>
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<h:commandButton value="#{msg['lbl.print']}"
+												actionListener="#{customerPersonalInfo.reportexecute}"
+												immediate="true" style="margin-center:10px;" process="@this" />&nbsp;&nbsp;
+            							<h:commandButton value="#{msg['lbl.exit']}"
+												actionListener="#{customerPersonalInfo.exit}"
+												immediate="true" style="margin-center:10px;" process="@this" />
+										</h:panelGroup>
+									</p:dialog>
+									<p:dialog id="invalidToken" widgetVar="invalidToken"
+										width="400" height="140" showHeader="true" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel value="#{msg['lbl.invalidToken']}" />
+										<br />
+									</p:dialog>
+
+									<p:confirmDialog id="multiplerecord"
+										header="#{msg['lbl.warning']}" widgetVar="multiplerecord"
+										width="700" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{msg['lbl.mobiledupmsg']}">
+										<p:commandButton value="#{msg['lbl.ok']}"
+											oncomplete="multiplerecord.hide()"
+											actionListener="#{customerPersonalInfo.resetMobileFetch}"
+											update="mainPanel" process="@this" />
+									</p:confirmDialog>
+
+									<p:confirmDialog id="customeralreadydeactive"
+										header="#{msg['lbl.warning']}"
+										widgetVar="customeralreadydeactive" width="700"
+										resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{msg['lbl.customeralreadydeactivate']}">
+										<p:commandButton value="#{msg['lbl.ok']}"
+											onclick="PF('customeralreadydeactive').hide();"
+											process="@this" />
+									</p:confirmDialog>
+
+									<p:panel id="mainPanel" styleClass="shadow1"
+										style="background-color:#cec !important;">
+
+										<p:confirmDialog id="idexpiredcard"
+											header="#{msg['lbl.warning']}" widgetVar="idexpiredcard"
+											width="700" resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip"
+											message="#{customerPersonalInfo.civilId} #{msg['lbl.idHasBeenExpiredOn']} #{customerPersonalInfo.expirydate} #{msg['lbl.ornotproperformat']}">
+											<p:commandButton value="#{msg['lbl.ok']}"
+												onclick="idexpiredcard.hide()" />
+										</p:confirmDialog>
+
+										<p:confirmDialog id="dobcheck" header="#{msg['lbl.warning']}"
+											widgetVar="dobcheck" width="700" resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip"
+											message="#{msg['lbl.theidnumber']} #{customerPersonalInfo.civilId} #{msg['lbl.dateofbirthis']} #{customerPersonalInfo.birthdate} #{msg['lbl.lessthanyears']}">
+											<p:commandButton value="#{msg['lbl.ok']}"
+												oncomplete="dobcheck.hide()" update="mainPanel"
+												immediate="true" />
+										</p:confirmDialog>
+
+										<p:confirmDialog id="error" widgetVar="error"
+											resizable="false" style="background-color: white !important;"
+											header="#{msg['lbl.exceptionMessage']}" styleClass="warning"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true" message="#{msg['lbl.multipleCivilidExist']}">
+										</p:confirmDialog>
+										<p:dialog modal="true" showHeader="true"
+											header="#{msg['lbl.pleasewait']}" widgetVar="process"
+											id="process" width="300" height="50" resizable="false"
+											draggable="false" closable="false"
+											style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+											<div style="text-align: center;">
+												<p:graphicImage value="../images/preloader.gif" />
+											</div>
+										</p:dialog>
+
+										<p:dialog id="dlgAlready" widgetVar="dlgAlready" width="480"
+											showHeader="false" resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true" modal="true">
+
+											<p:outputLabel value="#{msg['lbl.customernotverified']} " />
+											<br />
+
+											<p:commandButton value="#{msg['lbl.gotoverify']}"
+												actionListener="#{customerPersonalInfo.clickOnOK}"
+												process="@this" update="mainPanel" />
+											<p:spacer width="10px" />
+											<p:commandButton value="#{msg['lbl.gotoregistration']}"
+												actionListener="#{customerPersonalInfo.clickRegistration}"
+												process="@this" update="mainPanel" />
+										</p:dialog>
+
+
+
+										<p:dialog id="dlgSmartcard" widgetVar="dlgSmartcard"
+											width="480" showHeader="false" resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true" modal="true">
+
+											<p:outputLabel value="#{msg['lbl.registerthroughsmartcard']}" />
+											<br />
+
+											<p:commandButton value="#{msg['lbl.ok']}"
+												actionListener="#{customerPersonalInfo.clickOnokManual}"
+												process="@this" />
+										</p:dialog>
+
+										<p:dialog id="dlgverified" widgetVar="dlgverified" width="480"
+											showHeader="false" resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true" modal="true">
+
+											<p:outputLabel value="#{msg['lbl.updatebutnotverify']}" />
+											<br />
+
+											<p:commandButton value="#{msg['lbl.ok']}"
+												actionListener="#{customerPersonalInfo.clickOnokVerified}"
+												process="@this" />
+										</p:dialog>
+
+
+										<p:dialog id="dldInserCard" widgetVar="dldInserCard"
+											width="200" showHeader="false" resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true" modal="true">
+
+											<p:outputLabel value="#{msg['lbl.insertsmartcard']}" />
+											<br />
+
+											<p:commandButton value="#{msg['lbl.ok']}"
+												oncomplete="dldInserCard.hide()" process="@this" />
+										</p:dialog>
+
+										<p:dialog id="notMatched" widgetVar="notMatched" width="500"
+											height="40" resizable="false" showEffect="clip"
+											hideEffect="clip" modal="true"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+											<p:outputLabel
+												value="#{msg['lbl.token']}: #{customerPersonalInfo.tokenNumber} #{msg['lbl.notmached']}: #{customerPersonalInfo.idNumber}" />
+										</p:dialog>
+
+
+										<p:dialog id="exceptionfetching" widgetVar="exceptionfetching"
+											width="400" height="50" resizable="false" showEffect="clip"
+											hideEffect="clip" modal="true" header="#{msg['lbl.warning']}"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+											<p:outputLabel
+												value="#{msg['lbl.errorwhilereadingsmartcarddetails']}." />
+											<div class="clearfix"></div>
+
+										</p:dialog>
+
+										<p:confirmDialog id="duplicate" widgetVar="duplicate"
+											resizable="false" style="background-color: white !important;"
+											header="#{msg['lbl.warning']}" styleClass="warning"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true" message="#{msg['lbl.duplicateContactList']}">
+										</p:confirmDialog>
+
+
+
+										<p:confirmDialog id="migrationexception"
+											header="#{msg['lbl.warning']}" widgetVar="migrationexception"
+											width="900" resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip"
+											message="#{msg['lbl.customerhasregisteredsucessfullywithrefno']}: #{customerPersonalInfo.updateCustomerRefNo}. #{msg['lbl.pleaserecallthisrefnoonemos']}">
+											<p:commandButton value="#{msg['lbl.ok']}"
+												oncomplete="migrationexception.hide()" update="mainPanel"
+												immediate="true" />
+										</p:confirmDialog>
+										<p:confirmDialog id="printCustomerReference"
+											header="#{msg['lbl.informationmessage']}"
+											widgetVar="printCustomerReference" width="700"
+											showHeader="false" resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip"
+											message="#{msg['lbl.theidnumber']} #{customerPersonalInfo.idNumber} #{msg['lbl.isalreadyregisteredinemosapplicationwithrefno']} : #{customerPersonalInfo.custRefNo}">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="sqlexception" header="Exception Message"
+											widgetVar="sqlexception" width="700" showHeader="false"
+											resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip"
+											message="#{customerPersonalInfo.errorMsg}">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="actCustCheck"
+											header="#{msg['lbl.warning']}" widgetVar="actCustCheck"
+											width="700" resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip"
+											message="#{msg['lbl.actCustomerMsg']}">
+											<p:outputLabel value="" />
+											<div class="clearfix"></div>
+											<p:commandButton value="#{msg['lbl.yes']}"
+												actionListener="#{customerPersonalInfo.needModification}"
+												update="mainPanel" />
+											<p:commandButton value="#{msg['lbl.no']}"
+												actionListener="#{customerPersonalInfo.resetValues}"
+												update="mainPanel" />
+										</p:confirmDialog>
+
+
+										<p:panel id="iddetails"
+											style="padding:10px!important; background:none !important; "
+											rendered="#{customerPersonalInfo.booIdDetail}">
+
+											<p:panel styleClass="panel_border3">
+												<h4
+													style="margin-top: 25px; text-align: center; font-size: 22px; color: #fff;">
+													<h:outputText value="#{msg['lbl.modeofoperation']}"></h:outputText>
+												</h4>
+												<div class="clearfix" />
+											</p:panel>
+											<p:panel styleClass="shadow1"
+												style="background-color:#cec !important;">
+												<p:panel styleClass="panel_border2">
+													<h:panelGroup layout="block" styleClass="content_level1">
+														<p:panel styleClass="left_col"
+															style="width:55% !important;">
+															<p:panel styleClass="inner_left_col">
+																<!-- 	<h:outputText id="lbl_validselect" /> -->
+																<h:outputText value="#{msg['lbl.modeofoperation']} *" />
+															</p:panel>
+															<p:panel styleClass="inner_right_col"
+																style="padding-top:10px;">
+																<p:message for="validselect" display="text" />
+
+																<h:panelGrid columns="2" width="100%" cellpadding="25">
+																	<h:selectOneRadio id="validselect"
+																		value="#{customerPersonalInfo.selectType}"
+																		tabindex="1" label="Method Type" required="true"
+																		requiredMessage="#{msg['lbl.modevalidation']}">
+																		<f:selectItem itemValue="28"
+																			itemLabel="#{msg['lbl.manual']}" />
+																		<f:selectItem itemValue="29"
+																			itemLabel="#{msg['lbl.smartcard']}" id="smart1" />
+																		<p:ajax event="change"
+																			listener="#{customerPersonalInfo.appearCarddetail}"
+																			onstart="statusDialog.show();"
+																			onsuccess="statusDialog.hide();" update="mainPanel" />
+
+
+
+																	</h:selectOneRadio>
+
+
+																</h:panelGrid>
+
+																<!-- 	<p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();" widgetVar="smart" id="ajxcall"/> -->
+
+																<!-- <p:dialog modal="true" widgetVar="statusDialog"  id="statusDialog"   
+        draggable="false" closable="false">  
+    <p:graphicImage value="../images/loaderImage.gif" />  
+</p:dialog> -->
+
+																<p:dialog modal="true" showHeader="true"
+																	header="#{msg['lbl.pleasewait']}"
+																	widgetVar="statusDialog" id="statusDialog" width="300"
+																	height="50" resizable="false" draggable="false"
+																	closable="false"
+																	style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+																	<div style="text-align: center;">
+																		<p:graphicImage value="../images/preloader.gif" />
+																	</div>
+																</p:dialog>
+
+
+
+
+
+
+
+																<!-- 
+															<p:dialog id="selectedRowValuesDlg"
+											widgetVar="selectedRowValuesDlg" 
+											width="480" showHeader="false" resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip" closeOnEscape="false"
+											closable="true" modal="true" dynamic="true">
+											 <h:graphicImage library="images" value="../images/loaderImage.gif"
+                    style="margin-right: 12px; vertical-align: middle;"/>  
+											
+											<h:outputText value="Please Wait"
+												 style="font-weight:bold"
+												align="center" />
+										</p:dialog> -->
+
+
+
+															</p:panel>
+														</p:panel>
+
+
+														<p:panel styleClass="right_col" id="smart"
+															rendered="#{customerPersonalInfo.boosmartCardAppear}">
+															<p:panel styleClass="inner_left_col">
+																<p:graphicImage style="margin-top: -18px !important;"
+																	url="../images/reader_icon.jpg" />
+															</p:panel>
+															<p:panel styleClass="inner_right_col">
+															</p:panel>
+														</p:panel>
+														<div class="clearfix"></div>
+
+													</h:panelGroup>
+												</p:panel>
+
+
+
+												<p:panel id="idPanel"
+													style="padding:0px !important; border:none !important;"
+													rendered="#{customerPersonalInfo.booManual}">
+
+
+
+
+													<p:panel id="idpanel1" styleClass="panel_border2"
+														rendered="#{customerPersonalInfo.booIdType}">
+
+														<h:panelGroup layout="block" styleClass="content_level1">
+															<p:panel styleClass="left_col">
+																<p:panel styleClass="inner_left_col">
+																	<h:outputText id="lbl_idtype_0" />
+																</p:panel>
+																<p:panel styleClass="inner_right_col">
+																	<p:message for="idtype_0" display="text" />
+																	<p:selectOneMenu id="idtype_0"
+																		value="#{customerPersonalInfo.idType}"
+																		styleClass="dropdown" tabindex="2"
+																		filterMatchMode="contains" filter="true"
+																		style="width:180px;" label="Identity Type">
+																		<f:selectItem itemLabel="#{msg['lbl.selectIdType']}"
+																			itemValue="" />
+																		<f:selectItems
+																			value="#{customerPersonalInfo.idTypeValues.entrySet()}"
+																			var="c" itemLabel="#{c.value}" itemValue="#{c.key}" />
+																		<p:ajax event="change"
+																			listener="#{customerPersonalInfo.getIDTypeValue}"
+																			update="mainPanel" />
+																	</p:selectOneMenu>
+																</p:panel>
+															</p:panel>
+															<p:panel styleClass="right_col">
+																<p:panel styleClass="inner_left_col">
+																	<h:outputText id="lbl_idnumber_0" />
+																</p:panel>
+																<p:panel styleClass="inner_right_col">
+																	<p:outputLabel value="#{msg['lbl.validwrongcivil']}"
+																		rendered="#{customerPersonalInfo.booIdTypeCheck}"
+																		style="color: red !important; font-weight:bold;" />
+																	<p:inputText value="#{customerPersonalInfo.idNumber}"
+																		tabindex="3" id="idnumber_0" label="Id Number">
+																		<p:message for="idnumber_0" display="text" />
+																		<p:ajax event="blur"
+																			listener="#{customerPersonalInfo.onblurId}"
+																			update="mainPanel" />
+																	</p:inputText>
+																</p:panel>
+															</p:panel>
+															<div class="clearfix"></div>
+															<p:panel styleClass="left_col" id="remPl"
+																rendered="#{customerPersonalInfo.boolRemarksforStoM}">
+																<p:panel styleClass="inner_left_col">
+																	<h:outputText id="rem"
+																		value="#{msg['lbl.remarks']} #{customerPersonalInfo.boolRemarksforStoM==true?'*':''}" />
+																</p:panel>
+																<p:panel styleClass="inner_right_col">
+																	<p:inputText id="remarks" tabindex="10"
+																		value="#{customerPersonalInfo.remarks}"
+																		required="#{customerPersonalInfo.boolRemarksforStoM}"
+																		requiredMessage="#{msg['lbl.scRem']}" maxlength="100"
+																		onkeyup="this.value=this.value.toUpperCase()">
+																		<!--  <p:ajax update="remarks,remarksMsg" event="blur" /> -->
+																		<p:message id="remarksMsg" for="remarks"
+																			display="text" />
+																	</p:inputText>
+																	<p:outputLabel value="#{msg['lbl.scRem']}"
+																		style="color:red !important;width:500px !important;"
+																		rendered="#{customerPersonalInfo.boolRemarksforStoM}"></p:outputLabel>
+																</p:panel>
+															</p:panel>
+														</h:panelGroup>
+
+
+													</p:panel>
+
+													<div class="clearfix"></div>
+													<p:panel styleClass="panel_border2">
+														<h:panelGroup layout="block" styleClass="content_level1">
+															<p:panel styleClass="right_col"
+																style="width:15% !important;float:left;">
+
+																<p:selectBooleanCheckbox
+																	value="#{customerPersonalInfo.booCheckMobile}" tabindex="4">
+																	<p:ajax event="change" update="mainPanel"
+																		listener="#{customerPersonalInfo.enableMobileNo}" />
+																</p:selectBooleanCheckbox>
+															 &nbsp; <h:outputText value="#{msg['lbl.mobile']}" />
+
+															</p:panel>
+															<p:panel styleClass="right_col" id="mobPanel4"
+																style="width:15% !important;"
+																rendered="#{customerPersonalInfo.booMobileHide}">
+																<p:outputLabel
+																	value="#{msg['lbl.mobilenodoesnotexistpleaseselectidtypeandidnumber']}"
+																	rendered="#{customerPersonalInfo.msgMobileNoFetch}"
+																	style="color: red !important; font-weight:bold;!important;" />
+
+																<p:inputText
+																	value="#{customerPersonalInfo.mobileNoFetch}"
+																	id="mobilefetch" required="true"
+																	requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.mobile']}">
+																	<p:message for="mobilefetch" display="text" />
+																	<p:ajax update="mobilefetch" />
+
+																</p:inputText>
+															</p:panel>
+
+														</h:panelGroup>
+													</p:panel>
+													<div class="clearfix"></div>
+
+
+													<!-- 	<p:panel styleClass="right_col" rendered="#{customerPersonalInfo.renderverifiedTokenNumber}">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText id="Verified Token Number" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															
+															<p:inputText value="#{customerPersonalInfo.verifiedTokenNumber}"
+																label="Id Number">
+																
+																
+															</p:inputText>
+
+														</p:panel>
+													</p:panel>
+ -->
+
+												</p:panel>
+												<div class="clearfix"></div>
+											</p:panel>
+
+											<p:panel id="bankApproval" styleClass="panel_border5">
+
+												<h:panelGroup layout="block" styleClass="shadow_button1"
+													rendered="#{customerPersonalInfo.booManual}">
+
+													<p:commandButton value="#{msg['lbl.go']}" tabindex="6"
+														styleClass="btn-success" onstart="process.show();"
+														onsuccess="process.hide();" style="margin-right:10px;"
+														action="#{customerPersonalInfo.checkingIdWithDBForProcessing}"
+														update="mainPanel,error,remarks,remarksMsg">
+													</p:commandButton>
+
+													<p:commandButton styleClass="btn-info"
+														value="#{msg['lbl.clear']}" tabindex="7" onstart="process.show();"
+														onsuccess="process.hide();"
+														action="#{customerPersonalInfo.clearFirst}"
+														update="mainPanel" process="@this">
+														<p:resetInput target="@form" />
+													</p:commandButton>
+
+
+													<div class="clearfix"></div>
+												</h:panelGroup>
+
+											</p:panel>
+
+
+										</p:panel>
+
+										<p:panel id="verificationPanel"
+											rendered="#{customerPersonalInfo.renderverication}">
+											<p:panel styleClass="left_col" id="panelIdNumber">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_idnumber_2" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="idnumber_2" display="text" />
+													<p:inputText
+														value="#{customerPersonalInfo.idNumberverification}"
+														id="idnumber_2" label="Id Number">
+
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText id="lbl_token" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="token"
+														value="#{customerPersonalInfo.tokenNumber}" label="Token1">
+														<!-- label="Token Number" -->
+														<p:message for="token" display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="#{msg['lbl.go']}" tabindex="8"
+													onstart="process.show();" onsuccess="process.hide();"
+													style="margin-right:10px;"
+													action="#{customerPersonalInfo.fetchCustomerInfoVerification}"
+													update="mainPanel,error">
+												</p:commandButton>
+
+												<p:commandButton value="#{msg['lbl.clear']}" tabindex="9"
+													onstart="process.show();" onsuccess="process.hide();"
+													update="mainPanel">
+												</p:commandButton>
+												<div class="clearfix"></div>
+											</h:panelGroup>
+
+
+										</p:panel>
+									</p:panel>
+								</h:form>
+							</h:panelGroup>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+					</h:panelGroup></td>
+			</tr>
+		</table>
+		<div class="clearfix"></div>
+
+		<ui:include src="#{facesBean.footer}"></ui:include>
+
+	</f:view>
+</h:body>
+</html>

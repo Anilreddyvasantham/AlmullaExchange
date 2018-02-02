@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+		history.pushState(null, null, 'SwiftEnquiry.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'SwiftEnquiry.xhtml');
+	    });
+	</script>
+</h:head>
+<p:confirmDialog id="exist" widgetVar="exist" width="400" height="17"
+	resizable="false" header="#{msg['lbl.warningDailog']}"
+	style=" border:2px solid green !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.noRecordFound']}">
+</p:confirmDialog>
+<p:confirmDialog id="succ" widgetVar="succ" width="400" height="17"
+	resizable="false" header="#{msg['lbl.warningDailog']}"
+	style=" border:2px solid green !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.selectSwiftBankAndCountry']}">
+</p:confirmDialog>
+
+
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="swiftMaster">
+
+								<h1>
+									<h:outputText value="#{msg['lbl.swiftMasterEnquiry']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h3>
+										<h:outputText value="#{msg['lbl.swiftMasterEnquiry']}" />
+
+									</h3>
+									<p:confirmDialog id="csp" widgetVar="csp"   showHeader="false" resizable="false" header="Warning Message" styleClass="warning"
+														style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="explode" hideEffect="explode" message="#{swiftMasterEnquiryBean.errorMessage}">
+							  	</p:confirmDialog>
+								 <p:confirmDialog id="nullPoiterId"
+                                                                     widgetVar="nullPoiterId" resizable="false"
+                                                                     style="background-color: white !important;"
+                                                                     header="#{msg['lbl.warningDailog']}" styleClass="warning"
+                                                                     showEffect="clip" hideEffect="clip" closeOnEscape="true"
+                                                                     closable="true"
+                                                                     message="#{swiftMasterEnquiryBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+									<p:dialog id="mandatorydia" widgetVar="mandatorydia"
+										width="260" height="70" showHeader="false" resizable="false" header="#{msg['lbl.warningDailog']}"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+
+										<p:outputLabel value="#{msg['lbl.noRecordFound']}" />
+										<br />
+
+										<p:commandButton value="#{msg['lbl.ok']}"
+											oncomplete="mandatorydia.hide()" process="@this"
+											update="mainPanel" />
+									</p:dialog>
+									<p:panel styleClass="panel_border">
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.swiftbank']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="bank" display="text" id="msgbank" />
+												<p:selectOneMenu id="bank"
+													value="#{swiftMasterEnquiryBean.bankId}"
+													filterMatchMode="contains" filter="true"
+													label="SWIFT Bank">
+
+													<f:selectItem itemLabel="#{msg['lbl.selectBank']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{swiftMasterEnquiryBean.bankListFromDB}" var="c"
+														itemLabel="#{c.bankCode} - #{c.bankFullName}" itemValue="#{c.bankCode}" />
+													<p:ajax />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.swiftcountry']}" />
+
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="swiftcountryid" display="text" />
+												<p:selectOneMenu id="swiftcountryid"
+													value="#{swiftMasterEnquiryBean.swiftCountryId}"
+													filter="true" filterMatchMode="contains">
+													<f:selectItem itemLabel="#{msg['lbl.selectSwiftCountry']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{swiftMasterEnquiryBean.allCountryList}" var="c"
+														itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+														itemValue="#{c.fsCountryMaster.countryAlpha2Code}" />
+													<p:ajax update="swiftcountryid" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+
+
+										<!-- 	<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Branch" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="branch" display="text" id="msgbank1" />
+												<p:selectOneMenu id="branch"
+													value="#{swiftMasterEnquiryBean.branchId}"
+													filterMatchMode="startsWith" filter="true"
+													label="SWIFT BankBranch" required="true"
+													requiredMessage="Please Select Branch">
+
+													<f:selectItem itemLabel="#{msg['lbl.selectBankBranch']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{swiftMasterMaintenanceBean.branchList}" var="c"
+														itemLabel="#{c.branchFullName}"
+														itemValue="#{c.bankBranchId}" />
+													<p:ajax update="msgbank1,mainPanel" event="change"
+														listener="#{swiftMasterEnquiryBean.populateAllSwiftFields}" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+ -->
+
+
+										<!-- 			<h:panelGroup layout="block" class="clearfix" /> -->
+
+
+										<p:spacer height="20px" />
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="shadow_button"
+											style=" background-color:#FFF !important;">
+
+											<p:commandButton value="#{msg['lbl.enquiry']}" id="addTable"
+												update="mainPanel,dataTableId" style="margin-right:10px;"
+												action="#{swiftMasterEnquiryBean.swiftEnquiry}"
+												process="@this" onstart="process.show();" onsuccess="process.hide();">
+											</p:commandButton>
+											<p:commandButton value="#{msg['lbl.clear']}"
+												update="mainPanel,dataTableId" process="@this"
+												actionListener="#{swiftMasterEnquiryBean.clear}"
+												style="margin-right:10px;">
+											</p:commandButton>
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{swiftMasterEnquiryBean.exit}" process="@this">
+											</p:commandButton>
+										</p:panel>
+
+										<p:panel
+											rendered="#{swiftMasterEnquiryBean.renderDataTablePanel}"
+											id="dataTableId">
+											<p:dataTable id="dataTable"
+												value="#{swiftMasterEnquiryBean.swiftMasterEnqryList}"
+												var="c"
+												rowStyleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+												rowIndexVar="rowIndex" style="width:100%;" paginator="true"
+												paginatorPosition="bottom"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="15,10,5">
+
+												<p:column headerText="#{msg['lbl.sNo']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:outputLabel value="#{rowIndex+1}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.swiftbank']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.swiftBankName}">
+													<p:outputLabel value="#{c.swiftBankName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.swiftcountry']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.swiftCountryName}">
+													<p:outputLabel value="#{c.swiftCountryName}" />
+												</p:column>
+
+
+												<p:column headerText="#{msg['lbl.location']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.swiftLocation}">
+													<p:outputLabel value="#{c.swiftLocation}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.branchName']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.branchName}">
+													<p:outputLabel value="#{c.branchName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.bankName']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.bankName}">
+													<p:outputLabel value="#{c.bankName}" />
+												</p:column>
+
+												<!-- <p:column headerText="City Name"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:outputLabel value="#{c.cityName}" />
+												</p:column>
+
+												<p:column headerText="Region"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:outputLabel value="#{c.region}" />
+												</p:column> -->
+
+												<p:column headerText="#{msg['lbl.address1']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.firstAddress}">
+													<p:outputLabel value="#{c.firstAddress}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.swiftbic']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.swiftBIC}">
+													<p:outputLabel value="#{c.swiftBIC}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.chipsuid']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.chipsUID}">
+													<p:outputLabel value="#{c.chipsUID}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.acronymid']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.acronymID}">
+													<p:outputLabel value="#{c.acronymID}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.fedwireid']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.fedwireID}">
+													<p:outputLabel value="#{c.fedwireID}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.abanumber']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.abaNumber}">
+													<p:outputLabel value="#{c.abaNumber}" />
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.createdBy']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.createdBy}">
+													<p:outputLabel value="#{c.createdBy}" />
+												</p:column>
+												  <p:column headerText="#{msg['lbl.createddate']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.createdDate}">
+													<p:outputLabel value="#{c.createdDate}" />
+														</p:column>  
+												<p:column headerText="#{msg['lbl.enqStatus']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.isActive}">
+													<p:outputLabel value="#{c.isActive}" />
+												</p:column>
+
+											</p:dataTable>
+
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col">
+										</p:panel>
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+									
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+												id="process" width="300" height="60" resizable="false"
+												draggable="false" closable="false"
+												style=" border: 3px green solid !important;background-color: #FFF !important;">
+												<div
+													style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+													<p:graphicImage value="../images/processImg.gif"
+														style="float: left !important; margin-right: 24px !important; " />
+													<p:outputLabel value="Please wait ........"
+														style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+												</div>
+												</p:dialog>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

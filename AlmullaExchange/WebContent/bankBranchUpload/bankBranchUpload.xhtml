@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script>
+		history.pushState(null, null, 'bankBranchUpload.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'bankBranchUpload.xhtml');
+		});
+	</script>
+
+	<style>
+.ui-fileupload-buttonbar .ui-fileupload-cancel {
+	display: none;
+}
+</style>
+
+</h:head>
+
+<p:dialog id="uploadSuccess" widgetVar="uploadSuccess" width="50%"
+	height="300" showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="Records Uploaded Successfully!" />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}" process="@this"
+		oncomplete="uploadSuccess.hide()" />
+</p:dialog>
+
+<p:confirmDialog id="selectCountry" widgetVar="selectCountry"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all" message="Please Select Country!">
+</p:confirmDialog>
+
+<p:confirmDialog id="selectBank" widgetVar="selectBank"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all" message="Please Select Bank!">
+</p:confirmDialog>
+
+<p:confirmDialog id="noRecords" widgetVar="noRecords" resizable="false"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all"
+	message="Upload Unsuccess,Because selected Bank code records are not present in Excel Sheet!">
+</p:confirmDialog>
+
+<p:confirmDialog id="uploadUnSuccess" widgetVar="uploadUnSuccess"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all" message="Upload Unsuccess!">
+</p:confirmDialog>
+
+<p:confirmDialog id="recordsNotExceed" widgetVar="recordsNotExceed"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all" message="You should not upload greater than 5000 records at a time!">
+</p:confirmDialog>
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="neftBranchForm" enctype="multipart/form-data">
+
+								<h1>
+									<h:outputText value="Bank Branch Upload" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h3>
+										<h:outputText value="Bank Branch Upload"
+											rendered="#{bankBranchUploadBean.uploadScreen}" />
+										<h:outputText value="Upload Success...!"
+											rendered="#{bankBranchUploadBean.uploadSuccScreen}" />
+										<h:outputText value="Upload Un-Success...!"
+											rendered="#{bankBranchUploadBean.uploadUnSuccScreen}" />
+									</h3>
+									<p:panel styleClass="panel_border">
+										<p:panel id="headerPanel">
+											<p:confirmDialog id="errorPage" widgetVar="errorPage"
+												resizable="false"
+												style="background-color: white !important;"
+												header="#{msg['lbl.warningDailog']}" styleClass="warning"
+												showEffect="clip" hideEffect="clip" closeOnEscape="true"
+												closable="true" update="@all"
+												message="#{bankBranchUploadBean.errorMessage}">
+											</p:confirmDialog>
+
+											<p:dialog modal="true" showHeader="true"
+												header="#{msg['lbl.pleasewait']}" widgetVar="process"
+												id="process" width="300" height="50" resizable="false"
+												draggable="false" closable="false"
+												style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+												<div style="text-align: center;">
+													<p:graphicImage value="../images/preloader.gif" />
+												</div>
+											</p:dialog>
+
+											<p:panel rendered="#{bankBranchUploadBean.uploadScreen}">
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputLabel value="Country" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:selectOneMenu id="country"
+															value="#{bankBranchUploadBean.countryId}" filter="true"
+															filterMatchMode="contains">
+															<f:selectItem itemLabel="#{msg['lbl.selectcountry']}"
+																itemValue="" />
+															<f:selectItems
+																value="#{bankBranchUploadBean.allCountryList}" var="cou"
+																itemLabel="#{cou.fsCountryMaster.countryCode} - #{cou.countryName}"
+																itemValue="#{cou.fsCountryMaster.countryId}" />
+															<p:ajax event="change" update="country,bank"
+																listener="#{bankBranchUploadBean.bankLists}"
+																process="@this" onstart="process.show();"
+																onsuccess="process.hide();" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputLabel value="Bank" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:selectOneMenu id="bank"
+															value="#{bankBranchUploadBean.bankBranch}" filter="true"
+															filterMatchMode="contains">
+															<f:selectItem itemLabel="--- Select Bank ---"
+																itemValue="" />
+															<f:selectItems
+																value="#{bankBranchUploadBean.bankBranchList}" var="b"
+																itemLabel="#{b.bankCode} - #{b.bankFullName}"
+																itemValue="#{b.bankId}" />
+															<p:ajax event="change" update="bank" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="File To Upload" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:fileUpload id="fileUplod" mode="advanced"
+															style="margin-bottom: 25px;" fileLimit="1"
+															fileLimitMessage="one File is Allowed"
+															fileUploadListener="#{bankBranchUploadBean.uploadList}"
+															update="mainPanel,errorPage" label="Choose a file"
+															allowTypes="/(\.|\/)(xls|xlsx|csv)$/" required="true"
+															requiredMessage="Upload a File"
+															invalidFileMessage="You are allowed to upload only xls,xlsx and csv !!!"
+															onstart="PF('process').show()"
+															oncomplete="PF('process').hide()">
+														</p:fileUpload>
+													</p:panel>
+												</p:panel>
+											</p:panel>
+
+											<p:panel rendered="#{bankBranchUploadBean.uploadSuccScreen}">
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Country" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:selectOneMenu disabled="true"
+															value="#{bankBranchUploadBean.countryId}" filter="true"
+															filterMatchMode="contains">
+															<f:selectItem itemLabel="#{msg['lbl.selectcountry']}"
+																itemValue="" />
+															<f:selectItems
+																value="#{bankBranchUploadBean.allCountryList}" var="cou"
+																itemLabel="#{cou.fsCountryMaster.countryCode} - #{cou.countryName}"
+																itemValue="#{cou.fsCountryMaster.countryId}" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Bank" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:selectOneMenu disabled="true"
+															value="#{bankBranchUploadBean.bankBranch}" filter="true"
+															filterMatchMode="contains">
+															<f:selectItem itemLabel="--- Select Bank ---"
+																itemValue="" />
+															<f:selectItems
+																value="#{bankBranchUploadBean.bankBranchList}" var="b"
+																itemLabel="#{b.bankCode} - #{b.bankFullName}"
+																itemValue="#{b.bankId}" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Total Records Read" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText
+															value="#{bankBranchUploadBean.totalRecordsRead}"
+															readonly="true" />
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="New Branches Created" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText
+															value="#{bankBranchUploadBean.newBranchesCreated}"
+															readonly="true" />
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Branches Updated" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText
+															value="#{bankBranchUploadBean.branchesUpdated}"
+															readonly="true" />
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Error Records Count" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText
+															value="#{bankBranchUploadBean.errorRecordsCount}"
+															readonly="true" />
+													</p:panel>
+												</p:panel>
+											</p:panel>
+
+											<p:panel
+												rendered="#{bankBranchUploadBean.uploadUnSuccScreen}">
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Country" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:selectOneMenu disabled="true"
+															value="#{bankBranchUploadBean.countryId}" filter="true"
+															filterMatchMode="contains">
+															<f:selectItem itemLabel="#{msg['lbl.selectcountry']}"
+																itemValue="" />
+															<f:selectItems
+																value="#{bankBranchUploadBean.allCountryList}" var="cou"
+																itemLabel="#{cou.fsCountryMaster.countryCode} - #{cou.countryName}"
+																itemValue="#{cou.fsCountryMaster.countryId}" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Bank" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:selectOneMenu disabled="true"
+															value="#{bankBranchUploadBean.bankBranch}" filter="true"
+															filterMatchMode="contains">
+															<f:selectItem itemLabel="--- Select Bank ---"
+																itemValue="" />
+															<f:selectItems
+																value="#{bankBranchUploadBean.bankBranchList}" var="b"
+																itemLabel="#{b.bankCode} - #{b.bankFullName}"
+																itemValue="#{b.bankId}" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Total Records Read" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText
+															value="#{bankBranchUploadBean.totalRecordsRead}"
+															readonly="true" />
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="New Branches Created" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText
+															value="#{bankBranchUploadBean.newBranchesCreated}"
+															readonly="true" />
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Branches Updated" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText
+															value="#{bankBranchUploadBean.branchesUpdated}"
+															readonly="true" />
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Error Records Count" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText
+															value="#{bankBranchUploadBean.errorRecordsCount}"
+															readonly="true" />
+													</p:panel>
+												</p:panel>
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.exit']}"
+												rendered="#{bankBranchUploadBean.uploadScreen}"
+												update="neftBranchForm"
+												action="#{bankBranchUploadBean.exit}" process="@this"
+												onstart="process.show();" onsuccess="process.hide();" />
+											<p:commandButton value="Back To Upload"
+												rendered="#{!bankBranchUploadBean.uploadScreen}"
+												update="neftBranchForm"
+												action="#{bankBranchUploadBean.uploadScreen}"
+												process="@this" onstart="process.show();"
+												onsuccess="process.hide();" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+										<h:panelGroup layout="block" class="clearfix" />
+
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

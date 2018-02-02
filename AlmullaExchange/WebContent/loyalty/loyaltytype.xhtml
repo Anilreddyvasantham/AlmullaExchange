@@ -1,0 +1,594 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	  <link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<style type="text/css">
+    .animated .ui-progressbar-value { 
+        background-image: url("./images/preloader.gif"); 
+    }
+</style>
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+		history.pushState(null, null, 'loyaltytype.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'loyaltytype.xhtml');
+	    });
+	</script>
+</h:head>
+<p:confirmDialog id="codeExist" widgetVar="codeExist" width="300"
+	showHeader="false" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip"
+	header="#{msg['lbl.warningDailog']}"
+	message="Loyalty Code Already Exist..!">
+</p:confirmDialog>
+
+<p:confirmDialog id="datatable" widgetVar="datatable" width="300"
+	showHeader="false" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip"
+	header="#{msg['lbl.warningDailog']}"
+	message="#{msg['lbl.recrdAlreadyExisted']}">
+</p:confirmDialog>
+<p:dialog id="complete" widgetVar="complete" width="270" height="70"
+	showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background: 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.recrdSavedSuccessfully']} " />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		action="#{loyaltyType.loyaltyTypeNavigation}"
+		process="@this" />
+</p:dialog>
+<p:confirmDialog id="viewSearch" widgetVar="viewSearch"
+										width="400" styleClass="red" showHeader="false"
+										resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="Please Enter Loyalty Type...!">
+									</p:confirmDialog>
+									<p:confirmDialog id="noRecords" widgetVar="noRecords"
+										width="300"  resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="#{msg['lbl.noRecordFound']}">
+									</p:confirmDialog>
+	
+<h:body>
+
+	
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+					<!-- <ui:include
+						src="../common/common_menu.xhtml"></ui:include> --> <ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include>
+				</td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h1>
+								<h:outputText value="#{msg['lty.type.title']}" />
+							</h1>
+							
+							
+							<!-- Dialog box  -->
+							
+							
+							
+							
+									
+									
+								
+									
+								
+							
+							
+							
+							
+						 	
+							<h:panelGroup layout="block" class="table_bg">
+								<h:form id="form1" style="padding:0!important; background:none !important;">
+								<p:dialog modal="true" showHeader="true" header="#{msg['lbl.pleasewait']}"  widgetVar="process"  id="process"   width="300" height="50" resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+							    	</p:dialog>
+								<p:panel styleClass="shadow" id="mainPanel">								
+									<h2>
+										<h:outputText value="#{msg['lty.type.title']}" />
+									</h2>
+									
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{loyaltyType.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+
+
+									<p:confirmDialog id="exception" header="#{msg['lbl.warning']}"
+										widgetVar="exception" width="600" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{loyaltyType.errorMessage}">
+
+										<p:commandButton value="#{msg['lbl.ok']}"
+											onclick="exception.hide()" process="@this" update="mainPanel" />
+
+									</p:confirmDialog>
+									
+									<p:dialog id="update" widgetVar="update" width="270"
+										height="70" showHeader="false" resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background: 224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel
+											value="#{msg['lbl.recordsupdatedsuccessfully']} " />
+										<br />
+										<p:spacer width="15px" />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											action="#{loyaltyType.loyaltyTypeNavigation}"
+											process="@this"  />
+									</p:dialog>
+											<p:dialog id="pending" widgetVar="pending"
+										width="400" height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.warningDailog']}" closable="false"
+										showEffect="clip" hideEffect="clip">
+										<p:outputLabel
+											value="#{msg['lbl.plsApproveRecord']}"
+											 style="text-align: center; font-size:15px !important;"  />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											onclick="PF('pending').hide();" immediate="true"
+											style="margin-left: 150px !important;" />
+									</p:dialog>
+									<p:dialog id="delete" widgetVar="delete" width="270"
+										height="70" showHeader="false" resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background: 224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel value="#{msg['lbl.art.delsuccess']} " />
+										<br />
+										<p:spacer width="15px" />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											action="#{loyaltyType.view}"
+											process="@this"  />
+									</p:dialog>
+									<p:dialog id="permanentDelete" widgetVar="permanentDelete"
+										width="300" height="70" showHeader="false" resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel
+											value="#{msg['lbl.doyouwanttodeleterecordperminently']}" />
+										<p:spacer height="10px" />
+										<p:panel>
+											<p:commandButton value="#{msg['lbl.ok']}"
+												style="margin-right:10px; "
+												actionListener="#{loyaltyType.confirmPermanentDelete}"
+												process="@this" 
+												 /><!-- oncomplete="PF('permanentDelete').hide();" -->
+													<p:commandButton value="#{msg['lbl.cancel']}"
+												onclick="PF('permanentDelete').hide();" immediate="true" />
+
+										</p:panel>
+									</p:dialog>
+									<p:dialog id="activateRecord" widgetVar="activateRecord"
+										width="300" height="70" showHeader="false" resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel value="#{msg['lbl.doyouactivaterecord']} " />
+										<p:spacer height="10px" />
+										<p:panel>
+											<p:commandButton value="#{msg['lbl.ok']}"
+												style="margin-right:10px; "
+												actionListener="#{loyaltyType.activateRecord}"
+												process="@this" oncomplete="PF('activateRecord').hide();"
+												 />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												onclick="PF('activateRecord').hide();" immediate="true" />
+										</p:panel>
+									</p:dialog>
+										<p:confirmDialog id="remarksEmpty" widgetVar="remarksEmpty"
+										width="350" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{msg['lbl.art.noremarks']}">
+									</p:confirmDialog>
+									<p:dialog id="remarks" widgetVar="remarks" width="480"
+										 resizable="false"
+										style="background-color: white !important;"
+										styleClass="info" header="Remarks" closable="false"
+										showEffect="clip" hideEffect="clip" modal="true">
+										<p:panel styleClass="shadow">
+											<p:panel>
+											
+											<table>
+												<tr>
+													<td><h:outputText value="#{msg['lbl.approvedDate']} :" /></td>
+													<td><h:outputText
+															value="#{loyaltyType.approvedDate}"
+															style="color:red !important;" /></td>
+												</tr>
+												<tr>
+													<td><h:outputText value="#{msg['lbl.approvedBy']} :" /></td>
+													<td><h:outputText
+															value="#{loyaltyType.approvedBy}"
+															style="color:red !important;" /></td>
+												</tr>
+											</table>
+												
+											</p:panel>
+											<p:spacer height="10px" />
+											<p:panel>
+												<h:outputText value="#{msg['lbl.enterremarks']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:spacer height="5px" />
+											<p:panel>
+
+													<h:inputTextarea value="#{loyaltyType.remarks}" validatorMessage="Maximum 255 charectors allowed"
+													rows="5" cols="50">
+													<p:ajax />
+													<f:validateLength maximum="255"></f:validateLength>
+												</h:inputTextarea>
+											</p:panel>
+											<p:spacer width="5px" />									
+											
+										<p:panel style="padding-left:160px;">
+											<p:commandButton value="#{msg['lbl.ok']}"
+												style="margin-right:10px; "
+												action="#{loyaltyType.remarkSelectedRecord}"
+												process="@this" />
+											<p:commandButton value="#{msg['lbl.cancel']}" oncomplete="PF('remarks').hide();"												
+												process="@this"  />
+										</p:panel>
+										</p:panel>
+									</p:dialog>
+									<p:panel styleClass="panel_border" layout="block" >
+									<p:panel id="firstPanel"
+											rendered="#{loyaltyType.booLoyaltyTypeDetail}">
+											
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lty.type.code']}" /><h:outputText value="*" style="color:red;font-weight:bold;" />	
+											</p:panel>
+											<p:panel styleClass="inner_right_col"	>
+											
+												<p:message id="msgloyaltytypecode" for="loyaltytypecode"
+													display="text" />
+												
+												<p:autoComplete id="loyaltytypecode"
+														value="#{loyaltyType.loyalityTypeCode}" required="true"
+														onkeyup="this.value=this.value.toUpperCase()"
+														completeMethod="#{loyaltyType.autoComplete}"
+														maxResults="10" validatorMessage="Allow only Number and character"
+														requiredMessage="Please Enter Loyalty Type Code" 
+														maxlength="4" tabindex="1">
+														<f:validateRegex pattern="[0-9,A-Z]+" for="msgnum" />
+														<p:ajax
+															update="loyaltytypecode,msgloyaltytypecode,corporatecode,msgcorporatecode,corporatepoints,msgcorporatepoints,employeePoints,msgemployeePoints,levelNumber,msglevelNumber,shortDescEnglish,msgshortDescEnglish,fullDescEnglish,msgfullDescEnglish,shortDescLocal,msgshortDescLocal,fullDescLocal,msgfullDescLocal"
+															event="itemSelect"
+															listener="#{loyaltyType.autoCompletePopulate}" />
+														<p:ajax
+															update="loyaltytypecode,msgloyaltytypecode,corporatecode,msgcorporatecode,corporatepoints,msgcorporatepoints,employeePoints,msgemployeePoints,levelNumber,msglevelNumber,shortDescEnglish,msgshortDescEnglish,fullDescEnglish,msgfullDescEnglish,shortDescLocal,msgshortDescLocal,fullDescLocal,msgfullDescLocal"
+															event="blur"
+															listener="#{loyaltyType.autoCompletePopulate}"
+															process="@this" />
+
+														
+													</p:autoComplete>
+													
+													
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lty.type.type']}" /><h:outputText value="*" style="color:red;font-weight:bold;" />	
+											</p:panel>
+											<p:panel styleClass="inner_right_col"	>
+											
+												<p:message id="msgloyaltytype" for="loyaltytype"
+													display="text" />
+												<p:inputText id="loyaltytype" value="#{loyaltyType.loyalityType}" required="true" requiredMessage="Please Enter  Loyalty Type"	maxlength="48" tabindex="2">		 
+												<p:ajax event="blur" update="msgloyaltytype" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+										
+										<div class="clearfix"></div>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lty.type.corpcode']}" /><h:outputText value="*" style="color:red;font-weight:bold;" />	
+											</p:panel>
+											<p:panel styleClass="inner_right_col"	>
+											
+												<p:message id="msgcorporatecode" for="corporatecode"
+													display="text" />
+												<p:inputText id="corporatecode" value="#{loyaltyType.corporateCode}" required="true" requiredMessage="Please Enter  Corporate Code"	maxlength="48" tabindex="3">		 
+												<p:ajax event="blur" update="msgcorporatecode"/>
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lty.type.corppoint']}" /><h:outputText value="*" style="color:red;font-weight:bold;" />	
+											</p:panel>
+											<p:panel styleClass="inner_right_col"	>
+											
+												<p:message id="msgcorporatepoints" for="corporatepoints"
+													display="text" />
+												<p:inputText id="corporatepoints" value="#{loyaltyType.corporatePoints}" required="true" requiredMessage="Please Enter  Corporate Points"	maxlength="48" tabindex="4">		 
+												<p:ajax event="blur" update="msgcorporatepoints"/>
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+										<div class="clearfix"></div>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lty.type.emppoint']}" /><h:outputText value="*" style="color:red;font-weight:bold;" />	
+											</p:panel>
+											<p:panel styleClass="inner_right_col"	>
+											
+												<p:message id="msgemployeePoints" for="employeePoints"
+													display="text" />
+												<p:inputText id="employeePoints" value="#{loyaltyType.employeePoints}" required="true" requiredMessage="Please Enter  Employee Points"	maxlength="48" tabindex="5" >		 
+												<p:ajax event="blur" update="msgemployeePoints"/>
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lty.type.lvlno']}" /><h:outputText value="*" style="color:red;font-weight:bold;" />	
+											</p:panel>
+											<p:panel styleClass="inner_right_col"	>
+											
+												<p:message id="msglevelNumber" for="levelNumber"
+													display="text" />
+												<p:inputText id="levelNumber" value="#{loyaltyType.levelNo}" required="true" requiredMessage="Please Enter  level Number"	maxlength="8" tabindex="6">		 
+												<p:ajax event="blur" update="msglevelNumber"/>
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+									<div class="clearfix"></div>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lty.type.sengdesc']}" /><h:outputText value="*" style="color:red;font-weight:bold;" />	
+											</p:panel>
+											<p:panel styleClass="inner_right_col"	>
+											
+												<p:message id="msgshortDescEnglish" for="shortDescEnglish"
+													display="text" />
+													<!-- <p:message id="msgalpha" for="shortDescEnglish"
+														display="text" escape="true" /> -->
+												<p:inputText id="shortDescEnglish" value="#{loyaltyType.shortDescEnglish}" onkeyup="this.value=this.value.toUpperCase()" required="true" requiredMessage="Please Enter Short Description"	maxlength="14" tabindex="7" >	
+												<f:validateRegex pattern="[a-zA-Z ]+" for="msgshortDescEnglish" />	 
+												<p:ajax event="blur" update="msgshortDescEnglish"/>
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+											
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lty.type.fengdesc']}" /><h:outputText value="*" style="color:red;font-weight:bold;" />	
+											</p:panel>
+											<p:panel styleClass="inner_right_col"	>
+											
+												<p:message id="msgfullDescEnglish" for="fullDescEnglish"
+													display="text" />
+													<!-- <p:message id="msgalphadesc" for="fullDescEnglish" display="text" escape="true" /> -->
+												<p:inputText id="fullDescEnglish" value="#{loyaltyType.fullDescEnglish}" required="true" requiredMessage="Please Enter Full Description" maxlength="79" tabindex="8">		 
+												<f:validateRegex pattern="[a-zA-Z ]+" for="msgfullDescEnglish" />
+												<p:ajax event="blur" update="msgfullDescEnglish"/>
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+										
+										<div class="clearfix"></div>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lty.type.slocdesc']}" /><h:outputText value="*" style="color:red;font-weight:bold;" />	
+											</p:panel>
+											<p:panel styleClass="inner_right_col"	>
+											
+												<p:message id="msgshortDescLocal" for="shortDescLocal"
+													display="text" />
+												<p:inputText id="shortDescLocal" value="#{loyaltyType.shortDescLocal}" required="true" dir="RTL" style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;" 
+												requiredMessage="Please Enter  local short Description"	maxlength="14" tabindex="9">
+												<f:validator validatorId="arabicValidator" />		 
+												<p:ajax event="blur" update="msgshortDescLocal"/>
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lty.type.flocdesc']}" /><h:outputText value="*" style="color:red;font-weight:bold;" />	
+											</p:panel>
+											<p:panel styleClass="inner_right_col"	>
+											
+												<p:message id="msgfullDescLocal" for="fullDescLocal"
+													display="text" />
+												<p:inputText id="fullDescLocal" value="#{loyaltyType.fullDescLocal}" required="true" 
+												dir="RTL" style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;"
+												requiredMessage="Please Enter  local Full Description"	maxlength="79" tabindex="10">
+												<f:validator validatorId="arabicValidator" />		 
+												<p:ajax event="blur" update="msgfullDescLocal"/>
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+											<div class="clearfix"></div>
+											  <p:panel styleClass="left_col" >
+										<h:outputText  id="mandatory" value=" #{msg['lbl.*filedsAreMandatory']}"  style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:outputText value="#{msg['lbl.arbicLanguaue']}"
+											style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+											</p:panel>
+										
+									
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="#{msg['lbl.add']}" onstart="process.show();" onsuccess="process.hide();"
+													action="#{loyaltyType.addToDataTable}"
+													update="mainPanel,secondPanel" style=" margin-right:10px;" tabindex="11" />
+												<p:commandButton value="#{msg['lbl.view']}" action="#{loyaltyType.view}" process="@this" onstart="process.show();" onsuccess="process.hide();"
+													
+													update="mainPanel,,secondPanel" style=" margin-right:10px; "
+													tabindex="12" />
+												<p:commandButton value="#{msg['lbl.clear']}"
+													action="#{loyaltyType.clear}" process="@this" onstart="process.show();" onsuccess="process.hide();"
+													 update="mainPanel"
+													style=" margin-right:10px; " tabindex="13" />
+												<h:panelGroup layout="block" class="clearfix" />
+											</h:panelGroup>
+									
+										
+								    </p:panel>
+								    
+								  
+										<p:panel id="secondPanel"
+											rendered="#{loyaltyType.booLoyaltyTypeDataTable}">
+											<p:spacer height="20px" />										
+											<p:spacer height="20px" />
+											
+												<p:dataTable id="dataTable" var="c" rows="10" styleClass="mydatatableclass"
+													value="#{loyaltyType.loyaltyTypeDataTableList}"
+													paginator="true"
+													paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+													rowsPerPageTemplate="5,10,15" rowIndexVar="rowIndex"
+													editable="true" editMode="cell"
+													emptyMessage="#{msg['lbl.norecordfound']}"
+													paginatorPosition="bottom">
+
+													<p:column headerText="#{msg['lbl.sino']}"
+														style="width:50px;">
+														<h:outputText value="#{rowIndex+1}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lty.type.code']}">
+														<h:outputText value="#{c.loyalityTypeCode}" />
+													</p:column>
+													<p:column headerText="#{msg['lty.type.type']}">
+														<h:outputText value="#{c.loyalityType}" />
+													</p:column>
+													<p:column headerText="#{msg['lty.type.corpcode']}">
+														<h:outputText value="#{c.corporateCode}" />
+													</p:column>
+													<p:column headerText="#{msg['lty.type.corppoint']}">
+														<h:outputText value="#{c.corporatePoints}" />
+													</p:column>
+													
+													<p:column headerText="#{msg['lty.type.emppoint']}">
+														<h:outputText value="#{c.employeePoints}" />
+													</p:column>
+													
+													<p:column headerText="#{msg['lty.type.lvlno']}">
+														<h:outputText value="#{c.levelNo}" />
+													</p:column>
+													
+													<p:column headerText="#{msg['lty.type.fengdesc']}">
+														<h:outputText value="#{c.fullDescEnglish}" />
+													</p:column>
+													
+													<p:column headerText="#{msg['lty.type.flocdesc']}">
+														<h:outputText value="#{c.fullDescLocal}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.edit']}">
+													<p:commandButton id="imgEdit" styleClass="edit" value="" action="#{loyaltyType.edit(c)}" update=":form1" process="@this" tabindex="14"/>
+														
+													</p:column>
+													
+													<p:column headerText="#{msg['lbl.active/deactive']}"
+														sortBy="" style="text-align:center !important;">
+														<p:commandLink
+															value="#{c.dynamicLabelForActivateDeactivate}"
+															update=":form1"
+															actionListener="#{loyaltyType.checkStatusType(c)}"
+															process="@this"
+															style="color:blue !important; text-decoration:underline !important;"
+															immediate="true" tabindex="12" />
+													</p:column>
+													
+												</p:dataTable>
+												
+												<div class="clearfix" />
+							    
+							    		
+									
+									<div class="clearfix" />					 
+										<p:spacer height="20px" />
+										
+								    <h:panelGroup layout="block" styleClass="shadow_button" id="booSubmitPanel">							
+										  <p:commandButton id="submitPanel" value="#{msg['lbl.submit']}"  immediate="true" action="#{loyaltyType.save}" update="mainPanel" style="margin-right:10px;" process="@this" tabindex="15"
+										  onstart="process.show();" onsuccess="process.hide();" />
+										  <p:commandButton value="#{msg['lbl.exit']}"  action="#{complaint.exit}" style="margin-right:10px;" process="@this" tabindex="16"/>											
+									      <div class="clearfix"></div>
+									</h:panelGroup>
+											
+									</p:panel>
+									
+										
+										</p:panel>
+										
+										
+										
+										
+												
+								</h:form>
+							</h:panelGroup>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+					</h:panelGroup></td>
+			</tr>
+		</table>
+		<div class="clearfix"></div>
+
+	<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+
+	</f:view>
+</h:body>
+</html>

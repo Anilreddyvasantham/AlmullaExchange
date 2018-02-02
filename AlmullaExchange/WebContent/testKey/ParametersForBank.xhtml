@@ -1,0 +1,542 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	  <link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	  <script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+		history.pushState(null, null, 'ParametersForBank.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'ParametersForBank.xhtml');
+	    });
+	</script>
+</h:head>
+<p:confirmDialog id="remarksEmpty" widgetVar="remarksEmpty" width="400" height="17" resizable="false" style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+					showEffect="clip" header="#{msg['lbl.warningDailog']}" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.remarksShouldNotBeEmpty']}" >
+				</p:confirmDialog>	
+				<p:confirmDialog id="remitDealRefAlreayExist" widgetVar="remitDealRefAlreayExist" width="400" resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}"
+ styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.complaintAlreadyRegistered']}">
+</p:confirmDialog>
+	
+<p:dialog id="notSaved" widgetVar="notSaved" width="310" height="70" showHeader="false" resizable="false" style=" border:2px solid green !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+                      showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"  >
+            <p:outputLabel value="#{msg['lbl.complaintAssignedDetailsNotSaved']}"/><br/>
+            <p:spacer width="15px" />
+            <p:commandButton value="#{msg['lbl.ok']}" actionListener="#{testkeyParameterForBankBean.ComplaintAssignedNotSaved}" process="@this"/>          
+</p:dialog>			
+<p:dialog id="approve" widgetVar="approve" width="400" height="80"
+		resizable="false" style="background-color: white !important;"
+		styleClass="success" header="#{msg['lbl.success']}" closable="false"
+		showEffect="clip" hideEffect="clip">
+		<p:outputLabel value="#{msg['lbl.approvedsuccessfully']}"
+			style="text-align: center; font-size:15px !important;" />
+		<br />
+		<p:commandButton value="#{msg['lbl.ok']}"
+			actionListener="#{testkeyParameterForBankBean.clickOnOKApprove}"
+			process="@this" style="margin-left: 150px !important;" />
+	</p:dialog>	
+<p:confirmDialog id="noRecords" widgetVar="noRecords"
+										width="300"  resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="#{msg['lbl.noRecordFound']}">
+									</p:confirmDialog>
+<p:confirmDialog id="selectAll" widgetVar="selectAll"
+										width="300"  resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="#{msg['lbl.selectBankOrAccountNoOrCurrencyIdOrBranchIdOrSendReceiverIndicator']}">
+									</p:confirmDialog>
+<p:confirmDialog id="duplicateRecords" widgetVar="duplicateRecords"
+										width="300"  resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="#{msg['lbl.primaryTestKeyCodeAndSeconaryTestBothSame']} ">
+									</p:confirmDialog>									
+<p:confirmDialog id="datatable"
+										widgetVar="datatable" width="400" 
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="#{msg['lbl.recrdAlreadyExisted']}">
+									</p:confirmDialog>
+<p:confirmDialog id="assignedToAlreadyExist"
+										widgetVar="assignedToAlreadyExist" width="400" 
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="#{msg['lbl.assignedToAlreadyExist']}">
+									</p:confirmDialog>									
+<p:dialog id="alreadyapprov" widgetVar="alreadyapprov" width="310" height="70" showHeader="false" resizable="false" style=" border:2px solid green !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+                      showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"  >
+            <p:outputLabel value="#{msg['lbl.thisrecordalreadyapprovedby']}"/><br/>
+            <p:spacer width="15px" />
+            <p:commandButton value="#{msg['lbl.ok']}" actionListener="#{testkeyParameterForBankBean.testKeyMasterApprovedByOhterPerson}" process="@this"/>          
+</p:dialog>
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		
+			<h:form id="form">
+		
+				<table align="left" width="100%" style="height: 100%;">
+					<tr>
+						<td align="left" valign="top" style="height: 100%;">
+								<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+								</td>
+		
+						<td class="rightColumn" valign="top">
+						<h:panelGroup	layout="block" class="container">
+								<h:panelGroup layout="block" class="main_div">
+									<div class="menu_button">
+										<img style="cursor: pointer; position: relative; left: 15px;"
+											id="HideHandle" name="HideHandle"
+											src="../images/toggle_plus.png" alt=""
+											onclick='hideLeftCol("leftCol");closeMenus();' />
+									</div>
+									<h1>
+										<h:outputText value="#{msg['lbl.testKeyParameterForBankMaster']}" />
+									</h1>
+		
+		
+									<p:panel styleClass="shadow" id="mainPanel"
+										style="background-color:#FFF !important; " >
+										
+										<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{testkeyParameterForBankBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+
+
+									<p:confirmDialog id="exception" header="#{msg['lbl.warning']}"
+										widgetVar="exception" width="600" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{testkeyParameterForBankBean.errorMessage}">
+
+										<p:commandButton value="#{msg['lbl.ok']}"
+											onclick="exception.hide()" process="@this" update="mainPanel" />
+
+									</p:confirmDialog>	
+		
+										<h2>
+											<h:outputText value="#{msg['lbl.testKeyParameterForBankMaster']}" />
+										</h2>
+										
+										<p:dialog id="pending" widgetVar="pending"
+										width="400" height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.warningDailog']}" closable="false"
+										showEffect="clip" hideEffect="clip">
+										<p:outputLabel
+											value="#{msg['lbl.plsApproveRecord']}"
+											 style="text-align: center; font-size:15px !important;"  />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											onclick="PF('pending').hide();" immediate="true"
+											style="margin-left: 150px !important;" />
+									</p:dialog>
+										
+<p:dialog id="complete" widgetVar="complete" width="400"
+										height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="success" header="#{msg['lbl.success']}" closable="false"
+										showEffect="clip" hideEffect="clip">
+										<p:outputLabel
+											value="#{msg['lbl.recordsSuccessfullySaved']}  "
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{testkeyParameterForBankBean.clickOnOKSave}"
+											process="@this" style="margin-left: 150px !important;" />
+									</p:dialog>
+										<p:dialog id="permanentDelete" widgetVar="permanentDelete" width="400" height="80" resizable="false" style="background-color: white !important;" styleClass="warning" header="#{msg['lbl.deleteRecrd']}" closable="false" showEffect="clip" hideEffect="clip">
+<p:outputLabel value="#{msg['lbl.douWantDeleteRecordPermentely']}" style="text-align: center; font-size:15px !important;" /><br />
+<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{testkeyParameterForBankBean.CompleteAssignedConfirmPermanentDelete}" process="@this" oncomplete="PF('permanentDelete').hide();" update="mainPanel" style="margin-left: 150px !important;" />
+<p:commandButton value="#{msg['lbl.cancel']}" onclick="PF('permanentDelete').hide();" immediate="true" style="margin-left:10px;" />
+</p:dialog>
+										<p:dialog id="activateRecord" widgetVar="activateRecord" width="400" height="80" resizable="false" style="background-color: white !important;" styleClass="warning" header="#{msg['lbl.activateRecrd']}" closable="false" showEffect="clip" hideEffect="clip">
+					<p:outputLabel value="#{msg['lbl.doyouactivaterecord']}" style="text-align: center; font-size:15px !important;" /><br />
+					<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{testkeyParameterForBankBean.activateRecord}" process="@this" oncomplete="PF('activateRecord').hide();" update="mainPanel" style="margin-left: 150px !important;" />
+					<p:commandButton value="#{msg['lbl.cancel']}" onclick="PF('activateRecord').hide();" immediate="true" style="margin-left:10px;" />
+			</p:dialog>	
+
+                             		<p:dialog id="remarks" widgetVar="remarks" width="480" resizable="false" style="background-color: white !important;" styleClass="info" header="Remarks" closable="false" showEffect="clip" hideEffect="clip">
+                             		<p:panel>
+                             		<table>
+                             		<tr>
+                             		<td> <h:outputText value="#{msg['lbl.approvedDate']}" /></td>
+                             		<td><h:outputText value="#{testkeyParameterForBankBean.approvedDate}" style="color:red !important;"/> </td>
+                             		</tr>
+                             		<tr>
+                             		<td> <h:outputText value="#{msg['lbl.approvedBy']}" /> </td>
+                             		<td>	<h:outputText  value="#{testkeyParameterForBankBean.approvedBy}"  style="color:red !important;"/> </td>
+                             		</tr>
+                             		</table>
+                             		</p:panel>
+                             		<p:spacer height="10px"/>
+                             		<p:panel>
+                             		<h:outputText value="#{msg['lbl.enterremarks']}" /><h:outputText value="*" style="color:red !important;" />
+                             		</p:panel>
+                             		<p:spacer height="5px"/>
+                             		<p:panel>
+                             		<h:inputTextarea id="remarksId" value="#{testkeyParameterForBankBean.remarks}" validatorMessage="Maximum 255 charectors allowed" >
+                                           <f:validateLength maximum="255"/>
+                                            <p:ajax/>
+                                     </h:inputTextarea>
+                                    </p:panel>
+                                    <p:spacer height="5px"/>
+                                   	<p:panel style="padding-left:160px;">
+                                        <p:commandButton value="#{msg['lbl.ok']}" actionListener="#{testkeyParameterForBankBean.clickOkRemarks}" process="@this" /> 
+            							<p:commandButton value="#{msg['lbl.cancel']}" actionListener="#{testkeyParameterForBankBean.cancelRemarks}" process="@this"/> 
+                             </p:panel>
+                               </p:dialog>
+		
+									<p:panel styleClass="panel_border" >
+												
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bank']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgbank"  for="bankId" display="text" />
+													<p:selectOneMenu id="bankId" value="#{testkeyParameterForBankBean.bankId}" filter="true" filterMatchMode="startsWith" required="true"  requiredMessage="Please Select Bank" disabled="#{testkeyParameterForBankBean.booRead}">
+													 <f:selectItem itemLabel="#{msg['lbl.selectbank']}" itemValue="" />
+													<f:selectItems value="#{testkeyParameterForBankBean.bankMasterList}" var="c" itemLabel="#{c.bankMaster.bankCode} - #{c.bankMaster.bankFullName}" itemValue="#{c.bankMaster.bankId}" /> 
+													<p:ajax update="bankId,bankDesc,accountId" event="change" listener="#{testkeyParameterForBankBean.populateAccountNumbers}" onstart="process.show();" onsuccess="process.hide();"/>
+												</p:selectOneMenu>
+												</p:panel>
+												</p:panel>
+												<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bankDesc']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgBankDesc"  for="bankDesc" display="text" />
+											<p:inputText id="bankDesc" value="#{testkeyParameterForBankBean.bankDescription}" readonly="true">
+											<p:ajax update="msgBankDesc"/>
+											</p:inputText>
+												</p:panel>
+												</p:panel>
+													
+												
+											<h:panelGroup layout="block" class="clearfix"/>
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.accountNo']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgaccount"  for="accountId" display="text" />
+												<p:selectOneMenu id="accountId" value="#{testkeyParameterForBankBean.accountNo}"  required="true" requiredMessage="Please Select Bank" filter="startWith" disabled="#{testkeyParameterForBankBean.booRead}">
+													<f:selectItem itemLabel="#{msg['lbl.selectaccountnumber']}" itemValue="" />
+													<f:selectItems value="#{testkeyParameterForBankBean.lstBankAccountDetails}" var="c" itemLabel="#{c.bankAcctDetId} - #{c.bankAcctNo}" itemValue="#{c.bankAcctDetId}" />
+														<p:ajax update="msgaccount,currencyId,accountDesc" event="change" listener="#{testkeyParameterForBankBean.populatecurrency}" onstart="process.show();" onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.accountdesc']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="MsgaccountDesc"  for="accountDesc" display="text" />
+											<p:inputText id="accountDesc" value="#{testkeyParameterForBankBean.accountDescription}" readonly="true">
+											<p:ajax update="MsgaccountDesc"/>
+											</p:inputText>
+												</p:panel>
+												</p:panel>
+												
+												
+										<h:panelGroup layout="block" class="clearfix"/>
+										<p:panel styleClass="left_col" >
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currency']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgcurrency"  for="currencyId" display="text" />
+											<p:selectOneMenu id="currencyId" value="#{testkeyParameterForBankBean.currencyId}"  required="true" requiredMessage="Please Select Currency" filter="true" filterMatchMode="startWith" disabled="#{testkeyParameterForBankBean.booRead}">
+														<f:selectItem itemLabel="#{msg['lbl.benecurruncyselect']}" itemValue="" />
+														<f:selectItems value="#{testkeyParameterForBankBean.bankAccountDtlist}" var="c" itemLabel="#{c.fsCurrencyMaster.currencyCode} - #{c.fsCurrencyMaster.currencyName}" itemValue="#{c.fsCurrencyMaster.currencyId}" />
+														<p:ajax event="change" listener="#{testkeyParameterForBankBean.populateBranch}" update="msgcurrency,branchId" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+												</p:panel>
+												</p:panel>
+												
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.branch']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgbranch"  for="branchId" display="text" />
+											<p:selectOneMenu id="branchId" value="#{testkeyParameterForBankBean.branchCode}"  required="true" requiredMessage="Please Select Branch Code" filter="true" filterMatchMode="startWith" disabled="#{testkeyParameterForBankBean.booRead}">
+														<f:selectItem itemLabel="#{msg['lbl.selectBranch']}" itemValue="" />
+													<f:selectItems value="#{testkeyParameterForBankBean.bankbranchList}" var="c" itemLabel="#{c.branchCode} - #{c.branchFullName}" itemValue="#{c.bankBranchId}" />
+														<p:ajax update="msgcurrency" />
+													</p:selectOneMenu>
+												</p:panel>
+												</p:panel>
+												<h:panelGroup layout="block" class="clearfix"/>
+										<p:panel styleClass="left_col" >
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.sendOrReceiveIndicator']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgsendInd"  for="sendIndId" display="text" />
+											<p:selectOneMenu id="sendIndId" value="#{testkeyParameterForBankBean.sendReceiveIndicator}"  required="true" requiredMessage="Please Select Send/Receieve Indicator" filter="startWith" disabled="#{testkeyParameterForBankBean.booRead}">
+													<f:selectItem itemLabel="#{msg['lbl.selectSendOrReceieveIndicator']}" />
+													<f:selectItem itemLabel="Send" itemValue="S" />
+													<f:selectItem itemLabel="Receieve" itemValue="R" />
+													<p:ajax event="change" listener="#{testkeyParameterForBankBean.fetchdataBasedOnCombination}" update="msgsendInd,mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+												</p:panel>
+												</p:panel>
+												
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.calculationType']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgcalculation"  for="calculationId" display="text" />
+											<p:selectOneMenu id="calculationId" value="#{testkeyParameterForBankBean.calculationType}" required="true" requiredMessage="Please Select Calculation" filter="startWith" disabled="#{testkeyParameterForBankBean.booRead}">
+													<f:selectItem itemLabel="#{msg['lbl.selectCalculation']}" />
+													<f:selectItem itemLabel="Multiplication" itemValue="1" />
+													<f:selectItem itemLabel="Add" itemValue="2" />
+													<p:ajax event="change" listener="#{testkeyParameterForBankBean.disableSubmit}" update="msgcalculation" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+												</p:panel>
+												</p:panel>
+												<h:panelGroup layout="block" class="clearfix"/>
+										<p:panel styleClass="left_col" >
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.primaryParameter']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgprimary"  for="primaryId" display="text" />
+											<p:selectOneMenu id="primaryId" value="#{testkeyParameterForBankBean.primaryTestKey}"  required="true" requiredMessage="Please Select Primary Test Key" filter="true" filterMatchMode="startWith" disabled="#{testkeyParameterForBankBean.booRead}" >
+														<f:selectItem itemLabel="#{msg['lbl.selectPrimaryParameter']}" itemValue="" />
+													<f:selectItems value="#{testkeyParameterForBankBean.lstTestKeyParameters}" var="c" itemLabel="#{c.paramCodeDef} - #{c.fullDesc}" itemValue="#{c.paramCodeDef}" />
+														<p:ajax update="msgprimary" />
+													</p:selectOneMenu>
+												</p:panel>
+												</p:panel>
+												
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.secondaryParameter']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgsecondary"  for="secondaryId" display="text" />
+												<p:selectOneMenu id="secondaryId" value="#{testkeyParameterForBankBean.secondaryTestKey}"  required="true" requiredMessage="Please Select Secondary Test Key" filter="true" filterMatchMode="startWith" disabled="#{testkeyParameterForBankBean.booRead}" >
+														<f:selectItem itemLabel="#{msg['lbl.selectSecondaryTestParameter']}" itemValue="" />
+													<f:selectItems value="#{testkeyParameterForBankBean.lstTestKeyParameters}" var="c" itemLabel="#{c.paramCodeDef} - #{c.fullDesc}" itemValue="#{c.paramCodeDef}" />
+														<p:ajax event="change" update="msgsecondary,secondaryId,seconaryOrEndOfserial,endOfserial,mainPanel,dataPanel" listener="#{testkeyParameterForBankBean.checkPrimaryOrSecondaryTestKeyValus}" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+												<!-- <p:inputText id="secondaryId" value="#{testkeyParameterForBankBean.secondaryTestKey}" required="true" requiredMessage="Please Enter Secondary Test Key" maxlength="4" readonly="#{testkeyParameterForBankBean.booRead}">
+												<p:ajax event="blur" update="msgsecondary,secondaryId,seconaryOrEndOfserial,endOfserial,mainPanel,dataPanel" listener="#{testkeyParameterForBankBean.checkPrimaryOrSecondaryTestKeyValus}"/>
+												</p:inputText> -->
+												</p:panel>
+												</p:panel>
+												<h:panelGroup layout="block" class="clearfix"/>
+												<p:panel id="seconaryOrEndOfserial" rendered="#{testkeyParameterForBankBean.booseconaryIndicator}">
+										<p:panel styleClass="left_col" >
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.secondaryIndicator']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgSecondaryIndicator"  for="secondaryIndicatorId" display="text"/>
+											<p:selectOneMenu id="secondaryIndicatorId" value="#{testkeyParameterForBankBean.seconaryIndicator}" required="true" requiredMessage="Please Select Secondary Indicator" filter="startWith" disabled="#{testkeyParameterForBankBean.booRead}" >
+													<f:selectItem itemLabel="#{msg['lbl.selectSecondaryIndicator']}" />
+													<f:selectItem itemLabel="Daily" itemValue="D" />
+													<f:selectItem itemLabel="Weekly" itemValue="W" />
+													<f:selectItem itemLabel="Monthly" itemValue="M" />
+													<f:selectItem itemLabel="cont" itemValue="C" />
+													<p:ajax update="msgSecondaryIndicator" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+												</p:panel>
+												</p:panel>
+												
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.endOfSerial']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgEnd"  for="end" display="text"/>
+											<p:selectOneMenu id="end" value="#{testkeyParameterForBankBean.endOfSerial}" required="true" requiredMessage="Please Select End of Serial" filter="startWith" disabled="#{testkeyParameterForBankBean.booRead}">
+													<f:selectItem itemLabel="#{msg['lbl.selectEndOfSerial']}" />
+													<f:selectItem itemLabel="New" itemValue="N" />
+													<f:selectItem itemLabel="Reuse" itemValue="R" />
+													<p:ajax update="msgEnd"/>
+													</p:selectOneMenu>
+												</p:panel>
+												</p:panel>
+												</p:panel>
+												<p:panel id="endOfserial" rendered="#{testkeyParameterForBankBean.booendOfSerial}">
+										<p:panel styleClass="left_col" >
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.secondaryIndicator']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgSecondaryInd"  for="secondaryIndId" display="text" />
+													<p:inputText id="secondaryIndId" value="#{testkeyParameterForBankBean.seconaryIndicator}" readonly="true">
+													</p:inputText>
+												</p:panel>
+												</p:panel>
+												
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.endOfSerial']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgEndOfSerial"  for="endOfSerialId" display="text"/>
+													<p:inputText id="endOfSerialId" value="#{testkeyParameterForBankBean.endOfSerial}" readonly="true">
+													</p:inputText>
+												</p:panel>
+												</p:panel>
+												</p:panel>
+												
+													<h:panelGroup layout="block" class="clearfix"/>
+												
+												<h:panelGroup layout="block" class="clearfix"/>
+												<p:panel styleClass="left_col" >
+										<h:outputText  id="mandatory" value=" #{msg['lbl.*filedsAreMandatory']}"  style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										<h:panelGroup layout="block" class="clearfix"/>
+										</p:panel>
+										<div class="clearfix"></div>
+										<div class="clearfix"></div>
+										<h:panelGroup layout="block" class="clearfix"/>
+									<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{testkeyParameterForBankBean.booAdd}" id="booClearPanel">						
+										<p:commandButton value="#{msg['lbl.add']}" action="#{testkeyParameterForBankBean.duplicateCheckForDataTable}" style="margin-right:10px;" update="mainPanel,dataTable" tabindex="7" onstart="process.show();" onsuccess="process.hide();"/>
+										<p:commandButton value="#{msg['lbl.view']}" action="#{testkeyParameterForBankBean.viewAllTestKeyBank}" style="margin-right:10px;" disabled="#{testkeyParameterForBankBean.booClearPanel}" update="mainPanel" process="@this" onstart="process.show();" onsuccess="process.hide();" tabindex="8"/>
+										<p:commandButton value="#{msg['lbl.clear']}" action="#{testkeyParameterForBankBean.clearAllFields}" style="margin-right:10px;" disabled="#{testkeyParameterForBankBean.booClearPanel}" immediate="true" process="@this" update="mainPanel" tabindex="9"/> 
+										<!-- <p:commandButton value="#{msg['lbl.clear']}" onclick="clear(this)" disabled="#{complaintAssignedBean.booClearPanel}" immediate="true" process="@this" update="mainPanel"/>  -->
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+									
+									<h:panelGroup layout="block" class="clearfix"/>
+									<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{testkeyParameterForBankBean.booApproval}">						
+										<p:commandButton value="#{msg['lbl.approve']}" action="#{testkeyParameterForBankBean.testKeyMasterApproveRecord}" style="margin-right:10px;" process="@this" immediate="true" onstart="process.show();" onsuccess="process.hide();"/>
+										<p:commandButton value="#{msg['lbl.cancel']}" action="#{testkeyParameterForBankBean.testKeyMasterCancel}" style="margin-right:10px;" update="mainPanel" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+										
+									<p:panel id="dataPanel">
+									<p:dataTable id="dataTable" styleClass="mydatatableclass" value="#{testkeyParameterForBankBean.lstTestkeyParameterForBankDt}" 
+									rows="10" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="5,10,15" var="d" 
+									rowIndexVar="rowIndex" emptyMessage="#{msg['lbl.noRecordFound']}" paginatorPosition="bottom" rendered="#{testkeyParameterForBankBean.booRenderDataTable}" >
+										
+										<p:column headerText="#{msg['lbl.sino']}" style="width:30px;">
+											<h:outputText value="#{rowIndex+1}" />
+										</p:column>
+
+											<p:column headerText="#{msg['lbl.bank']}"  >
+											 <h:outputText value="#{d.bankName}"/>
+										</p:column>
+										
+										
+										<!-- <p:column headerText="Bank Description"  >
+											 <h:outputText value="#{d.bankDescription}"/>
+										</p:column> -->
+										
+										<p:column headerText="#{msg['lbl.accountNo']}"  >
+											<h:outputText value="#{d.accountNumber}"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.accountdesc']}"  >
+											<h:outputText value="#{d.accountDescription}"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.currency']}">
+											<h:outputText value="#{d.currencyName}"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.branch']}">
+											<h:outputText value="#{d.branchName}"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.sendOrReceiveIndicator']}">
+											<h:outputText value="#{d.sendReceiveIndicator}"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.calculationType']}">
+											<h:outputText value="#{d.calculationType}"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.primaryParameter']}">
+											<h:outputText value="#{d.primaryTestKeyName}"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.secondaryParameter']}">
+											<h:outputText value="#{d.secondaryTestKeyParameterName}"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.secondaryIndicator']}">
+											<h:outputText value="#{d.serialIndicator}"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.endOfSerial']}">
+											<h:outputText value="#{d.endOfSerial}"/>
+										</p:column>
+										
+       									 <p:column headerText="#{msg['lbl.edit']}">
+											<p:commandButton id="imgEdit" styleClass="edit" value="" rendered="#{d.renderEditButton}" action="#{testkeyParameterForBankBean.edit(d)}" disabled="#{testkeyParameterForBankBean.booEditButton}" update="dataTable,:form:mainPanel" process="@this"/>
+										</p:column> 
+										
+										<p:column headerText="#{msg['lbl.active/deactive']}" style="text-align:center !important;">
+			                              <p:commandLink action="#{testkeyParameterForBankBean.checkStatus(d)}" value="#{d.dynamicLabelForActivateDeactivate}" style="color:blue !important; text-decoration:underline !important;" update=":form:mainPanel,dataTable" immediate="true" process="@this" />
+		                                 </p:column>  
+										</p:dataTable> 							
+											</p:panel>
+											<div class="clearfix"></div>
+										<p:spacer height="10px"/>
+										<div class="clearfix"></div>
+										<h:panelGroup layout="block" class="clearfix"/>
+									<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{testkeyParameterForBankBean.booSaveOrExit}" id="booSubmitPanel">						
+										<p:commandButton id="submitPanel" value="#{msg['lbl.submit']}" action="#{testkeyParameterForBankBean.saveTestKeyForBank}" disabled="#{testkeyParameterForBankBean.booSubmitPanel}" process="@this" onstart="process.show();" onsuccess="process.hide();" update="mainPanel" style="margin-right:10px;" tabindex="10" />
+										<p:commandButton value="#{msg['lbl.exit']}"  style="margin-right:10px;" action="#{testkeyParameterForBankBean.exit}" process="@this" immediate="true" tabindex="11"/>
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+											<h:panelGroup layout="block" class="clearfix"/>
+										
+										<p:dialog modal="true" showHeader="true" header="#{msg['lbl.bco.plswait']}"  widgetVar="process"  id="process"   width="300" height="50" resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+							    	</p:dialog>			
+										</p:panel>
+										<div class="clearfix"></div>
+											</p:panel>
+										
+								</h:panelGroup>
+								
+							</h:panelGroup>
+						</td>
+					</tr>
+				</table>
+			</h:form>	
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

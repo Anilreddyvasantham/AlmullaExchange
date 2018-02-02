@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script src="../js/SigWeb.js" type="text/javascript"></script>
+	<script src="../js/digitalsignature.js"></script>
+	<script type="text/javascript">
+		var baseUri = "http://localhost:47289/SigWeb/";		
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+		history.pushState(null, null, 'BankexternalreferenceEnquiry.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'BankexternalreferenceEnquiry.xhtml');
+	    });
+	</script>
+</h:head>
+
+<h:body>
+
+      <p:confirmDialog id="nobranchdetails" widgetVar="nobranchdetails" width="350"
+		height="17" resizable="false"
+		style=" border:2px solid #007f30 !important; padding:0px !important;  color:#007f30 !important; background:url('../images/warning.png') 10px 43px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.noBranchDetailsforRecord']}">
+	</p:confirmDialog>
+
+
+
+	<f:view>
+			<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form">
+							<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+
+							
+									<p:dialog id="datatabledetails"   width="900"  overflow="auto" widgetVar="datatabledetails" header="#{msg['lbl.bankExternalReferenceDataTable']}" resizable="false" styleclass="ui-dialog-content ui-widget-content" style="height: auto; bottom:auto !important; border:3px solid #00a53e !important; font-weight:bold; background: #FFF !important;"
+                      					showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+
+									<p:dataTable value="#{bankExternalReferenceEnquiryBean.popup}" styleClass="mydatatableclass"
+										var="d" rowIndexVar="rowIndex" editable="true" editMode="cell"
+										emptyMessage="#{msg['lbl.norecordfound']}">
+										<p:column headerText="#{msg['lbl.slNo']}" style="width:50px;">
+											<h:outputText value="#{rowIndex+1}" />
+										</p:column>
+
+										<p:column headerText="#{msg['lbl.branchcode']}" filterBy="#{c.branchCode}" filterMatchMode="contains">
+											<h:outputText value="#{d.branchCode}" />
+										</p:column>
+
+										<p:column headerText="#{msg['lbl.branchFullName']}" filterBy="#{c.branchDescription}" filterMatchMode="contains">
+											<h:outputText value="#{d.branchDescription}" />
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.branchExternalId']}">
+											<p:inputText value="#{d.branchExternalId}" readonly="true" />
+										</p:column>
+
+									</p:dataTable>
+
+									<h:panelGroup layout="block" styleClass="shadow_button">
+										<p:commandButton id="detailsokid" value="#{msg['lbl.ok']}"  oncomplete="PF('datatabledetails').hide();" update="mainPanel"/>
+										<div class="clearfix"></div>
+									</h:panelGroup>
+
+								</p:dialog>
+		
+								<h1>
+									<h:outputText value="#{msg['lbl.bankexternalEnquiry']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h3>
+										<h:outputText value="#{msg['lbl.bankexternalEnquiry']}" />
+									</h3>
+									
+																<p:confirmDialog id="csp" widgetVar="csp"   showHeader="false" resizable="false" header="Warning Message" styleClass="warning"
+														style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="explode" hideEffect="explode" message="#{bankExternalReferenceEnquiryBean.errorMsg}">
+	  						 </p:confirmDialog>
+							
+						    <p:confirmDialog id="nullPoiterId"
+                                                                     widgetVar="nullPoiterId" resizable="false"
+                                                                     style="background-color: white !important;"
+                                                                     header="#{msg['lbl.warningDailog']}" styleClass="warning"
+                                                                     showEffect="clip" hideEffect="clip" closeOnEscape="true"
+                                                                     closable="true"
+                                                                     message="#{bankExternalReferenceEnquiryBean.errorMsg} - #{msg['lbl.nullPonterExcepetion']}">
+						     </p:confirmDialog>	
+								<p:panel styleClass="panel_border">
+								
+								
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.country']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgCountry" for="country" display="text" />
+												<p:selectOneMenu id="country"
+													value="#{bankExternalReferenceEnquiryBean.bankCountryId}"
+													filter="true" required="false" filterMatchMode="contains">
+													<f:selectItem itemLabel="#{msg['lbl.selectcountry']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{bankExternalReferenceEnquiryBean.countryList}"
+														var="c" itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+														itemValue="#{c.fsCountryMaster.countryId}" />
+													<p:ajax event="change"
+														listener="#{bankExternalReferenceEnquiryBean.getBankOnCountry}"
+														update="bankPanel" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col" id="bankPanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bank']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<!-- <p:message id="msgBank" for="bank" display="text" /> -->
+												<p:selectOneMenu id="bank"
+													value="#{bankExternalReferenceEnquiryBean.bank}"
+													 filter="true"
+													required="false" filterMatchMode="contains">
+													<f:selectItem itemLabel="#{msg['lbl.selectBank']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{bankExternalReferenceEnquiryBean.bankList}" var="c"
+														itemLabel="#{c.bankMaster.bankCode} - #{c.bankMaster.bankFullName}" itemValue="#{c.bankMaster.bankId}" />
+													<p:ajax event="change" 	update="mainPanel" /> 
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										
+										
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.enquiry']}"  action="#{bankExternalReferenceEnquiryBean.viewAll}"  update="mainPanel" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+											<p:commandButton value="#{msg['lbl.clear']}"  action="#{bankExternalReferenceEnquiryBean.clearEnquiryBean}"  update="mainPanel" process="@this"  />
+											<p:commandButton value="#{msg['lbl.exit']}"  action="#{bankExternalReferenceEnquiryBean.clickOnExit}"   process="@this"  />
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+										
+										<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="20px" />
+
+									<p:dataTable id="dataTableId" var="c" styleClass="mydatatableclass"
+										value="#{bankExternalReferenceEnquiryBean.viewList}"  rendered="#{bankExternalReferenceEnquiryBean.booEnableDatatable}"
+										rowIndexVar="rowIndex" emptyMessage="#{msg['lbl.noRecordFound']}"
+										rows="15" paginator="true"
+										paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+										rowsPerPageTemplate="15,20,25" paginatorPosition="bottom">
+
+
+										<p:column headerText="#{msg['lbl.sino']}" style="width:50px;" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputText value="#{rowIndex+1}" />
+										</p:column>
+
+										<p:column headerText="#{msg['lbl.country']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.countryName}">
+											<h:outputText value="#{c.countryName}" />
+										</p:column>
+
+										<p:column headerText="#{msg['lbl.bank']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.bankName}">
+											<h:outputText value="#{c.bankName}" />
+										</p:column>
+
+										<p:column headerText="#{msg['lbl.beneficiaryBank']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.beneficaryBankName}">
+											<h:outputText value="#{c.beneficaryBankName}" />
+										</p:column>
+
+										<p:column headerText="#{msg['lbl.bankExternalId']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.bankExternalId}">
+											<h:outputText value="#{c.bankExternalId}" />
+										</p:column>
+
+											<p:column headerText="#{msg['lbl.viewbranch']}" >
+													<p:commandLink id="branchappid" actionListener="#{bankExternalReferenceEnquiryBean.viewBranchData(c)}" update=":form:datatabledetails,:form:mainPanel" immediate="true" >
+														<h:outputText value="View Branch" style="text-align:center; width:50px;text-decoration:underline !important;color:blue !important;"/>
+													</p:commandLink>
+											</p:column>
+			
+										<p:column headerText="#{msg['lbl.createdBy']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.createdBy}">
+											<h:outputText value="#{c.createdBy}" />
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.createddate']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.createdOn}">
+											<h:outputText value="#{c.createdOn}" />
+											
+										</p:column>
+										
+											<p:column headerText="#{msg['lbl.enqStatus']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.isActive}">
+											<h:outputText value="#{c.isActive}" />
+										</p:column>
+
+									</p:dataTable>
+								</p:panel>
+							</p:panel>
+							</h:form>
+						</h:panelGroup>
+						</h:panelGroup>
+						</td>
+						
+						
+			</tr>
+		</table>
+		
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

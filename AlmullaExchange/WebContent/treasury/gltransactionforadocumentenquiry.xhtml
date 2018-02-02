@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+ <link rel="stylesheet" type="text/css" href="../css/dataTable.css" /> 
+ <script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+		history.pushState(null, null, 'gltransactionforadocumentenquiry.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'gltransactionforadocumentenquiry.xhtml');
+	    });
+	</script>  
+</h:head>
+	<p:confirmDialog id="notApproved" widgetVar="notApproved" width="300" header="#{msg['lbl.message']}"
+		height="17" resizable="false"
+		style=" border:2px solid gray !important; padding:0px !important;  color:solid green !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="explode" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.nodatafound']}">
+    	</p:confirmDialog> 
+  <p:confirmDialog id="nodatafound" widgetVar="nodatafound" width="370" styleClass="red" header="#{msg['lbl.warningDailog']}" resizable="false" 	
+  style="background-color: white !important;" showEffect="clip" hideEffect="clip" message="There is no Records!">
+      </p:confirmDialog>	
+    	
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<h:form id="form1"  >
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+				 
+				<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+				</td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h1>
+								<h:outputText value="#{msg['lbl.glTransForADocument']}" />
+							</h1>
+							<p:panel styleClass="shadow" id="mainPanel">
+							<p:confirmDialog id="error" widgetVar="error"  
+								resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" 
+								showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{glTransactionForDocumentBean.errorMessage}" >
+							</p:confirmDialog>
+							<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"  
+									resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" 
+									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{glTransactionForDocumentBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}" >
+							</p:confirmDialog>
+							
+						<!-- 	<h2>
+											<h:outputText value="GL Transaction For A Document" />
+										</h2> -->
+										<p:panel styleClass="panel_border"  >
+										
+														
+										<p:panel styleClass="left_col">
+
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['lbl.company']} *"></h:outputText>
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+													
+										<p:message id="msgCompany"  for="companyid1" display="text" />
+                                                    <p:selectOneMenu id="companyid1" value="#{glTransactionForDocumentBean.companyId}" filter="true" filterMatchMode="contains" required="true"  requiredMessage="Please Select Company"   >
+                                                    <f:selectItem itemLabel="#{msg['lbl.selectcompany']}"  itemValue="" />
+                                                    <f:selectItems value="#{glTransactionForDocumentBean.companyListFromDB}" var="c"  itemLabel="#{c.fsCompanyMaster.companyCode} - #{c.companyName}" itemValue="#{c.fsCompanyMaster.companyId}"/> 
+                                                    <p:ajax  update="msgCompany"/>
+                                                </p:selectOneMenu>			
+																		
+										</p:panel>
+										</p:panel>
+										
+																
+										
+										<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['lbl.documentType']}*"></h:outputText>
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+													
+										<p:message id="msgDocument"  for="documentid1" display="text" />
+                                                    <p:selectOneMenu id="documentid1" value="#{glTransactionForDocumentBean.documentId}" filter="true" filterMatchMode="contains" required="true"  requiredMessage="Please Select DocumentType"   >
+                                                    <f:selectItem itemLabel="#{msg['lbl.selectDocType']}" itemValue="" />
+                                                    <f:selectItems value="#{glTransactionForDocumentBean.dcoumentList}" var="c"  itemLabel="#{c.documentCode}-#{c.documentDesc}" itemValue="#{c.documentID}"/> 
+                                                    <p:ajax  update="msgDocument"/>
+                                                </p:selectOneMenu>			
+																		
+										</p:panel>
+										</p:panel>
+										
+																		
+									<p:panel styleClass="left_col">
+
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['lbl.documentYear']} *"></h:outputText>
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+													
+										<p:message id="msgDocumentYear"  for="documentid" display="text" />
+                                                    <p:selectOneMenu id="documentid" value="#{glTransactionForDocumentBean.documentFinancialYear}" filter="true" filterMatchMode="contains" required="true"  requiredMessage="Please Select DocumentYear"   >
+                                                    <f:selectItem itemLabel="-- Select Document Year --" itemValue="" />
+                                                    <f:selectItems value="#{glTransactionForDocumentBean.userFinancialYearList}" var="c"  itemLabel="#{c.financialYear}" itemValue="#{c.financialYear}"/> 
+                                                    <p:ajax  update="msgDocumentYear"/>
+                                                </p:selectOneMenu>			
+																		
+										</p:panel>
+										</p:panel>
+									 <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.documentNo']} *" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="docnomsg" for="documentnoid" display="text"/>
+											<p:inputText id="documentnoid"   value="#{glTransactionForDocumentBean.documentNo}" required="true" requiredMessage="Please Enter Document Number" >
+										 
+											<p:ajax update="docnomsg"/>
+											</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+										<h:panelGroup layout="block" class="clearfix"/>
+									<h:panelGroup layout="block" styleClass="shadow_button"   >						
+										<p:commandButton value="#{msg['lbl.enquiry']}"   action="#{glTransactionForDocumentBean.glTrnsactionEnquiry}"   style="margin-right:10px;" update="mainPanel"   />
+										<p:commandButton value="#{msg['lbl.exit']}" action="#{fcsaleEnquiryBean.exit}" style="margin-right:10px;" process="@this"  />
+										<p:commandButton value="#{msg['lbl.clear']}" action="#{glTransactionForDocumentBean.clearAll}"  update="form1" immediate="true" process="@this"   /> 
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+									<h:panelGroup layoutR="block" class="clearfix"/>
+									 
+        						
+                  
+										<h:panelGroup layout="block" class="clearfix"/>
+										
+									<p:panel styleClass="panel_border"  >
+									
+									<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bankTransferRequestDate']} " />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+										 
+											<p:inputText id="documentdateid"   value="#{glTransactionForDocumentBean.documentDate}" readonly="true" >
+											<!-- <f:convertDateTime pattern="dd/MM/YYYY"/>  -->
+											<p:ajax  />
+											</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.accMonthOrYear']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:inputText id="documentacyymmid"   value="#{glTransactionForDocumentBean.acMMYY}"  readonly="true" >
+										<!--  <f:convertDateTime pattern="dd-MM-yyyy"/>  -->
+											<p:ajax />
+											</p:inputText>
+											</p:panel>
+										</p:panel>	
+						
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.enqStatus']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:inputText id="documentstatusid"   value="#{glTransactionForDocumentBean.status}" readonly="true">
+											<p:ajax />
+											</p:inputText>
+											</p:panel>
+										</p:panel>	
+										 
+										
+									<h:panelGroup layout="block" class="clearfix"/>	
+										
+													
+										
+									 
+											<p:dataTable id="dataTable"
+													value="#{glTransactionForDocumentBean.enquiryDTList}" var="c"
+													rowIndexVar="rowIndex" emptyMessage="#{msg['lbl.norecordfound']}"
+													rows="10" paginator="true"
+													paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+													paginatorPosition="bottom" rowsPerPageTemplate="5,10,15"
+													sortMode="multiple" styleClass="mydatatableclass">
+									
+										<!-- <p:column headerText="S.No">
+										    <h:outputText value="#{rowIndex+1}" />
+										</p:column> -->
+						 				<p:column headerText="#{msg['lbl.linenumber']}">
+											<p:outputLabel value="#{c.lineNumber}"/>
+										</p:column>	 
+												
+									    <p:column headerText="#{msg['lbl.customerRef']}">
+											<p:outputLabel value="#{c.customerRef}"/>
+										</p:column>	    
+										
+										<p:column headerText="#{msg['lbl.faAccountNo']}">
+											<p:outputLabel value="#{c.faAccountNumber}"/>
+										</p:column>
+												
+										<p:column headerText="#{msg['lbl.itemDesc']}">
+											<p:outputLabel value="#{c.itemDescription}"/>
+										</p:column>
+										<p:column headerText="#{msg['lbl.currency']}">
+										    <p:outputLabel value="#{c.currencyDescription}"/>
+										</p:column> 		
+										 
+										<p:column headerText="#{msg['lbl.foreAmount']}">
+										<p:outputLabel value="#{c.foreignAmount}"/>
+										 </p:column> 	
+										<p:column headerText="#{msg['lbl.exchangecurrentrate']}">
+										    <p:outputLabel value="#{c.exchangeRate}"/>
+										</p:column>                                    
+ 	 									
+										<p:column headerText="#{msg['lbl.fclocalamt']}">
+										    <p:outputLabel value="#{c.localAmount}"/>
+										</p:column> 
+										<p:column headerText="#{msg['lbl.specialDeal']}">
+										    <p:outputLabel value="#{c.specialDeal}"/>
+										</p:column> 		
+																					
+									    </p:dataTable>
+									    
+									    
+                                </p:panel>
+									<p:panel styleClass="left_col" >
+								 
+								</p:panel>
+									</p:panel>
+									</p:panel>
+							</h:panelGroup>
+							</h:panelGroup>
+							</td>
+							</tr>
+						</table>
+						<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+									<h:panelGroup layout="block" class="clearfix"/>
+		</h:form>
+		</f:view>
+		</h:body>
+		</html>

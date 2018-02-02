@@ -1,0 +1,906 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script type="text/javascript">
+		$(document).on("keypress", ".dropdown", function(event) {
+			if (event.keyCode == 32) {
+				$('.ui-selectonemenu-trigger', this).click();
+			}
+		});
+	</script>
+</h:head>
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+		<h:form>
+		<p:focus context="availOnLineService"></p:focus>
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;"><ui:include
+							src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle"
+										src="../images/toggle_plus.png" alt=""
+										onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+
+								<h1>
+									<h:outputText value="Alternate Channel" />
+								</h1>
+
+
+								<p:panel styleClass="shadow" id="mainPanel"
+									style="background-color:#FFF !important; ">
+
+									<h3>
+										<h:outputText value="#{msg['lbl.customerInfo']}" />
+									</h3>
+
+									<p:dialog modal="true" showHeader="true"
+										header="#{msg['lbl.pleasewait']}" widgetVar="process"
+										id="process" width="300" height="50" resizable="false"
+										draggable="false" closable="false"
+										style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+										<div style="text-align: center;">
+											<p:graphicImage value="../images/preloader.gif" />
+										</div>
+									</p:dialog>
+
+
+									<p:confirmDialog id="errorPage" widgetVar="errorPage"
+										resizable="false" width="500"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{mobileAppVivaServiceBean.errorMessage} ">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="duplicateCheck" widgetVar="duplicateCheck"
+										resizable="false" width="500"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{lbl.duplicate} ">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="bankNot" widgetVar="bankNot"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Banks are not existed">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="accountNo" widgetVar="accountNo"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{msg['lbl.accountnumbernotexist']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="beneBranchNot" widgetVar="beneBranchNot"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{msg['lbl.nobranchesfound']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="inValidLogin" widgetVar="inValidLogin"
+										height="20" resizable="false" width="350"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{msg['lbl.userNamePasswordAreInvalid']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="failToUpdate" widgetVar="failToUpdate"
+										resizable="false" width="300px"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Fail to update OTP details">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="otpNotMatch" widgetVar="otpNotMatch"
+										resizable="false" width="300px"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="OTP is not matching">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="otpNoEmpty" widgetVar="otpNoEmpty"
+										resizable="false" width="300px"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Please enter OTP number">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="selectBeneCntry"
+										widgetVar="selectBeneCntry" resizable="false" width="300px"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Please select beneficiary country">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="selectBeneName" widgetVar="selectBeneName"
+										resizable="false" width="300px"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Please select beneficiary name">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="selectBeneBank" widgetVar="selectBeneBank"
+										resizable="false" width="300px"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Please select beneficiary Bank">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="selectBeneBranch"
+										widgetVar="selectBeneBranch" resizable="false" width="300px"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Please select beneficiary Branch">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="selectBeneAccount"
+										widgetVar="selectBeneAccount" resizable="false" width="300px"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="Please select beneficiary accont number">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="selectLanguage" widgetVar="selectLanguage"
+										resizable="false" width="300px"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Please select language type">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="deselectOpt" widgetVar="deselectOpt"
+										resizable="false" width="300px"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Please uncheck OPT selection">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="deselectManual" widgetVar="deselectManual"
+										resizable="false" width="300px"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Please uncheck manual selection">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="onlineCheck" widgetVar="onlineCheck"
+										resizable="false" width="300px"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Please select online service">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="kioskCheck" widgetVar="kioskCheck"
+										resizable="false" width="300px"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Please select kiosk service">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="mobileCheck" widgetVar="mobileCheck"
+										resizable="false" width="300px"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Please select mobile service">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="serviceProviderCheck"
+										widgetVar="serviceProviderCheck" resizable="false"
+										width="300px" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Please select service provider">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="serviceProviderNameCheck"
+										widgetVar="serviceProviderNameCheck" resizable="false"
+										width="300px" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Please select service provider name">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="VerifiedMethod" widgetVar="VerifiedMethod"
+										resizable="false" width="300px"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="Please select OTP verification or Manual verification">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="serviceProveeiNoT"
+										widgetVar="serviceProveeiNoT" resizable="false" width="300px"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Service providers are not available">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="antoherService"
+										header="#{msg['lbl.warning']}" widgetVar="antoherService"
+										width="600" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="Existing service provider will be deactivate.Do you want to continue">
+										<p:commandButton value="#{msg['lbl.yes']}"
+											action="#{mobileAppVivaServiceBean.addServiceprovider}"
+											oncomplete="antoherService.hide()" update="mainPanel"
+											immediate="true" />
+										<p:commandButton value="#{msg['lbl.no']}"
+											onclick="copy.hide();" immediate="true" />
+									</p:confirmDialog>
+
+									<p:dialog id="complete" widgetVar="complete" width="400"
+										height="70" resizable="false"
+										style="background-color: white !important;"
+										styleClass="success" header="#{msg['lbl.success']}"
+										closable="false" showEffect="clip" hideEffect="clip">
+										<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']}"
+											style="text-align: center; font-size:16px !important;" />
+										<br />
+										<p:commandButton value="ok"
+											actionListener="#{mobileAppVivaServiceBean.backToRemitanceFirstPanel}"
+											process="@this" style="margin-left: 180px !important;" />
+									</p:dialog>
+
+									<p:panel styleClass="panel_border">
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel value="#{msg['lbl.customerName']}"
+													style="color:#05000a;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText styleClass="ui-state-disabled" tabindex="-1"
+													value="#{mobileAppVivaServiceBean.customerName}"
+													readonly="true" style="font-size:12px !important;">
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel value="#{msg['lbl.CustomerLocalName']}"
+													style="color:#05000a;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText styleClass="ui-state-disabled" tabindex="-1"
+													value="#{mobileAppVivaServiceBean.customerArbicName}"
+													readonly="true"
+													style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;font-size:15px !important;"
+													dir="RTL">
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.localMobileNumber']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText styleClass="ui-state-disabled" tabindex="-1"
+													value="#{mobileAppVivaServiceBean.customerLocalMobile}"
+													readonly="true" style="font-size:15px !important;">
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix"></div>
+
+									</p:panel>
+
+
+									<h3>
+										<h:outputText value="Avail Remittance Services" />
+									</h3>
+
+									<p:panel styleClass="panel_border">
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Avail Online Service " />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">											
+												<p:message id="msgAvailOnLineService"
+													for="availOnLineService" display="text" />
+												<p:selectOneMenu id="availOnLineService"
+													styleClass="dropdown" tabindex="0"
+													value="#{mobileAppVivaServiceBean.availOnLineService}"
+													required="true" filter="true" filterMatchMode="contains"
+													requiredMessage="Please select avail online service">
+													<f:selectItem itemLabel="Select availed online service"
+														itemValue="" />
+													<f:selectItem itemValue="Y" itemLabel="Yes" />
+													<f:selectItem itemValue="N" itemLabel="No" />
+													<p:ajax update="msgAvailOnLineService" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Avail Kiosk Service" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgAvailKioskService" for="availKioskService"
+													display="text" />
+												<p:selectOneMenu id="availKioskService"
+													styleClass="dropdown"
+													value="#{mobileAppVivaServiceBean.availKioskService}"
+													required="true" filter="true" filterMatchMode="contains"
+													requiredMessage="Please select avail kiosk service">
+													<f:selectItem itemLabel="Select availed kiosk service"
+														itemValue="" />
+													<f:selectItem itemValue="Y" itemLabel="Yes" />
+													<f:selectItem itemValue="N" itemLabel="No" />
+													<p:ajax update="msgAvailKioskService" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix"></div>
+
+										<!-- <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Avail Mobile App Service" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgAvailMobileService"
+													for="availMobileService" display="text" />
+												<p:selectOneMenu id="availMobileService"
+													styleClass="dropdown"
+													value="#{mobileAppVivaServiceBean.availMobileAppService}"
+													required="true" filter="true" filterMatchMode="contains"
+													requiredMessage="Please select avail mobile app service">
+													<f:selectItem itemLabel="Select availed mobile service"
+														itemValue="" />
+													<f:selectItem itemValue="Y" itemLabel="Yes" />
+													<f:selectItem itemValue="N" itemLabel="No" />
+													<p:ajax update="msgAvailMobileService" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel> -->
+
+										<!-- <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Avail Service Provider" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgAvailServiceProvider"
+													for="availServiceProvider" display="text" />
+												<p:selectOneMenu id="availServiceProvider"
+													styleClass="dropdown"
+													value="#{mobileAppVivaServiceBean.availServiceProvider}"
+													required="true" filter="true" filterMatchMode="contains"
+													requiredMessage="Please select avail service provider">
+													<f:selectItem itemLabel="Select availed service provider"
+														itemValue="" />
+													<f:selectItem itemValue="Y" itemLabel="Yes" />
+													<f:selectItem itemValue="N" itemLabel="No" />
+													<p:ajax update="msgAvailServiceProvider" />
+													<p:ajax
+														listener="#{mobileAppVivaServiceBean.callMobileAppService}"
+														update="mainPanel,serviceProviderDTPanelId,serviceProviderPanelId,errorPage"
+														onstart="process.show();" onsuccess="process.hide();" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel> -->
+
+										<div class="clearfix"></div>
+
+									</p:panel>
+
+
+
+									<p:panel styleClass="panel_border" id="serviceProviderPanelId"
+										rendered="#{mobileAppVivaServiceBean.booRenderServiceProviderPanel}">
+
+										<h3>
+											<h:outputText value="Service provider details" />
+										</h3>
+
+										<p:panel styleClass="left_col"
+											style="padding: 0px 250px 0px 250px;">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Service Provider Name" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgServiceProvider" for="serviceProvider"
+													display="text" />
+												<p:selectOneMenu id="serviceProvider" styleClass="dropdown"
+													value="#{mobileAppVivaServiceBean.serviceProviderName}"
+													required="true" filter="true" filterMatchMode="contains"
+													requiredMessage="Please select service provider">
+													<f:selectItem itemLabel="Select service provider"
+														itemValue="" />
+													<f:selectItems
+														value="#{mobileAppVivaServiceBean.lstServiceProviderView}"
+														var="o" itemLabel="#{o.serviceProvider}"
+														itemValue="#{o.serviceProviderCode}" />
+													<p:ajax
+														update="msgServiceProvider,serviceBeneDetails,optManualChekboxPanel,optManualChekboxPanel1,mainPanel"
+														listener="#{mobileAppVivaServiceBean.callBeneDetails}"
+														onstart="process.show();" onsuccess="process.hide();" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="panel_border" id="serviceBeneDetails"
+											rendered="#{mobileAppVivaServiceBean.booRenderBenDeailsService}">
+
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.beneficiaryCountry']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgBeneCountry" for="beneCountry"
+														display="text" />
+													<p:selectOneMenu id="beneCountry" styleClass="dropdown"
+														value="#{mobileAppVivaServiceBean.beneCountryId}"
+														required="true"
+														requiredMessage="Please select beneficiary country"
+														filter="true" filterMatchMode="contains">
+														<f:selectItem itemLabel="#{msg['lbl.beleselect']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{mobileAppVivaServiceBean.allBeneCountryList}"
+															var="c" itemLabel="#{c.populateCode} - #{c.populateName}"
+															itemValue="#{c.populateId}" />
+														<p:ajax
+															update="msgBeneCountry,beneid,singleBeneBankId,beneBank,selectmenu,singleAcc,beneBranch,singleBeneBranch,errorPage"
+															listener="#{mobileAppVivaServiceBean.populateBeneficiary}"
+															onstart="process.show();" onsuccess="process.hide();" />
+													</p:selectOneMenu>
+
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.benificaryName']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+
+
+													<p:message for="beneid" display="text" id="msgbeneid" />
+
+													<p:selectOneMenu id="beneid" styleClass="dropdown"
+														value="#{mobileAppVivaServiceBean.beneName}"
+														filterMatchMode="contains" filter="true"
+														label="Beneficiary">
+														<f:selectItem itemLabel="#{msg['lbl.selectBene']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{mobileAppVivaServiceBean.beneficiaryList}"
+															var="c" itemLabel="#{c.populateName}"
+															itemValue="#{c.populateName}" />
+
+														<p:ajax update="msgbeneid,mainPanel,errorPage"
+															listener="#{mobileAppVivaServiceBean.populateBanks}"
+															onstart="process.show();" onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.beneficaryBank']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+
+
+													<p:column
+														style="width:100%; text-align:left;padding:0px !important;"
+														rendered="#{mobileAppVivaServiceBean.booRenderMultipleBank}">
+														<p:message id="msgBeneBank" for="beneBank" display="text" />
+														<p:selectOneMenu id="beneBank" styleClass="dropdown"
+															value="#{mobileAppVivaServiceBean.beneBankId}"
+															filter="true" required="true" filterMatchMode="contains"
+															requiredMessage="#{msg['lbl.pleaseSelectBank']}">
+															<f:selectItem itemLabel="#{msg['lbl.selectbank']}"
+																itemValue="" />
+															<f:selectItems
+																value="#{mobileAppVivaServiceBean.lstBanks}" var="c"
+																itemLabel="#{c.populateCode} - #{c.populateName}"
+																itemValue="#{c.populateId}" />
+															<p:ajax for="beneBank" update="mainPanel" event="change"
+																listener="#{mobileAppVivaServiceBean.populateBeneBranch}"
+																onstart="process.show()" onsuccess="process.hide();"
+																process="@this" />
+														</p:selectOneMenu>
+													</p:column>
+													<p:column
+														style="width:100%; text-align:left;padding:0px !important;"
+														rendered="#{mobileAppVivaServiceBean.booRenderSingleBank}">
+														<p:inputText id="singleBeneBankId" tabindex="-1"
+															value="#{mobileAppVivaServiceBean.beneficiaryBankName}"
+															styleClass="ui-state-disabled" readonly="true">
+															<p:ajax />
+														</p:inputText>
+													</p:column>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.beneficarBranch']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:column
+														style="width:100%; text-align:left;padding:0px !important;"
+														rendered="#{mobileAppVivaServiceBean.booRenderMultipleBranch}">
+														<p:message id="msgBeneBranch" for="beneBranch"
+															display="text" />
+														<p:selectOneMenu id="beneBranch" styleClass="dropdown"
+															value="#{mobileAppVivaServiceBean.beneBranchId}"
+															filter="true" required="true" filterMatchMode="contains"
+															requiredMessage="#{msg['lbl.pleaseSelectBranch']}">
+															<f:selectItem itemLabel="#{msg['lbl.selectBranch']}"
+																itemValue="" />
+															<f:selectItems
+																value="#{mobileAppVivaServiceBean.lstBranch}" var="c"
+																itemLabel="#{c.populateCode} - #{c.populateName}"
+																itemValue="#{c.populateId}" />
+															<p:ajax for="beneBank" update="mainPanel" event="change"
+																listener="#{mobileAppVivaServiceBean.populateAccountNumber}"
+																onstart="process.show()" onsuccess="process.hide();"
+																process="@this" />
+														</p:selectOneMenu>
+													</p:column>
+													<p:column
+														style="width:100%; text-align:left;padding:0px !important;"
+														rendered="#{mobileAppVivaServiceBean.booRenderSingleBranch}">
+														<p:inputText id="singleBeneBranch" tabindex="-1"
+															value="#{mobileAppVivaServiceBean.beneficiaryBranch}"
+															styleClass="ui-state-disabled" readonly="true">
+															<p:ajax />
+														</p:inputText>
+													</p:column>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.beneficiaryAccount']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+
+													<p:row>
+														<p:column
+															style="width:100%; text-align:left;padding:0px !important;"
+															rendered="#{mobileAppVivaServiceBean.booRenderBnkAccNoList}">
+															<p:message for="selectmenu" display="text" id="bankAcNo" />
+															<p:selectOneMenu id="selectmenu" styleClass="dropdown"
+																value="#{mobileAppVivaServiceBean.accountSequenceId}"
+																filter="true" filterMatchMode="contains" required="true"
+																requiredMessage="Please Select Account Number">
+																<f:selectItem
+																	itemLabel="#{msg['lbl.selectaccountnumber']}"
+																	itemValue="" />
+																<f:selectItems
+																	value="#{mobileAppVivaServiceBean.lstAccountNumber}"
+																	var="c" itemLabel="#{c.populateCode}"
+																	itemValue="#{c.populateId}" />
+																<p:ajax update="mainPanel"
+																	listener="#{mobileAppVivaServiceBean.populateOtherDetails}"
+																	onstart="process.show()" onsuccess="process.hide();" />
+															</p:selectOneMenu>
+														</p:column>
+														<p:column
+															style="width:100%; text-align:left;padding:0px !important;"
+															rendered="#{mobileAppVivaServiceBean.booRenderBnkAccNo}">
+															<p:inputText id="singleAcc" tabindex="-1"
+																value="#{mobileAppVivaServiceBean.accountNumber}"
+																styleClass="ui-state-disabled" readonly="true">
+																<p:ajax />
+															</p:inputText>
+														</p:column>
+													</p:row>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Fixed Amount/Variable" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="fixedAmount" display="text"
+														id="msgFixedAmount" />
+
+													<p:inputText id="currency"
+														value="#{mobileAppVivaServiceBean.currencyQuote}" tabindex="-1"
+														readonly="true" styleClass="ui-state-disabled"
+														style="width: 20%; color: red !important;">
+													</p:inputText>
+													<p:inputText id="fixedAmount"
+														value="#{mobileAppVivaServiceBean.fixedAmount}"
+														style="width: 60%;margin-left:10px;">
+														<p:ajax update="msgFixedAmount" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.language']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+
+													<p:messages id="msgLanguageId" display="text"
+														for="languageId" />
+													<p:selectOneMenu id="languageId" styleClass="dropdown"
+														value="#{mobileAppVivaServiceBean.languageId}"
+														filter="true" filterMatchMode="contains">
+														<f:selectItem itemValue=""
+															itemLabel="#{msg['lbl.serPleaseSelectLanguage']}" />
+														<f:selectItems
+															value="#{mobileAppVivaServiceBean.lstLanguageTypes}"
+															var="o" itemLabel="#{o.languageName}"
+															itemValue="#{o.languageId}" />
+														<p:ajax event="change" update="msgLanguageId" />
+													</p:selectOneMenu>
+
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+										</p:panel>
+
+										<p:panel id="optManualChekboxPanel"
+											rendered="#{mobileAppVivaServiceBean.booOtpManualCheckBox}">
+											<p:panel styleClass="inner_left_col">
+												<p:selectBooleanCheckbox
+													value="#{mobileAppVivaServiceBean.otpSelection}">
+													<p:ajax
+														listener="#{mobileAppVivaServiceBean.selectOtpSelect}"
+														update="serviceProviderPanelId,duplicateCheck,errorPage"
+														onstart="process.show()" onsuccess="process.hide();" />
+												</p:selectBooleanCheckbox>
+													 &nbsp; 
+													<h:outputText value="OTP Verification" />
+											</p:panel>
+										</p:panel>
+
+										<p:panel id="serviceProviderOTPPanelId"
+											rendered="#{mobileAppVivaServiceBean.booOTPAuthorizedPanel}">
+											<p:panel styleClass="left_col"
+												style="padding: 0px 250px 0px 250px;">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="OTP Verfication" />
+												</p:panel>
+
+												<p:panel styleClass="inner_right_col">
+													<p:message for="optNoId" display="text" id="msgOptNoId" />
+													<p:inputText value="#{mobileAppVivaServiceBean.otpNo}"
+														required="true" requiredMessage="Please enter OTP number"
+														id="optNoId">
+														<p:ajax update="msgOptNoId" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+										</p:panel>
+
+										<p:panel id="optManualChekboxPanel1"
+											rendered="#{mobileAppVivaServiceBean.booOtpManualCheckBox}">
+											<p:panel styleClass="inner_left_col">
+												<p:selectBooleanCheckbox
+													value="#{mobileAppVivaServiceBean.manualSelection}">
+													<p:ajax
+														listener="#{mobileAppVivaServiceBean.selectManualSelect}"
+														update="serviceProviderPanelId,errorPage"
+														onstart="process.show()" onsuccess="process.hide();" />
+												</p:selectBooleanCheckbox>
+													 &nbsp; 
+													<h:outputText value="Manual Verification" />
+											</p:panel>
+										</p:panel>
+
+										<p:panel id="serviceProviderManualPanelId"
+											rendered="#{mobileAppVivaServiceBean.booManualAuthorizedPanel}">
+											<p:panel styleClass="left_col"
+												style="padding: 0px 250px 0px 250px;">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.authorzed']}" />
+												</p:panel>
+
+												<p:panel styleClass="inner_right_col">
+													<p:message id="mamluse" for="amluse" display="text" />
+													<p:selectOneMenu id="amluse" styleClass="dropdown"
+														value="#{mobileAppVivaServiceBean.amlAuthorizedBy}"
+														filterMatchMode="contains" filter="true" required="true"
+														requiredMessage="Please enter Authorized By">
+														<f:selectItem itemLabel="Select Authorized" itemValue="" />
+														<f:selectItems
+															value="#{mobileAppVivaServiceBean.empllist}" var="c"
+															itemLabel="#{c.userName}" itemValue="#{c.userName}" />
+														<p:ajax update="mamluse" />
+													</p:selectOneMenu>
+												</p:panel>
+
+											</p:panel>
+
+											<p:panel styleClass="left_col"
+												style="padding: 0px 250px 0px 250px;">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.password']}" />
+												</p:panel>
+
+												<p:panel styleClass="inner_right_col">
+													<p:message for="amlpas" display="text" id="mamlpass" />
+													<p:password
+														value="#{mobileAppVivaServiceBean.amlAuthorizedPassword}"
+														required="true" requiredMessage="Please enter Password"
+														id="amlpas">
+														<p:ajax update="mamlpass" />
+													</p:password>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+
+										</p:panel>
+										<div class="clearfix"></div>
+									</p:panel>
+
+									<div class="clearfix"></div>
+									<p:spacer height="10px" />
+									<div class="clearfix"></div>
+
+									<!-- <h:panelGroup layout="block" styleClass="shadow_button">
+										<p:commandButton value="Submit" style="margin-right:10px;"/>
+											<p:commandButton value="Exit"/>
+											<div class="clearfix"></div>
+										</h:panelGroup> -->
+
+
+									<div class="clearfix"></div>
+									<p:spacer height="10px" />
+									<div class="clearfix"></div>
+
+									<p:panel id="serviceProviderDTPanelId"
+										rendered="#{mobileAppVivaServiceBean.booRenderDTServiceProviderPanel}">
+
+
+
+
+										<p:dataTable id="dataTable"
+											value="#{mobileAppVivaServiceBean.lstAlerChannelDt}" var="c"
+											rowStyleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+											rowIndexVar="rowIndex" style="width:100%;" paginator="true"
+											paginatorPosition="bottom"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="5" styleClass="mydatatableclass">
+
+											<p:column headerText="#{msg['lbl.sNo']}">
+												<p:outputLabel value="#{rowIndex+1}" />
+											</p:column>
+
+											<p:column headerText="Service Provider">
+												<p:outputLabel value="#{c.serviceProviderName}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.beneficiaryCountry']}">
+												<p:outputLabel value="#{c.beneCountryName}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.benificaryName']}">
+												<p:outputLabel value="#{c.beneName}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.beneficaryBank']}">
+												<p:outputLabel value="#{c.beneBank}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.beneficarBranch']}">
+												<p:outputLabel value="#{c.beneBankBranch}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.beneficiaryAccount']}">
+												<p:outputLabel value="#{c.beneAccountNumber}" />
+											</p:column>
+
+
+											<p:column headerText="Fixed Amount/Variable">
+												<p:outputLabel value="#{c.fixedAmount}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.language']}">
+												<p:outputLabel value="#{c.languageName}" />
+											</p:column>
+
+										</p:dataTable>
+
+										<h:panelGroup layout="block"
+											style="width:100%; text-align:right; padding-top:10px !important;">
+											<p:commandLink id="addnewbanks"
+												value="Add/Change Beneficiary" styleClass="link1"
+												action="#{mobileAppVivaServiceBean.addAnotherServiceProvider}"
+												update="mainPanel" process="@this" onstart="process.show()"
+												onsuccess="process.hide();" />
+										</h:panelGroup>
+
+									</p:panel>
+									<div class="clearfix"></div>
+
+									<div class="clearfix"></div>
+									<p:spacer height="10px" />
+									<div class="clearfix"></div>
+
+									<h:panelGroup layout="block" styleClass="shadow_button">
+										<p:commandButton value="Save" style="margin-right:5px;"
+											action="#{mobileAppVivaServiceBean.mainSave}"
+											process="@this" update="mainPanel" onstart="process.show();"
+											onsuccess="process.hide();" />
+										<p:commandButton value="#{msg['lbl.back']}"
+											style="margin-left:2px;" process="@this"
+											action="#{mobileAppVivaServiceBean.backToRemitanceFirstPanel}"
+											immediate="true" update="mainPanel" onstart="process.show();"
+											onsuccess="process.hide();" />
+
+										<!-- <p:commandButton style="margin-left:5px;" value="#{msg['lbl.exit']}"  action="#{mobileAppVivaServiceBean.exit}" process="@this" onstart="process.show()" onsuccess="process.hide();" immediate="true" /> -->
+										<div class="clearfix"></div>
+									</h:panelGroup>
+								</p:panel>
+
+							</h:panelGroup>
+							<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+						</h:panelGroup></td>
+				</tr>
+			</table>
+		</h:form>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

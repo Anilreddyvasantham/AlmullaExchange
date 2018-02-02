@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/new_style.css" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+
+	<script type="text/javascript">
+		history.pushState(null, null, 'kioskpingeneration.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'kioskpingeneration.xhtml');
+		});
+	</script>
+
+	<style type="text/css">
+.ui-dialog.dialogsuccess .ui-widget-content {
+	border: 3px solid #00a53e !important;
+	font-weight: bold;
+	padding: 0px 0px 0px 30px !important;
+}
+
+.ui-dialog.dialogsuccess .ui-widget-content label {
+	margin-right: 0px !important;
+}
+
+label {
+	margin-right: 26px !important;
+}
+</style>
+</h:head>
+
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form"
+								onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'text') return false;}">
+
+								<p:confirmDialog id="norecord" widgetVar="norecord" width="400"
+									height="17" resizable="false"
+									style="color:#FF0000 !important; border:2px solid #F33535 !important; padding:0px !important;  font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" message="#{msg['lbl.recordnotfound']}">
+								</p:confirmDialog>
+
+								<p:confirmDialog id="mobileShoulbeUpdate"
+									widgetVar="mobileShoulbeUpdate" width="400" height="17"
+									resizable="false"
+									style="color:#FF0000 !important; border:2px solid #F33535 !important; padding:0px !important;  font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" message="#{msg['lbl.kioskmobileupdate']}">
+								</p:confirmDialog>
+
+								<p:confirmDialog id="notindividualCustomer"
+									widgetVar="notindividualCustomer" width="400" height="17"
+									resizable="false"
+									style="color:#FF0000 !important; border:2px solid #F33535 !important; padding:0px !important;  font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" message="#{msg['lbl.kioscusnotind']}">
+								</p:confirmDialog>
+
+								<p:confirmDialog id="idexpired" widgetVar="idexpired"
+									width="400" height="17" resizable="false"
+									style="color:#FF0000 !important; border:2px solid #F33535 !important; padding:0px !important;  font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" message="#{msg['lbl.kioskidexpired']}">
+								</p:confirmDialog>
+
+								<p:confirmDialog id="procedureexception"
+									widgetVar="procedureexception" width="400" height="17"
+									resizable="false"
+									style="color:#FF0000 !important; border:2px solid #F33535 !important; padding:0px !important;  font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" message="#{msg['lbl.kioskpingenexception']}">
+								</p:confirmDialog>
+
+								<p:dialog id="alreadyKioskPin" widgetVar="alreadyKioskPin"
+									width="510" height="70" showHeader="false" resizable="false"
+									style=" border:2px solid green !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+									<p:outputLabel value="#{msg['lbl.kioskpinavailbel']}" />
+									<br />
+									<p:spacer width="15px" />
+									<p:commandButton value="#{msg['lbl.yes']}"
+										actionListener="#{kioskPinGeneration.pinGeneration}"
+										onclick="PF('alreadyKioskPin').hide();" update=":form"
+										immediate="true" />
+									<p:commandButton value="#{msg['lbl.no']}"
+										onclick="PF('alreadyKioskPin').hide();"
+										actionListener="#{kioskPinGeneration.clear}" update=":form"
+										process="@this" />
+								</p:dialog>
+
+								<p:confirmDialog id="updatepinexception"
+									widgetVar="updatepinexception" width="400" height="17"
+									resizable="false"
+									style="color:#FF0000 !important; border:2px solid #F33535 !important; padding:0px !important;  font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" message="#{msg['lbl.whileupdatingkioskex']}">
+								</p:confirmDialog>
+
+								<h1>
+									<h:outputText value="#{msg['lbl.kioskpingen']}" />
+								</h1>
+								
+								<p:panel styleClass="shadow" id="mainPanel">
+
+									<p:dialog id="updatesuccess" widgetVar="updatesuccess"
+										width="550" height="130" showHeader="false" resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel
+											value="#{msg['lbl.kiosknewpin']}: #{kioskPinGeneration.kioskPin} . #{msg['lbl.kiosksuccessgenerated']}"
+											style="font-size:12px !important" />
+										<br />
+										<p:spacer width="15px" />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{kioskPinGeneration.clear}"
+											onclick="PF('updatesuccess').hide();" process="@this"
+											update="mainPanel" />
+									</p:dialog>
+
+									<p:panel styleClass="panel_border">
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.customerRef']}*" />
+											</p:panel>
+											<!-- <p:panel styleClass="inner_right_col">
+										 <p:inputText  value="#{kioskPinGeneration.customerReference}" id="custref" required="true" requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.customerRef']}">
+										 <p:ajax listener="#{kioskPinGeneration.fetchCustomerDetails}" update=":form,msgcustref"/>
+										 <p:message id="msgcustref"  for="custref" display="text" />
+										 </p:inputText> 
+											
+											</p:panel> -->
+
+											<p:panel styleClass="inner_right_col">
+												<p:panelGrid style="width:100%;">
+													<p:row>
+														<p:column style="width:95%; padding:0px !important;">
+
+															<p:inputText
+																value="#{kioskPinGeneration.customerReference}"
+																id="custref" required="true"
+																requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.customerRef']}">
+																<p:ajax
+																	listener="#{kioskPinGeneration.fetchCustomerDetails}"
+																	update=":form,msgcustref" />
+																<p:message id="msgcustref" for="custref" display="text" />
+															</p:inputText>
+
+														</p:column>
+														<p:column
+															style="width:20%; text-align:right !important;padding:4px 0px 0px 8px !important;">
+															<p:commandButton id="customerSearchButton" value=""
+																styleClass="search_icon"
+																action="#{kioskPinGeneration.searchClicked}"
+																process="@this">
+																<p:tooltip for="customerSearchButton"
+																	value="#{msg['lbl.clickToSearch']}" />
+															</p:commandButton>
+														</p:column>
+													</p:row>
+												</p:panelGrid>
+											</p:panel>
+										</p:panel>
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.namekiosk']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText value="#{kioskPinGeneration.customerName}"
+													readonly="true" styleClass="ui-state-disabled" style="font-size:12px !important;">
+												</p:inputText>
+
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.mobileKiosk']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText value="#{kioskPinGeneration.mobile}"
+													readonly="true" styleClass="ui-state-disabled">
+
+
+
+												</p:inputText>
+
+											</p:panel>
+										</p:panel>
+
+
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:outputText value="#{msg['lbl.fieldaremandatory']}"
+											style="color:red !important; padding-left:10px !important;" />
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:spacer height="10px" />
+										<h:panelGroup layout="block" class="clearfix" />
+
+
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.submit']}"
+												action="#{kioskPinGeneration.pinGeneration}"
+												update="mainPanel" />
+
+											<p:commandButton value="#{msg['lbl.clear']}"
+												action="#{kioskPinGeneration.clear}" update="mainPanel"
+												process="@this" />
+
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{kioskPinGeneration.exit}" update="mainPanel"
+												process="@this" />
+
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+									</p:panel>
+
+
+								</p:panel>
+
+
+								<h:panelGroup layout="block" class="clearfix" />
+
+
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="../common/footerwithoutRuleEngine.xhtml"></ui:include>
+	</f:view>
+</h:body>
+</html>

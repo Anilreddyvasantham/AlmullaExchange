@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script src="../js/SigWeb.js" type="text/javascript"></script>
+	<script src="../js/digitalsignature.js"></script>
+	<script type="text/javascript">
+		var baseUri = makeUri();
+		history.pushState(null, null, 'PersonalRemitAMLCheck.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'PersonalRemitAMLCheck.xhtml');
+		});
+
+		$(document).ready(function() {
+			$(window).scroll(function() {
+				if ($(this).scrollTop() > 100) {
+					$('#goTop').stop().animate({
+						bottom : '30px'
+					}, 300);
+				} else {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				}
+			});
+			$('#goTop').click(function() {
+				$('html, body').stop().animate({
+					scrollTop : 0
+				}, 500, function() {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				});
+			});
+		});
+		
+		function showStatus() {
+		    statusDialog.show();
+		}
+		 
+		function hideStatus() {
+		    statusDialog.hide();
+		}
+	</script>
+	<style>
+.centeralign {
+	margin-left: auto;
+	margin-right: auto;
+	width: 6em
+}
+
+.buttonStyle:hover {
+	padding: 4px 10px 4px 7px !important;
+	border-top: 2px solid rgb(18, 139, 242) !important;
+	border-right: 2px solid rgb(18, 139, 242) !important;
+	border-bottom: 2px solid rgb(18, 139, 242) !important;
+	border-left: 2px solid rgb(18, 139, 242) !important;
+	border-radius: 4px !important;
+	background-color: white !important;
+	font-size: 18px !important;
+	font-weight: bold !important;
+	floar: right;
+}
+</style>
+</h:head>
+
+<h:body>
+
+
+
+	<p:confirmDialog id="inValidLogin" widgetVar="inValidLogin" height="20" resizable="false" width="350" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"
+		message="#{msg['lbl.userNamePasswordAreInvalid']}">
+	</p:confirmDialog>
+
+	<f:view>
+
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+		<p:dialog id="error" widgetVar="error" visible="#{personalRemitBean.visible}" width="400" height="70" styleClass="warning" header="#{msg['lbl.warningDailog']}" draggable="flase" closable="false" showHeader="true" resizable="false"
+			style=" border:3px solid #00a53e !important;  font-weight:bold; background:224px 45px no-repeat #FFF !important;" showEffect="clip" hideEffect="puff" modal="true">
+			<p:outputLabel value="#{personalRemitBean.errmsg}" />
+			<p:spacer height="10px" />
+			<p:panel>
+				<p:commandButton value="#{msg['lbl.ok']}" onclick="PF('error').hide()" process="@this" />
+			</p:panel>
+		</p:dialog>
+
+
+
+
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;" id="HideHandle" name="HideHandle" src="../images/toggle_plus.png" alt="" onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+
+							<h:form id="form1" onkeypress="if (event.keyCode == 13) { return false; }">
+
+
+								<p:dialog modal="true" showHeader="false" widgetVar="process" id="process" width="300" height="60" resizable="false" draggable="false" closable="false" style=" border: 2px green solid !important;background-color: #FFF !important;">
+									<div style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+										<p:graphicImage value="../images/processImg.gif" style="float: left !important; margin-right: 24px !important; " />
+										<p:outputLabel value="#{msg['lbl.pleaseWait']}" style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+									</div>
+								</p:dialog>
+
+
+
+								<p:confirmDialog id="alertmsg" widgetVar="alertmsg" header="Alert Message" resizable="false" style="background-color: white !important;" styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{personalRemitBean.exceptionMessage}">
+								</p:confirmDialog>
+
+
+								<p:confirmDialog id="sqlexception" widgetVar="sqlexception" header="#{msg['lbl.remitApplicationExceptionMessage']}" resizable="false" style="background-color: white !important;" styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"
+									message="#{msg['lbl.procedureErrorMessage']} : #{personalRemitBean.exceptionMessage}">
+								</p:confirmDialog>
+
+
+								<p:confirmDialog id="dataexception" widgetVar="dataexception" header="#{msg['lbl.remitApplicationExceptionMessage']}" resizable="false" width="700" style="background-color: white !important;" styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"
+									message="#{msg['lbl.indicator']} : #{personalRemitBean.exceptionMessage} #{msg['lbl.setupmissing']}">
+								</p:confirmDialog>
+
+
+								<p:confirmDialog id="additionaldatanot" widgetVar="additionaldatanot" height="20" resizable="false" width="500" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"
+									message="#{msg['lbl.additionalmsgnot']}">
+									<p:commandButton value="#{msg['lbl.ok']}" oncomplete="additionaldatanot.hide()" process="@this" />
+								</p:confirmDialog>
+
+
+
+								<h1>
+									<h:outputText value="REMITTANCE" />
+								</h1>
+								<p:panel id="mainPanel">
+
+									<p:panel rendered="#{personalRemitBean.amlboomsg}" styleClass="panel_border">
+
+
+										<h2>
+											<h:outputText value="#{msg['lbl.customerDetails']}" />
+										</h2>
+										<p:panel styleClass="panel_border" style="padding-bottom:0px !important;">
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.customerName']}" style="color:#05000a;" />
+													<h:outputText />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText styleClass="ui-state-disabled" value="#{personalRemitBean.customerFullName}" readonly="true" style="font-size:11px !important;">
+													</p:inputText>
+												</p:panel>
+												<div class="clearfix"></div>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.CustomerLocalName']}" style="color:#05000a;" />
+													<h:outputText />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText styleClass="ui-state-disabled" value="#{personalRemitBean.customerLocalFullName}" readonly="true" style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;font-size:11px !important;"
+																dir="RTL">
+													</p:inputText>
+												</p:panel>
+												<div class="clearfix"></div>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.benificaryName']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText styleClass="ui-state-disabled" value="#{personalRemitBean.benificiaryryNameRemittance}" readonly="true" />
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+
+										</p:panel>
+
+
+										<h2>#{msg['lbl.amlcheck']}</h2>
+
+										<p:panel styleClass="panel_border" rendered="#{personalRemitBean.booMessageThree}">
+
+											<p:dataTable id="amldatadetails" rowIndexVar="rowIndex" styleClass="mydatatableclass" value="#{personalRemitBean.almcheckList}" var="c" rows="5" paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="5,10,15" paginatorPosition="bottom">
+												<p:column headerText="#{msg['lbl.sNo']}" style="width:30px;">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.country']}" sortBy="#{c.countryName}">
+													<h:outputText value="#{c.countryName}" />
+												</p:column>
+												<p:column headerText="#{personalRemitBean.rangeFromOne}-#{personalRemitBean.rangeToOne}" sortBy="#{c.slab1}">
+													<h:outputText value="#{c.slab1}" />
+												</p:column>
+
+												<p:column headerText="#{personalRemitBean.rangeFromTwo}-#{personalRemitBean.rangeToTwo}" sortBy="#{c.slab2}">
+													<h:outputText value="#{c.slab2}" />
+												</p:column>
+
+												<p:column headerText="#{personalRemitBean.rangeFromThree}-#{personalRemitBean.rangeToThree}" sortBy="#{c.slab3}">
+													<h:outputText value="#{c.slab3}" />
+												</p:column>
+
+												<p:column headerText="#{personalRemitBean.rangeFromFour}-#{personalRemitBean.rangeToFour}" sortBy="#{c.slab4}">
+													<h:outputText value="#{c.slab4}" />
+												</p:column>
+
+												<p:column rendered="#{personalRemitBean.renderRangeFive}" headerText="#{personalRemitBean.rangeFromFive}-#{personalRemitBean.rangeToFive}" sortBy="#{c.slab5}">
+													<h:outputText value="#{c.slab5}" />
+												</p:column>
+
+												<p:column rendered="#{personalRemitBean.renderRangeSix}" headerText="#{personalRemitBean.rangeFromSix}-#{personalRemitBean.rangeToSix}" sortBy="#{c.slab6}">
+													<h:outputText value="#{c.slab6}" />
+												</p:column>
+
+
+											</p:dataTable>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="10px" />
+										</p:panel>
+										<p:spacer height="10px" />
+										<p:spacer height="10px" />
+
+										<p:panel styleClass="left_col" style="padding: 0px 250px 0px 250px;" rendered="#{personalRemitBean.booMessageOne}">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.messageone']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText styleClass="ui-state-disabled" value="#{personalRemitBean.amlMessageOne}" readonly="true">
+													<p:ajax />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col" rendered="#{personalRemitBean.booMessageTwo}" style="padding: 0px 250px 0px 250px;">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.messagetwo']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText styleClass="ui-state-disabled" value="#{personalRemitBean.amlMessageTwo}" readonly="true">
+													<p:ajax />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										<p:panel styleClass="left_col" rendered="#{personalRemitBean.booMessageThree}" style="padding: 0px 250px 0px 250px;">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.messagethree']}" />
+											</p:panel>
+
+											<p:panel styleClass="inner_right_col">
+												<p:inputText styleClass="ui-state-disabled" value="#{personalRemitBean.amlMessageThree}" readonly="true">
+													<p:ajax />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col" style="padding: 0px 250px 0px 250px;">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.authorzed']}" />
+											</p:panel>
+
+											<p:panel styleClass="inner_right_col">
+												<p:message id="mamluse" for="amluse" display="text" />
+												<p:selectOneMenu id="amluse" value="#{personalRemitBean.amlAuthorizedBy}" filterMatchMode="contains" filter="true" required="true" requiredMessage="Please enter Authorized By">
+													<f:selectItem itemLabel="Select Authorized" itemValue="" />
+													<f:selectItems value="#{personalRemitBean.empllist}" var="c" itemLabel="#{c.userName}" itemValue="#{c.userName}" />
+													<p:ajax update="amluse,mamluse">
+													</p:ajax>
+												</p:selectOneMenu>
+											</p:panel>
+
+										</p:panel>
+
+										<p:panel styleClass="left_col" style="padding: 0px 250px 0px 250px;">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.password']}" />
+											</p:panel>
+
+											<p:panel styleClass="inner_right_col">
+												<p:message for="amlpas" display="text" id="mamlpass" />
+												<p:password value="#{personalRemitBean.amlAuthorizedPassword}" required="true" requiredMessage="Please enter Password" id="amlpas">
+													<p:ajax update="mamlpass" />
+												</p:password>
+											</p:panel>
+										</p:panel>
+
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col" style="padding: 0px 250px 0px 250px;">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.almcheck']}" />
+											</p:panel>
+
+											<p:panel styleClass="inner_right_col">
+												<p:message for="amlrem" display="text" id="amlRemarks" />
+												<p:inputText value="#{personalRemitBean.amlRemarks}" required="true" requiredMessage="Please enter remarks" id="amlrem">
+													<p:ajax update="amlRemarks" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:spacer height="10px" />
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.back']}" onstart="process.show();" onsuccess="process.hide()" action="#{personalRemitBean.booAmlCheckBackToExchangeScreen}" process="@this" update="mainPanel" style="margin-right:10px; " />
+											<p:commandButton value="#{msg['lbl.next']}" onstart="process.show();" onsuccess="process.hide()" action="#{personalRemitBean.nextAmlCheckToCustomerSignature}" update=":form1" style="margin-right:10px; " />
+											<p:commandButton value="#{msg['lbl.exit']}" onstart="process.show();" onsuccess="process.hide()" action="#{personalRemitBean.exitFromPersonalRemmitance}" process="@this" immediate="true" update="mainPanel" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" class="clearfix" />
+									</p:panel>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+					</h:panelGroup></td>
+			</tr>
+		</table>
+
+
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+		<a id="goTop" />
+	</f:view>
+</h:body>
+</html>

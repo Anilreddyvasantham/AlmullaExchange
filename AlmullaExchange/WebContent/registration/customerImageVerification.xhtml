@@ -1,0 +1,519 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript">
+		history.pushState(null, null, 'customerImageVerification.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'customerImageVerification.xhtml');
+		});
+	</script>
+
+</h:head>
+
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="mainform">
+
+								<p:dialog modal="true" showHeader="true"
+									header="#{msg['lbl.pleasewait']}" widgetVar="process"
+									id="process" width="300" height="50" resizable="false"
+									draggable="false" closable="false"
+									style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+									<div style="text-align: center;">
+										<p:graphicImage value="../images/preloader.gif" />
+									</div>
+								</p:dialog>
+
+								<p:dialog id="arcmateTable" widgetVar="arcmateTable" width="300"
+									height="100" resizable="false" showEffect="clip"
+									hideEffect="clip" modal="true"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+									<p:outputLabel value="#{msg['lbl.arcmatetable']}" />
+									<p:commandButton value="#{msg['lbl.ok']}"
+										oncomplete="arcmateTable.hide()" />
+								</p:dialog>
+
+
+								<p:confirmDialog id="sameusernotapprove"
+									widgetVar="sameusernotapprove" width="400" height="17"
+									resizable="false" style="background-color: white !important;"
+									header="Warning Dailog" styleClass="warning" showEffect="clip"
+									hideEffect="clip" closeOnEscape="true" closable="true"
+									message="#{msg['lbl.sameusernotabletoapprove']}">
+								</p:confirmDialog>
+
+								<p:confirmDialog id="verifyatleastone"
+									widgetVar="verifyatleastone" width="400" height="17"
+									resizable="false" style="background-color: white !important;"
+									header="Warning Dailog" styleClass="warning" showEffect="clip"
+									hideEffect="clip" closeOnEscape="true" closable="true"
+									message="#{msg['lbl.verifyimage']}">
+								</p:confirmDialog>
+
+								<p:confirmDialog id="noRecords" widgetVar="noRecords"
+									width="300" height="17" resizable="false"
+									style="background-color: white !important;"
+									header="Warning Dailog" styleClass="warning" showEffect="clip"
+									hideEffect="clip" closeOnEscape="true" closable="true"
+									message="No Records Found!">
+								</p:confirmDialog>
+
+								<p:confirmDialog id="pleaseEnterAnyOne"
+									widgetVar="pleaseEnterAnyOne" width="330" height="17"
+									resizable="false" style="background-color: white !important;"
+									header="Warning Dailog" styleClass="warning" showEffect="clip"
+									hideEffect="clip" closeOnEscape="true" closable="true"
+									message="Please Enter atleast one field to Search!">
+								</p:confirmDialog>
+
+								<p:dialog id="approvedsucc" widgetVar="approvedsucc" width="300"
+									height="80" resizable="false"
+									style="background-color: white !important;"
+									styleClass="success" header="#{msg['lbl.success']}"
+									closable="false" showEffect="clip" hideEffect="clip">
+									<p:outputLabel value="#{msg['lbl.verifiedsuccess']}"
+										style="text-align: center; font-size:15px !important;" />
+									<br />
+									<p:spacer width="15px" />
+									<p:commandButton value="#{msg['lbl.ok']}"
+										onstart="process.show();"
+										onsuccess="process.hide();approvedsucc.hide()"
+										actionListener="#{custImageVerification.pageNavigation}" />
+								</p:dialog>
+
+								<p:confirmDialog id="alreadyapprov" widgetVar="alreadyapprov"
+									width="500" showHeader="false" resizable="false"
+									header="#{msg['lbl.warningDailog']}" styleClass="warning"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="explode" hideEffect="explode"
+									message="#{msg['lbl.alreadyVerified']}">
+
+									<p:spacer width="15px" />
+									<p:commandButton value="#{msg['lbl.ok']}"
+										onstart="process.show();"
+										onsuccess="process.hide();alreadyapprov.hide()"
+										actionListener="#{custImageVerification.pageNavigation}" />
+								</p:confirmDialog>
+
+
+								<h5>
+									<h:outputText value="#{msg['lbl.customerImageVerification']}" />
+								</h5>
+								<p:panel styleClass="shadow" id="mainPanel">
+
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{custImageVerification.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+
+										<p:commandButton value="#{msg['lbl.ok']}"
+											onclick="nullPointerId.hide()" process="@this"
+											update="mainPanel" />
+									</p:confirmDialog>
+
+
+									<p:confirmDialog id="exception" header="#{msg['lbl.warning']}"
+										widgetVar="exception" width="600" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{custImageVerification.errorMessage}">
+
+										<p:commandButton value="#{msg['lbl.ok']}"
+											onclick="exception.hide()" process="@this" update="mainPanel" />
+
+									</p:confirmDialog>
+
+									<p:dialog id="ex" widgetVar="ex"
+										style="background-color: white !important;" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" showHeader="false"
+										closable="true" modal="true">
+										<p:panel>
+											<p:dataTable id="dataTableIdheader" var="c"
+												sortMode="multiple" styleClass="mydatatableclass"
+												widgetVar="dataTableIdheader"
+												value="#{custImageVerification.listCustomer}"
+												rowStyleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+
+
+												<p:column headerText="#{msg['lbl.customername']}"
+													sortBy="#{c.customerName}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{c.customerName}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.CustomerLocalName']}"
+													sortBy="#{c.customerNameLocal}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{c.customerNameLocal}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.customerRef']}"
+													sortBy="#{c.customerReference}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{c.customerReference}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.idtype']}"
+													sortBy="#{c.idNumber}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{c.idTypeName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.idNumber']}"
+													sortBy="#{c.idNumber}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{c.idNumber}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.dateofexpiry']}"
+													sortBy="#{c.idExpireyDate}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{c.idExpireyDate}">
+														<f:convertDateTime pattern="dd/MM/yyyy" />
+													</h:outputText>
+												</p:column>
+
+
+
+											</p:dataTable>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="10px" />
+										<iframe frameborder="0" align="left"
+											src="#{custImageVerification.url}" name="someName"
+											id="someId" scrolling="auto" width="1400" height="650"
+											marginheight="2" marginwidth="5"> </iframe>
+
+										<p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<!--  <p:spacer height="5px"/> -->
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="#{msg['lbl.accept']}"
+													style="margin-right:10px; "
+													actionListener="#{custImageVerification.accept}"
+													process="@this" oncomplete="PF('ex').hide();"
+													update="mainPanel" />
+
+												<p:commandButton value="#{msg['lbl.rejectscan']}"
+													actionListener="#{custImageVerification.reject}"
+													style="margin-right:10px; " oncomplete="PF('ex').hide();"
+													update="mainPanel" process="@this" />
+												<p:commandButton value="#{msg['lbl.exit']}"
+													onclick="ex.hide();" process="@this" />
+											</h:panelGroup>
+										</p:panel>
+									</p:dialog>
+
+
+									<p:dialog id="reject" widgetVar="reject" width="400"
+										height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.warningDailog']}"
+										closable="false" showEffect="clip" hideEffect="clip"
+										modal="true">
+										<p:outputLabel value="Do you wan't reject this record" />
+										<p:spacer height="10px" />
+										<p:panel>
+											<p:commandButton value="#{msg['lbl.ok']}"
+												style="margin-right:10px; "
+												actionListener="#{custImageVerification.conformReject}"
+												process="@this" oncomplete="PF('reject').hide();"
+												update="mainPanel" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												actionListener="#{custImageVerification.conformRejectCancel}"
+												oncomplete="PF('reject').hide();" update="mainPanel"
+												process="@this" />
+										</p:panel>
+									</p:dialog>
+
+
+									<h2>
+										<h:outputText value="#{msg['lbl.customerImageVerification']}" />
+
+									</h2>
+
+
+									<p:panel styleClass="right_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['lbl.scandate']}"
+												styleClass="dropdown" />
+										</p:panel>
+										<!-- <p:focus context="dateofexpiry"></p:focus> -->
+										<p:panel styleClass="inner_right_col">
+
+											<p:calendar id="dateofexpiry" styleClass="dropdown" size="24"
+												value="#{custImageVerification.creationDate}" tabindex="0"
+												mode="popup" yearRange="c-50:c+50" pattern="dd/MM/yyyy"
+												navigator="true">
+												<p:ajax event="dateSelect" update="mainPanel"
+													onstart="process.show();" onsuccess="process.hide();" />
+											</p:calendar>
+										</p:panel>
+									</p:panel>
+
+									<p:panel styleClass="right_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="Customer Id" />
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputText id="cusId"
+												value="#{custImageVerification.cusId}">
+												<p:ajax event="blur" update="cusId"></p:ajax>
+											</p:inputText>
+										</p:panel>
+									</p:panel>
+
+									<h:panelGroup layout="block" class="clearfix" />
+
+									<p:panel styleClass="right_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="Id Number" />
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputText id="idNum" onchange="this.value = this.value.trim()"
+												value="#{custImageVerification.idNum}">
+												<p:ajax event="blur" update="idNum"></p:ajax>
+											</p:inputText>
+										</p:panel>
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+
+									<h:panelGroup layout="block" styleClass="shadow_button">
+										<p:commandButton value="Search" onstart="process.show();"
+											action="#{custImageVerification.search}"
+											onsuccess="process.hide();" update="mainPanel"
+											immediate="true">
+										</p:commandButton>
+
+										<p:commandButton value="Reset" onstart="process.show();"
+											action="#{custImageVerification.reset}" process="@this"
+											onsuccess="process.hide();" update="mainPanel"
+											immediate="true">
+										</p:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup layout="block" class="clearfix" />
+
+
+									<p:panel styleClass="panel_border">
+
+										<p:panel id="headerPanel">
+
+
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel id="datatTablePanel">
+												<p:dataTable id="dataTableId" var="c" sortMode="multiple"
+													styleClass="mydatatableclass" widgetVar="dataTableId"
+													rows="10" paginator="true"
+													paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+													rowsPerPageTemplate="10,20,30"
+													value="#{custImageVerification.list}"
+													rowIndexVar="rowIndex"
+													emptyMessage="#{msg['lbl.noRecordFound']}"
+													rowStyleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+													paginatorPosition="bottom">
+
+													<!--  <f:facet name="header">
+            <p:outputPanel>
+                <h:outputText value="Search:" />
+                <p:inputText id="globalFilter" onkeyup="PF('dataTableId').filter()" style="width:250px" placeholder="Enter ID Number or Customer Ref"/>
+            </p:outputPanel>
+        </f:facet> -->
+
+													<p:column headerText="#{msg['lbl.dslNo']}"
+														style="width:30px;"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{rowIndex+1}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.customername']}"
+														sortBy="#{c.customerName}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{c.customerName}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.CustomerLocalName']}"
+														sortBy="#{c.customerNameLocal}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{c.customerNameLocal}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.customerRef']}"
+														sortBy="#{c.customerReference}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+														filterMatchMode="contains"
+														filterBy="#{c.customerReference}">
+														<h:outputText value="#{c.customerReference}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.idtype']}"
+														sortBy="#{c.idNumber}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{c.idTypeName}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.idNumber']}"
+														sortBy="#{c.idNumber}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+														filterMatchMode="contains" filterBy="#{c.idNumber}">
+														<h:outputText value="#{c.idNumber}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.dateofexpiry']}"
+														sortBy="#{c.idExpireyDate}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{c.idExpireyDate}">
+															<f:convertDateTime pattern="dd/MM/yyyy" />
+														</h:outputText>
+													</p:column>
+
+													<!-- <p:column headerText="#{msg['lbl.fileidver']}"  styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.fileId}" />
+											</p:column> -->
+
+													<p:column headerText="#{msg['lbl.username']}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{c.createdBy}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.branchname']}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{c.branchName}" />
+													</p:column>
+
+													<!-- <p:column styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" headerText="#{msg['lbl.amlaccept']}" >
+												<f:facet name="header">
+													
+													<p:selectBooleanCheckbox
+														value="#{custImageVerification.selectAll}"
+														style="border: 5px solid white;">
+														<p:ajax event="change"
+															listener="#{custImageVerification.selecatAndDeselectAll}"
+															update=":mainform:dataTableId" />
+													</p:selectBooleanCheckbox>
+												</f:facet>
+
+												<p:selectBooleanCheckbox value="#{c.isCheck}" id="cheid" disabled="#{c.disableCheck}" 
+													>
+													<p:ajax event="change" update=":mainform:dataTableId" 
+														listener="#{custImageVerification.addingApprovalRecord(c)}" />
+												</p:selectBooleanCheckbox>
+											</p:column>
+											
+											<p:column headerText="#{msg['lbl.rejectscan']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<f:facet name="header">
+													
+													
+												</f:facet>
+
+												<p:selectBooleanCheckbox value="#{c.permanetRejectCheck}" disabled="#{c.disableCheck}"
+													>
+													<p:ajax event="change" update=":mainform:dataTableId" 
+														listener="#{custImageVerification.addingApprovalRecordReject(c)}" />
+												</p:selectBooleanCheckbox>
+										</p:column> -->
+
+													<p:column headerText="#{msg['lbl.view']}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+
+														<p:column headerText="#{msg['lbl.view']}">
+
+
+															<!-- <h:commandLink 
+											actionListener="#{custImageVerification.viewImage(c)}" 
+												 target="_new" onclick="ex.show();"
+												immediate="true" style="margin:30px 0px 0px 0px!important;padding:5px 10px 5px 10px;">
+												<p:graphicImage value="../images/viewicon.jpg" width="40"
+													height="30" id="imgEdit" >
+													 <p:ajax event="click" update=":mainform:dataTableId"/>
+													</p:graphicImage>
+												<p:tooltip for="imgEdit" value="#{msg['lbl.view']}" />
+											</h:commandLink> -->
+															<h:panelGroup styleClass="shadow_button">
+																<p:commandButton
+																	action="#{custImageVerification.viewImage(c)}"
+																	value="View" onstart="process.show();"
+																	onsuccess="process.hide();"
+																	update=":mainform:dataTableId,:mainform:ex">
+
+
+																</p:commandButton>
+
+															</h:panelGroup>
+
+														</p:column>
+													</p:column>
+
+
+
+												</p:dataTable>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+
+											<!-- <h:panelGroup layout="block" class="clearfix" />
+										<h:outputText value="* Same User Can't Able Approve" style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										<h:panelGroup layout="block" class="clearfix" /> -->
+											<div class="clearfix"></div>
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<!-- <p:commandButton value="#{msg['lbl.approve']}" onstart="process.show();" onsuccess="process.hide();"
+												action="#{custImageVerification.approvalAllRecords}"
+												update=":mainform:mainPanel" style="margin-right:10px; "
+												immediate="true">
+											</p:commandButton> -->
+
+												<p:commandButton value="#{msg['lbl.exit']}"
+													onstart="process.show();" onsuccess="process.hide();"
+													action="#{custImageVerification.exit}" update="mainPanel"
+													immediate="true">
+												</p:commandButton>
+											</h:panelGroup>
+
+
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+									</p:panel>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

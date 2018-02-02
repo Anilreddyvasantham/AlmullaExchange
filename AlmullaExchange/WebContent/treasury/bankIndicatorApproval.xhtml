@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script >
+		 history.pushState(null, null, 'bankIndicatorApproval.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'bankIndicatorApproval.xhtml'); 
+		    });
+</script>
+</h:head>
+<p:confirmDialog id="username" widgetVar="username" width="370" styleClass="red"  showHeader="false" resizable="false" 	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" message="#{msg['lbl.sameUserNotApproved']}" header="#{msg['lbl.warningDailog']}">
+      </p:confirmDialog>
+ 
+<h:body> 
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+							<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+						</td>
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+								<h:form id="bankIndicatorForm">
+							<h1>
+								<h:outputText value="#{msg['lbl.bankIndApproval']}" />
+							</h1>
+							
+							<p:confirmDialog id="error" widgetVar="error" visible="#{bankIndicatorApprovalBean.booVisible}" resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" update="@all"
+									message="#{bankIndicatorApprovalBean.errorMessage}">
+									</p:confirmDialog>
+							
+							
+							<p:panel styleClass="shadow" >
+							<h2>
+											<h:outputText value="#{msg['lbl.bankIndApproval']}" />
+											
+											<p:commandLink action="#{bankIndicatorApprovalBean.exit}"
+														 process="@this">
+														<p:graphicImage value="../images/return.jpg" width="25" height="25" id="imgEdit" styleClass="icon_right" style="float:right;" />
+														<p:tooltip for="imgEdit" value="Go to Home" />
+													</p:commandLink>
+										</h2>
+					<p:panel styleClass="shadow" id="mainPanel"	style="background-color:#FFF !important; padding-top:10px !important; ">
+									<p:dataTable var="d"  styleClass="mydatatableclass"
+									paginatorPosition="bottom" rowIndexVar="rowIndex" value="#{bankIndicatorApprovalBean.bankIndapprovalList}" emptyMessage="#{msg['lbl.norecordfound']}" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  rowsPerPageTemplate="15,10,5" >
+									
+									<p:column headerText= "#{msg['lbl.slNo']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputText value="#{rowIndex+1}" />
+										</p:column>
+										<!-- private BigDecimal bankIndicatorId; -->
+ 	 
+ 
+ 	 
+										<p:column headerText="#{msg['lbl.bankIndicatorCode']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+          									  <h:outputText value=" #{ d.bankIndicatorCode}" />
+        								</p:column>
+										   
+										<p:column headerText=" #{msg['lbl.bankIndicatorDescInEnglish']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+          									  <h:outputText value=" #{d.bankIndicatorDescInEnglish}" />
+        								</p:column>
+                 
+        							<p:column headerText="#{msg['lbl.bankIndicatorDescInLocal']}"  styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+            							<h:outputText value="#{d.bankIndicatorDescInLocal}"/>
+       								 </p:column>
+       								 
+       								 <p:column headerText="#{msg['lbl.approve']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<p:commandLink
+													action="#{bankIndicatorApprovalBean.navigationEdit(d)}"
+													style="color:blue !important; text-decoration:underline !important;"
+													process="@this" onstart="process.show();" onsuccess="process.hide();">
+													<p:graphicImage value="../images/approve.jpg" width="25"
+														height="25" id="imgEdit" />
+													<p:tooltip for="imgEdit" value="Approve" />
+												</p:commandLink>
+										</p:column>
+       														 		
+									</p:dataTable>
+								
+								</p:panel>
+								<h:panelGroup layout="block" class="clearfix"/>
+								<p:dialog modal="true" showHeader="true" header="Please wait.."  widgetVar="process"  id="process"   width="300" height="50" resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+							    	</p:dialog>
+								</p:panel>
+								</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"/>
+					</h:panelGroup>
+					<h:panelGroup layout="block" class="clearfix"/>
+					</td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

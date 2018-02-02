@@ -1,0 +1,874 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<script type="text/javascript">
+		history.pushState(null, null, 'serviceapplicabilityrule.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'serviceapplicabilityrule.xhtml');
+		});
+	</script>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<style>
+.ui-widget-content .ui-outputlabel {
+	text-align: center !important;
+}
+</style>
+
+</h:head>
+
+<h:body>
+
+	<p:confirmDialog id="checkdt" header="#{msg['lbl.warningMessage']}"
+		widgetVar="checkdt" width="270" showHeader="false" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip"
+		message="#{msg['lbl.thisrecordalreadyaddedtodatatable']}">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="selectAll" header="#{msg['lbl.warningMessage']}"
+		widgetVar="selectAll" width="370" showHeader="false" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip"
+		message="#{msg['lbl.selectCountryAndCurrencyAndREmittanceAndDelivery']}">
+	</p:confirmDialog>
+	<p:dialog id="mandatorydia" widgetVar="mandatorydia" width="300"
+		height="80" showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+
+		<p:outputLabel
+			value="#{msg['lbl.navigableandmandatoryfieldsarerequired']} " />
+		<br />
+
+		<p:commandButton value="#{msg['lbl.ok']}"
+			action="#{serviceApplicabilityRule.goOk}" />
+	</p:dialog>
+	<p:confirmDialog id="notabletoApprove" widgetVar="notabletoApprove"
+		width="370" styleClass="red" showHeader="false" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip"
+		message="#{msg['lbl.sameusernotabletoapprove']}">
+	</p:confirmDialog>
+
+	<p:dialog id="complete" widgetVar="complete" width="260" height="70"
+		showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+
+		<p:outputLabel value="#{msg['lbl.dataissuccessfullysaved']}" />
+		<br />
+
+		<p:commandButton value="#{msg['lbl.ok']}"
+			actionListener="#{serviceApplicabilityRule.okSaved}" />
+	</p:dialog>
+
+
+
+	<p:dialog id="approvedsuccess" widgetVar="approvedsuccess" width="400"
+		height="80" resizable="false"
+		style="background-color: white !important;" styleClass="success"
+		header="Success" closable="false" showEffect="clip" hideEffect="clip">
+		<p:outputLabel value="Approved Successfully"
+			style="text-align: center; font-size:15px !important;" />
+		<br />
+		<p:commandButton value="#{msg['lbl.ok']}"
+			actionListener="#{serviceApplicabilityRule.exit}"
+			style="margin-left: 150px !important;" />
+	</p:dialog>
+
+	<!-- <p:dialog id="notabletoApprove" widgetVar="notabletoApprove" width="260"
+		height="70" showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+
+		<p:outputLabel value="You Are not Able To Approved" />
+		<br />
+
+		<p:commandButton value="#{msg['lbl.ok']}"
+			oncomplete="notabletoApprove.hide()" />
+	</p:dialog> -->
+
+	<p:dialog id="maxgreater" widgetVar="maxgreater" width="260"
+		height="70" showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+
+		<p:outputLabel value="#{msg['lbl.greatertthanmin']}" />
+		<br />
+
+		<p:commandButton value="#{msg['lbl.ok']}"
+			oncomplete="maxgreater.hide()" />
+	</p:dialog>
+
+	<f:view>
+
+		<p:dialog id="check" widgetVar="check" width="270" height="70"
+			showHeader="false" resizable="false"
+			style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+			showEffect="clip" hideEffect="clip" closeOnEscape="true"
+			closable="true" modal="true">
+
+			<p:outputLabel value="#{msg['lbl.benifirecordalreadyexited']}" />
+			<br />
+			<p:spacer width="15px" />
+			<p:commandButton value="#{msg['lbl.ok']}"
+				actionListener="#{serviceApplicabilityRule.exit}" process="@this" />
+		</p:dialog>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form"
+								onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'text') return false;}">
+
+								<p:dialog id="norecord" widgetVar="norecord" width="260"
+									height="70" showHeader="false" resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+
+									<p:outputLabel value="#{msg['lbl.norecordfound']}" />
+									<br />
+
+									<p:commandButton value="#{msg['lbl.ok']}"
+										update=":form:datatablePanel,:form:datatable"
+										oncomplete="norecord.hide()" />
+								</p:dialog>
+								<p:dialog id="copy" widgetVar="copy" width="500" height="100"
+									visible="#{serviceApplicabilityRule.visableDailog}"
+									showHeader="false" resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background: 224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+
+									<p:outputLabel
+										value="This Product Available in Combination of #{serviceApplicabilityRule.remittanceName} and #{serviceApplicabilityRule.deliveryName}. If you Want To Copy Record?" />
+									<br />
+
+									<p:commandButton value="#{msg['lbl.yes']}"
+										actionListener="#{serviceApplicabilityRule.clickCopy}"
+										immediate="true" onclick="copy.hide();" update=":form:copyOne" />
+									<p:commandButton value="#{msg['lbl.no']}"
+										action="#{serviceApplicabilityRule.clickNo}" immediate="true"
+										onclick="copy.hide();" update="mainPanel" />
+								</p:dialog>
+
+
+								<p:confirmDialog id="sqlexception" widgetVar="sqlexception"
+									header="#{msg['lbl.warning']}" resizable="false" width="700"
+									style="background-color: white !important;"
+									styleClass="warning" showEffect="clip" hideEffect="clip"
+									closeOnEscape="true" closable="true"
+									message=" #{serviceApplicabilityRule.exceptionMessage}">
+								</p:confirmDialog>
+
+								<h1>
+									<h:outputText value="#{msg['lbl.serviceappruleheader']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel"
+									style="background-color:#FFF !important;">
+
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{serviceApplicabilityRule.exceptionMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+
+
+									<p:confirmDialog id="saveerror" header="#{msg['lbl.warning']}"
+										widgetVar="saveerror" width="600" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{serviceApplicabilityRule.exceptionMessage}">
+
+										<p:commandButton value="#{msg['lbl.ok']}"
+											onclick="saveerror.hide()" process="@this" update="mainPanel" />
+
+									</p:confirmDialog>
+
+
+									<p:dialog id="copyOne" widgetVar="copyOne" width="1000px"
+										modal="true" height="650" resizable="false"
+										style="background-color: white !important;" showHeader="true"
+										header="Search Applicabilty" styleClass="info"
+										closable="false" showEffect="clip" hideEffect="clip">
+										<p:spacer height="30px" />
+										<p:panel id="dailogPanel">
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:spacer height="30px" />
+											<p:spacer height="30px" />
+											<p:spacer height="30px" />
+
+											<p:dataTable id="dataTTable" var="dataC" sortMode="multiple"
+												rows="10" paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10,15"
+												value="#{serviceApplicabilityRule.dataTable}"
+												rowIndexVar="rowIndex" emptyMessage="No records Found"
+												rowStyleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+												styleClass="mydatatableclass" paginatorPosition="bottom">
+
+
+												<p:column headerText="SELECTION" filterMatchMode="contains"
+													style="width:20% !important;">
+
+													<p:commandLink
+														action="#{serviceApplicabilityRule.fetchAndDisplayFinalDatable(dataC)}"
+														value="#{dataC.countryName}"
+														style="color:blue !important; text-decoration:underline !important;text-align: center !important;"
+														update=":form" onclick="copyOne.hide();" immediate="true"
+														process="@this" />
+													<!-- 	<p:commandButton id="imgEdit1" styleClass="edit1" value="#{c.bankBranchId}" action="" onclick="viewWindow.hide();"  />  -->
+												</p:column>
+
+												<p:column headerText="Country Name"
+													filterBy="#{dataC.countryName}" filterMatchMode="contains"
+													style="width:20% !important;height:38px !important">
+													<p:outputLabel value="#{dataC.countryName}" />
+												</p:column>
+												<p:column headerText="currencyName"
+													filterBy="#{dataC.currencyName}" filterMatchMode="contains">
+													<p:outputLabel value="#{dataC.currencyName}" />
+												</p:column>
+												<p:column headerText="remittenceMode"
+													filterBy="#{dataC.remittenceMode}"
+													filterMatchMode="contains">
+													<p:outputLabel value="#{dataC.remittenceMode}" />
+												</p:column>
+												<p:column headerText="delivary" filterBy="#{dataC.delivary}"
+													filterMatchMode="contains">
+													<p:outputLabel value="#{dataC.delivary}" />
+												</p:column>
+											</p:dataTable>
+
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="Exit" onclick="copyOne.hide();" />
+											<div class="clearfix"></div>
+										</h:panelGroup>
+
+									</p:dialog>
+
+
+
+
+									<h2>
+										<h:outputText value="#{msg['lbl.serviceappruleheader']}" />
+									</h2>
+									<p:panel styleClass="panel_border"
+										style="padding-bottom:0px !important;">
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel id="firstPanel"
+											rendered="#{serviceApplicabilityRule.renderFirstPanel}">
+
+											<h:panelGroup>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.country']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="country" display="text" id="countrymsg" />
+														<p:selectOneMenu id="country"
+															value="#{serviceApplicabilityRule.countryId}"
+															required="true"
+															requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.country']}"
+															tabindex="1" filter="true" filterMatchMode="contains">
+															<f:selectItem itemValue=""
+																itemLabel="#{msg['lbl.beleselect']}" />
+															<f:selectItems
+																value="#{serviceApplicabilityRule.lstCountryName}"
+																var="c"
+																itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+																itemValue="#{c.fsCountryMaster.countryId}" />
+															<p:ajax event="change"
+																listener="#{serviceApplicabilityRule.getCurrencyList}"
+																update="country,countrymsg,currency"
+																onstart="process.show();" onsuccess="process.hide();" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.currency']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="currency" display="text" id="currencymsg" />
+														<p:selectOneMenu id="currency"
+															value="#{serviceApplicabilityRule.currencyId}"
+															tabindex="2" required="true"
+															requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.currency']}"
+															filter="true" filterMatchMode="contains">
+															<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}"
+																itemValue="" />
+															<f:selectItems
+																value="#{serviceApplicabilityRule.lstCurrencyName}"
+																var="c"
+																itemLabel="#{c.currencyCode} - #{c.currencyName}"
+																itemValue="#{c.currencyId}" />
+															<p:ajax event="change"
+																listener="#{serviceApplicabilityRule.getRemittanceList}"
+																update="currency,currencymsg,remittance"
+																onstart="process.show();" onsuccess="process.hide();" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.remittanc']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="remittance" display="text" id="remimsg" />
+														<p:selectOneMenu id="remittance" tabindex="3"
+															value="#{serviceApplicabilityRule.remittanceModeId}"
+															required="true"
+															requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.remittanc']}"
+															filter="true" filterMatchMode="contains">
+															<f:selectItem itemValue=""
+																itemLabel="#{msg['lbl.prehyphen']} #{msg['lbl.select']} #{msg['lbl.remittanc']} #{msg['lbl.posthyphen']}" />
+															<f:selectItems
+																value="#{serviceApplicabilityRule.lstRemittanceName}"
+																var="c"
+																itemLabel="#{c.remittanceModeMaster.remittance} - #{c.remittanceDescription}"
+																itemValue="#{c.remittanceModeMaster.remittanceModeId}" />
+															<p:ajax event="change"
+																listener="#{serviceApplicabilityRule.getDeliveryList}"
+																update="deliveryMode,remimsg" onstart="process.show();"
+																onsuccess="process.hide();" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.delivery']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="deliveryMode" display="text" id="delmsg" />
+														<p:selectOneMenu id="deliveryMode"
+															value="#{serviceApplicabilityRule.deliveryId}"
+															tabindex="4" required="true"
+															requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.delivery']}"
+															filter="true" filterMatchMode="contains">
+															<f:selectItem itemValue=""
+																itemLabel="#{msg['lbl.prehyphen']} #{msg['lbl.select']} #{msg['lbl.delivery']} #{msg['lbl.posthyphen']}" />
+															<f:selectItems
+																value="#{serviceApplicabilityRule.lstDeliveryName}"
+																var="c"
+																itemLabel="#{c.deliveryMode.deliveryMode} - #{c.englishDeliveryName}"
+																itemValue="#{c.deliveryMode.deliveryModeId}" />
+															<p:ajax update="delmsg,deliveryMode"
+																onstart="process.show();" onsuccess="process.hide();" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+
+											</h:panelGroup>
+											<div class="clearfix"></div>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="#{msg['lbl.add']}"
+													style="margin-right:10px;"
+													action="#{serviceApplicabilityRule.search}" update="form"
+													onstart="process.show();" onsuccess="process.hide();" />
+												<p:commandButton value="#{msg['lbl.view']}"
+													style="margin-right:10px;" immediate="true"
+													action="#{serviceApplicabilityRule.view}" update="form"
+													onstart="process.show();" onsuccess="process.hide();" />
+
+												<p:commandButton value="#{msg['lbl.clear']}" update="form"
+													action="#{serviceApplicabilityRule.clear}" immediate="true"
+													process="@this" />
+
+											</h:panelGroup>
+
+										</p:panel>
+										<div class="clearfix"></div>
+										<p:panel
+											rendered="#{serviceApplicabilityRule.renderDataTable}"
+											id="datatablePanel">
+
+											<p:spacer height="10px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:dataTable styleClass="mydatatableclass"
+												value="#{serviceApplicabilityRule.applicabilityList}"
+												id="datatable" rowIndexVar="rowIndex"
+												emptyMessage="#{msg['lbl.norecordfound']}" var="c"
+												editable="true" editMode="cell" paginatorPosition="bottom"
+												rows="10" paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="10,30,50">
+
+												<p:column headerText="#{msg['lbl.sino']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'oddrow' : 'oddrow'}"
+													style="text-align:center !important;">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+
+												<p:column headerText="#{msg['lbl.fieldname']}"
+													sortBy="#{c.fieldName}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'oddrow' : 'oddrow'}"
+													style="text-align:center !important;">
+													<h:outputText value="#{c.fieldName}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.fielddesc']}"
+													sortBy="#{c.fielDesc}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'oddrow' : 'oddrow'}"
+													style="text-align:center !important;">
+													<h:outputText value="#{c.fielDesc}" />
+												</p:column>
+
+												<p:ajax event="cellEdit"
+													listener="#{serviceApplicabilityRule.onCellEdit}"
+													update=":form:datatable" />
+
+												<p:column headerText="#{msg['lbl.nabigable']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'oddrow' : 'oddrow'}"
+													style="text-align:center !important;">
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{c.navigable}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:panel id="navicablePanel">
+																<p:inputText value="#{c.navigable}" label="Navigable"
+																	onkeyup="this.value=this.value.toUpperCase()"
+																	id="navicable" tabindex="5" maxlength="1"
+																	required="true"
+																	requiredMessage="please enter navigable"
+																	validatorMessage="#{msg['lbl.charactervalidationsyn']}">
+																	<p:message id="navicableMsg" for="navicable"
+																		display="text" />
+																	<f:validateRegex pattern="[NY]+" />
+																	<p:ajax event="blur"
+																		listener="#{serviceApplicabilityRule.updateValidation(c)}"
+																		update="navicablePanel,:form:datatable:navicableMsg" />
+
+																</p:inputText>
+															</p:panel>
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.mandatory']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'oddrow' : 'oddrow'}"
+													style="text-align:center !important;">
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{c.mandatory}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:panel id="mandatePanel">
+																<p:inputText value="#{c.mandatory}" id="mandatory"
+																	tabindex="6" label="Mandatory" maxlength="1"
+																	onkeyup="this.value=this.value.toUpperCase()"
+																	required="true"
+																	requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.mandatory']}"
+																	validatorMessage="#{msg['lbl.charactervalidationsyn']}">
+																	<p:message id="mandMsg" for="mandatory" display="text" />
+																	<f:validateRegex pattern="[NY]+" />
+																	<p:ajax event="blur"
+																		listener="#{serviceApplicabilityRule.updateValidation(c)}"
+																		update="mandatePanel,:form:datatable:mandMsg" />
+
+																</p:inputText>
+															</p:panel>
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.fieldtype']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'oddrow' : 'oddrow'}"
+													style="text-align:center !important;">
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{c.fielType}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:panel id="fieldTypePanel">
+																<p:inputText value="#{c.fielType}" id="fieldType"
+																	label="Field Type" maxlength="1"
+																	onkeyup="this.value=this.value.toUpperCase()"
+																	requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.fieldtype']}"
+																	validatorMessage="#{msg['lbl.charactervalidationsynb']}">
+																	<p:message id="fieldTypemsg" for="fieldType"
+																		display="text" />
+																	<f:validateRegex pattern="[ABND]+" />
+																	<p:ajax event="blur"
+																		listener="#{serviceApplicabilityRule.updateValidation(c)}"
+																		update="fieldTypePanel,:form:datatable:fieldTypemsg" />
+																</p:inputText>
+															</p:panel>
+
+
+
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+
+												<!-- <p:column headerText="#{msg['lbl.fieldlength']}" styleClass="#{rowIndex mod 2 == 0 ? 'oddrow' : 'oddrow'}"style="text-align:center !important;">
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{c.fielLength}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:panel id="fieldlengthPanel">
+															<p:inputText value="#{c.fielLength}" id="fieldLength"
+																label="Field Length" maxlength="2"  
+																requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.fieldlength']}"
+																validatorMessage="#{msg['lbl.charactervalidationsyn']}">
+																<p:message id="fieldLengthmsg" for="fieldLength"
+																	display="text" />
+																<f:convertNumber integerOnly="true" />
+																<f:validateLongRange minimum="1" />
+																<p:ajax event="blur"
+																	update="fieldlengthPanel,fieldLengthmsg" />
+															</p:inputText>
+														</p:panel>
+													</f:facet>
+												</p:cellEditor>
+											</p:column> -->
+
+												<p:column headerText="#{msg['lbl.validation']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'oddrow' : 'oddrow'}"
+													style="text-align:center !important;">
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{c.validation}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:panel id="validPanel">
+																<p:inputText value="#{c.validation}" id="validation"
+																	label="Validation" maxlength="1"
+																	onkeyup="this.value=this.value.toUpperCase()"
+																	requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.validation']}"
+																	validatorMessage="#{msg['lbl.charactervalidationsyn']}">
+																	<p:message id="validationmsg" for="validation"
+																		display="text" />
+																	<f:validateRegex pattern="[YN]+" />
+																	<p:ajax event="blur"
+																		listener="#{serviceApplicabilityRule.updateValidation(c)}"
+																		update="validPanel,:form:datatable:validationmsg" />
+																</p:inputText>
+															</p:panel>
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.min']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'oddrow' : 'oddrow'}"
+													style="width:50px;text-align:center !important;">
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{c.min}" />
+														</f:facet>
+
+														<f:facet name="input">
+															<p:panel id="minPanel">
+																<p:inputText value="#{c.min}" id="min" label="Min"
+																	requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.min']}"
+																	maxlength="2"
+																	validatorMessage="#{msg['lbl.zerovalidation']}">
+																	<p:message id="minMsg" for="min" display="text" />
+																	<f:validator validatorId="allowOnlyNumber" />
+																	<!-- <f:convertNumber integerOnly="true" />
+																<f:validateLongRange minimum="1" /> -->
+																	<p:ajax event="blur" update="minPanel,minMsg"
+																		listener="#{serviceApplicabilityRule.checkMin(c)}" />
+																</p:inputText>
+															</p:panel>
+														</f:facet>
+
+													</p:cellEditor>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.max']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'oddrow' : 'oddrow'}"
+													style="width:50px;text-align:center !important;">
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{c.max}" />
+														</f:facet>
+
+														<f:facet name="input">
+															<p:panel id="maxPanel">
+																<p:inputText value="#{c.max}" label="Max" id="max"
+																	maxlength="3"
+																	requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.max']}"
+																	validatorMessage="#{msg['lbl.zerovalidation']}">
+																	<p:message id="maxMsg" for="max" display="text" />
+																	<!-- <f:convertNumber integerOnly="true" />
+																<f:validateLongRange minimum="1" /> -->
+																	<f:validator validatorId="allowOnlyNumber" />
+																	<p:ajax event="blur" update="maxPanel,maxMsg"
+																		listener="#{serviceApplicabilityRule.checkMax(c)}" />
+																</p:inputText>
+															</p:panel>
+
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.language']}" width="7%"
+													styleClass="#{rowIndex mod 2 == 0 ? 'oddrow' : 'oddrow'}">
+													<!-- <h:outputText value="#{c.languageId}" /> -->
+													<p:messages id="msgLanguageId" display="text"
+														for="languageId" />
+													<p:selectOneMenu id="languageId"
+														value="#{c.serviceApplanguageId}"
+														panelStyle="width:120px !important;"
+														style="width:120px !important;" filter="true"
+														filterMatchMode="contains">
+														<f:selectItem itemValue=""
+															itemLabel="#{msg['lbl.serPleaseSelectLanguage']}" />
+														<f:selectItems value="#{c.lstLanguageTypes}" var="o"
+															itemLabel="#{o.languageCode} - #{o.languageName}"
+															itemValue="#{o.languageId}" />
+														<p:ajax event="change"
+															listener="#{serviceApplicabilityRule.updateValidation(c)}"
+															update="mandatePanel,:form:datatable:mandMsg" />
+													</p:selectOneMenu>
+												</p:column>
+
+
+											</p:dataTable>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="#{msg['lbl.submit']}"
+													action="#{serviceApplicabilityRule.save}"
+													update="datatablePanel,sqlexception"
+													process="datatablePanel" style="margin-right:10px;"
+													id="saveid"
+													rendered="#{serviceApplicabilityRule.renderSubmit}"
+													partialSubmit="true" onstart="process.show();"
+													oncomplete="process.hide();" />
+												<p:commandButton value="#{msg['lbl.exit']}"
+													action="#{serviceApplicabilityRule.exit}" process="@this"
+													rendered="#{serviceApplicabilityRule.renderExit}"
+													style="margin-right:10px;" />
+											</h:panelGroup>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</p:panel>
+
+
+										<p:panel
+											rendered="#{serviceApplicabilityRule.renderDataTableApprove}"
+											id="datatablePanelApprove">
+											<h2>
+												<h:outputText value="#{msg['lbl.serviceappruleheader']}" />
+											</h2>
+
+											<p:spacer height="10px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:dataTable
+												value="#{serviceApplicabilityRule.applicabilityListApprove}"
+												id="datatableapprove" rowIndexVar="rowIndex"
+												emptyMessage="#{msg['lbl.norecordfound']}" var="c"
+												paginatorPosition="bottom" rows="10" paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10,15">
+
+												<p:column headerText="#{msg['lbl.sino']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'oddrow' : 'oddrow'}">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+
+												<p:column headerText="#{msg['lbl.country']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'oddrow' : 'oddrow'}">
+													<h:outputText value="#{c.countryName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.currency']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'oddrow' : 'oddrow'}">
+													<h:outputText value="#{c.currency}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.remittanc']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'oddrow' : 'oddrow'}">
+													<h:outputText value="#{c.remittance}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.delivery']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'oddrow' : 'oddrow'}">
+													<h:outputText value="#{c.delivery}" />
+												</p:column>
+
+
+												<p:column headerText="#{msg['lbl.fieldname']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'oddrow' : 'oddrow'}">
+													<h:outputText value="#{c.fieldName}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.fielddesc']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'oddrow' : 'oddrow'}">
+													<h:outputText value="#{c.fielDesc}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.nabigable']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'oddrow' : 'oddrow'}">
+													<h:outputText value="#{c.navigable}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.mandatory']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'oddrow' : 'oddrow'}">
+													<h:outputText value="#{c.mandatory}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.fieldtype']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'oddrow' : 'oddrow'}">
+													<h:outputText value="#{c.fielType}" />
+												</p:column>
+
+												<!-- <p:column headerText="#{msg['lbl.fieldlength']}" styleClass="#{rowIndex mod 2 == 0 ? 'oddrow' : 'oddrow'}">
+												<h:outputText value="#{c.fielLength}" />
+											</p:column> -->
+
+												<p:column headerText="#{msg['lbl.validation']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'oddrow' : 'oddrow'}">
+													<h:outputText value="#{c.validation}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.min']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'oddrow' : 'oddrow'}">
+													<h:outputText value="#{c.min}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.max']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'oddrow' : 'oddrow'}">
+													<h:outputText value="#{c.max}" />
+												</p:column>
+
+
+
+											</p:dataTable>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" rendered="true"
+												styleClass="shadow_button">
+												<p:commandButton value="#{msg['lbl.approve']}"
+													action="#{serviceApplicabilityRule.approve}"
+													update="datatablePanelApprove"
+													process="datatablePanelApprove" style="margin-right:10px;" />
+												<p:commandButton value="Cancel" update="form"
+													action="#{serviceApplicabilityRule.clearApprove}"
+													immediate="true" process="@this" />
+											</h:panelGroup>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col">
+											<h:outputText value="#{msg['lbl.fieldtype']}:"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:outputText value="A - Alpha"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:outputText value="N - Numbers"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:outputText value="B-Both(A OR N)"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:outputText value="D - Date"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+												
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:outputText value=" #{msg['lbl.*filedsAreMandatory']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+									</p:panel>
+
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="Please wait ........"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+								</p:panel>
+								<h:panelGroup layout="block" class="clearfix" />
+
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+<script>
+	"use strict";
+	(function TabNumbers(pfx) {
+
+		pfx = new RegExp('^' + pfx + '(\\d+)$');
+		for (var divs = document.getElementsByTagName('input'), el, m, i = divs.length; i--;) { // traverse all divs 
+			if ((m = divs[i].id.match(pfx))) { // for those with id Div#
+				for (el = divs[i].firstChild; el; el = el.nextSibling) { // Traverse their child nodes
+					if (el.tagName === 'INPUT' || el.tagName === 'SELECT'
+							|| el.tagName === 'BUTTON') {
+						el.tabIndex = +m[1];
+					}
+				}
+			}
+		}
+	})('input');
+</script>
+</html>

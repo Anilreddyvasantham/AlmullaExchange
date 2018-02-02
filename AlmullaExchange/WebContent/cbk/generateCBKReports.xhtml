@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+
+	<script type="text/javascript">
+		var baseUri = makeUri();
+		history.pushState(null, null, 'generateCBKReports.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'generateCBKReports.xhtml');
+		});
+
+		$(document).ready(function() {
+			$(window).scroll(function() {
+				if ($(this).scrollTop() > 100) {
+					$('#goTop').stop().animate({
+						bottom : '30px'
+					}, 300);
+				} else {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				}
+			});
+			$('#goTop').click(function() {
+				$('html, body').stop().animate({
+					scrollTop : 0
+				}, 500, function() {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				});
+			});
+		});
+	</script>
+
+	<style>
+.centeralign {
+	margin-left: auto;
+	margin-right: auto;
+	width: 6em
+}
+
+.ui-datatable .ui-state-highlight {
+	background-color: red;
+}
+</style>
+
+</h:head>
+
+
+
+<p:confirmDialog id="reportFreq" widgetVar="reportFreq"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all" message="Please Select Report Frequency!">
+</p:confirmDialog>
+
+<p:confirmDialog id="weeklyFrom" widgetVar="weeklyFrom"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all" message="Please Select From date!">
+</p:confirmDialog>
+
+<p:confirmDialog id="monthlyFrom" widgetVar="monthlyFrom"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all" message="Please Select From Month/Year !">
+</p:confirmDialog>
+
+<p:confirmDialog id="quarterlyFrom" widgetVar="quarterlyFrom"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all" message="Please Select From Month/Year !">
+</p:confirmDialog>
+
+<p:confirmDialog id="weekDtCompare" widgetVar="weekDtCompare"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all"
+	message="Please Select From Date is less than 6 days from Current date!">
+</p:confirmDialog>
+
+<p:confirmDialog id="monthDtCompare" widgetVar="monthDtCompare"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all"
+	message="Please Select From month/year is less than 1 month from Current Month !">
+</p:confirmDialog>
+
+<p:confirmDialog id="quaDtCompare" widgetVar="quaDtCompare"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all"
+	message="Please Select From month/year is less than 3 months from Current Month!">
+</p:confirmDialog>
+
+<p:dialog id="informationSaved" widgetVar="informationSaved" width="270"
+	height="70" showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="Infromation is successfully saved!" />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}" process="@this"
+		oncomplete="informationSaved.hide()" />
+</p:dialog>
+
+<p:confirmDialog id="validDate" widgetVar="validDate" resizable="false"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all" message="Please Enter Valid Date !">
+</p:confirmDialog>
+
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+		<h:form id="cbkForm">
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;"><ui:include
+							src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle"
+										src="../images/toggle_plus.png" alt=""
+										onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+								<h1>
+									<h:outputText value="CBK Reports" />
+								</h1>
+
+								<p:panel styleClass="shadow" id="mainPanel"
+									style="background-color:#FFF !important; ">
+
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" update="@all"
+										message="#{generateCBKReportsBean.errorMessage}">
+									</p:confirmDialog>
+
+									<p:dialog modal="true" showHeader="true"
+										header="#{msg['lbl.pleasewait']}" widgetVar="process"
+										id="process" width="300" height="50" resizable="false"
+										draggable="false" closable="false"
+										style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+										<div style="text-align: center;">
+											<p:graphicImage value="../images/preloader.gif" />
+										</div>
+									</p:dialog>
+
+									<fieldset
+										style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+										<legend
+											style="font-size: 15px; font-weight: bold; color: #037712;"
+											align="top">&nbsp;Generate CBK Reports&nbsp;</legend>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel value="Report Frequency "
+													style="color:#05000a;" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:selectOneMenu filterMatchMode="contains" filter="true"
+													id="report"
+													value="#{generateCBKReportsBean.reportFreqSelected}">
+													<f:selectItem itemLabel="--Select Report Frequency--"
+														itemValue="" />
+													<f:selectItem itemLabel="Weekly" itemValue="W" />
+													<f:selectItem itemLabel="Monthly" itemValue="M" />
+													<f:selectItem itemLabel="Quarterly" itemValue="Q" />
+													<p:ajax event="change" update="report,mainPanel"
+														listener="#{generateCBKReportsBean.defaultValues}"
+														onstart="process.show();" onsuccess="process.hide();" />
+												</p:selectOneMenu>
+											</p:panel>
+											<div class="clearfix"></div>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col"
+											rendered="#{generateCBKReportsBean.reportFreqSelected eq 'W'}">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel value="From Date " style="color:#05000a;" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+
+											<p:panel styleClass="inner_right_col">
+												<p:calendar id="weeklyFromdt" navigator="true"
+													value="#{generateCBKReportsBean.weeklyFromDt}"
+													pattern="dd/MM/yyyy" readonlyInput="true"
+													maxdate="#{generateCBKReportsBean.disableWeek}">
+													<p:ajax event="dateSelect"
+														listener="#{generateCBKReportsBean.dateSelected}"
+														update="weeklyFromdt,weekToDt" onstart="process.show();"
+														onsuccess="process.hide();" />
+												</p:calendar>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col"
+											rendered="#{generateCBKReportsBean.reportFreqSelected eq 'W'}">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel value="To date " style="color:#05000a;" />
+											</p:panel>
+
+											<p:panel styleClass="inner_right_col">
+												<p:inputText value="#{generateCBKReportsBean.weeklyToDt}"
+													id="weekToDt" readonly="true">
+													<f:convertDateTime pattern="dd/MM/yyyy" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col"
+											rendered="#{generateCBKReportsBean.reportFreqSelected eq 'M'}">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel value="From Month/Year "
+													style="color:#05000a;" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+
+											<p:panel styleClass="inner_right_col">
+												<p:panelGrid style="width:100%;">
+													<p:row>
+														<p:column
+															style="width:95%; text-align:left; padding:0px 5px 0px 0px !important;">
+															<p:inputMask id="monFrDt"
+																value="#{generateCBKReportsBean.entMonDt}"
+																mask="99/9999">
+																<f:convertDateTime pattern="MM/yyyy" />
+																<p:ajax update="monFrDt,monthlyFromdt,monthlyToDt"
+																	listener="#{generateCBKReportsBean.dateEntered}"
+																	onstart="process.show();" onsuccess="process.hide();"></p:ajax>
+															</p:inputMask>
+														</p:column>
+														<p:column
+															style="width:5%; padding:0px 5px 0px 0px !important;">
+															<p:calendar id="monthlyFromdt" readonlyInput="true"
+																navigator="true"
+																value="#{generateCBKReportsBean.monthlyFromDt}"
+																pattern="dd/MM/yyyy"
+																maxdate="#{generateCBKReportsBean.disableMonth}">
+																<p:ajax event="dateSelect"
+																	listener="#{generateCBKReportsBean.dateSelected}"
+																	update="monthlyFromdt,monthlyToDt,mainPanel"
+																	onstart="process.show();" onsuccess="process.hide();" />
+															</p:calendar>
+														</p:column>
+													</p:row>
+												</p:panelGrid>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col"
+											rendered="#{generateCBKReportsBean.reportFreqSelected eq 'M'}">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel value="To Month/Year " style="color:#05000a;" />
+											</p:panel>
+
+											<p:panel styleClass="inner_right_col">
+												<p:inputText value="#{generateCBKReportsBean.monthlyToDt}"
+													id="monthlyToDt" readonly="true">
+													<f:convertDateTime pattern="MM/yyyy" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+
+										<p:panel styleClass="left_col"
+											rendered="#{generateCBKReportsBean.reportFreqSelected eq 'Q'}">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel value="From Month/Year "
+													style="color:#05000a;" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+
+											<p:panel styleClass="inner_right_col">
+												<p:panelGrid style="width:100%;">
+													<p:row>
+														<p:column
+															style="width:95%; text-align:left; padding:0px 5px 0px 0px !important;">
+															<p:inputMask id="entQuaDt"
+																value="#{generateCBKReportsBean.quarterlySelectedDate}"
+																mask="99/9999">
+																<f:convertDateTime pattern="MM/yyyy" />
+																<p:ajax update="entQuaDt,quaFromYrdt,quaToDt"
+																	listener="#{generateCBKReportsBean.dateEntered}"
+																	onstart="process.show();" onsuccess="process.hide();"></p:ajax>
+															</p:inputMask>
+														</p:column>
+														<p:column
+															style="width:5%; padding:0px 5px 0px 0px !important;">
+															<p:calendar id="quaFromYrdt" navigator="true"
+																value="#{generateCBKReportsBean.quarterlyFromDt}"
+																readonlyInput="true" pattern="dd/MM/yyyy"
+																maxdate="#{generateCBKReportsBean.disableQuarter}">
+																<p:ajax event="dateSelect"
+																	update="quaFromYrdt,quaToDt,mainPanel"
+																	listener="#{generateCBKReportsBean.dateSelected}"
+																	onstart="process.show();" onsuccess="process.hide();" />
+															</p:calendar>
+														</p:column>
+													</p:row>
+												</p:panelGrid>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col"
+											rendered="#{generateCBKReportsBean.reportFreqSelected eq 'Q'}">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel value="To Month/Year " style="color:#05000a;" />
+											</p:panel>
+
+											<p:panel styleClass="inner_right_col">
+												<p:inputText value="#{generateCBKReportsBean.quarterlyToDt}"
+													readonly="true" id="quaToDt">
+													<f:convertDateTime pattern="MM/yyyy" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+									</fieldset>
+
+									<h:panelGroup layout="block" class="clearfix" />
+									<h:panelGroup layout="block" styleClass="shadow_button">
+										<p:commandButton value="SUBMIT"
+											action="#{generateCBKReportsBean.submitSelected}"
+											onstart="process.show();" style="margin-right:10px;"
+											onsuccess="process.hide()" process="@this"
+											update="mainPanel,error" />
+										<p:commandButton value="#{msg['lbl.exit']}"
+											update=":cbkForm:mainPanel"
+											action="#{generateCBKReportsBean.exit}" process="@this"
+											onstart="process.show();" onsuccess="process.hide();" />
+
+										<h:panelGroup layout="block" class="clearfix" />
+									</h:panelGroup>
+									<div class="clearfix"></div>
+
+
+								</p:panel>
+							</h:panelGroup>
+							<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+						</h:panelGroup></td>
+				</tr>
+			</table>
+		</h:form>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

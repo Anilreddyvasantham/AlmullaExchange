@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	
+</h:head>
+
+<h:body>
+
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<!-- <f:event listener="#{usdGlobalRequirementDetails.populate}" type="preRenderView"/> -->
+		<h:form>
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;">
+						<!-- <ui:include
+								src="../common/fxdeal_menu.xhtml"></ui:include> --> <ui:include
+							src="#{facesBean.fxdeal_menu}"></ui:include>
+					</td>
+
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle"
+										src="../images/toggle_plus.png" alt=""
+										onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+								<h1>
+									<h:outputText value="#{msg['lbl.uSDGlobalRequirementDetails']}" />
+								</h1>
+<p:confirmDialog id="noDataFound" widgetVar="noDataFound" width="180"  resizable="false" 	
+style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+                      									showEffect="clip" hideEffect="clip" message="#{msg['lbl.noRecordFound']}" >
+      </p:confirmDialog>
+
+								<p:panel styleClass="shadow" id="mainPanel"
+									style="background-color:#FFF !important; ">
+
+									<h2>
+										<h:outputText value="#{msg['lbl.fundRequest']}" />
+									</h2>
+
+									<p:panel styleClass="panel_border">
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.projectionDate']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="projectiondate" display="text" />
+												<p:inputText
+													value="#{usdGlobalRequirementDetails.projectiondate}"
+													id="projectiondate" required="true"
+													requiredMessage="Please Enter Projection Date"
+													readonly="true" />
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+
+												<h:outputText
+													value="#{msg['lbl.exchangeApplicationCountry']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="applicationCountry" display="text" />
+												<p:inputText id="applicationCountry"
+													value="#{usdGlobalRequirementDetails.applicationCountry}"
+													required="true"
+													requiredMessage="Please Enter Exchange Application Country"
+													readonly="true" />
+											</p:panel>
+
+										</p:panel>
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bankcountry']}" />
+												<h:outputText value="*" style="color:red;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="bankCountry" display="text" />
+												<p:selectOneMenu id="bankCountry"
+													value="#{usdGlobalRequirementDetails.bankCountryId}"
+													filter="true" filterMatchMode="startsWith" required="true"
+													requiredMessage="#{msg['lbl.pleaseSelectBankCountry']}">
+													<f:selectItem itemLabel="#{msg['lbl.selectbankcountry']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{usdGlobalRequirementDetails.bankCountryList}"
+														var="c" itemLabel="#{c.bankCountryName}"
+														itemValue="#{c.bankCountryId}" />
+													<p:ajax event="change" update="mainPanel"
+														listener="#{usdGlobalRequirementDetails.clearFromBankCountryChange}" onstart="process.show();" onsuccess="process.hide();"/>
+												</p:selectOneMenu>
+											</p:panel>
+
+										</p:panel>
+
+										<p:panel styleClass="left_col" id="pnlBank">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bank']}" />
+												<!-- <h:outputText value="*"  style="color:red;"/> -->
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="bankId" display="text" />
+												<p:selectOneMenu id="bankId"
+													value="#{usdGlobalRequirementDetails.bankId}" filter="true"
+													filterMatchMode="startsWith">
+													<!-- <p:selectOneMenu id="bankId" value="#{usdGlobalRequirementDetails.bankId}" filter="true" filterMatchMode="startsWith" required="true" requiredMessage="#{msg['lbl.pleaseSelectBank']}"> -->
+													<f:selectItem itemLabel="#{msg['lbl.selectbank']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{usdGlobalRequirementDetails.lstBank}" var="c"
+														itemLabel="#{c.bankCode} - #{c.bankFullName}" itemValue="#{c.bankId}" />
+													<p:ajax event="change" update="mainPanel"
+														listener="#{usdGlobalRequirementDetails.clearFromBankChange}" onstart="process.show();" onsuccess="process.hide();"/>
+												</p:selectOneMenu>
+											</p:panel>
+
+										</p:panel>
+
+										<p:panel id="pnlCurrency" styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currency']}" />
+												<!-- <h:outputText value="*"  style="color:red;"/> -->
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="currencyId" display="text" />
+												<p:selectOneMenu id="currencyId"
+													value="#{usdGlobalRequirementDetails.currencyId}"
+													filter="true" filterMatchMode="startsWith">
+													<!-- <p:selectOneMenu id="currencyId" value="#{usdGlobalRequirementDetails.currencyId}" filter="true" filterMatchMode="startsWith" required="true" requiredMessage="#{msg['lbl.pleaseSelectCurrency']}"> -->
+													<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{usdGlobalRequirementDetails.currencyOfBank}"
+														var="c" itemLabel="#{c.fsCurrencyMaster.currencyName}"
+														itemValue="#{c.fsCurrencyMaster.currencyId}" />
+													<p:ajax event="change"
+														listener="#{usdGlobalRequirementDetails.populateAccountNumber}" onstart="process.show();" onsuccess="process.hide();"
+														update="pnlAccountNumber" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel id="pnlAccountNumber" styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText
+													value="#{msg['lbl.consolidateCountryReqscreenAccountNumber']}" />
+												<!-- <h:outputText value="*"  style="color:red;"/> -->
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="accountNumber" display="text" />
+												<p:selectOneMenu id="accountNumber"
+													value="#{usdGlobalRequirementDetails.accountNumber}"
+													filter="true" filterMatchMode="startsWith">
+													<f:selectItem itemLabel="#{msg['lbl.selectaccountnumber']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{usdGlobalRequirementDetails.lstAccountNumber}"
+														var="c" itemLabel="#{c.bankAcctNo}"
+														itemValue="#{c.bankAcctDetId}" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix"></div>
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.search']}"
+												action="#{usdGlobalRequirementDetails.search}" onstart="process.show();" onsuccess="process.hide();"
+												update="mainPanel" style="margin-right:10px;" />
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{usdGlobalRequirementDetails.exit}" 
+												immediate="true" />
+											<div class="clearfix"></div>
+										</h:panelGroup>
+
+
+
+										<div class="clearfix"></div>
+										<p:spacer height="20px" />
+										<div class="clearfix"></div>
+
+										<p:panel id="datatable"
+											style="border:none !important; padding-right:5px; padding-bottom:15px; margin:5px; background-color:none !important; ">
+
+											<p:dataTable var="c" styleClass="mydatatableclass" rowIndexVar="rowIndex"
+												value="#{usdGlobalRequirementDetails.usdGlobalRequirementDetails}"
+												rows="10" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+									rowsPerPageTemplate="5,10,15" paginatorPosition="bottom"
+												emptyMessage="#{msg['lbl.norecordfound']}">
+
+										<p:column headerText="#{msg['lbl.slNo']}" style="width:15px;">
+										<h:outputText value="#{rowIndex+1}"/>
+									</p:column>
+									
+												<p:column headerText="#{msg['lbl.salesProjection']}">
+													<h:outputText value="#{c.salesProjectionValue}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.valueDatedTransaction']}">
+													<h:outputText value="#{c.valueDatedTransaction}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.bankBalance']}">
+													<h:outputText value="#{c.bankBalance}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.ikonrate']}"
+													sortBy="#{c.ikonRate}">
+													<h:outputText value="#{c.ikonRate}" />
+												</p:column>
+
+												<p:column
+													headerText="#{msg['lbl.IntermediateFundingCurrency']}"
+													sortBy="#{c.usdEquivalantAmount}">
+													<h:outputText value="#{c.usdEquivalantAmount}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.bankcountry']}">
+													<h:outputText value="#{c.bankCountry}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.bank']}" sortBy="#{c.bankCode} - #{c.bank}" style="width:20%;">
+													<h:outputText value="#{c.bankCode} - #{c.bank}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.currency']}"
+													sortBy="#{c.currency}">
+													<h:outputText value="#{c.currency}" />
+												</p:column>
+
+												<p:column
+													headerText="#{msg['lbl.consolidateCountryReqscreenAccountNumber']}"
+													sortBy="#{c.accountNumber}">
+													<h:outputText value="#{c.accountNumber}" />
+												</p:column>
+											</p:dataTable>
+										</p:panel>
+
+										<div class="clearfix"></div>
+									</p:panel>
+
+									<div class="clearfix"></div>
+									<p:dialog modal="true" showHeader="true" header="Please wait.."  widgetVar="process"  id="process"   width="300" height="50" resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+							    	</p:dialog> 	
+								</p:panel>
+
+							</h:panelGroup>
+							<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+						</h:panelGroup></td>
+				</tr>
+			</table>
+		</h:form>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+		history.pushState(null, null, 'supplier.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'supplier.xhtml');
+	    });
+		
+	</script>
+</h:head>
+
+
+<h:body dir="#{facesBean.direction}">
+<p:confirmDialog id="idNotFound" widgetVar="idNotFound" width="200"  height="17" resizable="false"
+		style="background-color: white !important;" styleClass="warning" header="#{msg['lbl.warningDailog']}"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.idnotfund']}">
+    </p:confirmDialog>
+    
+    <p:confirmDialog id="alreadyExist" widgetVar="alreadyExist" width="400"  height="17" resizable="false"
+		style="background-color: white !important;" styleClass="warning" header="#{msg['lbl.warningDailog']}"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.sundryDebtorRefAlreadyExistDb']} ">
+    </p:confirmDialog>
+ 
+ <p:confirmDialog id="dupAcNo" widgetVar="dupAcNo" width="300"  height="17" resizable="false"
+		style="background-color: white !important;" styleClass="warning" header="#{msg['lbl.warningDailog']}"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.accNoAlreadyExist']}">
+    </p:confirmDialog>
+    
+    <p:confirmDialog id="enter" widgetVar="enter" width="300"  height="17" resizable="false"
+		style="background-color: white !important;" styleClass="warning" header="#{msg['lbl.warningDailog']}"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.pleaseEnterCustomerReference']}">
+    </p:confirmDialog>
+    
+     <p:confirmDialog id="notAbleToAdd" widgetVar="notAbleToAdd" width="700"  height="17" resizable="false"
+		style="background-color: white !important;" styleClass="warning" header="#{msg['lbl.warningDailog']}"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.cannotAbleToAddDiffSundryDebtorRefSameCustomer']}">
+    </p:confirmDialog>
+
+ <p:confirmDialog id="dupAcNoDT" widgetVar="dupAcNoDT" width="700"  height="17" resizable="false"
+		style="background-color: white !important;" styleClass="warning" header="#{msg['lbl.warningDailog']}"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.accNoAlreadyAddedToDataTable']}">
+    </p:confirmDialog>
+    
+    <p:confirmDialog id="nodataFound" widgetVar="nodataFound" width="300"  height="17" resizable="false"
+		style="background-color: white !important;" styleClass="warning" header="#{msg['lbl.warningDailog']}"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.noCustomerDetailsFound']} ">
+    </p:confirmDialog>
+
+ 	
+    
+	<p:dialog id="complete" widgetVar="complete" width="400" height="70"  resizable="false" 
+	style="background-color: white !important;" styleClass="success" header="#{msg['lbl.success']}" closable="false"
+	showEffect="clip" hideEffect="clip" >
+           <p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']}" style="text-align: center; font-size:16px !important;"/><br/>
+           <p:commandButton value="#{msg['lbl.ok']}" actionListener="#{supplierBean.suplierPageNavigation}" process="@this" style="margin-left: 150px !important;"/>          
+     </p:dialog>
+        
+	<f:view locale="#{facesBean.locale}">
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<!-- <f:event listener="#{supplierBean.populateSearchValue}" type="preRenderView"/> -->
+		<h:form id="inputForm">
+		<table align="left" width="100%" style="height:100%;">
+    <tr>
+    <td align="left" valign="top" style="height:100%;" ><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+    <td  class="rightColumn" valign="top">
+		<h:panelGroup layout="block" class="container">
+			<h:panelGroup layout="block" class="main_div">
+			<div class="menu_button"><img style="cursor: pointer;  position:relative; left:15px;" id="HideHandle" name="HideHandle" src="../images/toggle_plus.png" alt="" onclick='hideLeftCol("leftCol");closeMenus();'/></div>
+				<h1>
+						<h:outputText value="#{msg['lbl.dealCustomerSupplierSetUP']}" />
+				</h1>
+				
+					<p:panel id="mainPanel" styleClass="shadow" >
+			
+						
+							<p:confirmDialog id="sqlexception" widgetVar="sqlexception"
+									header="EXCEPTION MESSAGE"
+									resizable="false" width="700"
+									style="background-color: white !important;"
+									styleClass="warning" showEffect="clip" hideEffect="clip"
+									closeOnEscape="true" closable="true"
+									message="#{supplierBean.exceptionMessage}">
+							</p:confirmDialog>
+						
+						
+						
+							<p:confirmDialog id="duplicateCheck" widgetVar="duplicateCheck"  resizable="false"
+								style="background-color: white !important;" styleClass="warning" header="#{msg['lbl.warningDailog']}"
+								showEffect="clip" hideEffect="clip" closeOnEscape="true"
+								closable="true" message="#{msg['lbl.supplierduplicateCheck']}">
+						    </p:confirmDialog>
+		    
+    
+						     <p:confirmDialog id="currencyCheck" widgetVar="currencyCheck"  resizable="false"
+								style="background-color: white !important;" styleClass="warning" header="#{msg['lbl.warningDailog']}"
+								showEffect="clip" hideEffect="clip" closeOnEscape="true"
+								closable="true" message="#{msg['lbl.suppliercurrencyCheck']}">
+						    </p:confirmDialog>
+    
+
+							<p:confirmDialog id="accNoCheck" widgetVar="accNoCheck"  resizable="false"
+								style="background-color: white !important;" styleClass="warning" header="#{msg['lbl.warningDailog']}"
+								showEffect="clip" hideEffect="clip" closeOnEscape="true"
+								closable="true" message="#{msg['lbl.supplieraccNoCheck']}">
+						    </p:confirmDialog>
+    
+						<div class="clearfix"></div>
+										<h2>
+											<h:outputText value="#{msg['lbl.dealCustomerSupplierSetUP']}" />
+										</h2>
+										
+							<p:panel styleClass="panel_border" id="bankTransferFromPanel">
+								<p:panel styleClass="left_col" id="custidPanel">
+								<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.customerRef']}" /><h:outputText value="*"  style="color:red;font-weight:bold;"/>
+									</p:panel>
+									<p:panel styleClass="inner_right_col">
+									<p:panelGrid  style="width:100%;">
+										<p:row>		
+											<p:column style="width:80%;padding:0px 3px 0px 0px !important;" >
+												<p:inputText  value="#{supplierBean.customerId}" id="custId" required="true" 
+															 onkeypress="if (event.keyCode == 13) {onchange(); return true; }" 
+															 requiredMessage="Enter Customer Reference NO" tabindex="1"  >
+													<p:ajax event="blur" listener="#{supplierBean.getCustomerDetails}" update="mainPanel"/>
+													<p:message for="custId" display="text" id="msgid" />
+													<p:tooltip for="custId" value="Customer Reference NO" style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;"/>
+														<!-- 			<f:convertNumber  integerOnly="true"/> -->
+				<f:validateLongRange minimum="1"/>
+												</p:inputText>
+											</p:column>
+											<p:column style="width:20%; text-align:right !important;padding:4px 0px 0px 8px !important;">
+												<p:commandButton id="searchButton" value="" styleClass="search_icon" action="#{supplierBean.searchClicked}" process="@this" onstart="process.show();" onsuccess="process.hide();">
+													<p:tooltip for="searchButton" value="#{msg['lbl.clickToSearch']}" style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;"/>
+												</p:commandButton>
+											</p:column>
+										</p:row>
+									</p:panelGrid>
+									</p:panel>
+								</p:panel>
+								<p:panel styleClass="left_col">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.customername']}"/><h:outputText value="*"  style="color:red;font-weight:bold;"/>
+									</p:panel>
+									<p:panel styleClass="inner_right_col" >
+										<p:inputText value="#{supplierBean.localName}" id="localName" readonly="true" style="font-size:11px !important;" >
+										<p:ajax/>
+										</p:inputText>
+									</p:panel>
+								</p:panel>
+								<div class="clearfix"></div>
+								<p:panel styleClass="left_col">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.mobileNumber']}"/><h:outputText value="*"  style="color:red;font-weight:bold;"/>
+									</p:panel>
+									<p:panel styleClass="inner_right_col"   >
+										<p:inputText value="#{supplierBean.mobileNumber}" id="mobileNo" readonly="true" >
+										<p:ajax />
+										</p:inputText>
+										
+									</p:panel>
+								</p:panel>
+								<p:panel styleClass="left_col">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.nationality']}"/><h:outputText value="*"  style="color:red;font-weight:bold;"/>
+									</p:panel>
+									<p:panel styleClass="inner_right_col"   >
+										<p:inputText value="#{supplierBean.nationallityName}" id="nationId" readonly="true">
+										<p:ajax />
+										</p:inputText>
+									</p:panel>
+								</p:panel>
+								<div class="clearfix"></div>
+								<p:panel styleClass="left_col">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.emailID']}"/><!-- <h:outputText value="*"  style="color:red;font-weight:bold;"/> -->
+									</p:panel>
+									<p:panel styleClass="inner_right_col">
+										<p:inputText value="#{supplierBean.emailId}" id="email" readonly="true">
+										<p:ajax />
+										</p:inputText>
+									</p:panel>
+								</p:panel>
+								<p:panel styleClass="left_col" id="sundryDebtorRef">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.sundryDepotRef']}"/><h:outputText value="*"  style="color:red;font-weight:bold;"/>
+									</p:panel>
+									<p:panel styleClass="inner_right_col">
+									<p:message for="sundryId" display="text" id="msgSundryId"/>
+										<p:inputText value="#{supplierBean.sundryDeptolRef}" id="sundryId" required="true" requiredMessage="Enter Sundry Deptol Refence" tabindex="2" maxlength="20" validator="#{supplierBean.checkSundryDebtor}">
+										<f:validator validatorId="allowOnlyNumber" />
+										<p:ajax update="msgSundryId,sundryDebtorRef" event="blur" listener="#{supplierBean.sundryDebtorRefCheckAndAddDataTable}" onstart="process.show();" onsuccess="process.hide();"/>
+										</p:inputText>
+									</p:panel>
+								</p:panel>
+								<div class="clearfix"></div>
+								<p:panel styleClass="left_col">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.bank']}"/><!-- <h:outputText value="*"  style="color:red;font-weight:bold;"/> -->
+									</p:panel>
+									<p:panel styleClass="inner_right_col"   >
+									<p:message for="bank" display="text" id="msgBank"/>
+											<p:selectOneMenu  value="#{supplierBean.bankcode}" filter="true" filterMatchMode="contains" id="bank"  effect="fold" requiredMessage="Please Select Bank" tabindex="3" >
+													<f:selectItem itemLabel="#{msg['lbl.selectbank']}" itemValue=""  />
+													<f:selectItems value="#{supplierBean.bankListFrmBankApp}" var="c"  itemLabel="#{c.bankMaster.bankCode} -  #{c.bankMaster.bankFullName}" itemValue="#{c.bankMaster.bankId}" />
+												  <p:ajax  event="change" listener="#{supplierBean.populateBankDescription}" update="bankDescriptionPanel,msgBank" onstart="process.show();" onsuccess="process.hide();"/> 
+												
+												</p:selectOneMenu>
+									</p:panel>	
+								</p:panel>
+								<p:panel styleClass="left_col" id="bankDescriptionPanel">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.bankDesc']}"/><!-- <h:outputText value="*"  style="color:red;font-weight:bold;"/> -->
+									</p:panel>
+									<p:panel styleClass="inner_right_col">
+									<p:message for="bankDes" id="bankDescId" display="text"/>
+										<p:inputText  value="#{supplierBean.bankDescription}" id="bankDes" readonly="true" >
+										<p:ajax update="bankDescId" />
+										</p:inputText>
+									</p:panel>
+								</p:panel>
+								<div class="clearfix"></div>
+								
+									<p:panel styleClass="left_col" id="currencyPanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currency']}" /><!-- <h:outputText value="*"  style="color:red;font-weight:bold;"/> -->
+											</p:panel>
+									
+											<p:panel styleClass="inner_right_col">
+            									    <p:message for="currency" display="text" id="currencyId"/>
+            									    <p:selectOneMenu  id="currency" value="#{supplierBean.currencyId}" filter="true" filterMatchMode="contains"  requiredMessage="Please Select Currency" tabindex="4">
+													<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}" itemValue="" />
+													<f:selectItems value="#{supplierBean.currencyList}" var="c"  itemLabel="#{c.currencyCode} - #{c.currencyName}" itemValue="#{c.currencyId}"/>
+													<p:ajax update="currencyId" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+								<p:panel styleClass="left_col" id="bankAccNoPanel">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.bankAccountNumber']}"/><!-- <h:outputText value="*"  style="color:red;font-weight:bold;"/> -->
+									</p:panel>
+									<p:panel styleClass="inner_right_col">
+									<p:message for="bankAcNo" id="bankAc" display="text"/>
+										<p:inputText value="#{supplierBean.bankAccountNumber}" id="bankAcNo"  requiredMessage="Enter Bank Account Number" maxlength="12" tabindex="5" validator="#{supplierBean.checkBankAccNoisNumber}">
+									<!-- 	<f:convertNumber integerOnly="true" type="number" /> -->
+										<p:ajax event="blur" listener="#{supplierBean.accountNumberCheck}" update="bankAccNoPanel"/>
+										<p:ajax  update="bankAc"/>
+										</p:inputText>
+									</p:panel>
+										
+								</p:panel>
+								
+								
+								
+								<div class="clearfix"></div>
+							<p:panel styleClass="shadow_button" style=" background-color:#FFF !important;">
+							<p:commandButton value="#{msg['lbl.add']}" action="#{supplierBean.addRecordToDataTable}"  style="margin-right:10px;" update="mainPanel" tabindex="6" onstart="process.show();" onsuccess="process.hide();"/>
+							<p:commandButton value="#{msg['lbl.view']}" action="#{supplierBean.viewAllRecordsFromDB}"  update="mainPanel,sundryId,bank"  tabindex="7" style="margin-right:10px;" onstart="process.show();" onsuccess="process.hide();"/>
+							<p:commandButton value="#{msg['lbl.clear']}" action="#{supplierBean.clearValues}"  immediate="true" tabindex="8" onstart="process.show();" onsuccess="process.hide();" process="@this"/>
+							</p:panel>
+							<p:panel rendered="#{supplierBean.booRenderDataTable}">
+										<p:dataTable value="#{supplierBean.lstSupplierDetails}" styleClass="mydatatableclass" id="datatable" var="o" emptyMessage="#{msg['lbl.norecordfound']}" 
+										paginatorPosition="bottom" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+										rowsPerPageTemplate="5,10,15">
+											<p:column headerText="#{msg['lbl.customerRef']}">
+												<h:outputText value="#{o.customerRefId}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.custName']}">
+												<h:outputText value="#{o.customerName}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.mobileNumber']}">
+												<h:outputText value="#{o.mobileNumber}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.nationality']}">
+												<h:outputText value="#{o.nationality}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.emailID']}">
+												<h:outputText value="#{o.email}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.sundryDepotRef']}">
+												<h:outputText value="#{o.sundryDebtorRef}" />
+											</p:column>
+
+
+											<p:column headerText="#{msg['lbl.bankDesc']}" >
+												<h:outputText value="#{o.bankDescription}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.currency']}" >
+												<h:outputText value="#{o.currencyName}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.bankAccountNumber']}" >
+												<h:outputText value="#{o.accountNumber}" />
+											</p:column>
+											
+											<p:column headerText="#{msg['lbl.edit']}">
+													<p:commandButton   styleClass="edit" value="" action="#{supplierBean.editRecord(o)}"  update=":inputForm" immediate="true" process="@this">
+													</p:commandButton>
+											</p:column>
+											 <p:column headerText="#{msg['lbl.delete']}">
+												<p:commandButton styleClass="delete" value=""
+													actionListener="#{supplierBean.remove(o)}"
+													update=":inputForm" process="@this" immediate="true"/>
+											</p:column>
+											
+											<!-- <p:column>
+												<p:commandLink
+													action="#{supplierBean.addMoreTransaction(o)}"
+													value="#{msg['lbl.addMoreSupplier']}"
+													style="color:blue !important; text-decoration:underline !important;" update=":inputForm"
+													immediate="true" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+											</p:column> -->
+
+										</p:dataTable>
+										</p:panel>
+							
+							<p:panel styleClass="shadow_button" style=" background-color:#FFF !important;" rendered="#{supplierBean.booSavePanel}">
+							<p:commandButton value="#{msg['lbl.submit']}" style="margin-right:10px;" action="#{supplierBean.saveRecord}"  update=":inputForm,:inputForm:sqlexception" immediate="true" tabindex="8" disabled="#{supplierBean.disableSubmit}" onstart="process.show();" onsuccess="process.hide();"/>
+							<p:commandButton value="#{msg['lbl.exit']}" action="#{supplierBean.exit}" process="@this" immediate="true" tabindex="9"/>
+							</p:panel>
+							
+					<div class="clearfix"></div>
+							<p:panel styleClass="left_col" >
+									<h:outputText   value=" #{msg['lbl.*filedsAreMandatory']}"  style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+								</p:panel>	
+						</p:panel>		
+							<p:dialog modal="true" showHeader="true" header="Please wait.."  widgetVar="process"  id="process"   width="300" height="50" resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+							    	</p:dialog>	
+						</p:panel>	
+				
+			</h:panelGroup>
+		</h:panelGroup>
+		<div class="clearfix"></div>
+    				
+    				</td>
+    </tr>
+    </table>
+    	</h:form>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+
+
+</html>

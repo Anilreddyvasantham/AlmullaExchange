@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script src="../js/SigWeb.js" type="text/javascript"></script>
+	<script src="../js/digitalsignature.js"></script>
+	<script type="text/javascript" language="javascript">
+		var baseUri = makeUri();
+		history.pushState(null, null, 'promotionEnquiry.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'promotionEnquiry.xhtml');
+		});
+	</script>
+</h:head>
+
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form1">
+								<h1>
+									<h:outputText value="Promotion Enquiry" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h3>
+										<h:outputText value="Promotion Enquiry" />
+									</h3>
+
+
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{promotionEnquiryMBean.errorMessage}">
+									</p:confirmDialog>
+									<p:confirmDialog id="noSingnature" widgetVar="noSingnature"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Please fill the signature field ">
+									</p:confirmDialog>
+
+									<p:dialog modal="true" showHeader="true"
+										header="#{msg['lbl.pleasewait']}" widgetVar="process"
+										id="process" width="300" height="50" resizable="false"
+										draggable="false" closable="false"
+										style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+										<div style="text-align: center;">
+											<p:graphicImage value="../images/preloader.gif" />
+										</div>
+									</p:dialog>
+
+									<p:panel styleClass="panel_border">
+										<p:panel id="headerPanel">
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="Promotion Year" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{promotionEnquiryMBean.finaceYear}"
+														readonly="true"></p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="Promotion Number" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:selectOneMenu id="proNum" filter="true"
+														value="#{promotionEnquiryMBean.promotionDocumentNo}"
+														filterMatchMode="contains" required="true">
+														<f:selectItem itemLabel="--- Select ---" itemValue="" />
+														<f:selectItems
+															value="#{promotionEnquiryMBean.lstPromotionDocNo}"
+															var="p" itemLabel="#{p.populateId} - #{p.populateCode}"
+															itemValue="#{p.populateId}" />
+														<p:ajax event="change"
+															listener="#{promotionEnquiryMBean.getPromotionMaster()}"
+															update="mainPanel,proNum" onstart="process.show();"
+															onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="From Date" style="color:#05000a;" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{promotionEnquiryMBean.fromHDate}"
+														readonly="true">
+
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="To Date" style="color:#05000a;" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{promotionEnquiryMBean.toDate}"
+														readonly="true">
+
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="Promotion Description" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText
+														value="#{promotionEnquiryMBean.promotionDescription}"
+														readonly="true">
+
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="20px"></p:spacer>
+
+											<p:panel id="dataTablePanel">
+												<p:dataTable id="dataTable"
+													value="#{promotionEnquiryMBean.lstPromotionWinnerDataTable}"
+													var="d" rowIndexVar="rowIndex" editable="true"
+													editMode="cell" emptyMessage="#{msg['lbl.noRecordFound']}"
+													rows="10" paginator="true"
+													paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+													paginatorPosition="bottom" rowsPerPageTemplate="5,10,20,50"
+													styleClass="mydatatableclass">
+
+
+													<p:column headerText="#{msg['lbl.sino']}"
+														style="width:30px;">
+														<h:outputText value="#{rowIndex+1}" />
+													</p:column>
+
+													<p:column headerText="Draw Date">
+														<h:outputText value="#{d.drawDate}" />
+													</p:column>
+
+													<p:column headerText="Week From Date">
+														<h:outputText value="#{d.fromDate}" />
+													</p:column>
+													
+													<p:column headerText="Week To Date">
+														<h:outputText value="#{d.toDate}" />
+													</p:column>
+
+													<p:column headerText="Civil Id">
+														<h:outputText value="#{d.civilId}" />
+													</p:column>
+
+													<p:column headerText="Name" style="width:100px;">
+														<h:outputText value="#{d.customerName}" />
+													</p:column>
+
+													<p:column headerText="Mobile">
+														<h:outputText value="#{d.custMobileNo}" />
+													</p:column>
+
+													<p:column headerText="Prize No">
+														<h:outputText value="#{d.prizeNo}" />
+													</p:column>
+
+													<p:column headerText="Prize Amount">
+														<h:outputText value="#{d.prizeAmount}" />
+													</p:column>
+
+													<p:column headerText="Transaction year">
+														<h:outputText value="#{d.transactionYear}" />
+													</p:column>
+
+													<p:column headerText="Transaction No">
+														<h:outputText value="#{d.transactionNo}" />
+													</p:column>
+
+													<p:column headerText="Valid Upto">
+														<h:outputText value="#{d.validUpTo}" />
+													</p:column>
+
+													<p:column headerText="Declaration collected on">
+														<h:outputText value="#{d.declarationDate}">
+															<f:convertDateTime pattern="dd/MM/yyyy" />
+														</h:outputText>
+													</p:column>
+													
+													<p:column headerText="Balance Amount">
+														<h:outputText value="#{d.promoUsedAmt}">
+															
+														</h:outputText>
+													</p:column>
+													
+													<p:column headerText="Reprint" >
+													
+														<h:commandButton value="Reprint" action="#{promotionEnquiryMBean.genaratePromoDeclarationReport(d)}" 
+														rendered="#{d.declarationDate ne null}" immediate="true" style="font-weight: bold !important; font-size: 12px !important; color: blue !important;
+    													  text-decoration: underline !important; border: none !important;  background: none !important;">
+														</h:commandButton>
+													</p:column>
+													
+												</p:dataTable>
+
+												<div class="clearfix"></div>
+
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" styleClass="shadow_button">
+
+												<p:commandButton value="#{msg['lbl.exit']}"
+													action="#{promotionEnquiryMBean.exit}" process="@this"
+													onstart="process.show();" onsuccess="process.hide();" />
+
+												<h:panelGroup layout="block" class="clearfix" />
+											</h:panelGroup>
+
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+									</p:panel>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

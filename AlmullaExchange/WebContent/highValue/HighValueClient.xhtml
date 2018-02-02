@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	  <link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+</h:head>
+<p:confirmDialog id="noRecords" widgetVar="noRecords"
+										width="300"  resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="#{msg['lbl.noRecordFound']}">
+									</p:confirmDialog>
+<p:confirmDialog id="selectAll" widgetVar="selectAll"
+										width="300"  resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="#{msg['lbl.selectBankOrAccountNoOrCurrencyIdOrBranchIdOrSendReceiverIndicator']}">
+									</p:confirmDialog>
+<p:confirmDialog id="enqForRemit" widgetVar="enqForRemit"
+										width="300"  resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="There is no complaint remittance">
+									</p:confirmDialog>
+<p:confirmDialog id="dispalyForRemit" widgetVar="dispalyForRemit"
+										width="300"  resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="There is no remittance ">
+									</p:confirmDialog>																			
+								
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		
+			<h:form id="form">
+		
+				<table align="left" width="100%" style="height: 100%;">
+					<tr>
+						<td align="left" valign="top" style="height: 100%;">
+								<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+								</td>
+		
+						<td class="rightColumn" valign="top">
+						<h:panelGroup	layout="block" class="container">
+								<h:panelGroup layout="block" class="main_div">
+									<div class="menu_button">
+										<img style="cursor: pointer; position: relative; left: 15px;"
+											id="HideHandle" name="HideHandle"
+											src="../images/toggle_plus.png" alt=""
+											onclick='hideLeftCol("leftCol");closeMenus();' />
+									</div>
+									<h1>
+										<h:outputText value="#{msg['lbl.highValueClient']}" />
+									</h1>
+									
+									<p:confirmDialog id="error" widgetVar="error" resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" update="@all"
+									message="#{highValueClientBean.errorMessage}">
+									</p:confirmDialog>
+		
+		
+									<p:panel styleClass="shadow" id="mainPanel"
+										style="background-color:#FFF !important; " >
+										<h2>
+											<h:outputText value="#{msg['lbl.highValueClient']}" />
+											<!-- <p:commandLink action="#{bankBranchDetails.cancel}"
+														 process="@this">
+														<p:graphicImage value="../images/return.jpg" width="25" height="25" id="imgEdit" styleClass="icon_right" style="float:right;" />
+														<p:tooltip for="imgEdit" value="Go to Home" />
+													</p:commandLink> -->
+										</h2>
+										<p:dialog id="complete" widgetVar="complete" width="400"
+										height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="success" header="#{msg['lbl.success']}" closable="false"
+										showEffect="clip" hideEffect="clip">
+										<p:outputLabel
+											value="#{msg['lbl.recordsSuccessfullySaved']}  "
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{highValueClientBean.clickOnOKSave}"
+											process="@this" style="margin-left: 150px !important;" />
+									</p:dialog>
+									<p:panel styleClass="panel_border" >
+												
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.location']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgLocation"  for="locationId" display="text" />
+													<p:selectOneMenu id="locationId" value="#{highValueClientBean.locationId}" requiredMessage="Please Select Location" filter="true" filterMatchMode="contains" required="true" tabindex="1" >
+													 <f:selectItem itemLabel="#{msg['lbl.SelectLoca']}" itemValue="" />
+													<f:selectItems value="#{highValueClientBean.countryBranch}" var="c" itemLabel="#{c.branchId} - #{c.branchName}" itemValue="#{c.countryBranchId}" /> 
+													<p:ajax event="change" update="msgLocation" onstart="process.show();"
+													onsuccess="process.hide();" />
+												</p:selectOneMenu>
+												</p:panel>
+												</p:panel>
+												<h:panelGroup layout="block" class="clearfix"/>
+												<p:panel styleClass="left_col" >
+										<h:outputText  id="mandatory" value=" #{msg['lbl.*filedsAreMandatory']}"  style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										<h:panelGroup layout="block" class="clearfix"/>
+										</p:panel>
+										<div class="clearfix"></div>
+										<div class="clearfix"></div>
+										<h:panelGroup layout="block" class="clearfix"/>
+									<h:panelGroup layout="block" styleClass="shadow_button">						
+										<p:commandButton value="#{msg['lbl.view']}" action="#{highValueClientBean.addRecordsToDataTable}" update="mainPanel,error" tabindex="2"/>
+										<!-- <p:commandButton value="#{msg['lbl.clear']}" action="#{complaintEnquiryBean.clearAllFields}" style="margin-right:10px;" disabled="#{testkeyParameterForBankBean.booClearPanel}" immediate="true" process="@this" update="mainPanel" />  -->
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+									
+								
+										
+									<p:panel id="dataPanel">
+									<p:dataTable id="dataTable" styleClass="mydatatableclass" value="#{highValueClientBean.highValueClientDtList}"  
+									rows="10" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="5,10,15" var="d" 
+									rowIndexVar="rowIndex" emptyMessage="#{msg['lbl.noRecordFound']}" paginatorPosition="bottom" rendered="#{highValueClientBean.booRenderDataTable}" editable="true" editMode="cell">
+										<p:column headerText="#{msg['lbl.sino']}" style="width:30px;">
+											<h:outputText value="#{rowIndex+1}" />
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.logDate']}"  >
+											 <h:outputText value="#{d.logDate}">
+											 <f:convertDateTime pattern="dd/MM/yyyy"/>
+											 </h:outputText>
+										</p:column>
+
+											<p:column headerText="#{msg['lbl.customerRefNo']}"  >
+											 <h:outputText value="#{d.customerReferenceNo}"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.customerName']}"  >
+										<h:outputText value="#{d.customerName}"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.mobileNumber']}"  >
+										 <h:outputText value="#{d.mobileNumber}"/>
+										</p:column>
+										
+										
+										<p:column headerText="#{msg['lbl.visitDate']}">
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{d.visitDate}">
+														<f:convertDateTime pattern="dd/MM/yyyy"/>
+														</h:outputText>
+													</f:facet>
+													<f:facet name="input">
+														<p:panel id="visitDatePanel"> <!-- listener="#{highValueClientBean.onDateSelectForDealDate(d)}"   -->
+														<p:message id="msgVisitDate" for="visitDateId" display="text" />
+												<p:calendar id="visitDateId" mode="popup" value="#{d.visitDate}" mindate="#{d.minDate}" maxdate="#{d.effectiveMaxDate}" pattern="dd/MM/yyyy" navigator="true" readonlyInput="true" tabindex="3">
+        												<f:convertDateTime pattern="dd/MM/yyyy"/>
+        												<p:ajax event="dateSelect" listener="#{highValueClientBean.toEnbleForVisitBy(d)}" update="visitDatePanel,msgVisitDate,visitByPanel" />
+    											</p:calendar>
+														</p:panel>
+													</f:facet>
+													</p:cellEditor>
+										</p:column>
+										
+									<p:column headerText="#{msg['lbl.visitBy']}" style="width:20% !important;">
+										<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{d.visitBy}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:panel id="visitByPanel">
+														<p:message id="msgVisitBy" for="visitById" display="text" />
+														<p:selectOneMenu id="visitById" value="#{d.visitBy}" filter="true" filterMatchMode="startsWith" disabled="#{highValueClientBean.booRead}" tabindex="4">
+														<f:selectItem itemLabel="Select Visit By" itemValue="" />
+													<f:selectItems value="#{highValueClientBean.employeList}" var="c" itemLabel="#{c.userName}" itemValue="#{c.userName}" /> 
+														<p:ajax event="blur" update="visitByPanel,msgVisitBy" /> 
+														</p:selectOneMenu>
+															<!-- <p:inputText value="#{d.visitBy}" id="visitById" validatorMessage="Please Enter English Language">
+																<f:validateRegex pattern="[a-zA-Z ]+" />
+																<p:ajax event="blur" update="visitByPanel,:form:dataTable:msgVisitBy" /> 
+															</p:inputText>-->
+														</p:panel>
+													</f:facet>
+													</p:cellEditor>
+													</p:column>
+										<p:column headerText="#{msg['lbl.totalTransction']}">
+											<h:outputText value="#{d.totalTranscation}"/>
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.transctionAmount']}">
+											<h:outputText value="#{d.transcationAmount}"/>
+										</p:column>
+										
+										</p:dataTable> 							
+											</p:panel>
+											<div class="clearfix"></div>
+										<p:spacer height="10px"/>
+										<div class="clearfix"></div>
+										<h:panelGroup layout="block" class="clearfix"/>
+									<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{highValueClientBean.booSaveOrExit}" >			
+									<p:commandButton value="#{msg['lbl.save']}"  style="margin-right:10px;" action="#{highValueClientBean.saveDataTableRecords}" process="@this" immediate="true" tabindex="5" update="error" onstart="process.show();"
+													onsuccess="process.hide();"/>
+									<p:commandButton value="#{msg['lbl.cancel']}"  style="margin-right:10px;" action="#{highValueClientBean.cancel}" process="@this" immediate="true" tabindex="6"/>			
+										<p:commandButton value="#{msg['lbl.exit']}"  style="margin-right:10px;" action="#{highValueClientBean.exit}" process="@this" immediate="true" tabindex="7"/>
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+											<h:panelGroup layout="block" class="clearfix"/>
+										
+										<p:dialog modal="true" showHeader="true" header="#{msg['lbl.bco.plswait']}"  widgetVar="process"  id="process"   width="300" height="50" resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+							    	</p:dialog>			
+										</p:panel>
+										<div class="clearfix"></div>
+											</p:panel>
+										
+								</h:panelGroup>
+								
+							</h:panelGroup>
+						</td>
+					</tr>
+				</table>
+			</h:form>	
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

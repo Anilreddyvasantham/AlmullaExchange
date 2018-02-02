@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+		<style>
+			.ui-datatable .ui-paginator {
+			  padding: 2px;
+			  background-color: #FFFFFF !important;
+			  border: none!important;
+				}
+				.ui-fieldset {
+    border: solid 1px #51C4CC;
+       background-color: rgba(81, 196, 204, 0.03);
+    border-radius: 3px;
+}
+.ui-fieldset-legend {
+    color: #ffffff;
+    font-size: 16px;
+    line-height: 15px;
+    background-color: #51C4CC;
+    padding: 13px 20px !important;
+    border-bottom-right-radius: 2px;
+    border-bottom-left-radius: 2px;
+    border-top-right-radius: 2px;
+    border-top-left-radius: 2px;
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -ms-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+}
+legend.ui-fieldset-legend span
+{
+padding:10px;
+}
+.table { display:table; }
+.table-row { display:table-row; }
+.table-cell { display:table-cell; }
+table tr td label
+{
+
+padding-right:30px; 
+}
+</style>
+<script type="text/javascript">
+
+    	$(function(){
+    	    // Set cursor to pointer and add click function
+    	    $("legend").css("cursor","pointer").click(function(){
+    	        var legend = $(this);
+    	        var value = $(this).children("span").html();
+    	        if(value=="[-]")
+    	            value="[+]";
+    	        else
+    	            value="[-]";
+    	       $(this).siblings().slideToggle(1000, function() { legend.children("span").html(value); } );
+    	    });
+    	});
+</script>
+ <script>
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+		
+		 history.pushState(null, null, 'bankbannedwordsmaintanance.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'bankbannedwordsmaintanance.xhtml');
+		    });
+	</script>
+</h:head>
+<p:confirmDialog id="dlgNegNotAllowed" widgetVar="dlgNegNotAllowed" width="400" height="20"  
+		resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="Empty Banned Word Not Allowed">
+	</p:confirmDialog>
+ <p:dialog id="complete" widgetVar="complete" width="400"
+										height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="success" header="#{msg['lbl.success']}" closable="false"
+										showEffect="clip" hideEffect="clip">
+										<p:outputLabel
+											value="#{msg['lbl.recrdSavedSuccessfully']} "
+											style="text-align: center; font-size:15px !important;" />
+										<br/>
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{bankBannedWordsMaintenanceBean.pageNavigationToBankBannedWordsMaintenance}"
+											process="@this" style="margin-left: 150px !important;" />
+</p:dialog>
+<p:confirmDialog id="pleaseenterword" widgetVar="pleaseenterword" width="400" height="20"  
+		resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="Empty Banned Word Not Allowed">
+	</p:confirmDialog>
+<p:confirmDialog id="duplicate" widgetVar="duplicate" width="600" height="20"  
+		resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="Duplicate Banned Words Not Allowed">
+	</p:confirmDialog>
+ 
+<p:confirmDialog id="norecordsfound" widgetVar="norecordsfound" width="600" height="20"  
+		resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="No Data Found To Save">
+	</p:confirmDialog>
+<h:body>
+	   
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<h:form id="mainform">
+     
+			<p:growl id="messages" showDetail="true" />
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;">
+							<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+					
+					</td>
+
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle"
+										src="../images/toggle_plus.png" alt=""
+										onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+								<h1>
+									<h:outputText value="#{msg['lbl.bankbannedwordsmaintenance']}" />
+								</h1>
+
+
+								<p:panel styleClass="shadow" id="mainPanel"
+									style="background-color:#FFF !important;">
+									
+									
+									
+										<p:confirmDialog id="error" widgetVar="error" resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" update="@all"
+									message="#{bankBannedWordsMaintenanceBean.errorMessage}">
+									</p:confirmDialog>
+
+
+
+									<!-- <p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog> -->
+									
+									
+									
+									
+									
+									
+<fieldset class="ui-fieldset">
+<legend class="ui-fieldset-legend"> <span>[-]</span>
+
+	<h:outputText  value="#{msg['lbl.bankbannedwordsmaintenance']}" />
+</legend>
+									
+									 <!--RADIO BUTTON  -->
+																								 
+														<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_right_col" >
+															<h:selectOneRadio id="cardId" value="#{bankBannedWordsMaintenanceBean.selectionType}" required="true" requiredMessage="Please Select Any One Option" >
+																	<f:selectItem itemLabel="#{msg['lbl.specific']}" itemValue="S" /> 
+																														
+																	<f:selectItem itemLabel="#{msg['lbl.all']}" itemValue="A" />
+																	<p:ajax listener="#{bankBannedWordsMaintenanceBean.showBannnedWordsInDatatable}" update="mainPanel,error" onstart="process.show();" onsuccess="process.hide();"/>
+															</h:selectOneRadio>
+													</p:panel>
+													</p:panel>
+															<div class="clearfix"></div>
+						
+
+										 <!--RADIO BUTTON  -->
+									
+
+										<p:panel styleClass="left_col" rendered="#{bankBannedWordsMaintenanceBean.renderDropDowns}">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.country']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgCountry" for="country" display="text" />
+												<p:selectOneMenu id="country"
+													value="#{bankBannedWordsMaintenanceBean.countryId}"
+													filter="true" required="true" filterMatchMode="contains"
+													requiredMessage="#{msg['lbl.pleaseSelectBankCountry']}">
+													<f:selectItem itemLabel="#{msg['lbl.selectcountry']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{bankBannedWordsMaintenanceBean.allCountryList}"
+														var="c" itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+														itemValue="#{c.fsCountryMaster.countryId}" />
+													<p:ajax event="change"
+														update="msgCountry,bankId,error" listener="#{bankBannedWordsMaintenanceBean.populateCountryBanks}"  onstart="process.show();" onsuccess="process.hide();"/>
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col" id="pnlBank" rendered="#{bankBannedWordsMaintenanceBean.renderDropDowns}">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bank']}" />
+												<h:outputText value="*" style="color:red;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="bankId" display="text" />
+												<p:selectOneMenu id="bankId"
+													value="#{bankBannedWordsMaintenanceBean.bankId}" filter="true"
+													filterMatchMode="contains" required="true"
+													requiredMessage="Please Select Bank" label="Bank">
+													<f:selectItem itemLabel="#{msg['lbl.selectbank']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{bankBannedWordsMaintenanceBean.bankList}" var="c"
+														itemLabel="#{c.bankCode} - #{c.bankFullName}" itemValue="#{c.bankId}" /> />
+													<p:ajax for="bankId" event="change"
+														 
+														update="savetoDB,acceptid,mainPanel,error" onstart="process.show();" onsuccess="process.hide();" listener="#{bankBannedWordsMaintenanceBean.populateSpecificRecords}"/>
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+									 
+										<div class="clearfix"></div>
+ 
+										<!-- <p:panel styleClass="left_col">
+											<h:outputText value="#{msg['lbl.fieldaremandatory']}"
+												style="color:red; padding:10px !important; font-size:10px;" />
+										</p:panel> -->
+										<div class="clearfix"></div>
+					 
+										<!-- <h:panelGroup layout="block" styleClass="shadow_button" rendered="#{bankBannedWordsMaintenanceBean.renderAddPanel}">
+											<p:commandButton id="addid" value="#{msg['lbl.add']}"
+												style="margin-right:10px;"
+												update="mainPanel"
+												onstart="process.show();" onsuccess="process.hide();"/>
+											<p:commandButton value="#{msg['lbl.exit']}" action="#{bankBannedWordsMaintenanceBean.exitButton}"
+												  process="@this" />
+											<div class="clearfix"></div>
+										</h:panelGroup> -->
+
+										<div class="clearfix"></div>
+										<p:spacer height="10px" />
+										<div class="clearfix"></div>
+										<p:panel id="savetoDB">
+	
+
+											<p:dataTable id="dataTable" styleClass="mydatatableclass"
+												value="#{bankBannedWordsMaintenanceBean.bankBannedDataTableList}" var="c" 
+												editable="true" editMode="cell" cellpadding="0"
+												cellspacing="0" border="1" rowIndexVar="rowIndex"
+												emptyMessage="#{msg['lbl.norecordfound']}" rendered="#{bankBannedWordsMaintenanceBean.renderDatatable}" paginator="true"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="20" paginatorPosition="top">
+
+												<p:column headerText="#{msg['lbl.sino']}" >
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.bannedlistword']}"
+													style="width:70% !important;">
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{c.bankBannedName}" />
+														</f:facet>
+														<f:facet name="input">
+														
+															<p:inputText id="linedesc" value="#{c.bankBannedName}" onclick="this.select();"
+																type="text" required="true"
+																requiredMessage="Please Enter Data or Delete Field" placeholder="Please Enter Banned Word" validatorMessage="Please Enter AlphaBets only">
+																	<f:validateRegex pattern="[a-zA-Z0-9 ]+" for="msgnum" />
+																<p:ajax event="blur" update="dataTable" listener="#{bankBannedWordsMaintenanceBean.editRecord(c)}" onstart="process.show();" onsuccess="process.hide();"/>
+															</p:inputText>
+															<p:message id="msgnum" for="linedesc" display="text" />
+														</f:facet>
+														
+													</p:cellEditor>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.status']}" 
+													style="width:15% !important; ">
+													<p:commandButton value="#{c.dynamicLabelActivateDeactivate}"  actionListener="#{bankBannedWordsMaintenanceBean.removeRecordBankBannedRecords(c)}"
+																process="@this" update="dataTable,:mainform:mainPanel" immediate="true" onstart="process.show();" onsuccess="process.hide();">
+													</p:commandButton>
+												</p:column>
+											</p:dataTable>
+											<div class="clearfix"></div>
+											<h:panelGroup layout="block"
+												style="width:100%; text-align:right; padding-top:10px !important;">
+											<p:spacer height="40px"/>
+												<p:commandLink id="addmorefield" style=" font-size: 15px !important;"
+													value="#{msg['lbl.addmorebannedwords']}" styleClass="link1"
+													 
+													update="dataTable,:mainform:mainPanel,error" onstart="process.show();" onsuccess="process.hide();" 	action="#{bankBannedWordsMaintenanceBean.addEmptyRow}" rendered="#{bankBannedWordsMaintenanceBean.renderAddMoreBannedWord}"/>
+											</h:panelGroup>
+
+										</p:panel>
+
+										<h:panelGroup id="acceptid" layout="block"
+											styleClass="shadow_button" rendered="#{bankBannedWordsMaintenanceBean.renderAcceptButtonPanel}">
+											<p:commandButton style="margin-right:10px;" value="#{msg['lbl.accept']}" id="buttonsPanel" action="#{bankBannedWordsMaintenanceBean.save}" update="mainPanel,error" onstart="process.show();" onsuccess="process.hide();"/>
+											<p:commandButton style="margin-right:10px;"  value="#{msg['lbl.clear']}" id="clearid"  action="#{bankBannedWordsMaintenanceBean.clearAll}" disabled="#{bankBannedWordsMaintenanceBean.disableClearButton}" process="@this" update="mainPanel"  immediate="true"/>
+											<p:commandButton value="#{msg['lbl.exit']}" action="#{bankBannedWordsMaintenanceBean.exitButton}"
+												  process="@this" />
+										</h:panelGroup>
+
+
+									<div class="clearfix"></div>
+								<p:dialog modal="true" showHeader="true" header="Please wait.."  widgetVar="process"  id="process"   width="300" height="50" resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+							    	</p:dialog>
+							    			</fieldset>	
+								</p:panel>
+								
+					
+								<div class="clearfix"></div>
+							</h:panelGroup>
+							<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+						</h:panelGroup></td>
+				</tr>
+			</table>
+		</h:form>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+
+</h:body>
+</html>

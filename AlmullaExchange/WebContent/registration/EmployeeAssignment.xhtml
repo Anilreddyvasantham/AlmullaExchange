@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+</h:head>
+		
+    	
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<h:form id="form" >
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+				<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+				</td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h1>
+								<h:outputText value="Employee Assignment" />
+							</h1>
+	
+							<p:panel styleClass="shadow" id="mainPanel">
+	 <p:confirmDialog id="error" widgetVar="error"  
+		resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" 
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{employeeAssignmentBean.errorMessage}" >
+	</p:confirmDialog>
+	
+	<p:dialog id="complete" widgetVar="complete" width="400" height="80" resizable="false" style="background-color: white !important;"
+			      styleClass="success" header="#{msg['lbl.success']}" closable="false" showEffect="clip" hideEffect="clip" modal="true">
+			<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']}" style="text-align: center; font-size:15px !important;" /><br />
+										<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{employeeAssignmentBean.clickOnOKSave}" oncomplete="PF('complete').hide();" update="mainPanel" process="@this" style="margin-left: 150px !important;" />
+	</p:dialog>
+	
+	<p:confirmDialog id="noRecord" widgetVar="noRecord" width="300" header="#{msg['lbl.warningDailog']}"
+		height="17" resizable="false"
+		style=" border:2px solid green !important; padding:0px !important;  color:solid green !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="explode" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.nodatafound']}">
+    	</p:confirmDialog>
+    	
+    	
+    	<p:confirmDialog id="ttAmount" widgetVar="ttAmount" width="300" header="#{msg['lbl.warningDailog']}"
+		height="17" resizable="false"
+		style=" border:2px solid green !important; padding:0px !important;  color:solid green !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="explode" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.ttAmountIsZero']}">
+    	</p:confirmDialog>
+	
+	<p:dialog modal="true" showHeader="false" widgetVar="process" id="process" width="300" height="60" resizable="false" draggable="false" closable="false"
+	style=" border: 2px green solid !important;background-color: #FFF !important;">
+	<div style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important; ">
+	<p:graphicImage value="../images/processImg.gif" style="float: left !important; margin-right: 24px !important; "/>
+	<p:outputLabel value="Please wait ........" style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" /></div>
+	</p:dialog>	
+	
+		<p:dialog id="ttPanel" width="50%"  overflow="auto" widgetVar="ttPanel" header="#{msg['lbl.tt']}" resizable="false" styleclass="ui-dialog-content ui-widget-content" style="height: auto; bottom:auto !important; border:3px solid #00a53e !important; font-weight:bold; background: #FFF !important;"
+	                      					showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+	                      					
+									<h:panelGrid  style="width:100%;">
+									
+										<p:dataTable value="#{consiladateCountryWiseFundReqBean.ttBankList}" id="ttBank" styleClass="mydatatableclass"
+											var="o" rowIndexVar="rowIndex" 
+											emptyMessage="#{msg['lbl.norecordfound']}"  style="width:650px;"
+											>
+											<!-- rows="10" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" 
+											rowsPerPageTemplate="5,10,15" paginatorPosition="bottom" -->
+											
+											<p:column headerText="#{msg['lbl.slNo']}" style="width:50px;">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+											
+											
+											<p:column headerText="#{msg['lbl.bank']}" >
+												<h:outputText value="#{o.ttBankName}" />
+											</p:column>
+											
+											<p:column headerText="#{msg['lbl.fcamount']}" >
+												<h:outputText value="#{o.fcAmount}" />
+											</p:column>	
+											</p:dataTable>
+											<p:spacer height="10px" />
+												<p:panelGrid style="width:100%;" id="totalPanel">
+													<p:row>
+														<p:column style="width:50%; text-align:center;">
+															<h:outputText style="font-weight:bold;"
+																value="#{msg['lbl.totalAmount']}"></h:outputText>
+														</p:column>
+														<p:column style="width:50%; ">
+															<p:inputText style="width:25%;" id="totalAmount"
+																value="#{consiladateCountryWiseFundReqBean.totalFcAmount}"
+																readonly="true" >
+																<p:ajax update="totalAmount,totalPanel"/>
+																</p:inputText>
+														</p:column>
+													</p:row>
+												</p:panelGrid>							
+										</h:panelGrid>
+										</p:dialog>
+	
+	
+										<h2>
+											<h:outputText value="Employee Assignment" />
+										</h2>
+										<p:panel styleClass="panel_border"  >
+										
+									 <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.country']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgCountry" for="countryId" display="text"/>
+											<p:inputText id="countryId" value="#{employeeAssignmentBean.applicationCountryName}" readonly="true">
+											<p:ajax update="msgCountry"/>
+											</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+										<h:panelGroup layout="block" class="clearfix"/> 
+										
+										 <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.location']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgLocation" for="locationId" display="text"/>
+											<p:selectOneMenu id="locationId" value="#{employeeAssignmentBean.locationId}" filter="true" filterMatchMode="contains" tabindex="1">
+											 <f:selectItem itemLabel="-- #{msg['lbl.pleaseSelectBankCountry']} --"  itemValue="" />
+                                               <f:selectItems value="#{employeeAssignmentBean.lstCountryBranch}" var="c"  itemLabel="#{c.branchId} - #{c.branchName}" itemValue="#{c.countryBranchId}"/>       
+											<p:ajax event="change" listener="#{employeeAssignmentBean.toFetchEmployee}" update="msgLocation,employeeId,:form:empPanel" onstart="process.show();" onsuccess="process.hide();"/>
+											</p:selectOneMenu>
+											</p:panel>
+											
+										</p:panel>
+										 <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.employee']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgEmployee" for="employeeId" display="text"/>
+											<p:selectOneMenu id="employeeId" value="#{employeeAssignmentBean.employeeId}" filter="true" filterMatchMode="contains" tabindex="2">
+											 <f:selectItem itemLabel="#{msg['lbl.bank.pleaseSelectBank']}"  itemValue="" />
+                                              <f:selectItems value="#{employeeAssignmentBean.lstEmployee}" var="c"  itemLabel="#{c.employeeNumber} - #{c.employeeName}" itemValue="#{c.employeeId}"/> 
+											<p:ajax event="change" update="msgEmployee" onstart="process.show();" onsuccess="process.hide();"/>
+											</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										<h:panelGroup layout="block" class="clearfix"/> 
+										
+										<p:panel styleClass="left_col" >
+									<h:outputText  id="mandatory" value=" #{msg['lbl.*filedsAreMandatory']}"  style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+								</p:panel>
+								
+								<h:panelGroup layout="block" class="clearfix"/>
+									<h:panelGroup layout="block" styleClass="shadow_button"  >						
+										<p:commandButton value="#{msg['lbl.go']}" update="mainPanel" action="#{employeeAssignmentBean.goEmpDeatils}" style="margin-right:10px;"  onstart="process.show();" onsuccess="process.hide();" tabindex="3"/>
+										<!-- <p:commandButton value="#{msg['lbl.exit']}" action="#{employeeAssignmentBean.exit}" style="margin-right:10px;" process="@this" onstart="process.show();" onsuccess="process.hide();"/> -->
+										<p:commandButton value="#{msg['lbl.clear']}" action="#{employeeAssignmentBean.clearAll}" style="margin-right:10px;" update="mainPanel" immediate="true" process="@this" onstart="process.show();" onsuccess="process.hide();" tabindex="4"/> 
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+								
+								<h:panelGroup layout="block" class="clearfix"/> 
+										<p:panel id="empPanel" rendered="#{employeeAssignmentBean.booEmpPanel}" >	
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Current Location" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgCurrentLocation" for="currentLocation" display="text"/>
+											<p:inputText id="currentLocation" value="#{employeeAssignmentBean.currentLocation}" readonly="true">
+											<p:ajax event="blur" listener="#{employeeAssignmentBean.toFetchLocation}" update="msgCurrentLocation,toLocation"/>
+											</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="To Location" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgToLocation" for="toLocation" display="text"/>
+											<p:selectOneMenu id="toLocation" value="#{employeeAssignmentBean.toLocationId}" filter="true" filterMatchMode="contains" tabindex="4">
+											 <f:selectItem itemLabel="#{msg['lbl.plsSelectCurrency']}"  itemValue="" />
+                                             <f:selectItems value="#{employeeAssignmentBean.countryBranchList}" var="c"  itemLabel="#{c.branchId} - #{c.branchName}" itemValue="#{c.countryBranchId}"/> 
+											<p:ajax event="change" listener="#{employeeAssignmentBean.renderIpPanel}" update="msgToLocation,mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+											</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+									<h:panelGroup layout="block" class="clearfix"/> 
+									
+									<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.wuusername']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgWUUserName" for="wUUserNameId" display="text"/>
+											<p:inputText id="wUUserNameId" value="#{employeeAssignmentBean.webServiceUserName}" readonly="true">
+											<p:ajax update="msgWUUserName"/>
+											</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.wupassword']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgWUUserPwd" for="wUUserPwd" display="text"/>
+											<p:password id="wUUserPwd" value="#{employeeAssignmentBean.webServicePassword}"  > 
+											<p:ajax event="blur" update="msgWUUserPwd"/>
+											</p:password>
+											</p:panel>
+										</p:panel>
+										</p:panel>
+										
+										<p:panel id="ipPanel"  rendered="#{employeeAssignmentBean.booRenderIp}" >	
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel value="Current IP Address " />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="currentIp" value="#{employeeAssignmentBean.currentLocationIpAddress}" required="true" requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.ipaddress']}" maxlength="16" validatorMessage="Please Enter Valid IP">
+											<!-- <f:validateRegex pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$" for="ip" /> -->
+											<f:validator validatorId="ipAddressValidation" for="ip"/>
+											<p:ajax update="msgcurrentIp" event="blur" />
+												<p:message for="currentIp" display="text" id="msgcurrentIp" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel value="To IP Address " /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="ip" value="#{employeeAssignmentBean.toLocationIpAddress}" required="true" requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.ipaddress']}" maxlength="16" validatorMessage="Please Enter Valid IP" tabindex="5">
+											<!-- <f:validateRegex pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$" for="ip" /> -->
+											<f:validator validatorId="ipAddressValidation" for="ip"/>
+											<p:ajax update="msgip" event="blur" />
+												<p:message for="ip" display="text" id="msgip" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix"/>
+										<!-- <p:panel styleClass="left_col" >
+									<h:outputText  id="mandatory" value=" #{msg['lbl.*filedsAreMandatory']}"  style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+								</p:panel> -->
+								
+										<h:panelGroup layout="block" class="clearfix"/>
+									<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{employeeAssignmentBean.booRenderAccept}" >						
+										<p:commandButton value="#{msg['lbl.accept']}" update="mainPanel" action="#{employeeAssignmentBean.save}" style="margin-right:10px;"  onstart="process.show();" onsuccess="process.hide();"/>
+										<p:commandButton value="#{msg['lbl.exit']}" action="#{employeeAssignmentBean.exit}" style="margin-right:10px;" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+									<!-- 	<p:commandButton value="#{msg['lbl.clear']}" action="#{employeeAssignmentBean.clearAllForWuPanel}" style="margin-right:10px;" update="mainPanel" immediate="true" process="@this" onstart="process.show();" onsuccess="process.hide();"/> --> 
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+									
+									
+									<h:panelGroup layoutR="block" class="clearfix"/><!-- -->
+									<p:dataTable id="dataTable" styleClass="mydatatableclass"
+										value="#{consiladateCountryWiseFundReqBean.lstConsiladateCountryWiseFundReqDT}" 
+										rows="15" paginator="true" rendered="#{consiladateCountryWiseFundReqBean.booRenderDataTable}"
+										paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+										rowsPerPageTemplate="15,20,25" var="d" rowIndexVar="rowIndex"
+										emptyMessage="#{msg['lbl.noRecordFound']}" paginatorPosition="bottom">
+												<p:columnGroup type="header">
+														<p:row>
+															<p:column rowspan="2" headerText="#{msg['lbl.sino']}" />
+															<p:column rowspan="2" headerText="#{msg['lbl.country']}" />
+															<p:column rowspan="2" headerText="#{msg['lbl.bank']}" />
+															<p:column rowspan="2" headerText="#{msg['lbl.currency']}" />
+															
+															<p:column colspan="3" headerText="#{msg['lbl.fundRequiredInBankCurrency']}" />
+															<p:column colspan="3" headerText="#{msg['lbl.dealsDoneInBankCurrency']}" />
+															<p:column colspan="3" headerText="#{msg['lbl.conEnqDifference']} " />
+															
+															
+														</p:row>
+													
+														<p:row>
+															<p:column headerText="#{msg['lbl.eft']}"/>
+															<p:column headerText="#{msg['lbl.tt']}"/>
+															<p:column headerText="#{msg['lbl.cash']}"/>
+															
+															<p:column headerText="#{msg['lbl.eft']}"/>
+															<p:column headerText="#{msg['lbl.tt']}"/>
+															<p:column headerText="#{msg['lbl.cash']}"/>
+															
+															<p:column headerText="#{msg['lbl.eft']}"/>
+															<p:column headerText="#{msg['lbl.tt']}"/>
+															<p:column headerText="#{msg['lbl.cash']}"/>
+														</p:row>
+												</p:columnGroup>
+													
+													<p:column >
+														<p:outputLabel  style="text-align:center;" value="#{rowIndex+1}" />
+														</p:column>
+														
+														<p:column >
+														<p:outputLabel  style="text-align:center;" value="#{d.bankCountryName}" />
+														</p:column>
+														
+														
+														<p:column rendered="#{d.booBank}">
+														<p:outputLabel  style="text-align:center;" value="#{d.bankName}" />
+														</p:column>
+														
+														<p:column rendered="#{d.booTT}">
+														<p:commandLink action="#{consiladateCountryWiseFundReqBean.toFetchBankTreasureDealHeader(d)}" style="text-align:center; color:blue !important; text-decoration:underline !important;" value="#{d.bankName}" 
+														update=":form:mainPanel,dataTable" immediate="true" process="@this" onclick="process.show();" oncomplete="process.hide();"/>
+														</p:column>
+														
+														<p:column >
+														<p:outputLabel  style="text-align:center;" value="#{d.currencyName}" />
+														</p:column>
+														
+														<p:column style="width:6% !important;">
+															<p:outputLabel style="text-align:center;" value="#{d.fundReqEFT}"/>
+														</p:column>
+														
+														<p:column style="width:6% !important;">
+															<p:outputLabel style="text-align:center;" value="#{d.fundReqTT}"/>
+														</p:column>
+														
+														<p:column style="width:6% !important;">
+															<p:outputLabel style="text-align:center;" value="#{d.fundReqCash}"/>
+														</p:column>
+														
+														<p:column style="width:6% !important;">
+															<p:outputLabel style="text-align:center;" value="#{d.dealsDoneEFT}"/>
+														</p:column>
+														
+														<p:column style="width:6% !important;">
+															<p:outputLabel style="text-align:center;" value="#{d.dealsDoneTT}"/>
+														</p:column>
+														
+														<p:column style="width:6% !important;">
+															<p:outputLabel style="text-align:center;" value="#{d.dealsDoneCash}"/>
+														</p:column>
+														
+														<p:column style="width:6% !important;">
+															<p:outputLabel style="text-align:center;" value="#{d.diffEFT}"/>
+														</p:column>
+														
+														<p:column style="width:6% !important;">
+															<p:outputLabel style="text-align:center;" value="#{d.diffTT}"/>
+														</p:column>
+														
+														<p:column style="width:6% !important;">
+															<p:outputLabel style="text-align:center;" value="#{d.diffCash}"/>
+														</p:column>
+												
+									    </p:dataTable>
+									</p:panel>
+									
+									</p:panel>
+							</h:panelGroup>
+							</h:panelGroup>
+							</td>
+							</tr>
+						</table>
+						<ui:include src="#{facesBean.footer}"></ui:include>
+					<h:panelGroup layout="block" class="clearfix"/>
+		</h:form>
+		</f:view>
+		</h:body>
+		</html>

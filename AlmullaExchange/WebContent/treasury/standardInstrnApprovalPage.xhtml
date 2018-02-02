@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	
+</h:head>
+
+<h:body>
+
+<p:dialog id="approve" widgetVar="approve" width="400" height="70"  resizable="false" 
+	style="background-color: white !important;" styleClass="success" header="#{msg['lbl.success']}" closable="false"
+	showEffect="clip" hideEffect="clip" >
+           <p:outputLabel value="#{msg['lbl.approvedSuccess']} " style="text-align: center; font-size:16px !important;"/><br/>
+           <p:commandButton value="#{msg['lbl.ok']}" actionListener="#{standardInstructionApproval.showDetails}" process="@this" style="margin-left: 150px !important;"/>          
+     </p:dialog>
+
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<h:form id="mainform">
+
+			<p:growl id="messages" showDetail="true" />
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;"><!-- <ui:include
+							src="../common/fxdeal_menu.xhtml"></ui:include> -->
+							<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+							
+							</td>
+
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle"
+										src="../images/toggle_plus.png" alt=""
+										onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+								<h1>
+									<h:outputText value="#{msg['lbl.standardPaymentInstructionPage']}" />
+								</h1>
+
+
+								<p:panel styleClass="shadow" id="mainPanel"
+									style="background-color:#FFF !important;">
+									<h2>
+										<h:outputText value="#{msg['lbl.standardPaymentInstructionPage']}" />
+									</h2>
+									<p:panel>
+
+										<p:panel styleClass="left_col" id="pnlCompany">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.company']}" />
+												<h:outputText value="*" style="color:red;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="company" display="text" />
+												<p:selectOneMenu id="company"
+													value="#{standardInstructionApproval.companyId}"
+													filterMatchMode="startsWith" filter="true" label="Company"
+													required="true" requiredMessage="Please Select Company" disabled="#{standardInstructionApproval.disablecompanyId}">
+													<f:selectItem itemLabel="#{msg['lbl.selectcompany']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{standardInstructionApproval.companyListFromDB}"
+														var="c" itemLabel="#{c.companyName}"
+														itemValue="#{c.fsCompanyMaster.companyId}" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+
+										<p:panel styleClass="left_col" id="pnlBank">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bank']}" />
+												<h:outputText value="*" style="color:red;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="bankId" display="text" />
+												<p:selectOneMenu id="bankId"
+													value="#{standardInstructionApproval.bankId}" filter="true"
+													filterMatchMode="startsWith" required="true"
+													requiredMessage="Please Select Bank" label="Bank" disabled="#{standardInstructionApproval.disablebankId}">
+													<f:selectItem itemLabel="#{msg['lbl.selectbank']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{standardInstructionApproval.lstofbank}" var="c"
+														itemLabel="#{c.bankCode} - #{c.bankFullName}" itemValue="#{c.bankId}" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col" id="pnlCurrency">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currency']}" />
+												<h:outputText value="*" style="color:red;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="currencyId" display="text" />
+												<p:selectOneMenu id="currencyId"
+													value="#{standardInstructionApproval.currencyId}"
+													filter="true" filterMatchMode="startsWith" required="true"
+													requiredMessage="Please Select Currency" label="Currency" disabled="#{standardInstructionApproval.disablecurrencyId}">
+													<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{standardInstructionApproval.lstofcurrency}"
+														var="c" itemLabel="#{c.currencyName}"
+														itemValue="#{c.currencyId}" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.instructionrefnumber']}" />
+												<h:outputText value="*" style="color:red;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+
+												<p:panelGrid id="CheckSystemOrUpdated">
+													<p:row>
+
+														<p:column
+															style="width:95%; text-align:left;padding-left:0px;"
+															rendered="#{standardInstructionApproval.booSystemGenInstrnNum}">
+															<p:message for="countersel" display="text"
+																id="msgcountersel" />
+															<p:selectOneMenu id="countersel"
+																value="#{standardInstructionApproval.instructionRefNumber}"
+																filter="true" filterMatchMode="startsWith"
+																required="true"
+																requiredMessage="Please Select Standard Instruction Number"
+																label="Standard Instruction Number">
+																<f:selectItem itemLabel="#{msg['lbl.select']}"
+																	itemValue="" />
+																<f:selectItems
+																	value="#{standardInstructionApproval.pstandardInstrn}"
+																	var="c" itemLabel="#{c.standardInsructionNumber} - #{c.instructionDescription}"
+																	itemValue="#{c.standardInsructionNumber}" />
+																<p:ajax for="countersel" event="change"
+																	listener="#{standardInstructionApproval.search}"
+																	update="standardId,savetoDB,msgcountersel,addid,acceptid,mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+															</p:selectOneMenu>
+
+														</p:column>
+
+														<p:column
+															style="width:95%; text-align:left;padding-left:0px;"
+															rendered="#{standardInstructionApproval.booUpdateInstrnNum}">
+															<p:message for="counter" display="text" id="msgcounter" />
+															<p:inputText id="counter"
+																value="#{standardInstructionApproval.instructionNumber}"
+																required="true" readonly="true"
+																requiredMessage="Please Enter Standard Instruction Number"
+																label="Standard Instruction Number">
+															</p:inputText>
+														</p:column>
+
+													</p:row>
+												</p:panelGrid>
+
+											</p:panel>
+										</p:panel>
+
+
+										<p:panel styleClass="left_col" id="pnlstandard">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.standardinstruction']}" />
+												<h:outputText value="*" style="color:red;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="standardId" display="text"
+													id="msgstandardId" />
+												<p:inputText id="standardId"
+													value="#{standardInstructionApproval.instructionDescription}"
+													required="true" readonly="true"
+													requiredMessage="Please Enter Standard Instruction Description"
+													label="Standard Instruction Description">
+													<p:ajax update="msgstandardId" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix"></div>
+			
+										<div class="clearfix"></div>
+										<p:spacer height="10px" />
+										<div class="clearfix"></div>
+										<p:panel id="savetoDB">
+
+											<p:dataTable id="dataTable" styleClass="mydatatableclass"
+												style="width:100% !important; text-align:center !important; "
+												value="#{standardInstructionApproval.displayData}" var="c"
+												editable="true" editMode="cell" cellpadding="0"
+												cellspacing="0" border="1" rowIndexVar="rowIndex"
+												emptyMessage="#{msg['lbl.norecordfound']}">
+
+												<p:column headerText="#{msg['lbl.instructionslineno']}"
+													style="width:15% !important; text-align:center !important; margin-left:10px;">
+													<h:outputText value="#{c.lineNumber}" />
+												</p:column>
+
+												<p:column headerText="Line Description" style="text-align:center !important;">
+												<h:outputText value="#{c.lineDescription}" />
+												</p:column>
+
+											</p:dataTable>
+											<div class="clearfix"></div>
+										</p:panel>
+
+<p:spacer height="30px"/>
+										<h:panelGroup id="acceptid" layout="block"
+											styleClass="shadow_button">
+
+											<p:commandButton style="margin-right:10px;" value="#{msg['lbl.approve']}" id="buttonsPanel" action="#{standardInstructionApproval.approveRecord}" update="mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+											<p:commandButton value="#{msg['lbl.cancel']}" id="clearid" action="#{standardInstructionApproval.showDetails}" update="mainPanel" />
+
+										</h:panelGroup>
+
+										<div class="clearfix"></div>
+									</p:panel>
+									<div class="clearfix"></div>
+<div class="clearfix"></div>
+							<p:dialog modal="true" showHeader="true" header="Please wait.."  widgetVar="process"  id="process"   width="300" height="50" resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+							    	</p:dialog> 
+								</p:panel>
+								<div class="clearfix"></div>
+							</h:panelGroup>
+							<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+						</h:panelGroup></td>
+				</tr>
+			</table>
+		</h:form>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+
+</h:body>
+</html>

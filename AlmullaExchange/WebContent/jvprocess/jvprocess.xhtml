@@ -1,0 +1,897 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link href="css/style1.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script language="javascript" src="../js/jquery.autotab.js"></script>
+
+	
+	<style>
+	
+	.ip input.ui-autocomplete-input
+	{
+	width:7% !important;
+
+	}
+	
+	
+	.maxlen1 input.ui-autocomplete-input
+	{
+	width:10% !important;
+
+	}
+	
+	
+	
+.ui-datatable .ui-paginator {
+	padding: 2px;
+	background-color: #FFFFFF !important;
+	border: none !important;
+}
+
+.ui-fieldset {
+	border: solid 1px #51C4CC;
+	background-color: rgba(81, 196, 204, 0.03);
+	border-radius: 3px;
+}
+
+.ui-fieldset-legend {
+	color: #ffffff;
+	font-size: 16px;
+	line-height: 15px;
+	background-color: #51C4CC;
+	padding: 13px 20px !important;
+	border-bottom-right-radius: 2px;
+	border-bottom-left-radius: 2px;
+	border-top-right-radius: 2px;
+	border-top-left-radius: 2px;
+	-webkit-transition: all 0.3s ease;
+	-moz-transition: all 0.3s ease;
+	-ms-transition: all 0.3s ease;
+	-o-transition: all 0.3s ease;
+	transition: all 0.3s ease;
+}
+
+legend.ui-fieldset-legend span {
+	padding: 10px;
+}
+
+.table {
+	display: table;
+}
+
+.table-row {
+	display: table-row;
+}
+
+.table-cell {
+	display: table-cell;
+}
+
+.mydatatableclass table  tfoot tr td:nth-child(1),.mydatatableclass table  tfoot tr td:nth-child(3)
+	{
+	background-color: #cec !important;
+	color: #000 !important;
+	font-weight: bold !important;
+}
+
+.mydatatableclass table  tfoot tr td:nth-child(2),.mydatatableclass table  tfoot tr td:nth-child(4)
+	{
+	text-align: left !important;
+}
+</style>
+	<script type="text/javascript">
+		$(function() {
+			// Set cursor to pointer and add click function
+			$("legend").css("cursor", "pointer").click(function() {
+				var legend = $(this);
+				var value = $(this).children("span").html();
+				if (value == "[-]")
+					value = "[+]";
+				else
+					value = "[-]";
+				$(this).siblings().slideToggle(1000, function() {
+					legend.children("span").html(value);
+				});
+			});
+		});
+	</script>
+</h:head>
+
+
+<h:body dir="#{facesBean.direction}">
+
+<p:dialog id="complete" widgetVar="complete" width="400"
+										height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="success" header="#{msg['lbl.success']}" closable="false"
+										showEffect="clip" hideEffect="clip">
+										<p:outputLabel
+											value="#{msg['lbl.recrdSavedSuccessfully']} "
+											style="text-align: center; font-size:15px !important;" />
+										<br/>
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{jVProcessBean.jvProcessNavigation}"
+											process="@this" style="margin-left: 150px !important;" />
+</p:dialog>
+
+<p:confirmDialog id="balanceNotMatch" widgetVar="balanceNotMatch" width="300" height="20"  
+		resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="Amount not matched ">
+</p:confirmDialog>
+
+<p:confirmDialog id="noDenomination" widgetVar="noDenomination" width="300" height="20"  
+		resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="Please enter denomination details">
+</p:confirmDialog>
+
+<p:confirmDialog id="invalidGlNumber" widgetVar="invalidGlNumber" width="300" height="20"  
+		resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="Invalid Gl Number">
+</p:confirmDialog>
+
+<p:confirmDialog id="netAmountNotMatch" widgetVar="netAmountNotMatch" width="300" height="20"  
+		resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="Total debit and credit amount not matched">
+</p:confirmDialog>
+<p:confirmDialog id="accounNoManadatory" widgetVar="accounNoManadatory" width="300" height="20"  
+		resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="Please select bank account number">
+</p:confirmDialog>
+
+	<f:view locale="#{facesBean.locale}">
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:panelGroup layout="block" class="heading1">
+								<h:outputText value="#{msg['lbl.jvprocessing']}" />
+							</h:panelGroup>
+							<h:form id="jvProcessForm">
+
+								<p:panel id="mainPanel" styleClass="shadow"
+									style="margin: 20px 10px !important; background-color:#FFF !important;">
+
+<p:dialog modal="true" showHeader="true" header="Please wait.." widgetVar="process"  id="process"   width="400" height="100" resizable="false"
+                                         draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+                                         <div style="text-align:center;">
+                                         <p:graphicImage value="../images/preloader.gif" />
+                                         </div>
+                                     </p:dialog>
+                                     
+									<p:dialog id="locaDena" widgetVar="locaDena" width="1000px"
+										header="#{msg['lbl.details']}" resizable="false"
+										style="background-color: white !important;" styleClass="info"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+
+										<p:dataTable var="o" id="denominationid2"
+											styleClass="mydatatableclass"
+											value="#{jVProcessBean.lstDenominationForDailog}"
+											rowIndexVar="rowIndex" editable="true" editMode="cell"
+											emptyMessage="#{msg['lbl.norecordfound']}">
+
+
+											<!-- <p:column style="width:30px !important;"
+												headerText="#{msg['lbl.slNo']}">
+												<h:outputText value="#{o.serial}." />
+											</p:column> -->
+
+											 <p:column style="width:22% !important;"
+												headerText="#{msg['stock.denomination']}" sortBy="#{o.item}">
+												<h:outputText value="#{o.denominationDesc}" />
+											</p:column> 
+
+											<!-- <p:column style="width:22% !important;"
+												headerText="#{msg['lbl.currenctQuantity']}">
+												<h:outputText value="#{o.stock}" />
+											</p:column>
+ -->
+											<p:column style="width:22% !important;"
+												headerText="#{msg['lbl.fclocalpurchasenoofnotes']}">
+												<h:outputText value="#{o.noOfNotes}" />
+
+											</p:column>
+
+											<p:column style="width:22% !important;"
+												headerText="#{msg['lbl.newBal']}">
+												<h:outputText value="#{o.cashAmount}" />
+											</p:column>
+
+										</p:dataTable>
+
+
+									</p:dialog>
+
+
+
+									<fieldset class="ui-fieldset">
+										<legend class="ui-fieldset-legend">
+											<span>[-]</span>
+
+											<h:outputText value="#{msg['lbl.jvrefdetails']}" />
+										</legend>
+										<p:panel styleClass="panel_border1" id="jvPanelRefDetails">
+
+											<p:panel styleClass="left_col user_select">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.company']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText style="font-size:11px !important;"
+														value="#{jVProcessBean.companyName}" readonly="true">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col branchpanel">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.jvjvref']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col" id="documentPanelId">
+													<p:panelGrid style="width:98%;">
+														<p:row>
+															<p:column
+																style="width:50% !important; padding:0px 13px 0px 0px !important;">
+																<p:inputText id="financeYear"
+																	value="#{jVProcessBean.finaceYear}" required="true"
+																	requiredMessage="Enter Financial Year" readonly="true">
+																	<p:ajax event="blur" update="msgfinanceYear" />
+																	<p:message for="financeYear" display="text"
+																		id="msgfinanceYear" />
+																</p:inputText>
+															</p:column>
+															<p:column rendered="#{jVProcessBean.renderDocumentInput}"
+																style="width:50% !important; padding:0px !important;">
+																<p:inputText id="documentSerialId"
+																	value="#{jVProcessBean.documentSerialIdNumber}"
+																	required="true"
+																	requiredMessage="Enter Document Serial ID"
+																	readonly="true">
+																</p:inputText>
+															</p:column>
+
+															<p:column
+																style="width:50% !important; padding:0px !important;"
+																rendered="#{jVProcessBean.renderDocumentSelectMenu}">
+																<p:message for="editableDocumentSerialId" display="text"
+																	id="msgeditableDocumentSerialId" />
+																<p:selectOneMenu id="editableDocumentSerialId"
+																	panelStyle="width: 88px;"
+																	value="#{jVProcessBean.jvDocumentNumber}" filter="true"
+																	filterMatchMode="contains" required="true"
+																	requiredMessage="#{msg['lbl.SelectDocYearAndNumber']}">
+																	<f:selectItem itemLabel="#{msg['lbl.select']}"
+																		itemValue="" />
+																	<f:selectItems
+													value="#{jVProcessBean.dayBookList}" var="c"
+													itemLabel="#{c.documentNumber}" itemValue="#{c.documentNumber}"/>
+													<p:ajax event="change" listener="#{jVProcessBean.fetchRecordfromDb}" update="mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+																</p:selectOneMenu>
+															</p:column>
+
+															<p:column
+																style="width:5% !important; padding:0px !important;text-align:right !important;"
+																rendered="#{fxdetailinfobean.renderRef}">
+																<p:commandButton value=" " styleClass="edit"
+																	style="margin-left: 6px;"
+																	action="#{jVProcessBean.editableDocumentNo}"
+																	update="documentPanelId" process="@this" />
+															</p:column>
+
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+
+
+
+
+											<p:panel styleClass="left_col user_select">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.date']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="hdValueDate" display="text" id="hdValDate" />
+													<p:calendar id="hdValueDate"
+														value="#{jVProcessBean.hdCalValueDate}" mode="popup"
+														pattern="dd/MM/yyyy"
+														maxdate="#{jVProcessBean.effectiveMinDate}"
+														
+														navigator="true" readonlyInput="true" required="true"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.date']}">
+														<p:ajax event="dateSelect"
+															listener="#{jVProcessBean.onDateSelect}"
+															update="hdValDate" />
+													</p:calendar>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col branchpanel">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.jvreason']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<!-- 	<p:message for="reasonId" display="text" id="msgReason" />
+													<p:inputText id="reasonId"
+														value="#{jVProcessBean.jvReason}" required="true"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.jvreason']}">
+														<p:ajax update="msgReason" />
+													</p:inputText> -->
+													<p:message for="reasonId" display="text" id="msgReason" />
+															<p:selectOneMenu  tabindex="5" id="reasonId"
+																	panelStyle="width: 88px;"
+																	value="#{jVProcessBean.jvReason}" filter="true"
+																	filterMatchMode="contains" required="true"
+																	requiredMessage="Please Select Reason" >
+																	<f:selectItem itemLabel="#{msg['lbl.select']}"
+																		itemValue="" />
+																<f:selectItems value="#{jVProcessBean.jvReasonList}"
+																		var="c" itemLabel="#{c.paramCodeDef} - #{c.paramFullDesc}"
+																		itemValue="#{c.paramCodeDef}" />
+																		<p:ajax update="msgReason" event="change"/>
+																</p:selectOneMenu>
+
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+
+
+											<p:panel styleClass="left_col user_select">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.jvdesc']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="jvDescriptionId" display="text"
+														id="msgJvDescription" />
+													<p:inputTextarea value="#{jVProcessBean.jvDescription}"
+														id="jvDescriptionId" required="true"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.jvdesc']}" tabindex="5">
+														<p:ajax update="msgJvDescription" required="true"
+															requiredMessage="Enter Description" />
+													</p:inputTextarea>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col branchpanel">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.jvtotaldebit']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{jVProcessBean.totalDebits}"
+														readonly="true" />
+
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col user_select">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.jvtotalcredit']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{jVProcessBean.totalCredit}"
+														readonly="true" />
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col branchpanel">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.jvnet']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{jVProcessBean.netAmount}"
+														readonly="true" />
+
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+											<br />
+
+										</p:panel>
+									</fieldset>
+									<br />
+									<fieldset class="ui-fieldset">
+										<legend class="ui-fieldset-legend">
+											<span>[-]</span>
+
+											<h:outputText value="#{msg['lbl.jvdetails']}" />
+										</legend>
+										<p:panel styleClass="panel_border1" id="jvdetailsPanel">
+
+											<p:panel styleClass="left_col branchpanel">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.bank']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="jvMsgBankId" for="jvbankID" display="text" />
+													<p:selectOneMenu id="jvbankID"
+														value="#{jVProcessBean.jvBankId}" filter="true"
+														filterMatchMode="contains" tabindex="6">
+
+														<f:selectItem itemLabel="#{msg['lbl.selectbank']}"
+															itemValue="" />
+														<f:selectItems value="#{jVProcessBean.jvBankLst}" var="c"
+															itemLabel="#{c.bankCode} - #{c.bankDecs}"
+															itemValue="#{c.bankId}" />
+
+														<p:ajax for="jvbankID" event="change"
+															listener="#{jVProcessBean.jvbankSelection}"
+															update="jvMsgBankId,jvPanelCurrency" process="@this" />
+
+													</p:selectOneMenu>
+
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col user_select"
+												id="jvPanelCurrency">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.currency']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="jvMsgCurrencyId" for="jvCurrencyId"
+														display="text" />
+													<p:selectOneMenu id="jvCurrencyId"
+														value="#{jVProcessBean.jvCurrencyId}" filter="true"
+														filterMatchMode="contains" required="true"
+														requiredMessage="#{msg['lbl.pleaseSelectCurrency']}"
+														tabindex="7">
+														<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}"
+															itemValue="" />
+														<f:selectItems value="#{jVProcessBean.currencyListFromDB}"
+															var="c" itemLabel="#{c.currencyCode} - #{c.currencyDecs}"
+															itemValue="#{c.currencyId}" />
+														<p:ajax for="jvCurrencyId" event="change"
+															listener="#{jVProcessBean.populateAccountNumber}"
+															update="jvMsgCurrencyId,jvPanelAccountNo,mainPanel" />
+
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col branchpanel"
+												id="jvPanelAccountNo">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.bankaccountnumber']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+
+													<p:panelGrid style="width:100%;">
+														<p:row>
+															<p:column
+																style="width:100%; text-align:left;padding:0px !important;">
+
+																<p:message for="selectmenuTo" display="text"
+																	id="accountNoId" />
+																<p:selectOneMenu id="selectmenuTo"
+																	value="#{jVProcessBean.jvAccNumber}" filter="true"
+																	filterMatchMode="contains" tabindex="8">
+																	<f:selectItem
+																		itemLabel="#{msg['lbl.selectaccountnumber']}"
+																		itemValue="" />
+																	<f:selectItems
+																		value="#{jVProcessBean.lstjvAccountNumber}" var="c"
+																		itemLabel="#{c.bankAcctNo}" itemValue="#{c.bankAcctNo}" />
+																	<!-- <p:ajax
+																		listener="#{jVProcessBean.selecteAccountNameForPD}"
+																		update="accountNoId" /> -->
+																		<p:ajax/>
+																</p:selectOneMenu>
+															</p:column>
+															<p:column
+																style="width:100%; text-align:left;padding:0px !important;"
+																rendered="#{jVProcessBean.booRenderJvAccNoForUpdate}">
+																<p:inputText value="#{jVProcessBean.jvAccNoForUpdate}"
+																	readonly="true">
+																	<p:ajax />
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+
+
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col user_select">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.jvparticular']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="perticularsID" display="text"
+														id="msgPerticularsID" />
+													<p:inputText id="perticularsID"
+														value="#{jVProcessBean.jvPerticulars}" required="true"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.jvparticular']}">
+														<p:ajax update="msgPerticularsID" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col branchpanel">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.jvaccountno']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col" >
+<script language="javascript">
+$('body').ready(function(){
+     $.autotab({ tabOnSelect: true });
+     $('.ip').autotab('filter', 'number');
+ });
+</script>
+													<p:row>
+															<p:column  >
+															<p:autoComplete  styleClass="ip" maxlength="2"  id="glAccNoIDOne" value="#{jVProcessBean.jvGlAcNoOne}"  completeMethod="#{jVProcessBean.autoCompletejvGlAcNoOne}" maxResults="10"  onchange="clearForm(this);">
+															<p:ajax onstart="process.show();" onsuccess="process.hide();"/>
+															</p:autoComplete>
+															</p:column>
+															<p:column  >
+															<p:autoComplete styleClass="ip" maxlength="2"  id="glAccNoIDTwo" value="#{jVProcessBean.jvGlAcNoTwo}"  completeMethod="#{jVProcessBean.autoCompletejvGlAcNoTwo}" maxResults="10"  onchange="clearForm(this);">
+															<p:ajax onstart="process.show();" onsuccess="process.hide();"/>
+															</p:autoComplete>
+															</p:column>
+															<p:column  >
+															<p:autoComplete styleClass="ip" maxlength="2" id="glAccNoIDThree" value="#{jVProcessBean.jvGlAcNoThree}"  completeMethod="#{jVProcessBean.autoCompletejvGlAcNoThree}" maxResults="10"  onchange="clearForm(this);">
+															<p:ajax onstart="process.show();" onsuccess="process.hide();"/>
+															</p:autoComplete>
+															</p:column>
+															<p:column  >
+															<p:autoComplete styleClass="ip" maxlength="2" id="glAccNoIDFour" value="#{jVProcessBean.jvGlAcNoFour}"  completeMethod="#{jVProcessBean.autoCompletejvGlAcNoFour}" maxResults="10"  onchange="clearForm(this);">
+															<p:ajax onstart="process.show();" onsuccess="process.hide();"/>
+															</p:autoComplete>
+															</p:column>	
+															<p:column  >
+															<p:autoComplete styleClass="ip" maxlength="2" id="glAccNoIDFive" value="#{jVProcessBean.jvGlAcNoFive}"  completeMethod="#{jVProcessBean.autoCompletejvGlAcNoFive}" maxResults="10"  onchange="clearForm(this);">
+															<p:ajax onstart="process.show();" onsuccess="process.hide();"/>
+															</p:autoComplete>
+															</p:column>																																													
+															<p:column  >
+															<p:autoComplete styleClass="ip maxlen1" maxlength="3" id="glAccNoIDSix" value="#{jVProcessBean.jvGlAcNoSix}"  completeMethod="#{jVProcessBean.autoCompletejvGlAcNoSix}" maxResults="10"  onchange="clearForm(this);">
+															<p:ajax onstart="process.show();" onsuccess="process.hide();"/>
+															</p:autoComplete>
+															
+															</p:column>
+															<p:column  >
+															<p:inputText styleClass="ip" style="width:55px !important;" maxlength="4" id="glAccNoIDSeven" value="#{jVProcessBean.jvGlAcNoSeven}" >
+																<p:ajax event="blur" listener="#{jVProcessBean.jvGlAcNoValidation}" update="jvPanelSubCode,jvPanelSubCodeDesc"></p:ajax>
+																<!-- <p:ajax/> -->
+															</p:inputText>
+															</p:column>
+	<!-- 												<p:message for="glAccNoID" display="text" id="msgGlAccNoID" />
+													<p:column>
+													<p:inputText id="glAccNoID"
+														value="#{jVProcessBean.jvGlAcNo}" required="true"
+														requiredMessage="Enter Account No"  style="width:10%;">
+														<p:ajax update="msgGlAccNoID" />
+													</p:inputText>
+													</p:column> -->
+													</p:row>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col user_select" id="jvPanelSubCode">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.jvsubcode']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="subCodeId" display="text" id="msgSubCodeId" />
+
+													<p:inputText id="subCodeId" readonly="#{jVProcessBean.subCodeReadOnly}"
+														value="#{jVProcessBean.subCode}" required="true"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.jvsubcode']}">
+														<p:ajax event="blur" listener="#{jVProcessBean.jvSubCodeValidation}" update="msgSubCodeId" />
+														<!-- <p:ajax update="msgSubCodeId" /> -->
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<div class="clearfix"></div>
+											
+											<p:panel styleClass="left_col user_select" id="jvPanelSubCodeDesc">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.jvsubcode']} #{msg['lbl.description']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{jVProcessBean.subDescription}">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col branchpanel">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.jvforeignamt']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="foreignAmountID" display="text"
+														id="msgForeignAmountID" />
+
+													<p:inputText id="foreignAmountID"
+														value="#{jVProcessBean.foreignAmount}" required="true"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.jvforeignamt']}">
+														<p:ajax event="blur" listener="#{jVProcessBean.calKwdAmt}" update="jvPanelKwdAmount,msgForeignAmountID" />
+													</p:inputText>
+
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col user_select">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.jvexchangerate']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="exchangeID" display="text"
+														id="msgExchangeID" />
+
+													<p:inputText id="exchangeID"
+														value="#{jVProcessBean.exchangeRate}" required="true"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.jvexchangerate']}">
+														<p:ajax event="blur" listener="#{jVProcessBean.calKwdAmt}"
+															update="jvPanelKwdAmount,msgExchangeID" process="@this" />
+														<f:validator
+															validatorId="com.amg.exchange.validator.doubleCheckValidator" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col branchpanel"
+												id="jvPanelKwdAmount">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.amountkwd']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+
+													<p:inputText value="#{jVProcessBean.kwdAmount}"
+														readonly="true">
+														<p:ajax />
+													</p:inputText>
+
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+
+										</p:panel>
+									</fieldset>
+
+									<br />
+
+									<p:panel styleClass="panel_border1" id="denaminationPanel"
+										rendered="#{jVProcessBean.renderDenominationDataTable}">
+
+										<fieldset class="ui-fieldset">
+											<legend class="ui-fieldset-legend">
+												<span>[-]</span>
+
+												<h:outputText value="Denomination Details" />
+											</legend>
+											<p:panel styleClass="panel_border1">
+												<p:dataTable var="o" id="denominationid"
+													styleClass="mydatatableclass"
+													value="#{jVProcessBean.lstDenominationDataTable}"
+													rowIndexVar="rowIndex" editable="true" editMode="cell"
+													emptyMessage="#{msg['lbl.norecordfound']}">
+
+
+													<p:column style="width:30px !important;"
+														headerText="#{msg['lbl.slNo']}">
+														<h:outputText value="#{o.serial}." />
+													</p:column>
+
+													<p:column style="width:22% !important;"
+														headerText="#{msg['stock.denomination']}"
+														sortBy="#{o.item}">
+														<h:outputText value="#{o.denominationDesc}" />
+													</p:column>
+
+													<p:column style="width:22% !important;"
+														headerText="#{msg['lbl.currenctQuantity']}">
+														<h:outputText value="#{o.stock}" />
+													</p:column>
+
+
+													<p:column style="width:22% !important;"
+														headerText="#{msg['lbl.fclocalpurchasenoofnotes']}">
+														<p:message for="q" display="text" />
+														<p:cellEditor>
+															<f:facet name="output">
+																<h:outputText value="#{o.noOfNotes}" />
+															</f:facet>
+															<f:facet name="input">
+																<p:inputText id="q" value="#{o.noOfNotes}"
+																	converterMessage="#{msg['lbl.enterOnlyNumbers']}">
+																	<p:ajax event="blur" onstart="process.show();"
+																		onsuccess="process.hide();"
+																		listener="#{jVProcessBean.onCellEdit(o)}"
+																		update=":jvProcessForm:denominationid,:jvProcessForm:totalPanelId" />
+																	<f:convertNumber integerOnly="true" />
+																	<f:validator validatorId="allowOnlyNumber" />
+																</p:inputText>
+															</f:facet>
+														</p:cellEditor>
+													</p:column>
+
+													<p:column style="width:22% !important;"
+														headerText="#{msg['lbl.newBal']}">
+														<h:outputText value="#{o.cashAmount}" />
+													</p:column>
+
+												</p:dataTable>
+												<div class="clearfix"></div>
+												<div class="clearfix"></div>
+												<p:spacer height="10px" />
+
+												<p:panel styleClass="ui-state-disabled" id="totalPanelId"
+													style="float:right;">
+													<p:panel styleClass=" inner_right_col">
+														<h:outputText value="#{msg['lbl.totalNoOfNotes']}" />
+														<p:inputText value="#{jVProcessBean.totalNoofNotes}"
+															readonly="true" />
+													</p:panel>
+
+													<p:panel styleClass=" inner_right_col">
+														<h:outputText value="#{msg['lbl.totalNewBal']}" />
+														<p:inputText value="#{jVProcessBean.totalNewBalance}"
+															readonly="true" />
+													</p:panel>
+												</p:panel>
+												<div class="clearfix"></div>
+
+
+											</p:panel>
+
+										</fieldset>
+									</p:panel>
+									<h:panelGroup layout="block" styleClass="shadow_button"
+										rendered="#{jVProcessBean.renderDenominationDataTable}">
+										<p:commandButton value="#{msg['lbl.add']}"
+											action="#{jVProcessBean.addDenaminationDetails}"
+											update="mainPanel" />
+											
+											<p:commandButton value="#{msg['lbl.cancel']}"
+											action="#{jVProcessBean.cancelDenaminationDetails}"
+											update="mainPanel" immediate="true">
+											<p:resetInput target="@form" />
+											</p:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup layout="block" styleClass="shadow_button"
+										rendered="#{jVProcessBean.renderJVDetailsDataTable}">
+										<p:commandButton value="#{msg['lbl.add']}"
+											action="#{jVProcessBean.addRecordsToDataTable}"
+											update="mainPanel" />
+										<div class="clearfix"></div>
+									</h:panelGroup>
+
+									<p:panel styleClass="panel_border1"
+										rendered="#{jVProcessBean.renderJVDetailsDataTable}">
+
+										<p:dataTable var="o" id="denominationid1"
+											styleClass="mydatatableclass"
+											value="#{jVProcessBean.lstJVProcessDataTableBean}"
+											rowIndexVar="rowIndex" editable="true" editMode="cell"
+											emptyMessage="#{msg['lbl.norecordfound']}">
+											
+											<p:column headerText="#{msg['lbl.bankName']}">
+												<h:outputText value="#{o.bankName}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.currencyname']}">
+												<h:outputText value="#{o.currencyName}"
+													rendered="#{o.currencyNormal}" />
+												<p:commandLink rendered="#{o.currencyWithDenomination}"
+													action="#{jVProcessBean.checkStatusType(o)}"
+													value="#{o.currencyName}"
+													style="color:blue !important; text-decoration:underline !important;"
+													update=":jvProcessForm:mainPanel" immediate="true"
+													process="@this" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.jvaccountno']}">
+												<h:outputText value="#{o.accountNumber}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.jvparticular']}">
+												<h:outputText value="#{o.particularsDesc}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.jvaccountno']}">
+												<h:outputText value="#{o.glAccountNo}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.jvsubcode']}">
+												<h:outputText value="#{o.subCode}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.jvsubcode']} #{msg['lbl.description']}">
+
+												<h:outputText value="#{o.subDescription}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.jvforeignamt']}">
+												<h:outputText value="#{o.foreignAmt}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.jvexchangerate']}">
+												<h:outputText value="#{o.exchangeRate}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.jvamount']} (KWD)">
+												<h:outputText value="#{o.kwdAmount}" />
+											</p:column>
+											
+											<p:column headerText="#{msg['lbl.edit']}" >
+												<p:commandButton  id="imgEdit" styleClass="edit" value="" action="#{jVProcessBean.updateRecord(o)}" update=":jvProcessForm"  process="@this">
+													<p:tooltip  for="imgEdit" value="#{msg['lbl.edit']}"/>
+												</p:commandButton>
+											  </p:column>
+											  
+										</p:dataTable>
+									</p:panel>
+
+									<div class="clearfix"></div>
+
+
+
+
+
+									 
+									<p:panel styleClass="shadow_button"
+										style=" background-color:#FFF !important;" rendered="#{jVProcessBean.renderSavePanel}">
+										<p:commandButton value="#{msg['lbl.save']}" action="#{jVProcessBean.save}" style="margin-right:10px;" immediate="true" />
+										<!-- <p:commandButton value="Modify" style="margin-right:10px;" />
+										<p:commandButton value="Cancel" style="margin-right:10px;" />
+										<p:commandButton value="Delete" style="margin-right:10px;" /> -->
+										<p:commandButton value="#{msg['lbl.exit']}" style="margin-right:10px;" action="#{bankTransferBean.exit}" process="@this" immediate="true" />
+									</p:panel> 
+
+
+									<div class="clearfix"></div>
+								</p:panel>
+
+							</h:form>
+
+
+						</h:panelGroup>
+					</h:panelGroup>
+					<div class="clearfix"></div></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

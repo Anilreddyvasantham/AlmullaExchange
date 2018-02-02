@@ -1,0 +1,511 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+<script >
+		 	
+		 history.pushState(null, null, 'medicalinsurancesetup.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'medicalinsurancesetup.xhtml');
+		    });
+	</script>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</h:head>
+
+  <p:confirmDialog id="dataexist" widgetVar="dataexist" width="400"
+	height="17" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.thisrecordalreadyexisted']}">
+</p:confirmDialog>
+ <p:confirmDialog id="pending" widgetVar="pending" width="400"
+	height="17" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="This Record Pending For Approve">
+</p:confirmDialog>
+      
+      <p:confirmDialog id="datevalid" widgetVar="datevalid" width="500" header="#{msg['lbl.warningDailog']}"
+		height="20" resizable="false"
+		style=" border:2px solid gray !important; padding:0px !important;  color:solid green !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="explode" closeOnEscape="true"
+		closable="true" message=" #{msg['lbl.effectiveToDateGreaterThanEffectiveFrom']} ">
+    	</p:confirmDialog>  
+    	 <p:confirmDialog id="datefromvalid" widgetVar="datefromvalid" width="500" header="#{msg['lbl.warningDailog']}"
+		height="20" resizable="false"
+		style=" border:2px solid gray !important; padding:0px !important;  color:solid green !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="explode" closeOnEscape="true"
+		closable="true" message="  #{msg['lbl.pleseSelectFromDateThenToDate']}">
+    	</p:confirmDialog>  
+  	<p:confirmDialog id="notrecordfound" widgetVar="notrecordfound" width="500" header="#{msg['lbl.warningDailog']}"
+		height="20" resizable="false"
+		style=" border:2px solid gray !important; padding:0px !important;  color:solid green !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="explode" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.noInforEntered']} ">
+    	</p:confirmDialog>  
+ <p:dialog id="permanentDelete" widgetVar="permanentDelete" width="305" height="100" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+                                                          showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"  >
+                                                          <p:outputLabel  value="#{msg['lbl.doyouwanttodeleterecordperminently']}"/>
+                                                          <p:spacer height="10px"/>
+                                                          <p:panel>
+ 					        <p:commandButton value="#{msg['lbl.ok']}" style="margin-right:10px; "  actionListener="#{insuranceSetUpBean.confirmPermanentDelete}" process="@this" oncomplete="PF('permanentDelete').hide();" update=":form1" /> 
+                                        <p:commandButton value="#{msg['lbl.cancel']}"  onclick="PF('permanentDelete').hide();" immediate="true"/> 
+								</p:panel>                        
+</p:dialog>	
+<p:dialog id="activateRecord" widgetVar="activateRecord" width="300" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+                                                          showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"  >
+                                                          <p:outputLabel  value="#{msg['lbl.doyouactivaterecord']}"/>
+                                                          <p:spacer height="10px"/>
+                                                          <p:panel>
+ 					        <p:commandButton value="#{msg['lbl.ok']}" style="margin-right:10px; "  actionListener="#{insuranceSetUpBean.activateRecord}" process="@this" oncomplete="PF('activateRecord').hide();"  update=":form1"/> 
+                                        <p:commandButton value="#{msg['lbl.cancel']}"  onclick="PF('activateRecord').hide();" immediate="true"/> 
+								</p:panel>                        
+</p:dialog>
+<p:confirmDialog id="exist" widgetVar="exist" width="400" height="17"
+	resizable="false"
+	style=" border:2px solid green !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.recordnotfound']}">
+</p:confirmDialog>
+
+<h:body>
+   <p:dialog id="completed" widgetVar="completed" width="500" height="80"  resizable="false" 
+				style="background-color: white !important;" styleClass="success" header="#{msg['lbl.success']}" closable="false"	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+         modal="true">
+           <p:outputLabel value="#{msg['lbl.dataissuccessfullysaved']} " style="text-align: center; font-size:16px !important;"/><br/>
+           <p:commandButton value="#{msg['lbl.ok']}" actionListener="#{insuranceSetUpBean.clickOnOKSave}" style="margin-left: 200px !important;"  /> 
+           <p:spacer height="10px"/>         
+    </p:dialog>   
+  
+ 
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+				<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+				 </td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form1">
+							<!-- dilaog remar onclick="PF('remarks').hide();" -->
+							
+							
+							
+								<p:confirmDialog id="error" widgetVar="error" width="600" visible="#{insuranceSetUpBean.booVisible}"
+										showHeader="true" resizable="false" header="Warning Message"
+										styleClass="ui-confirmdialog-yes"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:green; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{insuranceSetUpBean.errorMessage}">
+									</p:confirmDialog>
+											
+							
+							
+							<p:dialog id="remarks" widgetVar="remarks" width="550"
+									height="205" showHeader="false" resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+									<p:panel styleClass="shadow">
+										<p:panel>
+											<h:outputText value="#{msg['lbl.activateddate']}: "/>
+											<h:outputText
+												value="#{insuranceSetUpBean.approvedDate}"  style="color:black" />&nbsp;&nbsp;&nbsp;
+                                        <h:outputText
+												value="#{msg['lbl.activatedby']}: "   />
+											<h:outputText
+												value="#{insuranceSetUpBean.approvedBy}"  style="color:black" />
+										</p:panel>
+										<div class="clearfix" />
+										<hr></hr>
+										<p:panel>
+											<h:outputText value="#{msg['lbl.pleaseenterremarks']}*" />
+										</p:panel>
+										<p:panel>
+											<h:inputTextarea
+												value="#{insuranceSetUpBean.remarks}" rows="5"
+												cols="50" >
+												<p:ajax />
+											</h:inputTextarea>
+										</p:panel>
+										<p:spacer width="15px" />
+										<div class="clearfix" />
+										<h:panelGroup styleClass="shadow">
+											<div class="clearfix" />
+											<p:commandButton value="#{msg['lbl.ok']}"
+												actionListener="#{insuranceSetUpBean.remarkSelectedRecord}"
+												process="@this" oncomplete="PF('remarks').hide();"
+												update="form1" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												  actionListener="#{insuranceSetUpBean.cancelRemarks}" process="@this"/>
+										</h:panelGroup>
+									</p:panel>
+								</p:dialog>
+								<!-- dilaog remar onclick="PF('remarks').hide();" -->
+	
+								 
+								<h1>
+									<h:outputText value="#{msg['lbl.medicalInsuranceSetUp']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+
+									<h2>
+										<h:outputText value="#{msg['lbl.medicalInsuranceSetUp']}" />
+									</h2>
+									 
+									 <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.effectiveFrom']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col"> 
+												<p:message for="fromDate" display="text" id="msgfromDate" /> 
+											 	<p:calendar id="fromDate" value="#{insuranceSetUpBean.effectiveFromDate}"  required="true" requiredMessage="Please select Effective From Date" readonlyInput="true" navigator="true" mindate="#{java.util.Date()}+1" pattern="dd/MM/yyyy">
+        									 
+        										<p:ajax event="dateSelect" update="msgfromDate" />
+    											</p:calendar>
+											</p:panel>
+										</p:panel>
+										 
+											 <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.effectiveTo']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message for="toDate" display="text" id="msgtoDate" /> 
+											 	<p:calendar id="toDate" value="#{insuranceSetUpBean.effectiveToDate}" required="true" requiredMessage="Please select effective To Date" navigator="true" readonlyInput="true" mindate="#{java.util.Date()}+1" pattern="dd/MM/yyyy">
+        										<p:ajax event="dateSelect" listener="#{insuranceSetUpBean.checkToDateValidator}" update="msgtoDate"/>
+    											</p:calendar>
+											</p:panel>
+										</p:panel> 
+									 
+											<div class="clearfix" />
+										
+										
+									 
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.fromAmount']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgfromamount" for="frmAmount"
+													display="text" />
+												<p:inputText id="frmAmount"
+													value="#{insuranceSetUpBean.fromAmount}" required="true"
+													requiredMessage="Please Enter From Amount" maxlength="10" validatorMessage="Please Enter Positive Values ">
+													 <f:validator validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+													<p:ajax event="blur" update="msgfromamount" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+								 
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.toAmount']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgtoamount" for="toAmountid"
+													display="text" />
+												<p:inputText id="toAmountid"
+													value="#{insuranceSetUpBean.toAmount}" required="true"
+													requiredMessage="Please Enter To Amount" maxlength="10"  validator="#{insuranceSetUpBean.comparingAmount}">
+													<f:validator validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+													<p:ajax event="blur" update="msgtoamount" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.numOFDays']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgnoofdays" for="daysid"
+													display="text" />
+												<p:inputText id="daysid"
+													value="#{insuranceSetUpBean.insuranceDays}" required="true"
+													requiredMessage="Please Enter Number of Days" maxlength="3" validatorMessage="Please Enter Possitive Days">
+													<f:validator validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+													<p:ajax event="blur" update="msgnoofdays" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+								 
+
+									 
+
+ 
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.earnedLoyalityPoints']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgearnedloyality" for="loyaltyid"
+													display="text" />
+												<p:inputText id="loyaltyid"
+													value="#{insuranceSetUpBean.loyaltyPoints}"
+													required="true"
+													requiredMessage="Please Enter Earned Loyality Points"
+													maxlength="10" validatorMessage="Please Loyalty Possitive Numbers"  >
+													
+													 <f:validator validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+													<p:ajax event="blur" update="msgearnedloyality" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix" />
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.insurAmount']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msginsuranceamount" for="insuranceamountid"
+													display="text" />
+												<p:inputText id="insuranceamountid"
+													value="#{insuranceSetUpBean.insuranceAmount}" required="true"
+													requiredMessage="Please Enter Insurance Amount" maxlength="10"  validatorMessage="Please Insurance Amount Possitive Numbers" >
+													<f:validator validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+													<p:ajax update="msginsuranceamount" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.addAmount']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgadditionalamount" for="addtionalamountid"
+													display="text" />
+												<p:inputText id="addtionalamountid"
+													value="#{insuranceSetUpBean.insuranceAdditionalAmount}"
+													required="true"
+													requiredMessage="Please Enter Additional Amount"
+													maxlength="10"  validatorMessage="Please Loyalty Possitive Numbers" >
+														<f:validator validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />											
+													<p:ajax update="msgadditionalamount" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+										<div class="clearfix" />
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.insurMess']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											 <p:message id="msginsurancemessage"  for="insurancemesgid" display="text" />   
+												<p:inputTextarea id="insurancemesgid"
+													value="#{insuranceSetUpBean.insuranceMsgOne}"
+													required="true"
+													requiredMessage="Please Enter Insurance Message"
+													style="height:70px !important;" maxlength="500">
+													<p:ajax event="blur" update="msginsurancemessage"/>
+												</p:inputTextarea>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.addMess']}" />
+												
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgadditionalmessage"
+													for="addtionalmsgideng" display="text" />
+												<p:inputTextarea id="addtionalmsgideng"
+													value="#{insuranceSetUpBean.insuranceMsgTwo}"  style="height:70px !important;" maxlength="500">
+																					 
+												<p:ajax event="blur" update="msgadditionalmessage" />
+												</p:inputTextarea>
+											</p:panel>
+										</p:panel>
+										 
+										<div class="clearfix" />
+										
+										
+										 <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.insuMessOrLocal']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											 <p:message id="msginsurancemessagelocal"  for="insurancemsglocalid" display="text" />   
+												<p:inputTextarea id="insurancemsglocalid"
+													value="#{insuranceSetUpBean.insuranceArabicMsgOne}"
+													required="true"
+													requiredMessage="Please Enter Insurance Message in Local"
+												  style="height:70px !important;text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;"
+													dir="RTL" maxlength="500" validatorMessage="Please Enter Arabic Language">
+													<f:validator validatorId="arabicValidator" />
+													<p:ajax event="blur" update="msginsurancemessagelocal"/>
+												</p:inputTextarea>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.addMessOrLocal']}" />
+												
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgadditionalmessagelocal"
+													for="addionalmsgloalid" display="text" />
+												<p:inputTextarea id="addionalmsgloalid"
+													value="#{insuranceSetUpBean.insuranceArabicMsgTwo}"   maxlength="500" style="height:70px !important;text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;"
+													dir="RTL" validatorMessage="Please Enter Arabic Language">
+													<f:validator validatorId="arabicValidator" />											
+													<p:ajax event="blur" update="msgadditionalmessagelocal" />
+												</p:inputTextarea>
+											</p:panel>
+										</p:panel>
+									 
+
+										<div class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button">
+										<p:commandButton value="#{msg['lbl.add']}"  action="#{insuranceSetUpBean.duplicateCheck}"  update="form1"/>
+										<p:commandButton value="#{msg['lbl.view']}" action="#{insuranceSetUpBean.viewAll}"
+												update="form1" process="@this"
+												immdiate="true" onstart="process.show();" onsuccess="process.hide();" />		 
+										<p:commandButton value="#{msg['lbl.clear']}" action="#{insuranceSetUpBean.clearAll}"  immediate="true" update="form1"  process="@this" disable="#{insuranceSetUpBean.booHideClear}"/>
+												 
+										</h:panelGroup>
+
+
+										<p:dataTable var="c" value="#{insuranceSetUpBean.insuranceDTList}"  
+											rows="10" paginator="true"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="5,10,15" editable="true" id="datatable"
+											emptyMessage="#{msg['lbl.norecordfound']}"
+											rowIndexVar="rowIndex" paginatorPosition="bottom" styleClass="mydatatableclass" rendered="#{insuranceSetUpBean.booRenderDataTable}">
+											
+
+											<p:column headerText="#{msg['lbl.sino']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.effectiveFrom']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.effectiveFromDate}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.effectiveTo']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.effectiveToDate}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.fromAmount']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.fromAmount} " />
+											</p:column>
+											<p:column headerText="#{msg['lbl.toAmount']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.toAmount} " />
+											</p:column>
+											<p:column headerText="#{msg['lbl.numOFDays']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.insuranceDays} " />
+											</p:column>
+
+
+											<p:column headerText="#{msg['lbl.earnedLoyalityPoints']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value=" #{c.loyaltyPoints}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.insurAmount']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value=" #{c.insuranceAmount}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.addAmount']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value=" #{c.insuranceAdditionalAmount}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.insurMess']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.insuranceMsgOne}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.addMess']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value=" #{c.insuranceMsgTwo}" />
+											</p:column>
+											 
+		 									<p:column headerText="#{msg['lbl.insuMessOrLocal']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value=" #{c.insuranceArabicMsgOne}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.addMessOrLocal']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value=" #{c.insuranceArabicMsgTwo}" />
+											</p:column>
+											 <p:column headerText="#{msg['lbl.edit']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:commandButton id="imgEdit" styleClass="edit"
+														action="#{insuranceSetUpBean.editRecord(c)}"  value="" update=":form1" process="@this"/> 
+											</p:column>
+										<p:column headerText="#{msg['lbl.activatedeactivate']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+ 
+													<p:commandLink
+														action="#{insuranceSetUpBean.checkStatusType(c)}"
+														value="#{c.dynamicActivateDeactivate}"
+														style="color:blue !important; text-decoration:underline !important;"
+														update=":form1" process="@this" />
+												</p:column>
+										
+
+										</p:dataTable>
+
+
+										<h:panelGroup layout="block" styleClass="shadow_button"  rendered="#{insuranceSetUpBean.booRenderSubmit}">
+											
+											<p:commandButton value="#{msg['lbl.submit']}" action="#{insuranceSetUpBean.saveDataTableRecords}"  immediate="true"    process="@this" update="error" />
+																										 
+											<p:commandButton value="#{msg['lbl.exit']}" action="#{insuranceSetUpBean.exit}" immediate="true" />
+												  
+										</h:panelGroup>
+										
+										<p:dialog modal="true" showHeader="true" header="Please wait.." widgetVar="process"  id="process"   width="400" height="100" resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+							    	</p:dialog> 		
+									</p:panel>
+								 
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

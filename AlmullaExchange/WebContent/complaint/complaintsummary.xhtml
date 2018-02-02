@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+
+		 history.pushState(null, null, 'complaintsummary.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'complaintsummary.xhtml');
+		    });
+	</script>
+</h:head>
+<h:body>
+	<f:view>
+	
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="complaintsummaryform">
+								<h1>
+									<h:outputText value="#{msg['lbl.complaintsummary']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h2>
+										<h:outputText value="#{msg['lbl.complaintsummary']}" />
+									</h2>
+									<!-- 
+                             		<p:confirmDialog id="noRecords" widgetVar="noRecords"
+										width="300"  resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="#{msg['lbl.validremittanceno']}">
+										<p:commandButton value="#{msg['lbl.ok']}" onclick="PF('noRecords').hide();" immediate="true" />
+									</p:confirmDialog> -->
+									
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{complaintSummaryBean.errorMessage}">
+									</p:confirmDialog>
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{complaintSummaryBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+									<p:confirmDialog id="noRecords" widgetVar="noRecords"
+										width="300"  resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="#{msg['lbl.validremittanceno']}">
+										<p:commandButton value="#{msg['lbl.ok']}" action="#{complaintSummaryBean.clickOK}"  immediate="true" />
+									</p:confirmDialog>
+									
+									
+									
+									<p:dialog id="search" widgetVar="search" width="700" resizable="false" style="background-color: white !important;" styleClass="info" header="Remittance Search" closable="false" showEffect="clip" hideEffect="clip">
+                             		
+                             		<p:spacer height="10px"/>
+
+										
+										<p:panel layout="block" >
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bccompany']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col" >		
+											<p:inputText id="companyName" value="#{complaintSummaryBean.companyName}" readonly="true" styleClass="readOnly"   style="width:180% !important;">															
+														<p:ajax />
+													</p:inputText>	
+											</p:panel>
+												
+										</p:panel>
+										
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+									
+										<p:panel layout="block" >
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.remitYearOrNumber']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:panelGrid style="width:180%; !important;">
+															<p:row>
+																<p:column
+																	style="width:50% !important; padding:0px 13px 0px 0px !important;">
+																	 <p:message for="dealDocYr" display="text" id="msgdealDocYr" />
+																	<p:selectOneMenu id="dealDocYr" value="#{complaintSummaryBean.remitdealYearId}" required="true"  requiredMessage="Please Select Remittance Year"
+																		filter="true" filterMatchMode="startsWith" tabindex="1">
+																		<f:selectItem itemLabel="#{msg['lbl.selectyear']}" itemValue="" />
+																		<f:selectItems value="#{complaintSummaryBean.dealYearList}" var="c" itemLabel="#{c.financialYear}" itemValue="#{c.financialYear}" />
+																		<p:ajax event="change" update="dealDocYr,msgdealDocYr" />
+																	</p:selectOneMenu>
+																</p:column>
+																<p:column style="width:50% !important; padding:0px 13px 0px 0px !important;">
+																<p:message for="dealDocNo" display="text" id="msgdealDocNo" />
+																	<p:inputText id="dealDocNo" value="#{complaintSummaryBean.remitdealReference}" required="true" validatorMessage="Please Enter Positive Number Only"  requiredMessage="Please Enter Document Number" tabindex="2">
+																	
+																	 	<f:convertNumber integerOnly="true" />
+													
+																		 <p:ajax update="dealDocNo,msgdealDocNo" /> 
+																	</p:inputText>
+																</p:column>
+															</p:row>
+														</p:panelGrid>
+													</p:panel>
+												</p:panel>
+									</p:panel>
+
+
+
+
+
+
+										<p:spacer height="5px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel style="padding-left:160px;">
+											<p:commandButton value="#{msg['lbl.search']}" action="#{complaintSummaryBean.searchComplateSummary}" process="@this" tabindex="3"/>
+											<p:commandButton value="#{msg['lbl.cancel']}" onclick="PF('search').hide();" immediate="true" tabindex="4" />
+										</p:panel>
+									</p:dialog>
+									
+									<p:panel id="firstPanel">
+										<p:spacer height="20px" />
+										<p:panel>
+											<p:dataTable id="dataTable" var="c" rows="10"
+												styleClass="mydatatableclass" value="#{complaintSummaryBean.lstOfComplaintSummaryDataTables}" paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10,15" rowIndexVar="rowIndex"
+												editable="true" editMode="cell"
+												emptyMessage="#{msg['lbl.norecordfound']}"
+												paginatorPosition="bottom">		
+												
+												<p:column style="text-align: center !important;">
+														<h:outputText value="#{rowIndex+1}" />
+													</p:column>
+																	
+
+
+												<p:column headerText="#{msg['lbl.country']} "
+													style="text-align: center !important;">													
+													<h:outputText value="#{c.countryName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.service']} "
+													style="text-align: center !important;">
+													<h:outputText value="#{c.serviceDescription}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.complainttypemaster']} "
+													style="text-align: center !important;">
+													<h:outputText value="#{c.complaintTypeDesc}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.bank']} "
+													style="text-align: center !important;">
+													<h:outputText value="#{c.bankFullName}">														
+													</h:outputText>
+												</p:column>
+
+
+												<p:column headerText="#{msg['lbl.totalcomplaints']} "
+													style="text-align: center !important;">
+													<h:outputText value="#{c.totalComplaint}" />
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.pendingcomplaints']} "
+													style="text-align: center !important;">
+													<h:outputText value="#{c.pendingComplaint}" />
+													</p:column>
+													 <p:column headerText="#{msg['lbl.status']}" 
+													style="text-align: center !important;">
+													<p:commandLink													
+													value="Go To Request"
+												action="#{complaintSummaryBean.populateComplateSummary(c)}" immediate="true"
+											ajax="false"  style="color:blue !important; text-decoration:underline !important;" />
+												
+												</p:column> -->
+											</p:dataTable>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:spacer height="10px" />
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											id="submitpanel">
+											<p:commandButton value="#{msg['lbl.refresh']}" action="#{complaintSummaryBean.refreshComplaintSummaryPage}"
+												style="margin-right:10px; " process="@this" tabindex="1" />
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{complaintSummaryBean.exitFromComplaintSummary}"
+												style="margin-right:10px; " process="@this" tabindex="2" />
+											<p:commandButton value="#{msg['lbl.remittancesearch']}" action="#{complaintSummaryBean.searchComplaintSummary}"
+												process="@this" tabindex="3" update="mainPanel" />
+										</h:panelGroup>
+									</p:panel>
+
+								</p:panel>
+
+								
+
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

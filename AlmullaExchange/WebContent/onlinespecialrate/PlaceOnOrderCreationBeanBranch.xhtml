@@ -1,0 +1,536 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script type="text/javascript" language="javascript">
+		history.pushState(null, null, 'PlaceOnOrderCreationBeanBranch.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null,
+					'PlaceOnOrderCreationBeanBranch.xhtml');
+		});
+	</script>
+	<script type="text/javascript">
+		$(document).on("keypress", ".dropdown", function(event) {
+			if (event.keyCode == 32) {
+				$('.ui-selectonemenu-trigger', this).click();
+			}
+		});
+	</script>
+</h:head>
+
+<h:body>
+
+	<f:view id="main">
+
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+
+							<h:form id="form"
+								onkeypress="if (event.keyCode == 13) { return false; }">
+								<p:focus context="country"></p:focus>
+
+								<p:dialog modal="true" showHeader="false" widgetVar="process"
+									id="process" width="300" height="60" resizable="false"
+									draggable="false" closable="false"
+									style=" border: 2px green solid !important;background-color: #FFF !important;">
+									<div
+										style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+										<p:graphicImage value="../images/processImg.gif"
+											style="float: left !important; margin-right: 24px !important; " />
+										<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+											style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+									</div>
+								</p:dialog>
+
+								<h1>
+									<h:outputText value="#{msg['lbl.placeAnOrder']}" />
+								</h1>
+
+								<p:panel styleClass="shadow" id="mainPanel">
+
+									<h3>
+										<h:outputText value="#{msg['lbl.placeAnOrder']}" />
+									</h3>
+
+									<p:dialog id="complete" widgetVar="complete" width="400"
+										modal="true" height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="success" header="#{msg['lbl.success']}"
+										closable="false" showEffect="clip" hideEffect="clip">
+										<p:outputLabel value="Place Order Successfully Submitted"
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											action="#{placeOrderCreationBean.saveOkClick1}"
+											process="@this" update="mainPanel"
+											style="margin-left: 150px !important;" />
+									</p:dialog>
+
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{placeOrderCreationBean.errorMsg}">
+									</p:confirmDialog>
+
+									<p:panel styleClass="panel_border">
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.benecountry']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgbencountryid" for="country" display="text" />												
+												<p:selectOneMenu id="country" styleClass="dropdown"
+													tabindex="0"
+													value="#{placeOrderCreationBean.beneficiaryCountryId}"
+													filterMatchMode="contains" filter="true" required="true"
+													requiredMessage="Please Select Country" disabled="#{placeOrderCreationBean.booRenderPlaceOrderFromRemit}">
+													<f:selectItem itemLabel="#{msg['lbl.selectCountry']}"
+														itemValue="" />
+													<f:selectItems value="#{placeOrderCreationBean.lstCountry}"
+														var="c"
+														itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+														itemValue="#{c.fsCountryMaster.countryId}" />
+													<p:ajax event="change" update="mainPanel,msgbencountryid"
+														listener="#{placeOrderCreationBean.populateServiceGroup}"
+														onstart="process.show();" onsuccess="process.hide();" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.customerRef']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgcustomerid" for="customerid"
+													display="text" />
+												<p:inputText id="customerid" tabindex="-1"
+													value="#{placeOrderCreationBean.customerRef} - #{placeOrderCreationBean.customerName}"
+													readonly="true" styleClass="ui-state-disabled"
+													style="font-size:11px !important;">
+													<p:ajax />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.benegroupservice']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgService" for="service" display="text" />
+												<p:selectOneMenu id="service"
+													styleClass="dropdown" filterMatchMode="contains"
+													filter="true"
+													value="#{placeOrderCreationBean.serviceGroupId}"
+													required="true" requiredMessage="Please Select Service" disabled="#{placeOrderCreationBean.booRenderPlaceOrderFromRemit}">
+													<f:selectItem itemLabel="#{msg['lbl.selectService']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{placeOrderCreationBean.allServiceList}" var="c"
+														itemLabel="#{c.populateCode} - #{c.populateName}"
+														itemValue="#{c.populateId}" />
+													<p:ajax event="change"
+														listener="#{placeOrderCreationBean.populateBeneficiary}"
+														update="msgService,mainPanel" onstart="process.show();"
+														onsuccess="process.hide();" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.beneficiary']} Name" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="beneid" display="text" id="msgbeneid" />
+												<p:selectOneMenu id="beneid" styleClass="dropdown"
+													value="#{placeOrderCreationBean.beneficiaryName}"
+													filterMatchMode="contains" filter="true"
+													label="Beneficiary" required="true"
+													requiredMessage="Please Select Beneficiary Name" disabled="#{placeOrderCreationBean.booRenderPlaceOrderFromRemit}">
+													<f:selectItem itemLabel="#{msg['lbl.selectBene']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{placeOrderCreationBean.beneficiaryList}" var="c"
+														itemLabel="#{c.populateName}"
+														itemValue="#{c.populateName}" />
+													<p:ajax update="msgbeneid,mainPanel" event="change"
+														listener="#{placeOrderCreationBean.populateBanks}"
+														onstart="process.show();" onsuccess="process.hide();" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText
+													value="#{msg['lbl.bank']} / #{msg['lbl.serviceProvider']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:column
+													style="width:100%; text-align:left;padding:0px !important;"
+													rendered="#{placeOrderCreationBean.booRenderMultipleBank}">
+													<p:message id="msgBankId" for="bank" display="text" />
+													<p:selectOneMenu id="bank" styleClass="dropdown"
+														value="#{placeOrderCreationBean.beneficiaryBankId}"
+														filter="true" required="true" filterMatchMode="contains"
+														requiredMessage="#{msg['lbl.pleaseSelectBank']}" disabled="#{placeOrderCreationBean.booRenderPlaceOrderFromRemit}">
+														<f:selectItem itemLabel="#{msg['lbl.selectbank']}"
+															itemValue="" />
+														<f:selectItems value="#{placeOrderCreationBean.lstBanks}"
+															var="c" itemLabel="#{c.code} - #{c.name}"
+															itemValue="#{c.id}" />
+														<p:ajax for="bank" update="mainPanel" event="change"
+															listener="#{placeOrderCreationBean.populateAccountNumber}"
+															onstart="process.show()" onsuccess="process.hide();"
+															process="@this" />
+													</p:selectOneMenu>
+												</p:column>
+												<p:column
+													style="width:100%; text-align:left;padding:0px !important;"
+													rendered="#{placeOrderCreationBean.booRenderSingleBank}">
+													<p:inputText
+														value="#{placeOrderCreationBean.beneficiaryBankName}" tabindex="-1"
+														styleClass="ui-state-disabled" readonly="true">
+														<p:ajax />
+													</p:inputText>
+												</p:column>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col" id="benebankId"
+											rendered="#{placeOrderCreationBean.bankingChannelProducts}">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.accountnumber']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:row>
+													<p:column
+														style="width:100%; text-align:left;padding:0px !important;"
+														rendered="#{placeOrderCreationBean.booRenderMultipleAccount}">
+														<p:message for="selectmenu" display="text" id="bankAcNo" />
+														<p:selectOneMenu id="selectmenu" styleClass="dropdown"
+															value="#{placeOrderCreationBean.beneficiaryAccountSeqId}"
+															filter="true" filterMatchMode="contains" required="true"
+															requiredMessage="Please Select Account Number" disabled="#{placeOrderCreationBean.booRenderPlaceOrderFromRemit}">
+															<f:selectItem
+																itemLabel="#{msg['lbl.selectaccountnumber']}"
+																itemValue="" />
+															<f:selectItems
+																value="#{placeOrderCreationBean.lstAccountNumber}"
+																var="c" itemLabel="#{c.populateCode}"
+																itemValue="#{c.populateId}" />
+															<p:ajax update="mainPanel"
+																listener="#{placeOrderCreationBean.populateCurrency}"
+																onstart="process.show()" onsuccess="process.hide();" />
+														</p:selectOneMenu>
+													</p:column>
+													<p:column
+														style="width:100%; text-align:left;padding:0px !important;"
+														rendered="#{placeOrderCreationBean.booRenderSingleAccount}">
+														<p:inputText
+															value="#{placeOrderCreationBean.beneficiaryAccountNumber}" tabindex="-1"
+															styleClass="ui-state-disabled" readonly="true">
+															<p:ajax />
+														</p:inputText>
+													</p:column>
+												</p:row>
+											</p:panel>
+										</p:panel>
+
+										<p:panel
+											rendered="#{!placeOrderCreationBean.bankingChannelProducts}">
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.agentMaster']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:column
+														style="width:100%; text-align:left;padding:0px !important;"
+														rendered="#{placeOrderCreationBean.booRenderMultipleAgentBank}">
+														<p:message id="msgAgentBankId" for="agentbank"
+															display="text" />
+														<p:selectOneMenu id="agentbank" styleClass="dropdown"
+															value="#{placeOrderCreationBean.beneficiaryAgentBankId}"
+															filter="true" required="true" filterMatchMode="contains"
+															requiredMessage="#{msg['lbl.pleaseSelectBank']}" disabled="#{placeOrderCreationBean.booRenderPlaceOrderFromRemit}">
+															<f:selectItem itemLabel="#{msg['lbl.selectbank']}"
+																itemValue="" />
+															<f:selectItems
+																value="#{placeOrderCreationBean.lstAgentBanks}" var="c"
+																itemLabel="#{c.code} - #{c.name}" itemValue="#{c.id}" />
+															<p:ajax for="agentbank" update="mainPanel" event="change"
+																listener="#{placeOrderCreationBean.populateAgentsBranchforCash}"
+																onstart="process.show()" onsuccess="process.hide();"
+																process="@this" />
+														</p:selectOneMenu>
+													</p:column>
+													<p:column
+														style="width:100%; text-align:left;padding:0px !important;"
+														rendered="#{placeOrderCreationBean.booRenderSingleAgentBank}">
+														<p:inputText
+															value="#{placeOrderCreationBean.beneficiaryAgentBankName}" tabindex="-1"
+															styleClass="ui-state-disabled" readonly="true">
+															<p:ajax />
+														</p:inputText>
+													</p:column>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.agentBranch']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:column
+														style="width:100%; text-align:left;padding:0px !important;"
+														rendered="#{placeOrderCreationBean.booRenderMultipleAgentBankBranch}">
+														<p:message id="msgAgentBranchId" for="agentbranch"
+															display="text" />
+														<p:selectOneMenu id="agentbranch" styleClass="dropdown"
+															value="#{placeOrderCreationBean.beneficiaryAgentBankBranchId}"
+															filter="true" required="true" filterMatchMode="contains"
+															requiredMessage="#{msg['lbl.pleaseSelectBank']}" disabled="#{placeOrderCreationBean.booRenderPlaceOrderFromRemit}">
+															<f:selectItem itemLabel="#{msg['lbl.selectbank']}"
+																itemValue="" />
+															<f:selectItems
+																value="#{placeOrderCreationBean.lstAgentBankBranch}"
+																var="c" itemLabel="#{c.code} - #{c.name}"
+																itemValue="#{c.id}" />
+															<p:ajax for="agentbranch" update="mainPanel"
+																event="change"
+																listener="#{placeOrderCreationBean.populateCurrency}"
+																onstart="process.show()" onsuccess="process.hide();"
+																process="@this" />
+														</p:selectOneMenu>
+													</p:column>
+													<p:column
+														style="width:100%; text-align:left;padding:0px !important;"
+														rendered="#{placeOrderCreationBean.booRenderSingleAgentBankBranch}">
+														<p:inputText
+															value="#{placeOrderCreationBean.beneficiaryAgentBankBranchName}" tabindex="-1"
+															styleClass="ui-state-disabled" readonly="true">
+															<p:ajax />
+														</p:inputText>
+													</p:column>
+												</p:panel>
+											</p:panel>
+
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Request #{msg['lbl.currency']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="requestCurrency" display="text"
+													id="msgRequestCurrencyId" />
+												<p:selectOneMenu id="requestCurrency"
+													styleClass="dropdown"
+													value="#{placeOrderCreationBean.requestCurrency}"
+													filterMatchMode="contains" filter="true" required="true"
+													requiredMessage="Please Select Currency">
+													<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{placeOrderCreationBean.lstRequestCurrency}"
+														var="c" itemLabel="#{c.populateName}"
+														itemValue="#{c.populateId}" />
+													<p:ajax update="msgRequestCurrencyId,destinationCurrencyId"
+														listener="#{placeOrderCreationBean.selectCurrency}" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.trnxFCAmount']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgfclocalcurrencyid" for="fclocalcurrencyid"
+													display="text" />
+												<p:inputText id="fclocalcurrencyid"
+													value="#{placeOrderCreationBean.fcOrLocalAmount}"
+													required="true" requiredMessage="Please Enter Amount"
+													maxlength="10">
+													<f:validator validatorId="allowOnlyNumber" />
+													<p:ajax event="blur" update="msgfclocalcurrencyid" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.valuedate']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="valueDate" display="text" id="msgValueDate" />
+												<p:calendar id="valueDate"
+													value="#{placeOrderCreationBean.valueDate}" mode="popup"
+													pattern="dd/MM/yyyy"
+													mindate="#{placeOrderCreationBean.effectiveMinDate}"
+													navigator="true" readonlyInput="true" required="true"
+													requiredMessage="Enter Value Date">
+													<p:ajax event="dateSelect" update="msgValueDate" />
+												</p:calendar>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText
+													value="#{msg['lbl.destination']} #{msg['lbl.currency']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="destinationCurrencyId" display="text"
+													id="msgDestinationCurrency" />
+												<p:selectOneMenu id="destinationCurrencyId"
+													styleClass="dropdown"
+													value="#{placeOrderCreationBean.destinationCurrency}"
+													filterMatchMode="contains" filter="true" required="true"
+													requiredMessage="Please Select Currency"
+													disabled="#{placeOrderCreationBean.enableDesCurrency}">
+													<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{placeOrderCreationBean.lstDestinationCurrency}"
+														var="c" itemLabel="#{c.populateName}"
+														itemValue="#{c.populateId}" />
+													<p:ajax update="msgDestinationCurrency" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Area" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="areaId" display="text" id="msgareaId" />
+												<p:selectOneMenu id="areaId"
+													styleClass="dropdown" filterMatchMode="contains"
+													filter="true" value="#{placeOrderCreationBean.areaName}">
+													<f:selectItem itemLabel=" -- Please Select Branch -- "
+														itemValue="" />
+													<f:selectItems
+														value="#{placeOrderCreationBean.lstViewArea}" var="c"
+														itemLabel="#{c.areaDesc}" itemValue="#{c.areaNo}" />
+													<p:ajax event="change" update="msgareaId"
+														onstart="process.show()" onsuccess="process.hide();" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										<!-- <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.remarks']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgremarks" for="remarks"
+													display="text" />
+												<p:inputText id="remarks"
+													value="#{placeOrderCreationBean.remarks}"
+													required="false" requiredMessage="Please Enter Amount"
+													maxlength="10">
+													<p:ajax update="msgremarks" />
+												</p:inputText>
+											</p:panel>
+										</p:panel> -->
+
+										<p:spacer height="10px" />
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h:panelGroup layout="block" styleClass="shadow_button">
+
+											<p:commandButton value="#{msg['lbl.save']}"
+												action="#{placeOrderCreationBean.saveRecord}"
+												update="mainPanel,complete" style="margin-right:10px;"
+												onstart="process.show();"
+												onsuccess="process.hide();" />
+
+											<p:commandButton id="clear" value="#{msg['lbl.clear']}"
+												action="#{placeOrderCreationBean.clearAll}"
+												style="margin-right:10px;" update="mainPanel"
+												process="@this" onstart="process.show();"
+												onsuccess="process.hide();">
+												<p:resetInput target="@form" />
+											</p:commandButton>
+
+											<p:commandButton value="#{msg['lbl.back']}"
+												action="#{placeOrderCreationBean.backToFirst}"
+												process="@this" style="margin-right:10px;" onstart="process.show();"
+												onsuccess="process.hide();"/>
+
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{placeOrderCreationBean.exitBranch}"
+												process="@this" onstart="process.show();"
+												onsuccess="process.hide();"/>
+
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+
+									</p:panel>
+
+									<h:panelGroup layout="block" class="clearfix" />
+									<p:panel styleClass="left_col">
+										<h:outputText value=" #{msg['lbl.*filedsAreMandatory']}"
+											style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+									</p:panel>
+								</p:panel>
+								<h:panelGroup layout="block" class="clearfix" />
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

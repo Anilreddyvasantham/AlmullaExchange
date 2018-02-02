@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+
+		 history.pushState(null, null, 'bankexternalreferencedetailsactivatedeactvate.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'bankexternalreferencedetailsactivatedeactvate.xhtml');
+		    });
+	</script>
+</h:head>
+
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<h:form id="form">
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;">
+					<!-- <ui:include
+							src="../common/fxdeal_menu.xhtml"></ui:include> -->
+							<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+							</td>
+	
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle"
+										src="../images/toggle_plus.png" alt=""
+										onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+								<h1>
+									<h:outputText value="#{msg['lbl.bankExternalReference']}" />
+								</h1>
+	
+	
+								<p:panel styleClass="shadow" id="mainPanel" 	>
+								
+								<!-- <p:confirmDialog id="nobranchdetails" widgetVar="nobranchdetails"
+									width="350" height="17" resizable="false"
+									style=" border:2px solid #007f30 !important; padding:0px !important;  color:#007f30 !important; background:url('../images/warning.png') 10px 43px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true"
+									message="#{msg['lbl.nobranchdetailsavailableforthisrecord']}">
+									
+								</p:confirmDialog> -->
+								
+								<p:dialog id="nobranchdetails" widgetVar="nobranchdetails" width="310" height="70" showHeader="false" resizable="false" style=" border:2px solid green !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+				                      showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"  >
+							            <p:outputLabel value="#{msg['lbl.nobranchdetailsavailableforthisrecord']}"/><br/>
+							            <p:spacer width="15px" />
+							            <p:commandButton value="#{msg['lbl.ok']}" actionListener="#{bankExternalReferenceBean.redirctToNoRec}" process="@this"/>          
+							</p:dialog>	
+	
+								<p:dialog id="pending" widgetVar="pending"
+										width="400" height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.warningDailog']}" closable="false"
+										showEffect="clip" hideEffect="clip" modal="true">
+										<p:outputLabel
+											value="#{msg['lbl.plsApproveRecord']}"
+											 style="text-align: center; font-size:15px !important;"  />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											onclick="PF('pending').hide();" immediate="true"
+											style="margin-left: 150px !important;" />
+								</p:dialog>
+								<p:dialog id="activateRecord" widgetVar="activateRecord" width="400" height="80" resizable="false" style="background-color: white !important;" styleClass="warning" header="#{msg['lbl.activateRecrd']}" closable="false" showEffect="clip" hideEffect="clip" modal="true">
+											<p:outputLabel value="#{msg['lbl.doyouactivaterecord']}" style="text-align: center; font-size:15px !important;" /><br />
+											<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{bankExternalReferenceBean.activateRecord}" process="@this" oncomplete="PF('activateRecord').hide();" update="mainPanel" style="margin-left: 150px !important;" />
+											<p:commandButton value="#{msg['lbl.cancel']}" onclick="PF('activateRecord').hide();" immediate="true" style="margin-left:10px;" />
+										</p:dialog>	
+										<p:dialog id="permanentDelete" widgetVar="permanentDelete"
+									  showHeader="false" resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel
+											value="#{msg['lbl.doyouwanttodeleterecordperminently']}" />
+										<p:spacer height="10px" />
+										<p:panel>
+											<p:commandButton value="#{msg['lbl.ok']}"
+												style="margin-right:10px; "
+												actionListener="#{bankExternalReferenceBean.confirmPermanentDeleteBranchDetails}"
+												process="@this" oncomplete="PF('permanentDelete').hide();"
+												  />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												onclick="PF('permanentDelete').hide();" immediate="true" />
+										</p:panel>
+									</p:dialog>
+										
+										
+											<p:dialog id="remarksDetails" widgetVar="remarksDetails" width="480" resizable="false" style="background-color: white !important;" styleClass="info" header="Remarks" closable="false" showEffect="clip" hideEffect="clip" modal="true">
+                             		<p:panel>
+                             		<table>
+                             		<tr>
+                             		<td> <h:outputText value="#{msg['lbl.approvedDate']}" /></td>
+                             		<td><h:outputText value="#{bankExternalReferenceBean.approvedDate}" style="color:red !important;"/> </td>
+                             		</tr>
+                             		<tr>
+                             		<td> <h:outputText value="#{msg['lbl.approvedBy']}" /> </td>
+                             		<td>	<h:outputText  value="#{bankExternalReferenceBean.approvedBy}"  style="color:red !important;"/> </td>
+                             		</tr>
+                             		</table>
+                             		</p:panel>
+                             		<p:spacer height="10px"/>
+                             		<p:panel>
+                             		<h:outputText value="#{msg['lbl.enterremarks']}" /><h:outputText value="*" style="color:red !important;" />
+                             		</p:panel>
+                             		<p:spacer height="5px"/>
+                             		<p:panel>
+                             		<h:inputTextarea id="remarksId" value="#{bankExternalReferenceBean.remarks}" validatorMessage="Maximum 255 charectors allowed" >
+                                           <f:validateLength maximum="255"/>
+                                            <p:ajax/>
+                                            
+                                     </h:inputTextarea>
+                                    </p:panel>
+                                    <p:spacer height="5px"/>
+                                   	<p:panel style="padding-left:160px;">
+                                        <p:commandButton value="#{msg['lbl.ok']}" actionListener="#{bankExternalReferenceBean.clickOkRemarks}" onclick="PF('remarksDetails').hide()"   process="@this" /> 
+            							<p:commandButton value="#{msg['lbl.cancel']}" actionListener="#{bankExternalReferenceBean.cancelRemarks}" process="@this"/> 
+                             </p:panel>
+                               </p:dialog>
+										
+								
+								
+								
+								<p:dataTable id="viewDataTable" styleClass="mydatatableclass"
+											value="#{bankExternalReferenceBean.popupinDataTable}" var="d" 
+											rowIndexVar="rowIndex" editable="true" editMode="cell" paginator="true" rows="5"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="10,5" 
+											emptyMessage="#{msg['lbl.norecordfound']}">
+											<p:column headerText="S.No" style="width:50px;">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.branchcode']}"
+												>
+												<h:outputText value="#{d.branchCode}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.branch']}"
+												>
+												<h:outputText value="#{d.branchDescription}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.branchExternalId']}">
+												<p:inputText value="#{d.branchExternalId}" readonly="true" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.flexFiled1']}"
+												sortBy="#{d.flexField1}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.flexField1}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.flexFiled2']}"
+												sortBy="#{d.flexField2}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.flexField2}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.flexFiled3']}"
+												sortBy="#{d.flexField3}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.flexField3}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.activatedeactivate']}"
+													style="text-align:center !important;">
+													<p:commandLink
+														action="#{bankExternalReferenceBean.checkStatusType(d)}"
+														value="#{d.dynamicLabelActivateDeactivate}"
+														style="color:blue !important; text-decoration:underline !important;" update="viewDataTable,:form:mainPanel"
+														immediate="true" process="@this" onclick="process.show();"
+														oncomplete="process.hide();" />
+												</p:column>
+											
+
+											
+										</p:dataTable>
+				 
+				 	<h:panelGroup layout="block" styleClass="shadow_button">
+				 	
+				 	<p:commandButton value="#{msg['lbl.back']}"
+												action="#{bankExternalReferenceBean.exitFromDetailsActivateDectivate}"
+												update="mainPanel" immediate="true"  	onstart="process.show();" onsuccess="process.hide();"/>
+				 	</h:panelGroup>
+								 
+									<div class="clearfix"></div>
+										</p:panel>
+									<div class="clearfix"></div>
+				 			 
+							 <p:dialog modal="true" showHeader="true" header="Please wait.."
+										widgetVar="process" id="process" width="300" height="50"
+										resizable="false" draggable="false" closable="false"
+										style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+										<div style="text-align: center;">
+											<p:graphicImage value="../images/preloader.gif" />
+										</div>
+									</p:dialog>
+							</h:panelGroup>
+							<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+						</h:panelGroup></td>
+				</tr>
+			</table>
+		</h:form>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

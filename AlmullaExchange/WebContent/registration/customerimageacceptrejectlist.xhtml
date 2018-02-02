@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript">
+		 history.pushState(null, null, 'customerimageacceptrejectlist.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'customerimageacceptrejectlist.xhtml');
+		    });
+		    
+
+	</script>
+
+</h:head>
+
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="mainform">
+
+								<p:dialog modal="true" showHeader="true"
+									header="#{msg['lbl.pleasewait']}" widgetVar="process"
+									id="process" width="300" height="50" resizable="false"
+									draggable="false" closable="false"
+									style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+									<div style="text-align: center;">
+										<p:graphicImage value="../images/preloader.gif" />
+									</div>
+								</p:dialog>
+
+
+								<p:dialog id="norecord" widgetVar="norecord" width="260"
+									height="70" showHeader="false" resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+
+									<p:outputLabel value="#{msg['lbl.norecordfound']}" />
+									<br />
+
+									<p:commandButton value="#{msg['lbl.ok']}"
+										oncomplete="norecord.hide()" />
+								</p:dialog>
+
+								<p:confirmDialog id="pleaseEnterAnyOne"
+									widgetVar="pleaseEnterAnyOne" width="330" height="17"
+									resizable="false" style="background-color: white !important;"
+									header="Warning Dailog" styleClass="warning" showEffect="clip"
+									hideEffect="clip" closeOnEscape="true" closable="true"
+									message="Please Enter atleast one field to Search!">
+								</p:confirmDialog>
+
+
+
+
+								<h5>
+									<h:outputText value="#{msg['lbl.imageverificationlog']}" />
+								</h5>
+								<p:panel styleClass="shadow" id="mainPanel">
+
+
+
+
+									<h2>
+										<h:outputText value="#{msg['lbl.customerImageVerification']}" />
+
+									</h2>
+
+									<p:panel styleClass="right_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['lbl.scandate']} *" />
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+
+											<p:calendar id="dateofexpiry" styleClass="dropdown"
+												tabindex="1" size="24" required="true"
+												requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.scandate']}"
+												value="#{custImageVerification.creationDateLog}"
+												mode="popup" yearRange="c-50:c+50" pattern="dd/MM/yyyy"
+												navigator="true">
+												<p:ajax event="dateSelect" update="mainPanel" />
+											</p:calendar>
+										</p:panel>
+									</p:panel>
+
+									<p:panel styleClass="right_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="Customer Id" />
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputText id="cusId"
+												value="#{custImageVerification.cusId}">
+												<p:ajax event="blur" update="cusId"></p:ajax>
+											</p:inputText>
+										</p:panel>
+									</p:panel>
+
+									<h:panelGroup layout="block" class="clearfix" />
+
+									<p:panel styleClass="right_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="Id Number" />
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputText id="idNum"
+												onchange="this.value = this.value.trim()"
+												value="#{custImageVerification.idNum}">
+												<p:ajax event="blur" update="idNum"></p:ajax>
+											</p:inputText>
+										</p:panel>
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+
+									<h:panelGroup layout="block" styleClass="shadow_button">
+										<p:commandButton value="Search" onstart="process.show();"
+											action="#{custImageVerification.searchLog}"
+											onsuccess="process.hide();" update="mainPanel"
+											immediate="true">
+										</p:commandButton>
+
+										<p:commandButton value="Reset" onstart="process.show();"
+											action="#{custImageVerification.reset}" process="@this"
+											onsuccess="process.hide();" update="mainPanel"
+											immediate="true">
+										</p:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup layout="block" class="clearfix" />
+
+									<p:panel styleClass="panel_border">
+
+										<p:panel id="headerPanel">
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel id="datatTablePanel">
+												<p:dataTable id="dataTableId" var="c" sortMode="multiple"
+													styleClass="mydatatableclass"
+													rows="10" paginator="true"
+													paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+													rowsPerPageTemplate="10,20,30"
+													value="#{custImageVerification.verificationList}"
+													rowIndexVar="rowIndex"
+													emptyMessage="#{msg['lbl.noRecordFound']}"
+													rowStyleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+													paginatorPosition="bottom">
+
+													<p:column headerText="#{msg['lbl.dslNo']}"
+														style="width:30px;"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{rowIndex+1}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.customername']}"
+														sortBy="#{c.customerName}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{c.customerName}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.CustomerLocalName']}"
+														sortBy="#{c.customerNameLocal}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{c.customerNameLocal}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.customerRef']}"
+														filterMatchMode="contains"
+														filterBy="#{c.customerReference}"
+														sortBy="#{c.customerReference}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{c.customerReference}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.idtype']}"
+														sortBy="#{c.idNumber}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{c.idTypeName}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.idNumber']}"
+														sortBy="#{c.idNumber}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+														filterMatchMode="contains" filterBy="#{c.idNumber}">
+														<h:outputText value="#{c.idNumber}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.dateofexpiry']}"
+														sortBy="#{c.idExpireyDate}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{c.idExpireyDate}">
+															<f:convertDateTime pattern="dd/MM/yyyy" />
+														</h:outputText>
+													</p:column>
+
+
+													<p:column headerText="#{msg['lbl.username']}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{c.createdBy}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.scandate']}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{c.createdDate}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.branchname']}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{c.branchName}" />
+													</p:column>
+
+
+													<p:column headerText="#{msg['lbl.verifiedbycompliance']}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{c.verifiedBy}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.verifieddatecompliance']}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{c.verifiedDate}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.compliancestatus']}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{c.complianceStatus}" />
+													</p:column>
+
+
+												</p:dataTable>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+
+
+											<div class="clearfix"></div>
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="#{msg['lbl.exit']}" tabindex="2"
+													onstart="process.show();" onsuccess="process.hide();"
+													action="#{custImageVerification.exit}"
+													update=":mainform:mainPanel" style="margin-right:10px; "
+													immediate="true">
+												</p:commandButton>
+
+
+											</h:panelGroup>
+
+
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+									</p:panel>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

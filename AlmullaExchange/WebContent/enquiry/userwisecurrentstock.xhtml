@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+</h:head>
+<h:body>
+	<f:view>
+	
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="stockform">
+								<h1>
+									<h:outputText value="#{msg['stock.header']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h2>
+										<h:outputText value="#{msg['stock.header']}" />
+									</h2>
+								</p:panel>
+								
+								
+								<p:confirmDialog id="error" widgetVar="error" visible="#{userStock.booVisible}" resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" update="@all"
+									message="#{userStock.errorMessage}">
+									</p:confirmDialog>
+
+
+								<p:dialog modal="true" showHeader="false" widgetVar="process" id="process" width="300" height="60" resizable="false" draggable="false" closable="false" style=" border: 2px green solid !important;background-color: #FFF !important;">
+									<div style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+										<p:graphicImage value="../images/processImg.gif" style="float: left !important; margin-right: 24px !important; " />
+										<p:outputLabel value="Please wait ........" style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+									</div>
+								</p:dialog>
+
+								<p:panel styleClass="panel_border" >
+								<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['stock.location']}" /><h:outputText value="*" style="color:red;font-weight:bold;" />	
+											</p:panel>
+											<p:panel styleClass="inner_right_col"	>
+											
+														<p:message for="location" display="text" id="msgLocation"/>
+												<p:selectOneMenu id="location" value="#{userStock.countryBranchId}" filter="true" filterMatchMode="contains"  required="true" requiredMessage="Please Select Location">
+													<f:selectItem itemLabel="--Select Location--"/>
+													<f:selectItems value="#{userStock.lstCountryBranchForLocation}" var="c"  itemLabel="#{c.branchId} - #{c.branchName}" itemValue="#{c.countryBranchId}"/>
+													<p:ajax update="msgCashierid,mainPanel,cashierid,error" listener="#{userStock.getAllCasheirs}" event="change" onstart="process.show();" onsuccess="process.hide();"/>
+												</p:selectOneMenu>
+												</p:panel>												
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['stock.user']}" /><h:outputText value="*" style="color:red;font-weight:bold;" />	
+												</p:panel>
+												<p:panel styleClass="inner_right_col"	>
+													<p:message for="cashierid" display="text" id="msgCashierid"/>
+													<p:selectOneMenu id="cashierid" value="#{userStock.username}" filter="true" filterMatchMode="contains"  required="true" requiredMessage="Please select user" >
+														<f:selectItem itemLabel="--Select User--"/>
+														<f:selectItems value="#{userStock.cashierList}" var="c"  itemLabel="#{c.employeeNumber} - #{c.employeeName}" itemValue="#{c.userName}"/>
+														<p:ajax update="msgCashierid,mainPanel,cashierid,location,currencyid,error" listener="#{userStock.getUserCurrency}" event="change" onstart="process.show();" onsuccess="process.hide();"/> 
+													</p:selectOneMenu>
+												</p:panel>												
+											</p:panel>
+																						
+											<div class="clearfix"></div>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['stock.currency']}" /><h:outputText value="*" style="color:red;font-weight:bold;" />	
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="currencyid" display="text" id="msgCurrencyid"/>
+													<p:selectOneMenu id="currencyid" value="#{userStock.currencyId}" filter="true" filterMatchMode="contains"  required="true" requiredMessage="Please select currency" >
+														<f:selectItem itemLabel="--Select Currency--"/>
+														<f:selectItems value="#{userStock.currencyList}" var="c"  itemLabel="#{c.currencyCode} - #{c.currencyDecs}" itemValue="#{c.currencyId}"/> 
+														<p:ajax update="msgCashierid,mainPanel,cashierid,location,firstPanel,exit,error" event="change" listener="#{userStock.getDenominationListByCurrency}" onstart="process.show();" onsuccess="process.hide();"/> 
+													</p:selectOneMenu>
+												</p:panel>												
+											</p:panel>
+											
+									<div class="clearfix"></div>
+									
+									<p:panel id="firstPanel" >
+									
+									<p:spacer height="5px" />
+									<p:panel>
+									<h2>
+									<h:outputText value="#{msg['stock.dtheader']}" />
+									</h2>
+										<p:dataTable id="dataTable" var="c" rows="10" 
+											styleClass="mydatatableclass" value="#{userStock.denominationList}" paginator="false"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="5,10,15" rowIndexVar="rowIndex"
+											editable="true" editMode="cell"
+											emptyMessage="#{msg['lbl.norecordfound']}"
+											paginatorPosition="bottom">		
+											
+											<p:column headerText="S.NO" style="text-align: center !important;">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+											
+											<p:column headerText="#{msg['stock.denomination']} "
+												style="text-align: center !important;" sortBy="#{c.denominationDesc}">	
+												<h:outputText value="#{c.denominationDesc}" />												
+											</p:column>
+
+											<p:column headerText="#{msg['stock.open']}" 
+												style="text-align: center !important;">	
+												<h:outputText value="#{c.openQuantity}" />												
+											</p:column>
+											
+											<p:column headerText="#{msg['stock.purchase']}" 
+												style="text-align: center !important;">	
+												<h:outputText value="#{c.purchaseQuantity}" />												
+											</p:column>
+											<p:column headerText="#{msg['stock.sale']}" 
+												style="text-align: center !important;">	
+												<h:outputText value="#{c.saleQuantity}" />												
+											</p:column>
+											<p:column headerText="#{msg['stock.transfer']}" 
+												style="text-align: center !important;">	
+												<h:outputText value="#{c.transactionQuantity}" />												
+											</p:column>
+											<p:column headerText="#{msg['stock.received']}" 
+												style="text-align: center !important;">
+												<h:outputText value="#{c.receivedQuantity}" />												
+											</p:column>	
+											
+											<p:column headerText="#{msg['stock.close']}" 
+												style="text-align: center !important;">
+												<h:outputText value="#{c.closureQuantity}" />													
+											</p:column>
+											<p:column headerText="#{msg['stock.fcamount']}" 
+												style="text-align: center !important;">	
+												<h:outputText value="#{c.fcAmount}" >												
+												</h:outputText>												
+											</p:column>											
+											<p:columnGroup type="footer">
+									            <p:row>
+									                <p:column colspan="8" style="text-align:right" footerText="#{msg['stock.total']}"  />
+									                <p:column footerText="#{userStock.totalFcAmount}" />
+									            </p:row>
+									        </p:columnGroup>
+
+										</p:dataTable>
+									</p:panel>
+									
+									<div class="clearfix"></div>
+									
+									<h:panelGroup layout="block" id="exit" styleClass="shadow_button" >							
+										  <p:commandButton value="#{msg['lbl.exit']}"  action="#{userStock.exit}" style="margin-right:10px;"/>											
+									      <div class="clearfix"></div>
+									</h:panelGroup>
+								</p:panel>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript">
+		var baseUri = makeUri();
+		history.pushState(null, null, 'ProductGroupingSetUp.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'ProductGroupingSetUp.xhtml');
+		});
+
+		$(document).ready(function() {
+			$(window).scroll(function() {
+				if ($(this).scrollTop() > 100) {
+					$('#goTop').stop().animate({
+						bottom : '30px'
+					}, 300);
+				} else {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				}
+			});
+			$('#goTop').click(function() {
+				$('html, body').stop().animate({
+					scrollTop : 0
+				}, 500, function() {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				});
+			});
+		});
+
+		function showStatus() {
+			statusDialog.show();
+		}
+
+		function hideStatus() {
+			statusDialog.hide();
+		}
+	</script>
+	<style>
+.centeralign {
+	margin-left: auto;
+	margin-right: auto;
+	width: 6em
+}
+
+.buttonStyle:hover {
+	padding: 4px 10px 4px 7px !important;
+	border-top: 2px solid rgb(18, 139, 242) !important;
+	border-right: 2px solid rgb(18, 139, 242) !important;
+	border-bottom: 2px solid rgb(18, 139, 242) !important;
+	border-left: 2px solid rgb(18, 139, 242) !important;
+	border-radius: 4px !important;
+	background-color: white !important;
+	font-size: 18px !important;
+	font-weight: bold !important;
+	floar: right;
+}
+</style>
+</h:head>
+
+<h:body>
+
+	<f:view>
+
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+
+							<h:form id="form1"
+								onkeypress="if (event.keyCode == 13) { return false; }">
+
+								<h1>
+									<h:outputText value="Product Grouping Setup" />
+								</h1>
+
+								<p:dialog modal="true" showHeader="false" widgetVar="process"
+									id="process" width="300" height="60" resizable="false"
+									draggable="false" closable="false"
+									style=" border: 2px green solid !important;background-color: #FFF !important;">
+									<div
+										style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+										<p:graphicImage value="../images/processImg.gif"
+											style="float: left !important; margin-right: 24px !important; " />
+										<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+											style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+									</div>
+								</p:dialog>
+
+								<p:dialog id="complete" widgetVar="complete" width="270"
+									height="70" showHeader="false" resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+									<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} " />
+									<br />
+									<p:spacer width="15px" />
+									<p:commandButton value="#{msg['lbl.ok']}" update="mainPanel"
+										actionListener="#{productGroupingSetupBean.clickOnOK}"
+										process="@this" oncomplete="PF('complete').hide();" />
+								</p:dialog>
+
+								<p:dialog id="activateDeactive" widgetVar="activateDeactive"
+									width="270" height="70" showHeader="false" resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+									<p:outputLabel value="#{productGroupingSetupBean.alertMsg}" />
+									<br />
+									<p:spacer width="15px" />
+									<p:commandButton value="#{msg['lbl.ok']}" process="@this"
+										oncomplete="PF('activateDeactive').hide();" />
+								</p:dialog>
+
+								<p:confirmDialog id="errormsg" widgetVar="errormsg"
+									showHeader="false" resizable="false" header="Warning Message"
+									styleClass="warning"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="explode" hideEffect="explode"
+									message="#{productGroupingSetupBean.errorMsg}">
+								</p:confirmDialog>
+
+								<p:panel id="mainPanel" styleClass="shadow"
+									style="margin: 20px 10px !important; background-color:#FFF !important;">
+
+									<h2>
+										<h:outputText value="Product Group Setup" />
+									</h2>
+
+									<p:panel styleClass="panel_border"
+										style="padding:10px 10px 10px 10px !important;">
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Bank" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="bank" display="text" id="msgbank" />
+												<p:selectOneMenu id="bank"
+													value="#{productGroupingSetupBean.bankId}" filter="true"
+													filterMatchMode="contains" required="true"
+													requiredMessage="Please Select Bank">
+													<f:selectItem itemLabel="#{msg['lbl.selectbank']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{productGroupingSetupBean.lstBankList}" var="c"
+														itemLabel="#{c.bankCode} - #{c.bankFullName}"
+														itemValue="#{c.bankId}" />
+													<p:ajax update="bank,productDetails" event="change"
+														listener="#{productGroupingSetupBean.viewBankCurrency}" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Currency" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="currency" display="text" id="currencymsg" />
+												<p:selectOneMenu id="currency"
+													value="#{productGroupingSetupBean.currencyId}"
+													filterMatchMode="contains" filter="true" required="true"
+													requiredMessage="Please Select Currency">
+													<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{productGroupingSetupBean.lstCurrencyMaster}"
+														var="c" itemLabel="#{c.currencyCode} - #{c.currencyName}"
+														itemValue="#{c.currencyId}" />
+													<p:ajax update="currencymsg,productDetails" event="change"
+														listener="#{productGroupingSetupBean.viewBankCurrency}" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Product Description" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText
+													value="#{productGroupingSetupBean.productgroupdesc}"
+													required="true"
+													requiredMessage="Please Enter Product Group" />
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.accountno']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText value="#{productGroupingSetupBean.accountNo}"
+													required="true"
+													requiredMessage="Please Enter Account Number" />
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Product Mode" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="transferMode" display="text" id="msgTransferMode" />
+												<p:selectOneMenu id="transferMode"
+													value="#{productGroupingSetupBean.productMode}" required="true"
+													requiredMessage="Please Select Product Mode"
+													filter="true" filterMatchMode="contains">
+													<f:selectItem itemLabel=" -- #{msg['lbl.transfermode']} --"
+														itemValue="" />
+													<f:selectItems value="#{productGroupingSetupBean.transferModeList}"
+														var="c" itemLabel="#{c.transferMode} - #{c.transferModeDesc}"
+														itemValue="#{c.transferMode}" />
+													<p:ajax update="msgTransferMode" onstart="process.show();" event="change"
+														onsuccess="process.hide();" listener="#{productGroupingSetupBean.fetchProductModeDesc}" />
+												</p:selectOneMenu>
+
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Transaction Limit" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText
+													value="#{productGroupingSetupBean.transactionLimit}" />
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Bank Limit" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText value="#{productGroupingSetupBean.bankLimit}" />
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup class="clearfix" />
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:spacer height="20px" />
+
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											id="goexitId" style="color:green;">
+											<p:commandButton value="#{msg['lbl.add']}"
+												action="#{productGroupingSetupBean.addRecordToDataTable}"
+												update="mainPanel" onstart="process.show();"
+												onsuccess="process.hide();" style="margin-right:10px;" />
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{productGroupingSetupBean.exit}" update="mainPanel"
+												onstart="process.show();" onsuccess="process.hide();"
+												immediate="true" />
+										</h:panelGroup>
+
+										<h:panelGroup class="clearfix" />
+
+										<p:dataTable id="productDetails" rowIndexVar="rowIndex"
+											styleClass="mydatatableclass"
+											value="#{productGroupingSetupBean.lstProductGroupingDataTable}"
+											var="c" rows="5" paginator="true"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="5,10,15" paginatorPosition="bottom">
+
+											<p:column headerText="#{msg['lbl.sNo']}" style="width:30px;">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+											
+											<p:column headerText="Product Group">
+												<h:outputText value="#{c.productGroupSerial}" />
+											</p:column>
+
+											<p:column headerText="Product Description">
+												<h:outputText value="#{c.productgroupdesc}" />
+											</p:column>
+
+											<p:column headerText="Account No">
+												<h:outputText value="#{c.accountNo}" />
+											</p:column>
+
+											<p:column headerText="Product Mode">
+												<h:outputText value="#{c.productModeDesc}" />
+											</p:column>
+
+											<p:column headerText="Transaction Limit">
+												<h:outputText value="#{c.transactionLimit}" />
+											</p:column>
+
+											<p:column headerText="Bank Limit">
+												<h:outputText value="#{c.bankLimit}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.edit']}">
+												<p:commandButton id="imgEdit" styleClass="edit" value=""
+													action="#{productGroupingSetupBean.editDataTableRecord(c)}"
+													update=":form1:mainPanel,productDetails" process="@this" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.active/deactive']}"
+												style="text-align:center !important;">
+												<p:commandLink
+													action="#{productGroupingSetupBean.checkStatusType(c)}"
+													value="#{c.dynamicLabelForActivateDeactivate}"
+													style="color:blue !important; text-decoration:underline !important;"
+													update=":form1:mainPanel,productDetails,:form1:activateDeactive"
+													immediate="true" process="@this" />
+											</p:column>
+
+										</p:dataTable>
+
+										<p:spacer height="20px" />
+
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											style="color:green;">
+											<p:commandButton value="#{msg['lbl.submit']}"
+												action="#{productGroupingSetupBean.saveProductGroup}"
+												update="mainPanel" onstart="process.show();"
+												onsuccess="process.hide();" style="margin-right:10px;"
+												immediate="true" />
+										</h:panelGroup>
+
+									</p:panel>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+					</h:panelGroup></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+		<a id="goTop" />
+	</f:view>
+</h:body>
+</html>

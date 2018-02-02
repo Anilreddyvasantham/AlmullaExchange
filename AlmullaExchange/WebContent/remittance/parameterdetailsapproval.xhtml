@@ -1,0 +1,658 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions">
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</h:head>
+<h:body>
+	
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;" id="HideHandle" name="HideHandle" src="../images/toggle_plus.png" alt="" onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form">
+								<p:dialog id="approve" widgetVar="approve" width="260" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip"
+									closeOnEscape="true" closable="true" modal="true">
+
+									<p:outputLabel value="Record got aapproved Successfully" />
+									<br />
+									<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{parameterDetailspprovlBean.pageNavigation}" />
+								</p:dialog>
+								<h1>
+									<h:outputText value="#{msg['lbl.parameterDetails']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+								
+								
+									<h2>
+										<h:outputText value="#{msg['lbl.parameterDetails']}" />
+									</h2>
+									
+									
+									<p:confirmDialog id="csp" widgetVar="csp" visible="#{parameterDetailspprovlBean.booVisible}" width="600" showHeader="true" resizable="false" header="Warning Message" styleClass="ui-confirmdialog-yes"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:green; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip" message="#{parameterDetailspprovlBean.errorMessage}">
+									</p:confirmDialog>
+									
+									<!-- Remarks Dailog  -->
+									<p:dialog id="remarks" widgetVar="remarks" width="550" height="205" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;" showEffect="scale" hideEffect="scale" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:panel styleClass="shadow">
+											<p:panel>
+												<h:outputText value="#{msg['lbl.activatedate']}" />
+												<h:outputText value="#{parameterDetailspprovlBean.approvedDate}" />&nbsp;&nbsp;&nbsp;
+                                        <h:outputText value="#{msg['lbl.approvedBy']}" />
+												<h:outputText value="#{parameterDetailspprovlBean.approvedBy}" />
+											</p:panel>
+											<div class="clearfix" />
+											<hr></hr>
+											<p:panel>
+												<h:outputText value="#{msg['lbl.enterremarks']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel>
+												<h:inputTextarea value="#{parameterDetailspprovlBean.remarks}" rows="5" cols="50">
+													<p:ajax />
+												</h:inputTextarea>
+											</p:panel>
+											<p:spacer width="15px" />
+											<div class="clearfix" />
+											<h:panelGroup styleClass="shadow">
+												<div class="clearfix" />
+												<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{parameterDetailspprovlBean.updateStatusoftheRecord}" process="@this" update="mainPanel" immediate="true" />
+												<p:commandButton value="#{msg['lbl.cancel']}" onclick="PF('remarks').hide()" actionListener="#{parameterDetailspprovlBean.cancelRemarks}" process="@this" update="mainPanel" immediate="true" />
+											</h:panelGroup>
+										</p:panel>
+									</p:dialog>
+									<p:panel styleClass="panel_border">
+										<p:panel id="headerPanel">
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.paramMaster']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col" id="paramMas">
+													<p:message id="msgparameterid" for="parameterid" display="text" />
+													<p:selectOneMenu id="parameterid" value="#{parameterDetailspprovlBean.parameterMasterId}" disabled="true" filterMatchMode="startsWith" filter="true" required="true" requiredMessage="Please Select Parameter Master">
+														<f:selectItem itemLabel="#{msg['lbl.selectcode']}" itemValue="" />
+														<f:selectItems value="#{parameterDetailspprovlBean.lstParameterMaster}" var="c" itemLabel="#{c.recordId}" itemValue="#{c.parameterMasterId}" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.fulldescription']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgfullid" for="fullid" display="text" />
+													<p:inputText id="fullid" value="#{parameterDetailspprovlBean.parameterFullDesc}"  readonly="true" >
+														<p:ajax update="msgfullid" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.shortdescription']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgshortid" for="shortid" display="text" />
+													<p:inputText id="shortid" value="#{parameterDetailspprovlBean.parameterShortDesc}" readonly="true">
+														<p:ajax update="msgshortid" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.arabicFullDescr']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgarfullid" for="arfullid" display="text" />
+													<p:inputText id="arfullid" value="#{parameterDetailspprovlBean.arabicFullDesc}" readonly="true"  style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;" dir="RTL">
+														<p:ajax update="msgarfullid" />
+														<f:validator validatorId="arabicValidator" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.arabicShortDesc']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgarshortid" for="arshortid" display="text" />
+													<p:inputText id="arshortid" value="#{parameterDetailspprovlBean.arabicShortDesc}" readonly="true" style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;" dir="RTL" >
+														<p:ajax update="msgarshortid" />
+														<f:validator validatorId="arabicValidator" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.parameterCode']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgparametercode" for="parametercode" display="text" />
+													<p:autoComplete id="parametercode"  value="#{parameterDetailspprovlBean.parameterCode}"  readonly="true"
+																	completeMethod="#{parameterDetailspprovlBean.autoCompleteData}" >
+													</p:autoComplete>
+												</p:panel>
+												
+												</p:panel>
+												
+												<p:panel styleClass="right_col" rendered="#{parameterDetailspprovlBean.isActive!=null}" >
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.status']}"  />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgStatus" for="isActive" display="text" />
+													<p:inputText id="isActive" readonly="true"
+														value="#{parameterDetailspprovlBean.isActive}"  >
+														<p:ajax update="msgStatus" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+												
+												
+											
+											
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailspprovlBean.NUMERIC_FIELD1}" >
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailspprovlBean.numericfieldLabel1}"  />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid1" for="numfieldid1" display="text" />
+													<p:inputText id="numfieldid1"  readonly="true"
+														value="#{parameterDetailspprovlBean.numericfield1}"  >
+														<p:ajax update="msgnumfieldid1" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailspprovlBean.NUMERIC_FIELD2}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailspprovlBean.numericfieldLabel2}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid2" for="numfieldid2" display="text" />
+													<p:inputText id="numfieldid2"  readonly="true"
+														value="#{parameterDetailspprovlBean.numericfield2}"  >
+														<p:ajax update="msgnumfieldid2" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailspprovlBean.NUMERIC_FIELD3}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailspprovlBean.numericfieldLabel3}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid3" for="numfieldid3" display="text" />
+													<p:inputText id="numfieldid3" readonly="true"
+														value="#{parameterDetailspprovlBean.numericfield3}"  >
+														<p:ajax update="msgnumfieldid3" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailspprovlBean.NUMERIC_FIELD4}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailspprovlBean.numericfieldLabel4}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid4" for="numfieldid4" display="text" />
+													<p:inputText id="numfieldid4" readonly="true"
+														value="#{parameterDetailspprovlBean.numericfield4}"  >
+														<p:ajax update="msgnumfieldid4" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailspprovlBean.NUMERIC_FIELD5}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailspprovlBean.numericfieldLabel5}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid5" for="numfieldid5" display="text" />
+													<p:inputText id="numfieldid5"  readonly="true"
+														value="#{parameterDetailspprovlBean.numericfield5}"  >
+														<p:ajax update="msgnumfieldid5" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailspprovlBean.NUMERIC_FIELD6}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailspprovlBean.numericfieldLabel6}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid6" for="numfieldid6" display="text" />
+													<p:inputText id="numfieldid6"  readonly="true"
+														value="#{parameterDetailspprovlBean.numericfield6}"  >
+														<p:ajax update="msgnumfieldid6" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailspprovlBean.NUMERIC_FIELD7}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailspprovlBean.numericfieldLabel7}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid7" for="numfieldid7" display="text" />
+													<p:inputText id="numfieldid7"  readonly="true"
+														value="#{parameterDetailspprovlBean.numericfield7}"  >
+														<p:ajax update="msgnumfieldid7" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailspprovlBean.NUMERIC_FIELD8}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailspprovlBean.numericfieldLabel8}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid8" for="numfieldid8" display="text" />
+													<p:inputText id="numfieldid8"   readonly="true"
+														value="#{parameterDetailspprovlBean.numericfield8}"  >
+														<p:ajax update="msgnumfieldid8" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailspprovlBean.NUMERIC_FIELD9}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailspprovlBean.numericfieldLabel9}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnumfieldid9" for="numfieldid9" display="text" />
+													<p:inputText id="numfieldid9"  readonly="true"
+														value="#{parameterDetailspprovlBean.numericfield9}"  >
+														<p:ajax update="msgnumfieldid9" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailspprovlBean.CHAR_FIELD1}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailspprovlBean.charfieldLabel1}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid1" for="charfieldid1" display="text" />
+													<p:inputText id="charfieldid1"  readonly="true"
+														value="#{parameterDetailspprovlBean.charfield1}"  >
+														<p:ajax update="msgcharfieldid1" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailspprovlBean.CHAR_FIELD2}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailspprovlBean.charfieldLabel2}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid2" for="charfieldid2" display="text" />
+													<p:inputText id="charfieldid2"  readonly="true"
+														value="#{parameterDetailspprovlBean.charfield2}"  >
+														<p:ajax update="msgcharfieldid2" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailspprovlBean.CHAR_FIELD3}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailspprovlBean.charfieldLabel3}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid3" for="charfieldid3" display="text" />
+													<p:inputText id="charfieldid3"  readonly="true"
+														value="#{parameterDetailspprovlBean.charfield3}"  >
+														<p:ajax update="msgcharfieldid3" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											
+												<p:panel styleClass="left_col" rendered="#{parameterDetailspprovlBean.CHAR_FIELD4}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailspprovlBean.charfieldLabel4}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid4" for="charfieldid4" display="text" />
+													<p:inputText id="charfieldid4" readonly="true"
+														value="#{parameterDetailspprovlBean.charfield4}"  >
+														<p:ajax update="msgcharfieldid4" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailspprovlBean.CHAR_FIELD5}" >
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailspprovlBean.charfieldLabel5}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid5" for="charfieldid5" display="text" />
+													<p:inputText id="charfieldid5"  readonly="true"
+														value="#{parameterDetailspprovlBean.charfield5}"  >
+														<p:ajax update="msgcharfieldid5" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailspprovlBean.CHAR_FIELD6}" >
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailspprovlBean.charfieldLabel6}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid6" for="charfieldid6" display="text" />
+													<p:inputText id="charfieldid6"  readonly="true"
+														value="#{parameterDetailspprovlBean.charfield6}"  >
+														<p:ajax update="msgcharfieldid6" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailspprovlBean.CHAR_FIELD7}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailspprovlBean.charfieldLabel7}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid7" for="charfieldid7" display="text" />
+													<p:inputText id="charfieldid7"  readonly="true"
+														value="#{parameterDetailspprovlBean.charfield7}"  >
+														<p:ajax update="msgcharfieldid7" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailspprovlBean.CHAR_FIELD8}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailspprovlBean.charfieldLabel8}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid8" for="charfieldid8" display="text" />
+													<p:inputText id="charfieldid8"  readonly="true"
+														value="#{parameterDetailspprovlBean.charfield8}"  >
+														<p:ajax update="msgcharfieldid8" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailspprovlBean.CHAR_FIELD9}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailspprovlBean.charfieldLabel9}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcharfieldid9" for="charfieldid9" display="text" />
+													<p:inputText id="charfieldid9"  readonly="true"
+														value="#{parameterDetailspprovlBean.charfield9}"  >
+														<p:ajax update="msgcharfieldid9" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailspprovlBean.DATE_FIELD1}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailspprovlBean.datefieldLabel1}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdatefieldid1" for="datefieldid1" display="text" />
+													<!-- <p:inputText id="datefieldid1"
+														value="#{parameterDetailspprovlBean.datefield1}"  >
+														<p:ajax update="msgdatefieldid1" />
+													</p:inputText> -->
+													<p:calendar id="datefieldid1" value="#{parameterDetailspprovlBean.datefield1}"     disabled="true"
+												mode="popup" navigator="true"
+												pattern="dd/MM/yyyy" >
+												<p:ajax update="msgdatefieldid1" />
+												</p:calendar>
+													
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailspprovlBean.DATE_FIELD2}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailspprovlBean.datefieldLabel2}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdatefieldid2" for="datefieldid2" display="text" />
+													
+													<p:calendar id="datefieldid2" value="#{parameterDetailspprovlBean.datefield2}" 
+												mode="popup" navigator="true"  disabled="true"
+												pattern="dd/MM/yyyy" >
+												<p:ajax update="msgdatefieldid2" />
+												</p:calendar>
+													
+												</p:panel>
+											</p:panel>
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailspprovlBean.DATE_FIELD3}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.dateFieldThree']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdatefieldid3" for="datefieldid3" display="text" />
+													<!-- <p:inputText id="datefieldid3"
+														value="#{parameterDetailspprovlBean.datefield3}"  >
+														<p:ajax update="msgdatefieldid3" />
+													</p:inputText> -->
+													
+													<p:calendar id="datefieldid3" value="#{parameterDetailspprovlBean.datefieldLabel3}" 
+												mode="popup" navigator="true"  disabled="true"
+												pattern="dd/MM/yyyy" >
+												<p:ajax update="msgdatefieldid3" />
+												</p:calendar>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailspprovlBean.DATE_FIELD4}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailspprovlBean.datefieldLabel4}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdatefieldid4" for="datefieldid4" display="text" />
+													<!-- <p:inputText id="datefieldid4"
+														value="#{parameterDetailspprovlBean.datefield4}"  >
+														<p:ajax update="msgdatefieldid4" />
+													</p:inputText> -->
+													
+													<p:calendar id="datefieldid4" value="#{parameterDetailspprovlBean.datefield4}" 
+												mode="popup" navigator="true"  disabled="true"
+												pattern="dd/MM/yyyy" >
+												<p:ajax update="msgdatefieldid4" />
+												</p:calendar>
+													
+												</p:panel>
+											</p:panel>
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailspprovlBean.DATE_FIELD5}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailspprovlBean.datefieldLabel5}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdatefieldid5" for="datefieldid5" display="text" />
+													<!-- <p:inputText id="datefieldid5"
+														value="#{parameterDetailspprovlBean.datefield5}"  >
+														<p:ajax update="msgdatefieldid5" />
+													</p:inputText> -->
+													
+													<p:calendar id="datefieldid5" value="#{parameterDetailspprovlBean.datefield5}" 
+												mode="popup" navigator="true"  disabled="true"
+												pattern="dd/MM/yyyy" >
+												<p:ajax update="msgdatefieldid5" />
+												</p:calendar>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailspprovlBean.DATE_FIELD6}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailspprovlBean.datefieldLabel6}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdatefieldid6" for="datefieldid6" display="text" />
+													<!-- <p:inputText id="datefieldid6"
+														value="#{parameterDetailspprovlBean.datefield6}"  >
+														<p:ajax update="msgdatefieldid6" />
+													</p:inputText> -->
+													<p:calendar id="datefieldid6" value="#{parameterDetailspprovlBean.datefield6}" 
+												mode="popup" navigator="true"  disabled="true"
+												pattern="dd/MM/yyyy" >
+												<p:ajax update="msgdatefieldid6" />
+												</p:calendar>
+													
+													
+												</p:panel>
+											</p:panel>
+											
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailspprovlBean.DATE_FIELD7}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailspprovlBean.datefieldLabel7}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdatefieldid7" for="datefieldid7" display="text" />
+													<!-- <p:inputText id="datefieldid7"
+														value="#{parameterDetailspprovlBean.datefield7}"  >
+														<p:ajax update="msgdatefieldid7" />
+													</p:inputText> -->
+													<p:calendar id="datefieldid7" value="#{parameterDetailspprovlBean.datefield7}" 
+												mode="popup" navigator="true"  disabled="true"
+												pattern="dd/MM/yyyy" >
+												<p:ajax update="msgdatefieldid7" />
+												</p:calendar>
+													
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailspprovlBean.DATE_FIELD8}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailspprovlBean.datefieldLabel8}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdatefieldid8" for="datefieldid8" display="text" />
+													<!-- <p:inputText id="datefieldid8"
+														value="#{parameterDetailspprovlBean.datefield8}"  >
+														<p:ajax update="msgdatefieldid8" />
+													</p:inputText> -->
+													
+													<p:calendar id="datefieldid8" value="#{parameterDetailspprovlBean.datefield8}" 
+												mode="popup" navigator="true"  disabled="true"
+												pattern="dd/MM/yyyy" >
+												<p:ajax update="msgdatefieldid8" />
+												</p:calendar>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col" rendered="#{parameterDetailspprovlBean.DATE_FIELD9}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{parameterDetailspprovlBean.datefieldLabel9}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdatefieldid9" for="datefieldid9" display="text" />
+													<!-- <p:inputText id="datefieldid9"
+														value="#{parameterDetailspprovlBean.datefield9}"  >
+														<p:ajax update="msgdatefieldid9" />
+													</p:inputText> -->
+													<p:calendar id="datefieldid9" value="#{parameterDetailspprovlBean.datefield9}" 
+												mode="popup" navigator="true"  disabled="true"
+												pattern="dd/MM/yyyy" >
+												<p:ajax update="msgdatefieldid9" />
+											</p:calendar>
+													
+												</p:panel>
+											</p:panel>
+											
+											
+											<h:panelGroup layout="block" class="clearfix" />
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel id="submitPanel">
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="Approve" action="#{parameterDetailspprovlBean.approve}" immediate="true" update="mainPanel,csp" style="margin-right:10px; "  onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()"/>
+												<p:commandButton value="Cancel" action="#{parameterDetailspprovlBean.pageNavigation}" style="margin-right:10px; " immediate="true" />
+												<!-- <p:commandButton value="View" action="#{parameterDetailspprovlBean.view}" update="mainPanel" immediate="true" /> -->
+											</h:panelGroup>
+										</p:panel>
+
+										<pe:blockUI widgetVar="blockUIWidget">
+											<h:panelGrid columns="2">
+												<p:graphicImage value="../images/ajax_loader.gif" />
+												<h:outputText value="Please wait, data is being processed..." style="white-space: nowrap;" />
+											</h:panelGrid>
+										</pe:blockUI>
+										<p:panel styleClass="left_col">
+											<h:outputText id="mandatory" value=" #{msg['lbl.*filedsAreMandatory']}" style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

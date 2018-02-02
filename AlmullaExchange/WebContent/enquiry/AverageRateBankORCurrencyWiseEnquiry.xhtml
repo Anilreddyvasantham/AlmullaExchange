@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+		history.pushState(null, null, 'AverageRateBankORCurrencyWiseEnquiry.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'AverageRateBankORCurrencyWiseEnquiry.xhtml');
+	    });
+	</script>
+</h:head>
+
+<h:body>
+
+	<f:view>
+	
+<p:confirmDialog id="noDataFound" widgetVar="noDataFound" width="300" height="17" resizable="false" 
+      style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="#{msg['lbl.noDataFound']}">
+      </p:confirmDialog>
+	
+	<p:confirmDialog id="optionSelect" widgetVar="optionSelect"   resizable="false" 
+      style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="#{msg['lbl.pleaseselectcountryorbankorcur']}">
+      </p:confirmDialog>
+      
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top">
+				
+					<h:panelGroup layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;" id="HideHandle" name="HideHandle" src="../images/toggle_plus.png" alt="" onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="avgBankEnqForm">
+							
+								<h1>
+									<h:outputText value="#{msg['lbl.avgBankOrCurrencyEnq']}" />
+								</h1>
+								
+								<p:panel styleClass="shadow" id="mainPanel">
+								
+								<p:confirmDialog id="error" widgetVar="error"  
+								resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" 
+								showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{averageRateBankORCurrencyWiseEnquiry.errorMessage}" >
+							</p:confirmDialog>
+							<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"  
+									resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" 
+									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{averageRateBankORCurrencyWiseEnquiry.errorMessage} - #{msg['lbl.nullPonterExcepetion']}" >
+							</p:confirmDialog>
+									<h2>
+										<h:outputText value="#{msg['lbl.avgBankOrCurrencyEnq']}" />
+									<p:commandLink action="#{bankBranchDetails.cancel}"
+														 process="@this">
+														<p:graphicImage value="../images/return.jpg" width="25" height="25" id="imgEdit" styleClass="icon_right" style="float:right;" />
+														<p:tooltip for="imgEdit" value="Go to Home" />
+													</p:commandLink>
+									</h2>
+			
+									
+									<p:panel styleClass="panel_border">
+									<p:panel rendered="#{averageRateBankORCurrencyWiseEnquiry.renderFirstPanel}">
+									
+									<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.country']}" /> 
+
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="countryid" display="text" id="msgcountryid"/>
+												<p:selectOneMenu id="countryid"
+													value="#{averageRateBankORCurrencyWiseEnquiry.countryId}"
+													filter="true" filterMatchMode="contains">
+													<f:selectItem itemLabel="#{msg['lbl.selectcountry']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{averageRateBankORCurrencyWiseEnquiry.allCountryList}" var="c"
+														itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+														itemValue="#{c.fsCountryMaster.countryId}" />
+													<p:ajax update="msgcountryid,bankId,currencyId"  listener="#{averageRateBankORCurrencyWiseEnquiry.getbankListFromBankAccountDetails}" onstart="process.show();" onsuccess="process.hide();"  />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+									
+																		
+										<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.bank']}"/>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="bankId" display="text"  id="msgBankId"/> 
+													
+													<p:selectOneMenu id="bankId" value="#{averageRateBankORCurrencyWiseEnquiry.bankId}" filterMatchMode="contains"  filter="true"   >
+													<f:selectItem itemLabel=" #{msg['lbl.selectBank']} " itemValue="" />
+													<f:selectItems value="#{averageRateBankORCurrencyWiseEnquiry.bankMasterList}" var="c"  itemLabel="#{c.bankCode} - #{c.bankFullName}" itemValue="#{c.bankId}"/>
+													<p:ajax event="change" update="msgBankId,currencyId" listener="#{averageRateBankORCurrencyWiseEnquiry.getCurrencyListFromBankAccountDetails}" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu> 
+												</p:panel>
+											</p:panel>
+									
+										
+												<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.currency']}"/>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="currencyId" display="text"  id="msgCurrencyId"/>
+											<p:selectOneMenu id="currencyId" value="#{averageRateBankORCurrencyWiseEnquiry.currencyId}" filter="true" filterMatchMode="contains" >
+												<f:selectItem itemLabel="#{msg['lbl.selectCurrency']}" itemValue="" />
+												<f:selectItems value="#{averageRateBankORCurrencyWiseEnquiry.currencyMasterList}" var="c"  itemLabel="#{c.currencyCode} - #{c.currencyName}" itemValue="#{c.currencyId}"/>
+												<p:ajax event="change" update="msgCurrencyId" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu> 
+												</p:panel>
+											</p:panel>
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+								<h:panelGroup layout="block" styleClass="shadow_button" >
+										<p:commandButton value="#{msg['lbl.enquiry']}"  action="#{averageRateBankORCurrencyWiseEnquiry.enquiry}" update=":avgBankEnqForm:mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+										<p:commandButton value="#{msg['lbl.clear']}"  action="#{averageRateBankORCurrencyWiseEnquiry.clearAll}" update=":avgBankEnqForm:mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup> 
+									
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+			
+										<p:panel>
+					<p:dataTable id="dealTrackerTable" var="c"  sortMode="multiple"  styleClass="mydatatableclass"
+					paginatorPosition="bottom" rows="10" paginator="true" 
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10,15"
+									value="#{averageRateBankORCurrencyWiseEnquiry.enquiryDataTableList}" rowIndexVar="rowIndex" emptyMessage="#{msg['lbl.norecordfound']}">
+
+													<f:facet name="header" >
+														<p:outputPanel>
+															<h:outputText value="#{msg['lbl.commPool']}" style="margin-left: 250px !important;"/>
+															<h:outputText value="#{msg['lbl.provision']}" style="margin-left: 545px !important;"/>
+														</p:outputPanel>
+													</f:facet>
+
+
+										<p:column style="text-align: center !important; width:10px" headerText="#{msg['lbl.slNo']}" >
+								             <h:outputText value="#{rowIndex+1}" />
+								        </p:column>
+								        <p:column  style="text-align: center !important; width:10px" headerText="#{msg['lbl.bankCode']}" >
+								        <h:outputText value="#{c.bankCode}" />
+								        </p:column>
+								        <p:column style="text-align: center !important; width:10px" headerText="#{msg['lbl.bank']}">
+								        <h:outputText value="#{c.bankName}" />
+								        </p:column>
+										<p:column style="text-align: center !important; width:10px"  headerText="#{msg['lbl.currency']}">
+								            <h:outputText value="#{c.currencyName}" />
+								        </p:column>
+								        <p:column style="text-align: center !important; width:10px"  headerText="#{msg['lbl.country']}">
+								            <h:outputText value="#{c.countryName}" />
+								        </p:column>
+								        <p:column style="text-align: center !important; width:10px" headerText="#{msg['lbl.foreBal']}">
+											<h:outputText value="#{c.foreignCurrencyBalForCommonPoolDisplay}" />
+										</p:column>
+										<p:column style="text-align: center !important; width:10px" headerText="#{msg['lbl.localBalance']}">
+											<h:outputText value="#{c.localBalanceForCommonPoolDisplay}" />
+										</p:column>
+										
+										 <p:column style="text-align: center !important; width:10px" headerText="#{msg['lbl.averagerate']}">
+											<h:outputText value="#{c.avgRate}" />
+										</p:column>
+										
+										<p:column style="text-align: center !important; width:10px"  headerText="#{msg['lbl.speDealsForeBal']}">
+										<p:commandLink value="#{c.specialDealFcAmount}" action="#{averageRateBankORCurrencyWiseEnquiry.showSpecialDealForeignCurrencyDetails(c)}" update=":avgBankEnqForm:mainPanel" immediate="true"
+													style="color:blue !important; text-decoration:underline !important;font-size:6px;"
+													process="@this" onstart="process.show();" onsuccess="process.hide();" />
+										</p:column>
+										
+										<p:column style="text-align: center !important; width:10px" headerText="#{msg['lbl.totalForeBal']}">
+											<h:outputText value="#{c.totalForeigncurrencyBalanceDisplay}" />
+										</p:column>
+										
+										<p:column style="text-align: center !important; width:10px"  headerText="#{msg['lbl.foreBal']}">
+											<h:outputText value="#{c.foreignCurrencyBalForProvision}" />
+										</p:column>
+										
+										<p:column style="text-align: center !important; width:10px" headerText="#{msg['lbl.localBalance']}">
+											<h:outputText value="#{c.localBalanceForProvision}" />
+										</p:column>
+										
+								</p:dataTable>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+									</p:panel>
+									
+									<p:panel rendered="#{averageRateBankORCurrencyWiseEnquiry.renderSecondPanel}">
+									
+										<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.bank']}"/><h:outputText value="*"  style="color:red;font-weight:bold;"/>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:inputText value="#{averageRateBankORCurrencyWiseEnquiry.bankName}" readonly="true"/>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+												<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.currency']}"/><h:outputText value="*"  style="color:red;font-weight:bold;"/>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:inputText value="#{averageRateBankORCurrencyWiseEnquiry.currencyName}" readonly="true"/>
+												</p:panel>
+											</p:panel>
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+								
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										
+								<p:dataTable var="c" value="#{averageRateBankORCurrencyWiseEnquiry.enquiryDataTableListForSpCus}" 
+								styleClass="mydatatableclass" paginatorPosition="bottom" rows="10" paginator="true" 
+								paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								rowsPerPageTemplate="5,10,15"
+								rowIndexVar="rowIndex" emptyMessage="#{msg['lbl.norecordfound']}">
+     							
+     								<p:column headerText="#{msg['lbl.slNo']}" style="width:15px !important; text-align: center !important;" >
+										<h:outputText value="#{rowIndex+1}"/>
+									</p:column>
+									
+									<p:column headerText="Customer Reference" style="width:50px !important ;text-align: center !important;" >
+										<h:outputText value="#{c.customerReference}" />
+									</p:column>
+									
+									<p:column headerText="#{msg['lbl.customername']}" style=" width:50px !important; text-align: center !important;" >
+										<h:outputText value="#{c.customerName}" />
+									</p:column>
+									
+									<p:column headerText="#{msg['lbl.forignCurrencyBal']}" style=" width:15px !important; text-align: center !important;" >
+										<h:outputText  value="#{c.foreignCurrencyBalanceDisplay}"/>
+									</p:column>
+										
+								</p:dataTable>
+										<h:panelGroup layout="block" class="clearfix" />
+									<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="inner_right_col">
+												<p:panel styleClass="inner_left_col" >
+													<h:outputText value="#{msg['lbl.pertotal']}" style="margin-left: 670px !important;"/><h:outputText value="*"  style="color:red;font-weight:bold;"/>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:inputText value="#{averageRateBankORCurrencyWiseEnquiry.totalAmount}" readonly="true" style="  margin-left: 610px !important;"/>
+												</p:panel>
+											</p:panel>
+											
+												<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+								<h:panelGroup layout="block" styleClass="shadow_button" >
+										<p:commandButton value="#{msg['lbl.cancel']}"  action="#{averageRateBankORCurrencyWiseEnquiry.cancel}" update=":avgBankEnqForm:mainPanel" immediate="true" onstart="process.show();" onsuccess="process.hide();"/>
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup> 
+											<h:panelGroup layout="block" class="clearfix" />
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+									<h:outputText value="Note:"
+											style="color:red; padding:10px !important; font-size:12.5px; font-weight:bold;" />
+											<h:panelGroup layout="block" class="clearfix" />
+									<!-- <h:outputText value="#{msg['lbl.pleaseSelectBankOrCurrency']}"
+											style="color:red; padding:10px !important; font-size:12px; font-weight:bold;" /> -->
+											<h:outputText value="#{msg['lbl.pleaseselectcountryorbankorcur']}"
+											style="color:red; padding:10px !important; font-size:12px; font-weight:bold;" />
+											<h:panelGroup layout="block" class="clearfix" />
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" class="clearfix"/>
+										
+										<p:dialog modal="true" showHeader="true" header="#{msg['lbl.bco.plswait']}"  widgetVar="process"  id="process"   width="300" height="50" resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+							    	</p:dialog>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> 
+					<h:panelGroup layout="block" class="clearfix" />
+				</td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

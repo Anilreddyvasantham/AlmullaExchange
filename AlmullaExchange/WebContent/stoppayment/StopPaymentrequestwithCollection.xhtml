@@ -1,0 +1,1831 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+	</script>
+
+
+	<script type="text/javascript">
+		var baseUri = makeUri();
+		history.pushState(null, null, 'StopPaymentrequestwithCollection.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null,
+					'StopPaymentrequestwithCollection.xhtml');
+		});
+
+		$(document).ready(function() {
+			$(window).scroll(function() {
+				if ($(this).scrollTop() > 100) {
+					$('#goTop').stop().animate({
+						bottom : '30px'
+					}, 300);
+				} else {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				}
+			});
+			$('#goTop').click(function() {
+				$('html, body').stop().animate({
+					scrollTop : 0
+				}, 500, function() {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				});
+			});
+		});
+	</script>
+	<script type="text/javascript">
+		$(document).on("keypress", ".dropdown", function(event) {
+			if (event.keyCode == 32) {
+				$('.ui-selectonemenu-trigger', this).click();
+			}
+		});
+	</script>
+</h:head>
+
+<h:body>
+
+	<p:confirmDialog id="passwordcheck" widgetVar="passwordcheck"
+		width="350" showHeader="false" resizable="false"
+		header="Warning Message"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip"
+		message="#{msg['lbl.sorrypassworddeosnotmatch']}">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="datanotfound" widgetVar="datanotfound" width="350"
+		showHeader="false" resizable="false" header="Warning Message"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip"
+		message="#{msg['lbl.recordnotfound']}">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="wu" widgetVar="wu" width="350" showHeader="false"
+		resizable="false" header="Warning Message"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip"
+		message="#{msg['lbl.transactionprocessedbywesternunion']}">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="notesZero" widgetVar="notesZero" width="500"
+		showHeader="false" resizable="false" header="Warning Message"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip"
+		message="#{msg['lbl.noofnoteszero']}">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="totalcashCheck" widgetVar="totalcashCheck"
+		width="500" showHeader="false" resizable="false"
+		header="Warning Message"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip"
+		message="#{msg['lbl.refundamountshouldnotnegative']}">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="error" widgetVar="error" width="500"
+		showHeader="false" resizable="false" header="Warning Message"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip"
+		message="#{msg['lbl.exceptionoccured']}">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="bankexists" widgetVar="bankexists"
+		resizable="false" width="500"
+		style="background-color: white !important;"
+		header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message=" #{msg['lbl.bankisalreadyexist']}">
+	</p:confirmDialog>
+
+	<!--Net Amount is Not Matching to Total Amount dialog box  -->
+	<p:confirmDialog id="amountmatch" widgetVar="amountmatch" width="350"
+		showHeader="false" resizable="false" header="Warning Message"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip"
+		message="#{msg['lbl.netamountnotmatchingtototalamount']}">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="stopPaymentDone" widgetVar="stopPaymentDone"
+		width="350" showHeader="false" resizable="false"
+		header="Warning Message"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip"
+		message="STOP PAYMENT ALREADY  DONE">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="cashexists" widgetVar="cashexists" width="350"
+		showHeader="false" resizable="false" header="Warning Message"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip"
+		message="#{msg['lbl.cashisalreadyexist']}">
+	</p:confirmDialog>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="stopPaymentForm">
+
+								<p:focus for="dealYearId" />
+								<h1>
+									<h:outputText value="#{msg['lbl.stoppaymentrequest']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<!-- <h2>
+										<h:outputText value="#{msg['lbl.stoppaymentrequest']}" />
+									</h2> -->
+
+									<p:confirmDialog id="proceErr" widgetVar="proceErr" width="400"
+										resizable="false"
+										visible="#{stoppaymentCollectionBean.booProcedureDialog}"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{stoppaymentCollectionBean.errMsg}"></p:confirmDialog>
+
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+
+									<p:dialog id="clearrefunddenominationexceed"
+										widgetVar="clearrefunddenominationexceed" modal="true"
+										width="350" height="100" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.warningDailog']}"
+										closable="false" showEffect="clip" hideEffect="clip">
+										<p:outputLabel
+											value="#{msg['lbl.totalRefundAmountReceivedExcedThanRefundAmount']}" />
+										<br />
+										<h:panelGroup style="display:block; text-align:center">
+											<p:commandButton value="#{msg['lbl.ok']}"
+												actionListener="#{stoppaymentCollectionBean.clearDataTableClearDenomination}"
+												onclick="PF('cleardenominationexceed').hide();"
+												process="@this" />
+										</h:panelGroup>
+									</p:dialog>
+
+									<p:confirmDialog id="stockNotAvailable"
+										widgetVar="stockNotAvailable" height="20" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{msg['lbl.stockNotAvailable']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="checkPaymentModeService"
+										widgetVar="checkPaymentModeService" height="20"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Payment Mode Service Not Avaliable">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="chequerefexists"
+										widgetVar="chequerefexists" height="20" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="Same Bank with Same Check Reference Number is Already Exists">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="sqlexception" widgetVar="sqlexception"
+										header="#{msg['lbl.remitApplicationExceptionMessage']}"
+										resizable="false" width="700"
+										style="background-color: white !important;"
+										styleClass="warning" showEffect="clip" hideEffect="clip"
+										closeOnEscape="true" closable="true"
+										message="#{msg['lbl.procedureErrorMessage']} : #{stoppaymentCollectionBean.exceptionMessage}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="netamountgreater"
+										widgetVar="netamountgreater" height="20" resizable="false"
+										width="400" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{msg['lbl.totalCashReceivedShouldBeEqualToToalCash']} ">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="denominationerror"
+										widgetVar="denominationerror" height="20" resizable="false"
+										width="350" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{msg['lbl.denominationDetailsNotAvailable']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="refundamounterror"
+										widgetVar="refundamounterror" height="20" resizable="false"
+										width="500" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{msg['lbl.refundAmountAndTotalRefundAmountNotMatching']}">
+									</p:confirmDialog>
+
+									<p:dialog id="addDebitCard" widgetVar="addDebitCard"
+										width="400" height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.warningDailog']}"
+										closable="false" showEffect="clip" hideEffect="clip">
+										<p:outputLabel
+											value="#{msg['lbl.doyouwantToSaveDebitCardDetails']}"
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.yes']}"
+											oncomplete="addDebitCard.hide()"
+											actionListener="#{stoppaymentCollectionBean.saveCustomerDetailsToCustomerBank}"
+											update="mainPanel" process="@this"
+											style="margin-left: 150px !important;" />
+										<p:commandButton value="#{msg['lbl.no']}"
+											oncomplete="addDebitCard.hide()"
+											actionListener="#{stoppaymentCollectionBean.calculatingNetAmountDT}"
+											process="@this" update="mainPanel"
+											style="margin-right: 10px !important;" />
+									</p:dialog>
+
+									<p:confirmDialog id="csp" widgetVar="csp" showHeader="false"
+										resizable="false" header="Warning Message"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{stoppaymentCollectionBean.errorMessage}">
+									</p:confirmDialog>
+
+									<p:dialog id="save" widgetVar="save" width="270" height="70"
+										showHeader="false" resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} " />
+										<br />
+										<p:spacer width="15px" />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{stoppaymentCollectionBean.stopPaymentsuccesseNavigation}"
+											onclick="PF('save').hide()" process="@this"
+											update="mainPanel" />
+									</p:dialog>
+
+									<p:confirmDialog id="amountgreater" widgetVar="amountgreater"
+										height="20" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{msg['lbl.amountisgraterthannetamount']} : #{msg['lbl.knetAllowExtraForTheNetAmountTOPay']} : #{stoppaymentCollectionBean.errcolCashExistsLimit}">
+									</p:confirmDialog>
+
+									<p:panel styleClass="panel_border"
+										rendered="#{stoppaymentCollectionBean.booRenderFirstPanel}">
+										<p:panel id="headerPanel">
+
+											<p:panel styleClass="panel_border" id="one">
+
+												<p:panel styleClass="left_col" id="dealYearValueID">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.transferno']}" />
+														<h:outputText value="*"
+															style="color:red;font-weight:bold;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:panelGrid style="width:98%;">
+															<p:row>
+																<p:column
+																	style="width:45% !important; padding:0px 13px 0px 0px !important;">
+																	<!-- <p:inputText id="dealYearId"
+																			value="#{stoppaymentCollectionBean.dealYear}"
+																			readonly="true" styleClass="ui-state-disabled" >
+																			<p:ajax />
+																		</p:inputText> -->
+
+																	<p:selectOneMenu id="dealYearId" styleClass="dropdown"
+																		value="#{stoppaymentCollectionBean.transferYear}"
+																		filterMatchMode="contains" filter="true"
+																		required="true"
+																		requiredMessage="please Select Transaction Year">
+																		<f:selectItem itemLabel="#{msg['lbl.selectyear']}"
+																			itemValue="" />
+																		<f:selectItems
+																			value="#{stoppaymentCollectionBean.trnxYearList}"
+																			var="c" itemLabel="#{c.financialYear}"
+																			itemValue="#{c.financialYear}" />
+																		<p:ajax event="change" onstart="process.show();"
+																			listener="#{stoppaymentCollectionBean.fetchDetails}"
+																			update="mainPanel,csp" onsuccess="process.hide();"
+																			process="@this" />
+																	</p:selectOneMenu>
+																</p:column>
+																<p:column
+																	style="width:45% !important; padding:0px 13px 0px 0px !important;"
+																	rendered="#{stoppaymentCollectionBean.renderRef}">
+																	<p:message for="transferNoTextId" display="text"
+																		id="applicationNoId" />
+																	<p:inputText id="transferNoTextId"
+																		value="#{stoppaymentCollectionBean.transferNo}"
+																		required="true" requiredMessage="Enter Transfer No">
+																		<p:ajax event="change" update="mainPanel,csp"
+																			listener="#{stoppaymentCollectionBean.fetchDetails}"
+																			onstart="process.show();" onsuccess="process.hide();"
+																			process="@this" />
+																	</p:inputText>
+																</p:column>
+
+															</p:row>
+														</p:panelGrid>
+													</p:panel>
+												</p:panel>
+
+
+												<p:panel styleClass="left_col" id="ApplicationNo">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.applicationo']}" />
+														<h:outputText value="*"
+															style="color:red;font-weight:bold;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:panelGrid style="width:98%;">
+															<p:row>
+																<p:column
+																	style="width:45% !important; padding:0px 13px 0px 0px !important;">
+																	<p:inputText id="appYearId" tabindex="-1"
+																		value="#{stoppaymentCollectionBean.applicationFinancialYear}"
+																		readonly="true" styleClass="ui-state-disabled">
+																		<p:ajax />
+																	</p:inputText>
+																</p:column>
+																<p:column
+																	style="width:45% !important; padding:0px 13px 0px 0px !important;">
+																	<p:inputText tabindex="-1"
+																		value="#{stoppaymentCollectionBean.applicationNo}"
+																		readonly="true" styleClass="ui-state-disabled">
+
+																	</p:inputText>
+																</p:column>
+															</p:row>
+														</p:panelGrid>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.productname']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="productName" tabindex="-1"
+															value="#{stoppaymentCollectionBean.productName}"
+															readonly="true" styleClass="ui-state-disabled">
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="right_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.productstatus']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+
+														<p:inputText id="productStatus" tabindex="-1"
+															value="#{stoppaymentCollectionBean.productStatus}"
+															readonly="true" styleClass="ui-state-disabled">
+
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+
+												<div class="clearfix"></div>
+											</p:panel>
+
+											<p:spacer height="10px" />
+											<p:panel styleClass="panel_border" id="CustPanel">
+
+												<!-- <p:panel styleClass="left_col">
+
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Branch Code"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="branchCode"
+														value="#{stoppaymentCollectionBean.branchCode}" readonly="true">
+														
+													</p:inputText>
+												</p:panel>
+
+											</p:panel> -->
+
+												<div class="clearfix"></div>
+												<p:panel styleClass="left_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.customercode']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="customerCode" tabindex="-1"
+															value="#{stoppaymentCollectionBean.customerCode}"
+															readonly="true" styleClass="ui-state-disabled">
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+
+												<p:panel styleClass="right_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.customername']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+
+														<p:inputText id="customerName" tabindex="-1"
+															value="#{stoppaymentCollectionBean.customerName}"
+															readonly="true" styleClass="ui-state-disabled">
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+
+
+												<div class="clearfix"></div>
+												<p:panel styleClass="left_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.telephone']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="telephoneNo" tabindex="-1"
+															value="#{stoppaymentCollectionBean.telephoneNo}"
+															readonly="true" styleClass="ui-state-disabled">
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.branchname']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+
+														<p:inputText id="branchName" tabindex="-1"
+															value="#{stoppaymentCollectionBean.branchName}"
+															readonly="true" styleClass="ui-state-disabled">
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+											</p:panel>
+
+											<p:spacer height="15px" />
+
+
+											<p:panel styleClass="panel_border" id="TPanel">
+
+												<p:panel styleClass="left_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.transferDate']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="transferDate" tabindex="-1"
+															value="#{stoppaymentCollectionBean.receiptDate}"
+															readonly="true" styleClass="ui-state-disabled">
+															<f:convertDateTime type="date" pattern="dd-MM-yyyy" />
+
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+												<p:panel styleClass="right_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.validuntill']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="validUntill" tabindex="-1"
+															value="#{stoppaymentCollectionBean.validUntill}"
+															readonly="true" styleClass="ui-state-disabled">
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.payablebranch']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+
+														<p:inputText id="payableBranch" tabindex="-1"
+															value="#{stoppaymentCollectionBean.payableBranch}"
+															readonly="true" styleClass="ui-state-disabled">
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+
+												<!-- <p:panel styleClass="left_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.accpayee']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="accPayee"
+															value="#{stoppaymentCollectionBean.accPayee}"
+															readonly="true" styleClass="ui-state-disabled">
+														</p:inputText>
+													</p:panel>
+
+												</p:panel> -->
+
+
+												<p:panel styleClass="right_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.benificiary']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<h:inputTextarea id="beneficiaryTextArea" tabindex="-1"
+															value="#{stoppaymentCollectionBean.beneficiary}"
+															readonly="true" styleClass="ui-state-disabled">
+
+														</h:inputTextarea>
+													</p:panel>
+
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.transferamount']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="transferAmount" tabindex="-1"
+															value="#{stoppaymentCollectionBean.transferAmount}"
+															readonly="true" styleClass="ui-state-disabled">
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+
+												<p:panel styleClass="right_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.payableat']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="payableAt" tabindex="-1"
+															value="#{stoppaymentCollectionBean.payableAt}"
+															readonly="true" styleClass="ui-state-disabled">
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+											</p:panel>
+
+											<p:spacer height="15px"></p:spacer>
+
+											<p:panel styleClass="panel_border" id="CPanel">
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.refundfor']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="refundFor" tabindex="-1"
+															value="#{stoppaymentCollectionBean.saleAmount}"
+															required="false" readonly="true"
+															styleClass="ui-state-disabled"
+															requiredMessage="Enter refundFor">
+															<p:ajax event="blur" update="msgrefundFor" />
+															<p:message for="refundFor" display="text"
+																id="msgrefundFor" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.exchangerate']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="exchangeRate" tabindex="-1"
+															value="#{stoppaymentCollectionBean.exchangeRate}"
+															required="false" readonly="true"
+															styleClass="ui-state-disabled"
+															requiredMessage="Enter Exchange Rate">
+															<p:ajax event="blur" update="msgexchangeRate" />
+															<p:message for="exchangeRate" display="text"
+																id="msgexchangeRate" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Purchase Amount"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="purchaseAmount" tabindex="-1"
+															value="#{stoppaymentCollectionBean.purchaseAmount}"
+															required="false" readonly="true"
+															styleClass="ui-state-disabled"
+															requiredMessage="Enter Purchase Amount">
+															<p:ajax event="blur" update="msgpurchaseAmount" />
+															<p:message for="purchaseAmount" display="text"
+																id="msgpurchaseAmount" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.commission']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="commission" tabindex="-1"
+															value="#{stoppaymentCollectionBean.commission}"
+															required="false" readonly="true"
+															styleClass="ui-state-disabled"
+															requiredMessage="Enter commission">
+															<p:ajax event="blur" update="msgcommission" />
+															<p:message for="commission" display="text"
+																id="msgcommission" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.charges']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+
+														<p:inputText id="charges" tabindex="-1"
+															value="#{stoppaymentCollectionBean.charges}"
+															required="false" requiredMessage="Enter charges"
+															readonly="true" styleClass="ui-state-disabled">
+															<p:ajax event="blur" update="msgcharges" />
+															<p:message for="charges" display="text" id="msgcharges" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.deliverycharges']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="deliveryCharges" tabindex="-1"
+															value="#{stoppaymentCollectionBean.deliveryCharges}"
+															required="false" readonly="true"
+															styleClass="ui-state-disabled"
+															requiredMessage="Enter Delivery Charges">
+															<p:ajax event="blur" update="msgdeliveryCharges" />
+															<p:message for="deliveryCharges" display="text"
+																id="msgdeliveryCharges" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Net Amount"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+
+														<p:inputText id="netAmount" tabindex="-1"
+															value="#{stoppaymentCollectionBean.netAmount}"
+															required="false" readonly="true"
+															styleClass="ui-state-disabled"
+															requiredMessage="Enter Net Refund">
+															<p:ajax event="blur" update="msgnetAmount" />
+															<p:message for="netAmount" display="text"
+																id="msgnetAmount" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<p:spacer height="20px"></p:spacer>
+											</p:panel>
+
+											<p:spacer height="20px"></p:spacer>
+
+											<!--  Add button Panel-->
+											<p:panel>
+												<h:panelGroup layout="block" class="clearfix" />
+												<h:panelGroup layout="block" styleClass="shadow_button">
+													<p:commandButton value="#{msg['lbl.next']}"
+														action="#{stoppaymentCollectionBean.view}"
+														update="mainPanel,stopPaymentForm"
+														onstart="process.show();" onsuccess="process.hide();"
+														style="margin-right:10px; " />
+													<p:commandButton value="#{msg['lbl.cancel']}"
+														action="#{stoppaymentCollectionBean.clickOnExit}"
+														process="@this" style="margin-right:10px;"
+														immediate="true" />
+													<p:commandButton value="#{msg['lbl.clear']}"
+														action="#{stoppaymentCollectionBean.clear}"
+														process="@this" update="mainPanel"
+														style="margin-right:10px; " />
+												</h:panelGroup>
+
+											</p:panel>
+
+											<!--  Add button Panel ends here-->
+										</p:panel>
+										<!--  Mandatory Field-->
+										<div class="clearfix"></div>
+										<p:panel styleClass="left_col">
+											<h:outputText id="mandatory"
+												value=" #{msg['lbl.*filedsAreMandatory']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+									</p:panel>
+
+
+									<p:panel styleClass="shadow"
+										style=" background-color:#FFF !important;"
+										rendered="#{stoppaymentCollectionBean.booRenderPaymentDetails}">
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<!-- <h3>
+											<h:outputText value="Denomination Details" />
+										</h3> -->
+
+										<p:panel
+											rendered="#{stoppaymentCollectionBean.booRendercashdenomination}">
+											<!-- <fieldset
+											style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;"> -->
+											<h2
+												style="font-size: 15px; font-weight: bold; color: #037712;"
+												align="top">&nbsp;
+												#{msg['lbl.remtdenominationdetails']} &nbsp;</h2>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<table cellpadding="0" cellspacing="0" border="0"
+												width="100%" class="mytable">
+												<tr>
+													<th>#{msg['lbl.fclocalpurchaseserialno']}</th>
+													<th>#{msg['lbl.fclocalpurchasedenominationname']}</th>
+													<th>#{msg['lbl.fclocalpurchasenoofnotes']}</th>
+													<th>#{msg['lbl.fclocalpurchasecashamount']}</th>
+
+												</tr>
+												<ui:repeat value="#{stoppaymentCollectionBean.lstData}"
+													var="o">
+
+													<tr>
+														<td style="width: 15% ! important;"><h:outputText
+																value="#{o.serial}." /></td>
+														<td style="width: 15% ! important;"><h:outputText
+																value="#{o.denominationDesc}" /></td>
+
+														<td style="width: 15% ! important;"><p:message
+																for="q" display="text"
+																style="text-shadow:none !important;" /> <p:inputText
+																id="q" value="#{o.qty}"
+																tabindex="#{stoppaymentCollectionBean.count}">
+
+																<p:ajax event="change"
+																	listener="#{stoppaymentCollectionBean.onCellEdit(o)}"
+																	update=":stopPaymentForm:totalcashid,:stopPaymentForm:paymentPanel,price"
+																	onstart="process.show();" onsuccess="process.hide();" />
+																<!-- <f:validator
+																validatorId="com.amg.exchange.validator.FcQValidator" /> -->
+															</p:inputText></td>
+														<td style="width: 15% ! important;"><h:outputText
+																value="#{o.price}" id="price" /></td>
+													</tr>
+												</ui:repeat>
+
+
+											</table>
+
+											<p:dialog id="cleardenominationexceed"
+												widgetVar="cleardenominationexceed" modal="true" width="350"
+												height="100" resizable="false"
+												style="background-color: white !important;"
+												styleClass="warning" header="#{msg['lbl.warningDailog']}"
+												closable="false" showEffect="clip" hideEffect="clip">
+												<p:outputLabel
+													value="#{msg['lbl.pleaseEnsureDenominationAmountShouldTallyWithCollectedAmount']}" />
+												<br />
+												<h:panelGroup style="display:block; text-align:center">
+													<p:commandButton value="#{msg['lbl.ok']}"
+														actionListener="#{stoppaymentCollectionBean.clearDataTableClearDenomination}"
+														onstart="process.show();" onsuccess="process.hide();"
+														onclick="PF('cleardenominationexceed').hide();"
+														process="@this" />
+												</h:panelGroup>
+											</p:dialog>
+
+
+
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panelGrid style="width:80%;margin-left:100px;">
+												<p:row>
+													<p:column style="width:20% !important ;">
+														<h:outputText value="#{msg['lbl.totalcahrcvd']}" />
+													</p:column>
+													<p:column style="width:20% !important ;">
+														<p:inputText id="totalcashrecid" tabindex="-1"
+															value="#{stoppaymentCollectionBean.cashAmount}"
+															readonly="true" styleClass="ui-state-disabled">
+															<p:ajax />
+														</p:inputText>
+													</p:column>
+
+
+													<p:column style="width:20% !important ;">
+														<h:outputText value="#{msg['lbl.toatalcash']}" />
+													</p:column>
+													<p:column style="width:20% !important ;">
+														<p:inputText id="totalcashid" tabindex="-1"
+															value="#{stoppaymentCollectionBean.denomtotalCash}"
+															readonly="true" styleClass="ui-state-disabled">
+															<p:ajax />
+														</p:inputText>
+													</p:column>
+
+												</p:row>
+											</p:panelGrid>
+
+										</p:panel>
+
+										<p:panel
+											rendered="#{stoppaymentCollectionBean.boorefundPaymentDetails}">
+
+
+											<h2
+												style="font-size: 15px; font-weight: bold; color: #037712;"
+												align="top">&nbsp; #{msg['lbl.refundDenomination']}
+												&nbsp;</h2>
+
+											<p:panel styleClass="panel_border" id="refunddenomId">
+												<h:panelGroup layout="block" class="clearfix" />
+												<p:spacer height="20px" />
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<h3>#{stoppaymentCollectionBean.denominationchecking}</h3>
+
+												<table cellpadding="0" cellspacing="0" border="0"
+													width="100%" class="mytable">
+													<tr>
+														<th>#{msg['lbl.fclocalpurchaseserialno']}</th>
+														<th>#{msg['lbl.fclocalpurchasedenominationname']}</th>
+														<th>#{msg['lbl.fclocalpurchasecurrentstock']}</th>
+														<th>#{msg['lbl.fclocalpurchasenoofnotes']}</th>
+														<th>#{msg['lbl.fclocalpurchasecashamount']}</th>
+
+													</tr>
+													<ui:repeat
+														value="#{stoppaymentCollectionBean.lstRefundData}" var="o">
+
+														<tr>
+															<td style="width: 15% ! important;"><h:outputText
+																	value="#{o.serial}." /></td>
+															<td style="width: 15% ! important;"><h:outputText
+																	value="#{o.denominationDesc}" /></td>
+
+															<td style="width: 15% ! important;"><h:outputText
+																	value="#{o.stock}" /></td>
+															<td style="width: 15% ! important;"><p:message
+																	for="q1" display="text" /> <p:inputText id="q1" tabindex="1"
+																	value="#{o.qty}">
+																	<p:ajax event="change" onstart="process.show();"
+																		onsuccess="process.hide();"
+																		listener="#{stoppaymentCollectionBean.onRefundCellEdit(o)}"
+																		update=":stopPaymentForm:mainPanel,refundprice,q1" />
+																	<!-- <f:validator
+																			validatorId="com.amg.exchange.validator.FcQValidator" /> -->
+
+																</p:inputText></td>
+
+															<td style="width: 15% ! important;"><h:outputText
+																	value="#{o.price}" id="refundprice" /></td>
+														</tr>
+													</ui:repeat>
+
+
+												</table>
+
+												<p:spacer height="20px" />
+												<h:panelGroup layout="block" class="clearfix" />
+
+											</p:panel>
+
+											<p:panel id="refundDetailsId">
+
+												<p:spacer height="20px" />
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panelGrid style="width:80%;margin-left:100px;">
+													<p:row>
+
+														<p:column style="width:20% !important ;">
+															<h:outputText value="Refund Amount" />
+														</p:column>
+														<p:column style="width:20% !important ;">
+															<p:inputText id="refundamountid" tabindex="-1"
+																styleClass="ui-state-disabled"
+																value="#{stoppaymentCollectionBean.refundAmount}"
+																readonly="true">
+																<p:ajax />
+															</p:inputText>
+														</p:column>
+
+														<p:column style="width:20% !important ;">
+															<h:outputText value="Total Refund Amount" />
+														</p:column>
+														<p:column style="width:20% !important ;">
+															<p:inputText id="collectrefundid" tabindex="-1"
+																styleClass="ui-state-disabled"
+																value="#{stoppaymentCollectionBean.collectedRefundAmount}"
+																readonly="true">
+																<p:ajax />
+															</p:inputText>
+														</p:column>
+
+													</p:row>
+												</p:panelGrid>
+
+											</p:panel>
+
+										</p:panel>
+
+										<p:panel
+											rendered="#{stoppaymentCollectionBean.booRenderPaymentDetails}">
+
+											<h2
+												style="font-size: 15px; font-weight: bold; color: #037712;"
+												align="top">&nbsp; #{msg['lbl.pymntdetails']} &nbsp;</h2>
+
+											<p:panel styleClass="panel_border" id="paymentPanel">
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.remarks']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText tabindex="2"
+															value="#{stoppaymentCollectionBean.paymentDetailsremark}">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.paydamount']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText tabindex="-1"
+															value="#{stoppaymentCollectionBean.payPaidAmount}"
+															readonly="true" styleClass="ui-state-disabled">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.netpaydamnt']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText tabindex="-1"
+															value="#{stoppaymentCollectionBean.payNetPaidAmount}"
+															readonly="true" styleClass="ui-state-disabled">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.refundamt']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText tabindex="-1"
+															value="#{stoppaymentCollectionBean.payRefund}"
+															readonly="true" styleClass="ui-state-disabled">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<h:panelGroup layout="block" styleClass="shadow_button">
+													<!-- <p:commandButton value="Modify" style="margin-right:10px; " /> -->
+													<p:commandButton value="#{msg['lbl.back']}" tabindex="3"
+														action="#{stoppaymentCollectionBean.gotoBack}"
+														onstart="process.show();" onsuccess="process.hide();"
+														update="mainPanel" style="margin-right:10px; " />
+													<p:commandButton tabindex="4"
+														value="#{stoppaymentCollectionBean.nextOrSaveButton}"
+														action="#{stoppaymentCollectionBean.saveCheck}"
+														update="mainPanel" onstart="process.show();"
+														onsuccess="process.hide();" style="margin-right:10px; " />
+													<p:commandButton value="#{msg['lbl.exit']}" tabindex="5"
+														action="#{stoppaymentCollectionBean.clickOnExit}"
+														update="mainPanel" immediate="true" />
+													<h:panelGroup layout="block" class="clearfix" />
+												</h:panelGroup>
+
+												<h:panelGroup layout="block" class="clearfix" />
+												<p:spacer height="20px" />
+												<h:panelGroup layout="block" class="clearfix" />
+
+											</p:panel>
+										</p:panel>
+									</p:panel>
+
+									<!-- End of Panel 7 -->
+
+									<p:panel styleClass="shadow"
+										style=" background-color:#FFF !important;"
+										rendered="#{stoppaymentCollectionBean.booRenderCollection}">
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h2>
+											<h:outputText value="#{msg['lbl.chargesdetails']}" />
+										</h2>
+										<p:panel styleClass="panel_border" id="paymentModePanel">
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+
+											<p:panel styleClass="left_col" id="ReceiptNoid">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.receiptno']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:98%;">
+														<p:row>
+															<p:column
+																style="width:45% !important; padding:0px 13px 0px 0px !important;">
+																<p:inputText id="appYearrId" tabindex="-1"
+																	value="#{stoppaymentCollectionBean.dealYear}"
+																	readonly="true" styleClass="ui-state-disabled">
+																	<p:ajax />
+																</p:inputText>
+															</p:column>
+															<p:column
+																style="width:45% !important; padding:0px 13px 0px 0px !important;">
+																<p:inputText tabindex="-1"
+																	value="#{stoppaymentCollectionBean.receiptNo}"
+																	readonly="true" styleClass="ui-state-disabled">
+
+																</p:inputText>
+															</p:column>
+
+
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+
+
+											<p:confirmDialog id="exCheckCashLimit"
+												widgetVar="exCheckCashLimit" height="20" resizable="false"
+												width="350" style="background-color: white !important;"
+												header="#{msg['lbl.warningDailog']}" styleClass="warning"
+												showEffect="clip" hideEffect="clip" closeOnEscape="true"
+												closable="true"
+												message="#{stoppaymentCollectionBean.excheckCashLimitMessage}">
+											</p:confirmDialog>
+
+
+											<p:panel styleClass="right_col">
+
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.transferamount']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="transferAmountagain" tabindex="-1"
+														value="#{stoppaymentCollectionBean.transferAmount}"
+														readonly="true" styleClass="ui-state-disabled">
+													</p:inputText>
+												</p:panel>
+
+											</p:panel>
+
+
+
+											<p:panel styleClass="left_col">
+
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.stoppaymentcharges']}"></h:outputText>
+												</p:panel>
+												<p:focus for="spCharges" rendered="#{stoppaymentCollectionBean.focus}"></p:focus>
+												<p:panel styleClass="inner_right_col">
+
+
+													<p:message for="spCharges" display="text" id="msgspCharges" />
+													<p:inputText id="spCharges" tabindex="0"
+														value="#{stoppaymentCollectionBean.spCharges}"
+														converterMessage="Enter Only Numbers " required="true"
+														requiredMessage="Please enter  #{msg['lbl.stoppaymentcharges']}">
+
+														<p:ajax event="blur" update="msgspCharges"
+															listener="#{stoppaymentCollectionBean.updatespCharges}"
+															onstart="process.show();" onsuccess="process.hide();" />
+														<f:validator
+															validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+														<p:ajax event="blur" update="msgspCharges" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:spacer height="10px" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</p:panel>
+										<p:spacer height="10px" />
+										<p:panel styleClass="panel_border" id="paymentModePanelF">
+											<h2>
+												<h:outputText value="#{msg['lbl.pymtmode']}" />
+											</h2>
+											<p:spacer height="10px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.pymtmode']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="paymentmode" display="text"
+														id="msgpaymentmode" />
+													<p:selectOneMenu id="paymentmode" styleClass="dropdown"
+														value="#{stoppaymentCollectionBean.colpaymentmodeId}"
+														filterMatchMode="startwith" required="true"
+														requiredMessage="please Select Payment Mode ">
+														<f:selectItem itemLabel="#{msg['lbl.selectmodetyp']}" />
+														<f:selectItems
+															value="#{stoppaymentCollectionBean.lstFetchAllPayMode}"
+															var="c" itemLabel="#{c.localPaymentName}"
+															itemValue="#{c.paymentMode.paymentModeId}" />
+														<p:ajax event="change"
+															listener="#{stoppaymentCollectionBean.changeofPaymentMode}"
+															onstart="process.show();" onsuccess="process.hide();"
+															update="msgpaymentmode,debitdetails,mainPanel" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="right_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.amount']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="cashid" display="text" id="msgcashid" />
+													<p:inputText id="cashid"
+														value="#{stoppaymentCollectionBean.colCash}"
+														required="true" requiredMessage="Please Enter Amount"
+														converterMessage="Please Enter Numbers Only ">
+														<f:validator
+															validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+														<p:ajax event="blur"
+															listener="#{stoppaymentCollectionBean.checkcashcollection}"
+															update="cashid,msgcashid,amountgreater,csp" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<!--  Added by Rabil on 13/12/2016 for Bank Transfer -->
+
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel id="bankTransferdetails"
+												rendered="#{stoppaymentCollectionBean.booRenderColBankTransfer}">
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.banks']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgcolbankTransferid"
+															for="colbankTransferid" display="text" />
+														<p:selectOneMenu id="colbankTransferid"
+															styleClass="dropdown"
+															value="#{stoppaymentCollectionBean.colBankTransferBankCode}"
+															filterMatchMode="contains" filter="true" required="true"
+															requiredMessage="Please Select Bank">
+															<!-- <f:selectItem itemLabel="Select Bank" itemValue="" /> -->
+															<f:selectItem itemLabel="#{msg['lbl.selectBank']}"
+																itemValue="" />
+
+															<f:selectItems
+																value="#{stoppaymentCollectionBean.chequebankMasterList}"
+																var="c"
+																itemLabel="#{c.bankShortName} - #{c.bankFullName}"
+																itemValue="#{c.chequeBankCode}" />
+
+															<p:ajax update="mainPanel" event="change"
+																listener="#{stoppaymentCollectionBean.populateCustomerDetails}"
+																onstart="process.show();" onsuccess="process.hide();" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+											</p:panel>
+											<!--  code end here by Rabil on 13/12/2016 for Bank Transfer -->
+
+
+											<!-- Bank details capturing start -->
+
+											<p:panel id="debitdetails"
+												rendered="#{stoppaymentCollectionBean.booRenderColDebitCard}">
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+
+														<h:outputText value="#{msg['lbl.banks']}" />
+
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgcolbankid" for="colbankid"
+															display="text" />
+														<p:selectOneMenu id="colbankid" styleClass="dropdown"
+															value="#{stoppaymentCollectionBean.colBankCode}"
+															filterMatchMode="startsWith" filter="true"
+															required="true" requiredMessage="Please Select Bank">
+															<!-- <f:selectItem itemLabel="Select Bank" itemValue="" /> -->
+															<f:selectItem itemLabel="#{msg['lbl.selectBank']}"
+																itemValue="" />
+
+															<f:selectItems
+																value="#{stoppaymentCollectionBean.bankMasterList}"
+																var="c"
+																itemLabel="#{c.bankShortName} - #{c.bankFullName}"
+																itemValue="#{c.chequeBankCode}" />
+
+															<p:ajax
+																update="colcardno ,msgcolbankid,cardtypename,mainPanel"
+																event="change"
+																listener="#{stoppaymentCollectionBean.populateCustomerDetails}"
+																onstart="process.show();" onsuccess="process.hide();" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+
+
+												<p:confirmDialog id="misMatchBankCardLength"
+													widgetVar="misMatchBankCardLength" height="20"
+													resizable="false" width="500"
+													style="background-color: white !important;"
+													header="#{msg['lbl.warningDailog']}" styleClass="warning"
+													showEffect="clip" hideEffect="clip" closeOnEscape="true"
+													closable="true"
+													message="#{msg['lbl.bankDebitCardLengthShouldMatchWith']} #{stoppaymentCollectionBean.colCardNoLength} ">
+												</p:confirmDialog>
+
+
+												<p:confirmDialog id="alertmsg" widgetVar="alertmsg"
+													header="Alert Message" resizable="false"
+													style="background-color: white !important;"
+													styleClass="warning" showEffect="clip" hideEffect="clip"
+													closeOnEscape="true" closable="true"
+													message="#{stoppaymentCollectionBean.exceptionMessage}">
+												</p:confirmDialog>
+
+
+
+												<p:panel styleClass="left_col" id="colcardno">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.cardnumb']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+
+														<p:panelGrid style="width:100%;">
+															<p:row>
+																<p:column
+																	style="width:50% !important; padding:0px 13px 0px 0px !important;"
+																	rendered="#{stoppaymentCollectionBean.booRenderSingleDebit}">
+																	<p:message for="colcardid" display="text"
+																		id="msgcolcardid" />
+																	<p:inputText id="colcardid"
+																		value="#{stoppaymentCollectionBean.colCardNo}"
+																		required="true"
+																		requiredMessage="Please Enter Card Number"
+																		maxlength="#{stoppaymentCollectionBean.colCardNoLength}">
+																		<p:ajax
+																			update="msgcolcardid,colcardid,misMatchBankCardLength"
+																			listener="#{stoppaymentCollectionBean.checkingCardNumberLength}"
+																			onstart="process.show();" onsuccess="process.hide();"
+																			event="blur" />
+																	</p:inputText>
+																</p:column>
+																<p:column
+																	style="width:45% !important; padding:0px !important;"
+																	rendered="#{stoppaymentCollectionBean.booRenderMulDebit}">
+																	<p:message for="debitcardId" display="text"
+																		id="msgdebitcardId" />
+																	<p:selectOneMenu id="debitcardId" styleClass="dropdown"
+																		value="#{stoppaymentCollectionBean.colCardNo}"
+																		filter="true" filterMatchMode="startsWith"
+																		required="true"
+																		requiredMessage="Please Enter Card Number">
+																		<f:selectItem itemLabel="Select Debit Card"
+																			itemValue="" />
+																		<f:selectItems
+																			value="#{stoppaymentCollectionBean.lstDebitCard}"
+																			var="c" itemLabel="#{c.debitCard}"
+																			itemValue="#{c.debitCard}" />
+																		<p:ajax for="msgdebitcardId" event="change"
+																			listener="#{stoppaymentCollectionBean.populateCustKnetCardDetails}"
+																			update="mainPanel" onstart="process.show();"
+																			onsuccess="process.hide();" />
+																	</p:selectOneMenu>
+																</p:column>
+
+																<p:column
+																	style="width:5% !important; padding:0px !important;text-align:right !important;"
+																	rendered="#{stoppaymentCollectionBean.booRenderMulDebit}">
+																	<p:commandButton value=" " styleClass="edit"
+																		onstart="process.show();" onsuccess="process.hide()"
+																		update="mainPanel"
+																		action="#{stoppaymentCollectionBean.editDebitCardtoEnter}"
+																		process="@this" />
+																</p:column>
+
+															</p:row>
+														</p:panelGrid>
+
+													</p:panel>
+
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.nameofcard']}" />
+													</p:panel>
+
+													<p:panel styleClass="inner_right_col" id="cardtypename">
+														<p:message id="msgcolnameid" for="colnameid"
+															display="text" />
+														<p:inputText id="colnameid"
+															value="#{stoppaymentCollectionBean.colNameofCard}"
+															required="true"
+															requiredMessage="Please Enter Name of Card">
+															<p:ajax event="blur"
+																listener="#{stoppaymentCollectionBean.firstNameCheck}"
+																update="msgcolnameid,authpanel,mainPanel,alertmsg"
+																onstart="process.show();" onsuccess="process.hide();" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.approvalNumber']}" />
+													</p:panel>
+
+													<p:panel styleClass="inner_right_col" id="colApprovalNoId">
+														<p:message id="msgcolapprovalno" for="colapprovalno"
+															display="text" />
+														<p:inputText id="colapprovalno"
+															value="#{stoppaymentCollectionBean.colApprovalNo}"
+															required="true"
+															requiredMessage="Please Enter Approval No">
+															<p:ajax update="msgcolapprovalno" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panel id="authpanel"
+													rendered="#{stoppaymentCollectionBean.booAuthozed}">
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.authorzed']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message id="msgcolauthorid" for="colauthorid"
+																display="text" />
+															<p:selectOneMenu id="colauthorid" styleClass="dropdown"
+																value="#{stoppaymentCollectionBean.colAuthorizedby}"
+																filterMatchMode="startsWith" filter="true"
+																required="true"
+																requiredMessage="Please Select Authorized">
+																<f:selectItem itemLabel="Select Authorized" itemValue="" />
+																<f:selectItems
+																	value="#{stoppaymentCollectionBean.empllist}" var="c"
+																	itemLabel="#{c.userName}" itemValue="#{c.userName}" />
+																<p:ajax update="msgcolauthorid" />
+															</p:selectOneMenu>
+														</p:panel>
+													</p:panel>
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.password']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col" id="testpanel">
+															<p:message id="msgcolpassword" for="colpassid"
+																display="text" />
+															<p:password id="colpassid"
+																value="#{stoppaymentCollectionBean.colpassword}"
+																required="true"
+																requiredMessage="Please Enter Authorized Password">
+																<p:ajax update="msgcolpassword" />
+															</p:password>
+														</p:panel>
+													</p:panel>
+
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<h:panelGroup layout="block"
+													style="width:100%; text-align:right; padding-top:10px !important;">
+													<p:commandLink id="addnewbanks"
+														value="#{msg['lbl.addNewBank']}" styleClass="link1"
+														action="#{stoppaymentCollectionBean.addNewBenificiary}"
+														onstart="process.show();" onsuccess="process.hide();"
+														update="colbankid,debitdetails" process="@this" />
+												</h:panelGroup>
+
+											</p:panel>
+
+											<!-- Bank details capturing end -->
+
+											<p:panel id="chequedetails"
+												rendered="#{stoppaymentCollectionBean.booRenderColCheque}">
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.banks']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgcolchequebankid" for="colchequebankid"
+															display="text" />
+														<p:selectOneMenu id="colchequebankid"
+															styleClass="dropdown"
+															value="#{stoppaymentCollectionBean.colchequebankCode}"
+															filterMatchMode="startsWith" filter="true"
+															required="true" requiredMessage="Please Select Bank">
+															<f:selectItem itemLabel="#{msg['lbl.selectBank']}"
+																itemValue="" />
+															<f:selectItems
+																value="#{stoppaymentCollectionBean.chequebankMasterList}"
+																var="c" itemLabel="#{c.bankFullName}"
+																itemValue="#{c.chequeBankCode}" />
+															<p:ajax update="mainPanel" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col" id="chequeRef">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Cheque Reference" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="colChequeRefId" display="text"
+															id="msgcolChequeRefId" />
+														<p:inputText id="colChequeRefId"
+															value="#{stoppaymentCollectionBean.colChequeRef}"
+															required="true"
+															requiredMessage="Please Enter Cheque Ref Number">
+															<p:ajax update="msgcolChequeRefId" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Cheque Date" />
+														<h:outputText value="*"
+															style="color:red;font-weight:bold;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+
+														<p:message for="hdValueDate" display="text" id="hdValDate" />
+														<p:calendar id="hdValueDate"
+															value="#{stoppaymentCollectionBean.colChequeDate}"
+															mode="popup" pattern="dd/MM/yyyy"
+															mindate="#{stoppaymentCollectionBean.effectiveMinDate}"
+															navigator="true" readonlyInput="true" required="true"
+															requiredMessage="Enter Cheque Date">
+															<p:ajax update="hdValDate" />
+														</p:calendar>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.approvalNumber']}" />
+													</p:panel>
+
+													<p:panel styleClass="inner_right_col" id="colChequeAppNoId">
+														<p:message id="msgcolChequeAppNo" for="colChequeAppNo"
+															display="text" />
+														<p:inputText id="colChequeAppNo"
+															value="#{stoppaymentCollectionBean.colChequeApprovalNo}"
+															required="true"
+															requiredMessage="Please Enter Approval No">
+															<p:ajax update="msgcolChequeAppNo" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+
+												<p:commandButton value="#{msg['lbl.add']}"
+													action="#{stoppaymentCollectionBean.verifyPassword}"
+													onstart="process.show();" onsuccess="process.hide();"
+													update="mainPanel,colpaymenttype,csp"
+													style="margin-right:10px; " />
+
+												<p:commandButton value="#{msg['lbl.back']}"
+													action="#{stoppaymentCollectionBean.gotoFirstPanel}"
+													onstart="process.show();" onsuccess="process.hide();"
+													update="mainPanel" immediate="true"
+													style="margin-right:10px; " />
+
+												<p:commandButton value="#{msg['lbl.exit']}"
+													action="#{stoppaymentCollectionBean.clickOnExit}"
+													update="mainPanel" immediate="true" />
+											</h:panelGroup>
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:spacer height="10px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:dataTable var="c" id="colpaymenttype"
+												styleClass="mydatatableclass"
+												value="#{stoppaymentCollectionBean.coldatatablevalues}"
+												rowIndexVar="rowIndex" editable="true" editMode="cell"
+												emptyMessage="#{msg['lbl.norecordfound']}"
+												rendered="#{stoppaymentCollectionBean.booRendercollectiondatatable}"
+												rows="5" paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10,15" paginatorPosition="bottom">
+
+												<p:column headerText="#{msg['lbl.sino']}"
+													style="width:50px;">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.paymenttyp']}"
+													sortBy="#{c.colpaymentmodetypeDT}">
+													<h:outputText value="#{c.colpaymentmodetypeDT}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.bank']}"
+													sortBy="#{c.colbankNameDT}"
+													style="width:15% !important; text-align:center !important;">
+													<h:outputText value="#{c.colbankNameDT}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.cardnumb']}"
+													sortBy="#{c.colCardNumberDT}"
+													style="width:15% !important; text-align:center !important;">
+													<h:outputText value="#{c.colCardNumberDT}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.nameofcard']}">
+													<h:outputText value="#{c.colNameofCardDT}" />
+												</p:column>
+
+												<p:column headerText="Cheque Ref.No"
+													sortBy="#{c.colchequeRefNo}">
+													<h:outputText value="#{c.colchequeRefNo}" />
+												</p:column>
+
+												<p:column headerText="Cheque Date"
+													sortBy="#{c.colchequeDate}">
+													<h:outputText value="#{c.colchequeDate}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.approvalNumber']}">
+													<h:outputText value="#{c.colApprovalNo}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.amount']}">
+													<h:outputText value="#{c.colAmountDT}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.edit']}">
+													<p:commandButton id="imgEdit" styleClass="edit" value=""
+														onstart="process.show();" onsuccess="process.hide()"
+														action="#{stoppaymentCollectionBean.editRecord(c)}"
+														update=":stopPaymentForm:paymentModePanel,:stopPaymentForm:paymentModePanelF,colpaymenttype"
+														rendered="#{c.booDisbale eq null}"
+														disabled="#{c.booDisbale}" process="@this">
+														<p:tooltip for="imgEdit" value="#{msg['lbl.edit']}" />
+													</p:commandButton>
+												</p:column>
+
+												<p:column>
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.delete']}" />
+													</f:facet>
+													<p:commandButton value="" onstart="process.show();"
+														onsuccess="process.hide()"
+														actionListener="#{stoppaymentCollectionBean.deletePaymentModeRecords(c)}"
+														styleClass="delete" process="@this"
+														disabled="#{c.booDisbale}"
+														update=":stopPaymentForm:colpaymenttype,:stopPaymentForm:mainPanel" />
+												</p:column>
+
+											</p:dataTable>
+											<p:spacer height="10px" />
+
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="full_col"
+												rendered="#{stoppaymentCollectionBean.booRendercollectiondatatable}">
+												<p:panelGrid style="width:100%;">
+													<p:row>
+														<p:column
+															style="width:16%; padding:0px 5px 0px 10px !important;">
+															<h:outputText value="#{msg['lbl.totalAmount']}" />
+														</p:column>
+
+														<p:column
+															style="width:16%; padding:0px 5px 0px 10px !important;">
+															<p:inputText tabindex="-1"
+																value="#{stoppaymentCollectionBean.toalUsedAmount}"
+																styleClass="ui-state-disabled" readonly="true" />
+														</p:column>
+
+
+														<p:column
+															style="width:16%; padding:0px 5px 0px 10px !important;">
+															<h:outputText value="Balance to Collect" />
+														</p:column>
+
+														<p:column
+															style="width:16%; padding:0px 5px 0px 10px !important;">
+															<p:inputText styleClass="ui-state-disabled" tabindex="-1"
+																value="#{stoppaymentCollectionBean.totalbalanceAmount}"
+																readonly="true" />
+														</p:column>
+
+
+														<p:column
+															style="width:16%; padding:0px 5px 0px 10px !important;">
+															<h:outputText value="Amount to Refund" />
+														</p:column>
+
+														<p:column
+															style="width:16%; padding:0px 5px 0px 10px !important;">
+															<p:inputText styleClass="ui-state-disabled" tabindex="-1"
+																value="#{stoppaymentCollectionBean.totalrefundAmount}"
+																readonly="true" />
+														</p:column>
+
+													</p:row>
+												</p:panelGrid>
+
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" styleClass="shadow_button"
+												rendered="#{stoppaymentCollectionBean.booRendercollectiondatatable}">
+												<p:commandButton id="next" value="#{msg['lbl.next']}"
+													action="#{stoppaymentCollectionBean.nextpaneltoPaymentDetails}"
+													onstart="process.show();" onsuccess="process.hide();"
+													update="mainPanel" immediate="true" />
+											</h:panelGroup>
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" class="clearfix" />
+										</p:panel>
+									</p:panel>
+
+									<p:panel rendered="#{stoppaymentCollectionBean.successPanel}"
+										style="padding:60px 100px 60px 100px !important;">
+										<fieldset
+											style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+											<legend
+												style="font-size: 20px; font-weight: bold; color: #037712;"
+												align="top">&nbsp;#{msg['lbl.success']}&nbsp;</legend>
+
+											<p:outputLabel
+												value="#{msg['lbl.dataSuccessFullySavedClickOkToContinue']} "
+												style="font-size: 18px !important; font-weight: bold; color: #037712; padding:20px 150px 20px 230px !important;" />
+											<p:outputLabel
+												value=" Data Saved With  Number :#{stoppaymentCollectionBean.transactionNoForDisplay} "
+												style="font-size: 18px !important; font-weight: bold; color: #037712; padding:20px 150px 20px 230px !important;" />
+											<p:panel style="padding-left: 400px;">
+												<p:commandButton value="#{msg['lbl.ok']}"
+													actionListener="#{stoppaymentCollectionBean.clickOnExit}"
+													process="@this" immediate="true"
+													style="padding: 5px 10px 5px 10px !important;" />
+											</p:panel>
+											<p:outputLabel
+												value="#{msg['lbl.doyouwantprintforstoppaymentrequest']} "
+												style=" font-weight: bold; color: #037712; padding:30px 0px 0px 0px !important;">
+												<h:commandLink value="#{msg['lbl.clickHere']} "
+													actionListener="#{stoppaymentCollectionBean.genarateStopPaymentrequestReport}"
+													style="font-weight: bold; font-size: 12px !important; color:blue !important; text-decoration:underline !important;"
+													process="@this" immediate="true" />
+											</p:outputLabel>
+
+											<p:outputLabel
+												value="#{msg['lbl.doyouwantprintforstoppaymentcollection']}"
+												style=" font-weight: bold; color: #037712; padding:30px 0px 0px 0px !important;">
+												<h:commandLink value="#{msg['lbl.clickHere']} "
+													actionListener="#{stoppaymentCollectionBean.genarateStopPaymentCollectionReport}"
+													style="font-weight: bold; font-size: 12px !important; color:blue !important; text-decoration:underline !important;"
+													process="@this" immediate="true" />
+											</p:outputLabel>
+										</fieldset>
+									</p:panel>
+
+								</p:panel>
+
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

@@ -1,0 +1,1646 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+	</script>
+	<script src="../js/script.js"></script>
+	<script type="text/javascript">
+		$(document).on("keypress", ".dropdown", function(event) {
+			if (event.keyCode == 32) {
+				$('.ui-selectonemenu-trigger', this).click();
+			}
+		});
+	</script>
+</h:head>
+
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="refundRequestForm">
+							<p:focus for="docYear"></p:focus>
+								<h1>
+									<h:outputText value="Refund Request Approval" />
+								</h1>
+
+								<p:panel styleClass="shadow" id="mainPanel">
+									<!-- <h2>
+										<h:outputText value="Refund Request Approval" />
+									</h2> -->
+
+									<p:confirmDialog id="noRecord" widgetVar="noRecord" width="400"
+										resizable="false" style="background-color: white !important;"
+										header="Warning Dailog" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="No Record Found !!!!!!">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="amountgreater" widgetVar="amountgreater"
+										width="350" showHeader="false" resizable="false"
+										header="Warning Message"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{msg['lbl.amountisgraterthannetamount']}">
+
+									</p:confirmDialog>
+
+									<p:confirmDialog id="csp" widgetVar="csp" width="500"
+										showHeader="false" resizable="false" header="Warning Message"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{requestRefund.errorMessage}">
+									</p:confirmDialog>
+
+									<p:dialog id="save" widgetVar="save" width="270" height="70"
+										showHeader="false" resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} " />
+										<br />
+										<p:spacer width="15px" />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{requestRefund.Ok}"
+											onclick="PF('save').hide()" process="@this"
+											update="mainPanel" />
+
+									</p:dialog>
+
+									<p:confirmDialog id="sqlexception" widgetVar="sqlexception"
+										header="#{msg['lbl.remitApplicationExceptionMessage']}"
+										resizable="false" width="700"
+										style="background-color: white !important;"
+										styleClass="warning" showEffect="clip" hideEffect="clip"
+										closeOnEscape="true" closable="true"
+										message="#{msg['lbl.procedureErrorMessage']} : #{requestRefund.exceptionMessage}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="passwordcheck" widgetVar="passwordcheck"
+										width="350" showHeader="false" resizable="false"
+										header="Warning Message"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{msg['lbl.sorrypassworddeosnotmatch']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="checkPaymentModeService"
+										widgetVar="checkPaymentModeService" height="20"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Payment Mode Service Not Avaliable">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="exCheckCashLimit"
+										widgetVar="exCheckCashLimit" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{requestRefund.excheckCashLimitMessage}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="denaminationZero"
+										header="denaminationZero" widgetVar="denaminationZero"
+										width="360" showHeader="false" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{msg['lbl.denominationqtyzero']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="cashexists" widgetVar="cashexists"
+										width="350" showHeader="false" resizable="false"
+										header="Warning Message"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{msg['lbl.cashisalreadyexist']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="bankexists" widgetVar="bankexists"
+										resizable="false" width="500"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message=" #{msg['lbl.bankisalreadyexist']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="amountmatch" widgetVar="amountmatch"
+										height="20" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{msg['lbl.netamountnotmatchingtototalamount']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="netamountgreater" header="Warning Message"
+										widgetVar="netamountgreater" showHeader="false"
+										resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{msg['lbl.netamountandpaidnotmatch']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="refundamounterror"
+										widgetVar="refundamounterror" height="20" resizable="false"
+										width="500" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{msg['lbl.refundAmountAndTotalRefundAmountNotMatching']}">
+									</p:confirmDialog>
+
+									<p:dialog id="isEmpty" widgetVar="isEmpty" width="260"
+										height="70" showHeader="false" resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel
+											value="#{msg['lbl.validationprefix']} #{msg['lbl.applicationo']}...." />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											action="#{requestRefund.clickOnOk}" process="@this" />
+									</p:dialog>
+
+									<p:dialog id="notValidTransfer" widgetVar="notValidTransfer"
+										width="260" height="70" showHeader="false" resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel
+											value="#{msg['lbl.transfernumberdoesnotexist']}" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											action="#{requestRefund.clickOnOk}" process="@this" />
+									</p:dialog>
+
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+
+									<p:confirmDialog id="notApproved" widgetVar="notApproved"
+										width="400" resizable="false"
+										style="background-color: white !important;"
+										header="Warning Dailog" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="#{msg['lbl.sameUserNotApproved']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="denominationerror"
+										widgetVar="denominationerror" height="20" resizable="false"
+										width="350" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{msg['lbl.denominationDetailsNotAvailable']}">
+									</p:confirmDialog>
+
+									<p:panel rendered="#{requestRefund.booRenderFirstPanel}">
+										<p:panel id="headerPanel">
+
+											<p:panel styleClass="panel_border" id="one">
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.documentyearNo']}" />
+														<h:outputText value="*"
+															style="color:red;font-weight:bold;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:panelGrid style="width:98%;">
+															<p:row>															
+																<p:message for="documentSerialId1" display="text"
+																	id="msgdocnum" />																	
+																<p:column id="docFin"
+																	style="width:50% !important; padding:0px 13px 0px 0px !important;">
+																	<p:inputText id="docYear" tabindex="0"
+																		value="#{requestRefund.docFinYear}">
+																		<p:ajax />
+																	</p:inputText>
+																</p:column>
+
+																<p:column
+																	style="width:50% !important; padding:0px !important;">
+																	<p:inputText id="documentSerialId1"
+																		value="#{requestRefund.documentNum}">
+																		<p:ajax event="change" onstart="process.show();"
+																			onsuccess="process.hide();"
+																			listener="#{requestRefund.getRemittanceTransDetails}"
+																			update="documentSerialId1,mainPanel,csp,msgdocnum" />
+																	</p:inputText>
+																</p:column>
+															</p:row>
+														</p:panelGrid>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.transferno']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:panelGrid style="width:100%;">
+															<p:row>
+																<p:column
+																	style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																	<p:inputText id="financeYear" tabindex="-1"
+																		value="#{requestRefund.remittanceYear}"
+																		readonly="true">
+																		<p:message for="financeYear" display="text"
+																			id="msgfinanceYear" />
+																	</p:inputText>
+																</p:column>
+																<p:column
+																	style="width:70%; padding:0px 5px 0px 10px !important;">
+																	<p:inputText id="transferNo" tabindex="-1"
+																		value="#{requestRefund.transferNo}" readonly="true" disabled="true">
+																	</p:inputText>
+																</p:column>
+															</p:row>
+														</p:panelGrid>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.productname']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="productName" tabindex="-1"
+															value="#{requestRefund.productName}" required="false"
+															readonly="true" styleClass="ui-state-disabled"
+															requiredMessage="Enter Product Name">
+															<p:ajax event="blur" update="msgProductName" />
+															<p:message for="productName" display="text"
+																id="msgProductName" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.transactionstatus']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="productStatus" tabindex="-1"
+															value="#{requestRefund.productStatus}" required="false"
+															readonly="true" styleClass="ui-state-disabled"
+															requiredMessage="Enter product Status ">
+															<p:ajax event="blur" update="msgProductStatus" />
+															<p:message for="productStatus" display="text"
+																id="msgProductStatus" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.branchname']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="branchName" tabindex="-1"
+															value="#{requestRefund.branchName}" required="false"
+															readonly="true" styleClass="ui-state-disabled"
+															requiredMessage="Enter Branch Name" >
+															<p:ajax event="blur" update="msgbranchName" />
+															<p:message for="branchName" display="text"
+																id="msgbranchName" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.customername']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:panelGrid style="width:100%;">
+															<p:row>
+																<p:column
+																	style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																	<p:inputText id="customerRefNo" tabindex="-1"
+																		value="#{requestRefund.customerRefNo}"
+																		required="false" readonly="true"
+																		styleClass="ui-state-disabled">
+																		<p:ajax event="blur" update="msgcustomerRefNo" />
+																		<p:message for="customerRefNo" display="text"
+																			id="msgcustomerRefNo" />
+																	</p:inputText>
+																</p:column>
+																<p:column
+																	style="width:70%; padding:0px 5px 0px 10px !important;">
+																	<p:inputText id="customerName" tabindex="-1"
+																		value="#{requestRefund.customerName}" required="false"
+																		readonly="true" styleClass="ui-state-disabled"
+																		requiredMessage="Enter Customer Name" style="font-size:10px !important;">
+																		<p:ajax event="blur" update="msgCustomerName" />
+																		<p:message for="customerName" display="text"
+																			id="msgCustomerName" />
+																	</p:inputText>
+																</p:column>
+															</p:row>
+														</p:panelGrid>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.telephone']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="telephoneNo" tabindex="-1"
+															value="#{requestRefund.telephoneNo}" required="false"
+															readonly="true" styleClass="ui-state-disabled"
+															requiredMessage="Enter Telephone No" >
+															<p:ajax event="blur" update="msgTelephoneNo" />
+															<p:message for="telephoneNo" display="text"
+																id="msgTelephoneNo" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<p:spacer height="40px"></p:spacer>
+												<p:spacer height="40px"></p:spacer>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+											<p:spacer height="15px" />
+
+											<p:panel styleClass="panel_border" id="CustPanel">
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.transferDate']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:calendar id="transferDate"
+															value="#{requestRefund.transferDate}" disabled="true"
+															pattern="dd/MM/yyyy" readonly="true"
+															styleClass="ui-state-disabled">
+														</p:calendar>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.validuntill']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="validUntill" tabindex="-1"
+															value="#{requestRefund.validUntill}" required="false"
+															readonly="true" styleClass="ui-state-disabled"
+															requiredMessage="Enter Valid Untill" >
+															<p:ajax event="blur" update="msgvalidUntill" />
+															<p:message for="validUntill" display="text"
+																id="msgvalidUntill" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.payablebranch']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="payableBranch" tabindex="-1"
+															value="#{requestRefund.payableBranch}" required="false"
+															readonly="true" styleClass="ui-state-disabled"
+															requiredMessage="Enter Payable Branch" >
+															<p:ajax event="blur" update="msgpayableBranch" />
+															<p:message for="payableBranch" display="text"
+																id="msgpayableBranch" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.benificiary']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col"
+														style="height:65% !important;">
+														<h:inputTextarea value="#{requestRefund.benificiary}" tabindex="-1"
+															readonly="true" styleClass="ui-state-disabled" rows="10"
+															cols="20" />
+
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.transferamount']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:panelGrid style="width:100%;">
+															<p:row>
+																<p:column
+																	style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																	<p:inputText id="transferAmountCurrency" tabindex="-1"
+																		value="#{requestRefund.transferAmountCurrency}"
+																		required="false"
+																		requiredMessage="Enter Transfer Amount Currency"
+																		readonly="true" styleClass="ui-state-disabled">
+																		<p:ajax event="blur"
+																			update="msgtransferAmountCurrency" />
+																		<p:message for="transferAmountCurrency" display="text"
+																			id="msgtransferAmountCurrency" />
+																	</p:inputText>
+																</p:column>
+																<p:column
+																	style="width:70%; padding:0px 5px 0px 10px !important;">
+																	<p:inputText id="transferAmount" tabindex="-1"
+																		value="#{requestRefund.transferAmount}"
+																		required="false" readonly="true"
+																		requiredMessage="Enter Transfer Amount"
+																		styleClass="ui-state-disabled">
+																		<p:ajax event="blur" update="msgtransferAmount" />
+																		<p:message for="transferAmount" display="text"
+																			id="msgtransferAmount" />
+																	</p:inputText>
+																</p:column>
+															</p:row>
+														</p:panelGrid>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.payablebank']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="payableBank" tabindex="-1"
+															value="#{requestRefund.payableBank}" required="false"
+															readonly="true" styleClass="ui-state-disabled"
+															requiredMessage="Enter Payable Bank" >
+															<p:ajax event="blur" update="msgpayableBank" />
+															<p:message for="payableBank" display="text"
+																id="msgpayableBank" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+											</p:panel>
+
+											<p:spacer height="15px" />
+
+											<p:panel styleClass="panel_border" id="TPanel">
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.refundfor']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="refundFor" tabindex="-1"
+															value="#{requestRefund.refundFor}" required="false"
+															readonly="true" styleClass="ui-state-disabled"
+															requiredMessage="Enter refundFor" >
+															<p:ajax event="blur" update="msgrefundFor" />
+															<p:message for="refundFor" display="text"
+																id="msgrefundFor" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.exchangerate']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+
+														<p:panelGrid style="width:100%;">
+															<p:row>
+																<p:column
+																	style="width:100%; padding:0px 5px 0px 10px !important;">
+																	<p:inputText id="exchangeRate" tabindex="-1"
+																		value="#{requestRefund.exchangeRate}" required="false"
+																		readonly="true" styleClass="ui-state-disabled"
+																		requiredMessage="Enter Exchange Rate" >
+																		<p:ajax event="blur" update="msgexchangeRate" />
+																		<p:message for="exchangeRate" display="text"
+																			id="msgexchangeRate" />
+																	</p:inputText>
+																</p:column>
+															</p:row>
+														</p:panelGrid>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.commission']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="commission" tabindex="-1"
+															value="#{requestRefund.commission}" required="false"
+															readonly="true" styleClass="ui-state-disabled"
+															requiredMessage="Enter commission" >
+															<p:ajax event="blur" update="msgcommission" />
+															<p:message for="commission" display="text"
+																id="msgcommission" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.charges']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+
+														<p:inputText id="charges" value="#{requestRefund.charges}" tabindex="-1"
+															required="false" requiredMessage="Enter charges"
+															readonly="true" styleClass="ui-state-disabled"
+															>
+															<p:ajax event="blur" update="msgcharges" />
+															<p:message for="charges" display="text" id="msgcharges" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.deliverycharges']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="deliveryCharges" tabindex="-1"
+															value="#{requestRefund.deliveryCharges}" required="false"
+															readonly="true" styleClass="ui-state-disabled"
+															requiredMessage="Enter Delivery Charges" >
+															<p:ajax event="blur" update="msgdeliveryCharges" />
+															<p:message for="deliveryCharges" display="text"
+																id="msgdeliveryCharges" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.rateadjust']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="rateAdjust" tabindex="-1"
+															value="#{requestRefund.rateAdjust}" required="false"
+															readonly="true" styleClass="ui-state-disabled"
+															requiredMessage="Enter Rate Adjust" >
+															<p:ajax event="blur" update="msgrateAdjust" />
+															<p:message for="rateAdjust" display="text"
+																id="msgrateAdjust" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.otheradjust']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="otherAdjust" tabindex="-1"
+															value="#{requestRefund.otherAdjust}" required="false"
+															readonly="true" styleClass="ui-state-disabled"
+															requiredMessage="Enter Other Adjust" >
+															<p:ajax event="blur" update="msgotherAdjust" />
+															<p:message for="otherAdjust" display="text"
+																id="msgotherAdjust" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.netrefund']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+
+														<p:inputText id="netRefund" tabindex="-1"
+															value="#{requestRefund.netRefund}" required="false"
+															readonly="true" styleClass="ui-state-disabled"
+															requiredMessage="Enter Net Refund" >
+															<p:ajax event="blur" update="msgnetRefund" />
+															<p:message for="netRefund" display="text"
+																id="msgnetRefund" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<p:spacer height="20px"></p:spacer>
+											</p:panel>
+
+											<p:spacer height="20px"></p:spacer>
+
+											<p:panel>
+												<h:panelGroup layout="block" class="clearfix" />
+												<h:panelGroup layout="block" styleClass="shadow_button">
+													<p:commandButton value="#{msg['lbl.next']}"
+														action="#{requestRefund.view}" process="@this"
+														update="mainPanel" style="margin-right:10px; "/>
+													<p:commandButton value="#{msg['lbl.clear']}"
+														action="#{requestRefund.clear}" process="@this"
+														update="mainPanel" style="margin-right:10px; "/>
+												</h:panelGroup>
+											</p:panel>
+										</p:panel>
+									</p:panel>
+
+									<p:panel styleClass="shadow"
+										style=" background-color:#FFF !important;"
+										rendered="#{requestRefund.booRenderPaymentDetails}">
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel rendered="#{requestRefund.booRendercashdenomination}">
+
+											<h2
+												style="font-size: 15px; font-weight: bold; color: #037712;"
+												align="top">&nbsp;
+												#{msg['lbl.remtdenominationdetails']} &nbsp;</h2>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<!-- <p:spacer height="20px" /> -->
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<table cellpadding="0" cellspacing="0" border="0"
+												width="100%" class="mytable">
+												<tr>
+													<th>#{msg['lbl.fclocalpurchaseserialno']}</th>
+													<th>#{msg['lbl.fclocalpurchasedenominationname']}</th>
+													<th>#{msg['lbl.fclocalpurchasenoofnotes']}</th>
+													<th>#{msg['lbl.fclocalpurchasecashamount']}</th>
+												</tr>
+												<ui:repeat value="#{requestRefund.lstData}" var="o">
+
+													<tr>
+														<td style="width: 15% ! important;"><h:outputText
+																value="#{o.serial}." /></td>
+														<td style="width: 15% ! important;"><h:outputText
+																value="#{o.denominationDesc}" /></td>
+														<td style="width: 15% ! important;"><p:message
+																for="q" display="text"
+																style="text-shadow:none !important;" /> <p:inputText
+																id="q" value="#{o.qty}"
+																tabindex="#{requestRefund.count}">
+																<p:ajax event="blur"
+																	listener="#{requestRefund.onCellEdit(o)}"
+																	update=":refundRequestForm:totalcashid,:refundRequestForm:paymentPanel,price" />
+															</p:inputText></td>
+														<td style="width: 15% ! important;"><h:outputText
+																value="#{o.price}" id="price" /></td>
+													</tr>
+												</ui:repeat>
+
+
+											</table>
+
+											<p:dialog id="cleardenominationexceed"
+												widgetVar="cleardenominationexceed" modal="true" width="350"
+												height="100" resizable="false"
+												style="background-color: white !important;"
+												styleClass="warning" header="#{msg['lbl.warningDailog']}"
+												closable="false" showEffect="clip" hideEffect="clip">
+												<p:outputLabel
+													value="#{msg['lbl.pleaseEnsureDenominationAmountShouldTallyWithCollectedAmount']}" />
+												<br />
+												<h:panelGroup style="display:block; text-align:center">
+													<p:commandButton value="#{msg['lbl.ok']}"
+														actionListener="#{requestRefund.clearDataTableClearDenomination}"
+														onclick="PF('cleardenominationexceed').hide();"
+														process="@this" />
+												</h:panelGroup>
+											</p:dialog>
+
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panelGrid style="width:80%;margin-left:100px;">
+												<p:row>
+													<p:column style="width:20% !important ;">
+														<h:outputText value="#{msg['lbl.totalcahrcvd']}" />
+													</p:column>
+
+													<p:column style="width:20% !important ;">
+														<p:inputText id="totalcashrecid" tabindex="-1"
+															value="#{requestRefund.cashAmount}" readonly="true"
+															styleClass="ui-state-disabled">
+															<p:ajax />
+														</p:inputText>
+													</p:column>
+
+													<p:column style="width:20% !important ;">
+														<h:outputText value="#{msg['lbl.toatalcash']}" />
+													</p:column>
+
+													<p:column style="width:20% !important ;">
+														<p:inputText id="totalcashid" tabindex="-1"
+															value="#{requestRefund.denomtotalCash}" readonly="true"
+															styleClass="ui-state-disabled">
+															<p:ajax />
+														</p:inputText>
+													</p:column>
+
+												</p:row>
+											</p:panelGrid>
+
+										</p:panel>
+
+										<p:panel rendered="#{requestRefund.boorefundPaymentDetails}">
+
+											<h2
+												style="font-size: 15px; font-weight: bold; color: #037712;"
+												align="top">&nbsp; #{msg['lbl.refundDenomination']}
+												&nbsp;</h2>
+
+											<p:panel styleClass="panel_border" id="refunddenomId">
+												<h:panelGroup layout="block" class="clearfix" />
+												<!-- <p:spacer height="20px" /> -->
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<h3>#{requestRefund.denominationchecking}</h3>
+
+												<table cellpadding="0" cellspacing="0" border="0"
+													width="100%" class="mytable">
+													<tr>
+														<th>#{msg['lbl.fclocalpurchaseserialno']}</th>
+														<th>#{msg['lbl.fclocalpurchasedenominationname']}</th>
+														<th>#{msg['lbl.fclocalpurchasecurrentstock']}</th>
+														<th>#{msg['lbl.fclocalpurchasenoofnotes']}</th>
+														<th>#{msg['lbl.fclocalpurchasecashamount']}</th>
+
+													</tr>
+													<ui:repeat value="#{requestRefund.lstRefundData}" var="o">
+
+														<tr>
+															<td style="width: 15% ! important;"><h:outputText
+																	value="#{o.serial}." /></td>
+															<td style="width: 15% ! important;"><h:outputText
+																	value="#{o.denominationDesc}" /></td>
+
+															<td style="width: 15% ! important;"><h:outputText
+																	value="#{o.stock}" /></td>
+															<td style="width: 15% ! important;"><p:message
+																	for="q1" display="text" /> <p:inputText id="q1"
+																	value="#{o.qty}">
+																	<p:ajax event="change" onstart="process.show();"
+																		onsuccess="process.hide();"
+																		listener="#{requestRefund.onRefundCellEdit(o)}"
+																		update=":refundRequestForm:mainPanel,refundprice,:refundRequestForm:refunddenomId,q1" />
+
+																</p:inputText></td>
+
+															<td style="width: 15% ! important;"><h:outputText
+																	value="#{o.price}" id="refundprice" /></td>
+														</tr>
+													</ui:repeat>
+
+												</table>
+
+												<p:spacer height="20px" />
+												<h:panelGroup layout="block" class="clearfix" />
+
+											</p:panel>
+
+											<p:panel id="refundDetailsId">
+
+												<p:spacer height="20px" />
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panelGrid style="width:80%;margin-left:100px;">
+													<p:row>
+
+														<p:column style="width:20% !important ;">
+															<h:outputText value="Refund Amount" />
+														</p:column>
+
+														<p:column style="width:20% !important ;">
+															<p:inputText id="refundamountid"
+																styleClass="ui-state-disabled" tabindex="-1"
+																value="#{requestRefund.totalUamount}" readonly="true">
+																<p:ajax />
+															</p:inputText>
+														</p:column>
+
+														<p:column style="width:20% !important ;">
+															<h:outputText value="Total Refund Amount" />
+														</p:column>
+
+														<p:column style="width:20% !important ;">
+															<p:inputText id="collectrefundid"
+																styleClass="ui-state-disabled" tabindex="-1"
+																value="#{requestRefund.collectedRefundAmount}"
+																readonly="true">
+																<p:ajax />
+															</p:inputText>
+														</p:column>
+
+													</p:row>
+												</p:panelGrid>
+
+											</p:panel>
+
+										</p:panel>
+
+										<p:panel rendered="#{requestRefund.booRenderPaymentDetails}">
+											<h2
+												style="font-size: 15px; font-weight: bold; color: #037712;"
+												align="top">&nbsp; #{msg['lbl.pymntdetails']} &nbsp;</h2>
+
+											<p:panel styleClass="panel_border" id="paymentPanel">
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.remarks']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{requestRefund.paymentDetailsremark}">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.paydamount']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{requestRefund.payPaidAmount}" tabindex="-1"
+															readonly="true" styleClass="ui-state-disabled">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.netpaydamnt']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{requestRefund.colCash}" tabindex="-1"
+															readonly="true" styleClass="ui-state-disabled">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.refundamt']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{requestRefund.payRefund}" tabindex="-1"
+															readonly="true" styleClass="ui-state-disabled">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<h:panelGroup layout="block" styleClass="shadow_button">
+													<p:commandButton value="#{msg['lbl.back']}"
+														action="#{requestRefund.gotoBack}" update="mainPanel"
+														style="margin-right:10px; " />
+													<p:commandButton value="#{requestRefund.nextOrSaveButton}"
+														action="#{requestRefund.saveCheck}" process="@this"
+														update="mainPanel,csp" style="margin-right:10px; " />
+													<p:commandButton value="#{msg['lbl.exit']}"
+														action="#{requestRefund.clickOnExit}" update="mainPanel"
+														immediate="true" />
+													<h:panelGroup layout="block" class="clearfix" />
+												</h:panelGroup>
+
+												<h:panelGroup layout="block" class="clearfix" />
+												<p:spacer height="20px" />
+												<h:panelGroup layout="block" class="clearfix" />
+
+											</p:panel>
+										</p:panel>
+									</p:panel>
+									<!-- End of Panel 6 and starting of panel 7-->
+
+									<p:panel styleClass="shadow"
+										style=" background-color:#FFF !important;"
+										rendered="#{requestRefund.booRenderCollection}">
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h2>
+											<h:outputText value="#{msg['lbl.chargesdetails']}" />
+										</h2>
+										<p:panel styleClass="panel_border" id="paymentModePanel">
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.transferno']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+															<p:column
+																style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText id="paymentFinanceYear" tabindex="-1"
+																	value="#{requestRefund.paymentFinanceYear}"
+																	required="false" readonly="true"
+																	requiredMessage="Enter Payment Finance Year">
+																	<p:ajax event="blur" update="msgpaymentFinanceYear" />
+																	<p:message for="paymentFinanceYear" display="text"
+																		id="msgpaymentFinanceYear" />
+																</p:inputText>
+															</p:column>
+															<p:column
+																style="width:70%; text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText id="paymentNo" readonly="true" tabindex="-1"
+																	value="#{requestRefund.applicationRef}"
+																	required="false" requiredMessage="Enter Payment No">
+																	<p:ajax event="blur" update="msgpaymentNo" />
+																	<p:message for="paymentNo" display="text"
+																		id="msgpaymentNo" />
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+
+												<p:panel styleClass="inner_right_col">
+													<h:outputText value=" #{msg['lbl.paymentdate']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:calendar id="paymentDate" disabled="true" tabindex="-1"
+														value="#{requestRefund.paymentDate}" pattern="dd/MM/yyyy">
+													</p:calendar>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.netrefund']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="netamountid" tabindex="-1"
+														value="#{requestRefund.calNetAmountPaid}" readonly="true"
+														required="true">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:spacer height="10px" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</p:panel>
+										<p:spacer height="10px" />
+										<p:panel styleClass="panel_border" id="paymentModePanelF">
+											<h2>
+												<h:outputText value="#{msg['lbl.pymtmode']}" />
+											</h2>
+											<p:spacer height="10px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.pymtmode']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+
+												<p:panel styleClass="inner_right_col">
+												
+													<p:message for="paymentmode" display="text"
+														id="msgpaymentmode" />
+													<p:selectOneMenu id="paymentmode" tabindex="0" styleClass="dropdown"
+														value="#{requestRefund.colpaymentmodeId}"
+														filterMatchMode="contains" filter="true" required="true"
+														requiredMessage="please Select Payment Mode ">
+														<f:selectItem itemLabel="#{msg['lbl.selectmodetyp']}" />
+														<f:selectItems value="#{requestRefund.lstFetchPayMode}"
+															var="c" itemLabel="#{c.localPaymentName}"
+															itemValue="#{c.paymentMode.paymentModeId}" />
+
+														<p:ajax event="change"
+															listener="#{requestRefund.changeofPaymentMode}"
+															update="msgpaymentmode,debitdetails,mainPanel" />
+													</p:selectOneMenu>
+												</p:panel>
+
+											</p:panel>
+
+											<p:panel styleClass="right_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.amount']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="cashid" display="text" id="msgcashid" />
+													<p:inputText id="cashid" value="#{requestRefund.colCash}"
+														required="true" requiredMessage="Please Enter Amount"
+														converterMessage="Please Enter Numbers Only " disabled="true">
+														<p:ajax />
+														<!-- <f:validator
+															validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" /> -->
+														<!-- <p:ajax event="blur"
+															listener="#{requestRefund.checkcashcollection}"
+															update="cashid,msgcashid,amountgreater,paymentmode" /> -->
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<!-- Bank details capturing start -->
+
+											<p:panel id="debitdetails"
+												rendered="#{requestRefund.booRenderColDebitCard}">
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.banks']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgcolbankid" for="colbankid"
+															display="text" />
+														<p:selectOneMenu id="colbankid" styleClass="dropdown"
+															value="#{requestRefund.colBankCode}"
+															filterMatchMode="contains" filter="true" required="true"
+															requiredMessage="Please Select Bank">
+															<!-- <f:selectItem itemLabel="Select Bank" itemValue="" /> -->
+															<f:selectItem itemLabel="#{msg['lbl.selectBank']}"
+																itemValue="" />
+
+															<f:selectItems value="#{requestRefund.bankMasterList}"
+																var="c"
+																itemLabel="#{c.bankShortName} - #{c.bankFullName}"
+																itemValue="#{c.chequeBankCode}" />
+
+															<p:ajax
+																update="colcardno,msgcolbankid,cardtypename,mainPanel"
+																event="change"
+																listener="#{requestRefund.populateCustomerDetails}"
+																onstart="process.show();" onsuccess="process.hide();" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+
+												<p:confirmDialog id="misMatchBankCardLength"
+													widgetVar="misMatchBankCardLength" height="20"
+													resizable="false" width="500"
+													style="background-color: white !important;"
+													header="#{msg['lbl.warningDailog']}" styleClass="warning"
+													showEffect="clip" hideEffect="clip" closeOnEscape="true"
+													closable="true"
+													message="#{msg['lbl.bankDebitCardLengthShouldMatchWith']} #{requestRefund.colCardNoLength} ">
+												</p:confirmDialog>
+
+												<p:confirmDialog id="alertmsg" widgetVar="alertmsg"
+													header="Alert Message" resizable="false"
+													style="background-color: white !important;"
+													styleClass="warning" showEffect="clip" hideEffect="clip"
+													closeOnEscape="true" closable="true"
+													message="#{requestRefund.exceptionMessage}">
+												</p:confirmDialog>
+
+												<p:panel styleClass="left_col" id="colcardno">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.cardnumb']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+
+														<p:panelGrid style="width:100%;">
+															<p:row>
+																<p:column
+																	style="width:50% !important; padding:0px 13px 0px 0px !important;"
+																	rendered="#{requestRefund.booRenderSingleDebit}">
+																	<p:message for="colcardid" display="text"
+																		id="msgcolcardid" />
+																	<p:inputText id="colcardid"
+																		value="#{requestRefund.colCardNo}" required="true"
+																		requiredMessage="Please Enter Card Number"
+																		maxlength="#{requestRefund.colCardNoLength}">
+																		<p:ajax
+																			update="msgcolcardid,colcardid,misMatchBankCardLength"
+																			listener="#{requestRefund.checkingCardNumberLength}"
+																			event="blur" />
+																	</p:inputText>
+																</p:column>
+																<p:column
+																	style="width:45% !important; padding:0px !important;"
+																	rendered="#{requestRefund.booRenderMulDebit}">
+																	<p:message for="debitcardId" display="text"
+																		id="msgdebitcardId" />
+																	<p:selectOneMenu id="debitcardId" styleClass="dropdown"
+																		value="#{requestRefund.colCardNo}" filter="true"
+																		filterMatchMode="contains" required="true"
+																		requiredMessage="Please Enter Card Number">
+																		<f:selectItem itemLabel="Select Debit Card"
+																			itemValue="" />
+																		<f:selectItems value="#{requestRefund.lstDebitCard}"
+																			var="c" itemLabel="#{c.debitCard}"
+																			itemValue="#{c.debitCard}" />
+																		<p:ajax for="msgdebitcardId" event="change"
+																			listener="#{requestRefund.populateCustKnetCardDetails}"
+																			update="mainPanel" onstart="process.show();"
+																			onsuccess="process.hide();" />
+																	</p:selectOneMenu>
+																</p:column>
+
+																<p:column
+																	style="width:5% !important; padding:0px !important;text-align:right !important;"
+																	rendered="#{requestRefund.booRenderMulDebit}">
+																	<p:commandButton value=" " styleClass="edit"
+																		onstart="process.show();" onsuccess="process.hide()"
+																		update="mainPanel"
+																		action="#{requestRefund.editDebitCardtoEnter}"
+																		process="@this" />
+																</p:column>
+
+															</p:row>
+														</p:panelGrid>
+
+													</p:panel>
+
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.nameofcard']}" />
+													</p:panel>
+
+													<p:panel styleClass="inner_right_col" id="cardtypename">
+														<p:message id="msgcolnameid" for="colnameid"
+															display="text" />
+														<p:inputText id="colnameid"
+															value="#{requestRefund.colNameofCard}" required="true"
+															requiredMessage="Please Enter Name of Card">
+															<p:ajax event="blur"
+																listener="#{requestRefund.firstNameCheck}"
+																update="msgcolnameid,authpanel,mainPanel,alertmsg"
+																onstart="process.show();" onsuccess="process.hide();" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.approvalNumber']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col" id="colApprovalNoId">
+														<p:message id="msgcolapprovalno" for="colapprovalno"
+															display="text" />
+														<p:inputText id="colapprovalno"
+															value="#{requestRefund.colApprovalNo}" required="true"
+															requiredMessage="Please Enter Approval No">
+															<p:ajax update="msgcolapprovalno" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panel id="authpanel"
+													rendered="#{requestRefund.booAuthozed}">
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.authorzed']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message id="msgcolauthorid" for="colauthorid"
+																display="text" />
+															<p:selectOneMenu id="colauthorid" styleClass="dropdown"
+																value="#{requestRefund.colAuthorizedby}"
+																filterMatchMode="contains" filter="true" required="true"
+																requiredMessage="Please Select Authorized">
+																<f:selectItem itemLabel="Select Authorized" itemValue="" />
+																<f:selectItems value="#{requestRefund.empllist}" var="c"
+																	itemLabel="#{c.userName}" itemValue="#{c.userName}" />
+																<p:ajax update="msgcolauthorid" />
+															</p:selectOneMenu>
+														</p:panel>
+													</p:panel>
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.password']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col" id="testpanel">
+															<p:message id="msgcolpassword" for="colpassid"
+																display="text" />
+															<p:password id="colpassid"
+																value="#{requestRefund.colpassword}" required="true"
+																requiredMessage="Please Enter Authorized Password">
+																<p:ajax update="msgcolpassword" />
+															</p:password>
+														</p:panel>
+													</p:panel>
+
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+											</p:panel>
+
+											<!-- Bank details capturing end -->
+
+											<p:panel id="chequedetails"
+												rendered="#{requestRefund.booRenderColCheque}">
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.banks']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgcolchequebankid" for="colchequebankid"
+															display="text" />
+														<p:selectOneMenu id="colchequebankid" styleClass="dropdown"
+															value="#{requestRefund.colchequebankCode}"
+															filterMatchMode="contains" filter="true" required="true"
+															requiredMessage="Please Select Bank">
+															<f:selectItem itemLabel="#{msg['lbl.selectBank']}"
+																itemValue="" />
+															<f:selectItems
+																value="#{requestRefund.chequebankMasterList}" var="c"
+																itemLabel="#{c.bankFullName}"
+																itemValue="#{c.chequeBankCode}" />
+															<p:ajax update="mainPanel" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col" id="chequeRef">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Cheque Reference" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="colChequeRefId" display="text"
+															id="msgcolChequeRefId" />
+														<p:inputText id="colChequeRefId"
+															value="#{requestRefund.colChequeRef}" required="true"
+															requiredMessage="Please Enter Cheque Ref Number">
+															<p:ajax update="msgcolChequeRefId" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Cheque Date" />
+														<h:outputText value="*"
+															style="color:red;font-weight:bold;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+
+
+														<p:message for="hdValueDate" display="text" id="hdValDate" />
+														<p:calendar id="hdValueDate"
+															value="#{requestRefund.colChequeDate}" mode="popup"
+															pattern="dd/MM/yyyy"
+															mindate="#{requestRefund.effectiveMinDate}"
+															navigator="true" readonlyInput="true" required="true"
+															requiredMessage="Enter Cheque Date">
+															<p:ajax update="hdValDate" />
+														</p:calendar>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.approvalNumber']}" />
+													</p:panel>
+
+													<p:panel styleClass="inner_right_col" id="colChequeAppNoId">
+														<p:message id="msgcolChequeAppNo" for="colChequeAppNo"
+															display="text" />
+														<p:inputText id="colChequeAppNo"
+															value="#{requestRefund.colChequeApprovalNo}"
+															required="true"
+															requiredMessage="Please Enter Approval No">
+															<p:ajax update="msgcolChequeAppNo" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+											</p:panel>
+
+											<!-- cheque details ends and bank transfer starts --> 
+
+											<p:panel id="btdetails"
+												rendered="#{requestRefund.booRenderBankTransfer}">
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.banks']}" />
+													</p:panel>
+												<p:panel styleClass="inner_left_col">
+														<p:message id="msgcolbankTransferid"
+															for="colbankTransferid" display="text" />
+														<p:selectOneMenu id="colbankTransferid" styleClass="dropdown"
+															value="#{requestRefund.colBankTransferBankCode}"
+															filterMatchMode="contains" filter="true" required="true"
+															requiredMessage="Please Select Bank">
+															<f:selectItem itemLabel="#{msg['lbl.selectBank']}"
+																itemValue="" />
+															<f:selectItems
+																value="#{requestRefund.chequebankMasterList}"
+																var="c"
+																itemLabel="#{c.bankShortName} - #{c.bankFullName}"
+																itemValue="#{c.chequeBankCode}" />
+															<p:ajax update="mainPanel" event="change"
+																listener="#{requestRefund.populateCustomerDetails}"
+																onstart="process.show();" onsuccess="process.hide();" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+												
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.approvalNumber']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col" id="btAppNoId">
+														<p:message id="msgbtAppNo" for="btAppNo" display="text" />
+														<p:inputText id="btAppNo"
+															value="#{requestRefund.bankTransferApprovalNo}"
+															required="true"
+															requiredMessage="Please Enter Approval No">
+															<p:ajax update="msgbtAppNo" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+											</p:panel>
+											
+											<!-- Ends and bank transfer here --> 
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+
+												<p:commandButton value="#{msg['lbl.add']}"
+													action="#{requestRefund.verifyPassword}" process="@this"
+													update="mainPanel,colpaymenttype,csp,sqlexception"
+													style="margin-right:10px; " />
+
+												<p:commandButton value="#{msg['lbl.back']}"
+													action="#{requestRefund.gotoFirstPanel}" update="mainPanel"
+													immediate="true" style="margin-right:10px; " />
+
+												<p:commandButton value="#{msg['lbl.exit']}"
+													action="#{requestRefund.clickOnExit}" update="mainPanel"
+													immediate="true" />
+
+											</h:panelGroup>
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:spacer height="10px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:dataTable var="c" id="colpaymenttype"
+												styleClass="mydatatableclass"
+												value="#{requestRefund.coldatatablevalues}"
+												rowIndexVar="rowIndex" editable="true" editMode="cell"
+												emptyMessage="#{msg['lbl.norecordfound']}"
+												rendered="#{requestRefund.booRendercollectiondatatable}"
+												rows="5" paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10,15" paginatorPosition="bottom">
+
+												<p:column headerText="#{msg['lbl.sino']}"
+													style="width:50px;">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.paymenttyp']}"
+													sortBy="#{c.colpaymentmodetypeDT}">
+													<h:outputText value="#{c.colpaymentmodetypeDT}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.bank']}"
+													sortBy="#{c.colbankNameDT}"
+													style="width:15% !important; text-align:center !important;">
+													<h:outputText value="#{c.colbankNameDT}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.cardnumb']}"
+													sortBy="#{c.colCardNumberDT}"
+													style="width:15% !important; text-align:center !important;">
+													<h:outputText value="#{c.colCardNumberDT}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.nameofcard']}">
+													<h:outputText value="#{c.colNameofCardDT}" />
+												</p:column>
+
+												<p:column headerText="Cheque Ref.No"
+													sortBy="#{c.colchequeRefNo}">
+													<h:outputText value="#{c.colchequeRefNo}" />
+												</p:column>
+
+												<p:column headerText="Cheque Date"
+													sortBy="#{c.colchequeDate}">
+													<h:outputText value="#{c.colchequeDate}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.approvalNumber']}">
+													<h:outputText value="#{c.colApprovalNo}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.amount']}">
+													<h:outputText value="#{c.colAmountDT}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.edit']}">
+													<p:commandButton id="imgEdit" styleClass="edit" value=""
+														onstart="process.show();" onsuccess="process.hide()"
+														action="#{requestRefund.editRecord(c)}"
+														update=":refundRequestForm:paymentModePanel,:refundRequestForm:paymentModePanelF,colpaymenttype"
+														process="@this">
+														<p:tooltip for="imgEdit" value="#{msg['lbl.edit']}" />
+													</p:commandButton>
+												</p:column>
+
+												<p:column>
+													<f:facet name="header">
+														<h:outputText value="#{msg['lbl.delete']}" />
+													</f:facet>
+													<p:commandButton value="" onstart="process.show();"
+														onsuccess="process.hide()"
+														actionListener="#{requestRefund.deletePaymentModeRecords(c)}"
+														styleClass="delete" process="@this"
+														update=":refundRequestForm:colpaymenttype,:refundRequestForm:mainPanel" />
+												</p:column>
+
+											</p:dataTable>
+											<p:spacer height="10px" />
+
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="full_col"
+												rendered="#{requestRefund.booRendercollectiondatatable}">
+												<p:panelGrid style="width:100%;">
+													<p:row>
+														<p:column
+															style="width:16%; padding:0px 5px 0px 10px !important;">
+															<h:outputText value="#{msg['lbl.totalAmount']}" />
+														</p:column>
+
+														<p:column
+															style="width:16%; padding:0px 5px 0px 10px !important;">
+															<p:inputText value="#{requestRefund.toalUsedAmount}" tabindex="-1"
+																styleClass="ui-state-disabled" readonly="true" />
+														</p:column>
+
+														<p:column
+															style="width:16%; padding:0px 5px 0px 10px !important;">
+															<h:outputText value="Balance to Collect" />
+														</p:column>
+
+														<p:column
+															style="width:16%; padding:0px 5px 0px 10px !important;">
+															<p:inputText styleClass="ui-state-disabled" tabindex="-1"
+																value="#{requestRefund.totalbalanceAmount}"
+																readonly="true" />
+														</p:column>
+
+														<p:column
+															style="width:16%; padding:0px 5px 0px 10px !important;">
+															<h:outputText value="Amount to Refund" />
+														</p:column>
+
+														<p:column
+															style="width:16%; padding:0px 5px 0px 10px !important;">
+															<p:inputText styleClass="ui-state-disabled" tabindex="-1"
+																value="#{requestRefund.totalrefundAmount}"
+																readonly="true" />
+														</p:column>
+
+													</p:row>
+												</p:panelGrid>
+
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" styleClass="shadow_button"
+												rendered="#{requestRefund.booRendercollectiondatatable}">
+												<p:commandButton id="next" value="#{msg['lbl.next']}"
+													action="#{requestRefund.nextpaneltoPaymentDetails}"
+													update="mainPanel" immediate="true" />
+											</h:panelGroup>
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" class="clearfix" />
+										</p:panel>
+									</p:panel>
+
+									<!-- End of Panel 7 -->
+									<!-- <p:panel rendered="#{requestRefund.successPanel}"
+											style="padding:60px 100px 60px 100px !important;">
+											<fieldset
+												style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+												<legend
+													style="font-size: 20px; font-weight: bold; color: #037712;"
+													align="top">&nbsp;#{msg['lbl.success']}&nbsp;</legend>
+
+												<p:outputLabel
+													value="#{msg['lbl.dataSuccessFullySavedClickOkToContinue']}"
+													style="font-size: 18px !important; font-weight: bold; color: #037712; padding:20px 150px 20px 230px !important;" >
+
+												<p:panel style="padding-left: 400px;">
+														<p:commandButton value="#{msg['lbl.ok']}"
+															action="#{requestRefund.navigateToRefundRequestPage}" process="@this" />
+													</p:panel>
+													</p:outputLabel>
+												<p:outputLabel
+													value="#{msg['lbl.doYouWantPrintRReport']}    "
+													style=" font-weight: bold; color: #037712; padding:30px 0px 0px 0px !important;">
+													<h:commandLink value="#{msg['lbl.clickHere']} "
+														actionListener="#{requestRefund.genarateRefundRequestOfficeCopyReports}"
+														style="font-weight: bold; font-size: 12px !important; color:blue !important; text-decoration:underline !important;"
+														process="@this" immediate="true" />
+													
+												</p:outputLabel>
+												<p:outputLabel
+													value="#{msg['lbl.doYouWantPrintRReport']}    "
+													style=" font-weight: bold; color: #037712; padding:30px 0px 0px 0px !important;">
+													<h:commandLink value="#{msg['lbl.clickHere']} "
+														actionListener="#{requestRefund.genarateRefundRequestCustomerCopyReports}"
+														style="font-weight: bold; font-size: 12px !important; color:blue !important; text-decoration:underline !important;"
+														process="@this" immediate="true" />
+												</p:outputLabel>
+											</fieldset>
+										</p:panel> -->
+
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

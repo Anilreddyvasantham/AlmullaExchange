@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script src="../js/SigWeb.js"  type="text/javascript"></script>
+	<script src="../js/digitalsignature.js"></script>
+	<script type="text/javascript">
+		var baseUri = "http://localhost:47289/SigWeb/";		
+
+		
+		history.pushState(null, null, 'bankaccountapprovallist.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'bankaccountapprovallist.xhtml');
+	    });
+		
+	</script>
+</h:head>
+
+<h:body> 
+
+
+<p:confirmDialog id="unapprove" widgetVar="unapprove" width="400"  resizable="false" 
+      style="background-color: white !important;" header="Warning Dailog" styleClass="warning"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="#{msg['lbl.sameusernotabletoapprove']}">
+</p:confirmDialog>
+   
+						 
+<p:confirmDialog id="csp" widgetVar="csp"   showHeader="false" resizable="false" header="Warning Message" styleClass="warning"
+														style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="explode" hideEffect="explode" message="#{bankaccountdetails.errorMesssage}">
+</p:confirmDialog>
+							
+<p:confirmDialog id="nullPoiterId"
+                                                                     widgetVar="nullPoiterId" resizable="false"
+                                                                     style="background-color: white !important;"
+                                                                     header="#{msg['lbl.warningDailog']}" styleClass="warning"
+                                                                     showEffect="clip" hideEffect="clip" closeOnEscape="true"
+                                                                     closable="true"
+                                                                     message="#{bankaccountdetails.errorMesssage} - #{msg['lbl.nullPonterExcepetion']}">
+</p:confirmDialog>  
+			
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+							<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+						</td>
+
+				<td class="rightColumn" valign="top">
+				<h:panelGroup layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form1">
+								<h1>
+									<h:outputText
+										value="#{msg['lbl.bankaccountapproval']}" />
+								</h1>				
+		  				
+							<p:panel styleClass="shadow" id="mainPanel">
+							
+							<p:confirmDialog id="csp" widgetVar="csp"   showHeader="false" resizable="false" header="Warning Message" styleClass="warning"
+														style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="explode" hideEffect="explode" message="#{bankaccountdetails.errorMesssage}">
+							  	    </p:confirmDialog>
+							
+							<p:dialog modal="true" showHeader="false" widgetVar="process"
+												id="process" width="300" height="60" resizable="false"
+												draggable="false" closable="false"
+												style=" border: 3px green solid !important;background-color: #FFF !important;">
+												<div
+													style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+													<p:graphicImage value="../images/processImg.gif"
+														style="float: left !important; margin-right: 24px !important; " />
+													<p:outputLabel value="Please wait ........"
+														style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+												</div>
+												</p:dialog>
+							
+							
+								<h2>
+								<h:outputText
+											value="#{msg['lbl.bankaccountapprovallist']}" />
+											<p:commandLink action="#{bankaccountdetails.exit}"
+														 process="@this">
+														<p:graphicImage value="../images/return.jpg" width="25" height="25" id="imgEdit" styleClass="icon_right" style="float:right;" />
+														<p:tooltip for="imgEdit" value="Go to Home" style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" />
+													</p:commandLink>
+								</h2>
+								
+								<p:panel id="bankApproval" styleClass="panel_border">											
+												
+												<p:dataTable id="dataTableId" var="o"  sortMode="multiple" styleClass="mydatatableclass"
+												rows="10" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  rowsPerPageTemplate="5,10,15"
+												value="#{bankaccountdetails.approvalList}" rowIndexVar="rowIndex" emptyMessage="#{msg['lbl.recordnotfound']}" paginatorPosition="bottom">
+												
+
+												<p:column headerText="#{msg['lbl.sino']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.bankCode']}" sortBy="#{o.bankCode}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.bankCode}" />
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.bankName']}" sortBy="#{o.bankName}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.bankName}" />
+												</p:column>
+												
+												
+												<p:column headerText="#{msg['lbl.accountno']}" sortBy="#{o.accountNo}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.accountNo}" />
+												</p:column>
+
+												 <p:column headerText="#{msg['lbl.telephone']}" sortBy="#{o.telephone}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.telephone}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.fax']}" sortBy="#{o.fax}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.fax}" />
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.email']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.email}" />
+												</p:column> 
+												
+												<p:column headerText="#{msg['lbl.department']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.department}" />
+												</p:column>
+										
+												
+												<p:column headerText="#{msg['lbl.approve']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:commandLink action="#{bankaccountdetails.gotoApproval(o)}"
+														 process="@this" onstart="process.show();" onsuccess="process.hide();">
+														<p:graphicImage value="../images/approve.jpg" width="25" height="25" id="imgEdit" style="float:center;"/>
+													<p:tooltip for="imgEdit" value="#{msg['lbl.approve']}"
+														style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" />
+												</p:commandLink>
+												</p:column>
+
+											</p:dataTable>
+										</p:panel>
+								
+							</p:panel>
+						</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"/>
+					</h:panelGroup>
+					<h:panelGroup layout="block" class="clearfix"/>
+					</td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script src="../js/SigWeb.js" type="text/javascript"></script>
+	<script src="../js/digitalsignature.js"></script>
+	<script type="text/javascript">
+		//var baseUri = "http://localhost:47289/SigWeb/";
+		var baseUri = makeUri();
+		$(function() {
+			/*
+			 * this swallows backspace keys on any non-input element.
+			 * stops backspace -> back
+			 */
+			var rx = /INPUT|SELECT|TEXTAREA/i;
+
+			$(document).bind(
+					"keydown keypress",
+					function(e) {
+						if (e.which == 8) { // 8 == backspace
+							if (!rx.test(e.target.tagName) || e.target.disabled
+									|| e.target.readOnly) {
+								e.preventDefault();
+							}
+						}
+					});
+		});
+	</script>
+	<style>
+.centeralign {
+	margin-left: auto;
+	margin-right: auto;
+	width: 6em
+}
+</style>
+</h:head>
+
+<h:body onload="javascript:onClear()">
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<f:event listener="#{beneficaryTransactionBean.populateValue}"
+			type="preRenderView" />
+
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+					<!-- <ui:include src="../common/common_menu.xhtml"></ui:include> -->
+					<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+				</td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+
+							<p:dialog modal="true" showHeader="false" widgetVar="process"
+								id="process" width="300" height="60" resizable="false"
+								draggable="false" closable="false"
+								style=" border: 2px green solid !important;background-color: #FFF !important;">
+								<div
+									style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+									<p:graphicImage value="../images/processImg.gif"
+										style="float: left !important; margin-right: 24px !important; " />
+									<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+										style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+								</div>
+							</p:dialog>
+
+							<p:dialog id="invalidNoOFNotes" widgetVar="invalidNoOFNotes"
+								width="400" height="30" resizable="false"
+								style=" border:3px solid #F33535 !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 43px no-repeat #FFF !important;"
+								showEffect="clip" hideEffect="clip" closeOnEscape="true"
+								closable="true" modal="true">
+
+								<p:outputLabel style="padding-left:20px;"
+									value="#{msg['lbl.enternoofnoteswithincurrentstock']} : #{beneficaryTransactionBean.validNoOFQuantity} !!!!!" />
+							</p:dialog>
+
+							<p:dialog id="complete" widgetVar="complete" showHeader="false"
+								resizable="false"
+								style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 345px 45px no-repeat #FFF !important;"
+								showEffect="clip" hideEffect="clip" closeOnEscape="true"
+								closable="true" modal="true">
+
+								<p:outputLabel value="FC Sale Saved Successfully" />
+								<br />
+
+								<p:commandButton value="ok"
+									actionListener="#{beneficaryTransactionBean.completed}"
+									process="@this" />
+							</p:dialog>
+
+							<p:confirmDialog id="procedureErr" widgetVar="procedureErr"
+								resizable="false" style="background-color: white !important;"
+								header="#{msg['lbl.warningDailog']}" styleClass="warning"
+								showEffect="clip" hideEffect="clip" closeOnEscape="true"
+								closable="true"
+								message="#{msg['lbl.procedureErrorMessage']} : #{beneficaryTransactionBean.errmsg}">
+							</p:confirmDialog>
+
+							<p:confirmDialog id="reportnotavailable"
+								widgetVar="reportnotavailable" resizable="false"
+								style="background-color: white !important;"
+								header="#{msg['lbl.warningDailog']}" styleClass="warning"
+								showEffect="clip" hideEffect="clip" closeOnEscape="true"
+								closable="true"
+								message="Reprint Not Available For This Transaction">
+							</p:confirmDialog>
+
+							<p:confirmDialog id="report" widgetVar="report"
+								visible="#{beneficaryTransactionBean.booDialogCall}"
+								resizable="false" style="background-color: white !important;"
+								header="#{msg['lbl.warningDailog']}" styleClass="warning"
+								showEffect="clip" hideEffect="clip" closeOnEscape="true"
+								closable="true" message="#{beneficaryTransactionBean.errmsg}">
+							</p:confirmDialog>
+
+							<h:form id="form1" target="_blank">
+
+								<h1>
+									<h:outputText value="#{msg['lbl.rem.title']}" />
+								</h1>
+
+								<p:panel styleClass="shadow" id="mainPanel">
+
+									<p:confirmDialog id="noreport" widgetVar="noreport"
+										visible="#{beneficaryTransactionBean.booRenderReport}"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="Report Not Available For Western Union">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="noDatafound" widgetVar="noDatafound"
+										visible="#{beneficaryTransactionBean.booRenderData}"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Data Not Available">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="username" widgetVar="username" width="400"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{msg['lbl.sameusernotabletoShowAllDetails']}">
+									</p:confirmDialog>
+
+									<p:panel
+										rendered="#{beneficaryTransactionBean.booRenderFcSalePanel}">
+
+										<h2>
+											<h:outputText value="#{msg['lbl.rem.title']}" />
+										</h2>
+
+										<p:panel styleClass="panel_border">
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panelGrid style="width:100%;">
+
+												<p:row>
+
+													<p:column style="width:33%;">
+														<h:outputText value="#{msg['lbl.customerrefno']}*"></h:outputText>
+														<p:inputText
+															value="#{beneficaryTransactionBean.customerrefno}"
+															size="20" style="font-size:11px !important;"
+															readonly="true" />
+													</p:column>
+
+													<p:column style="width:33%;">
+														<h:outputText value="#{msg['lbl.customerName']}"></h:outputText>
+														<p:inputText id="name"
+															value="#{beneficaryTransactionBean.name}" readonly="true"
+															size="20">
+															<p:tooltip for="name" value="#{msg['lbl.customername']}" />
+														</p:inputText>
+
+													</p:column>
+
+													<p:column style="width:33%;">
+														<h:outputText value="#{msg['lbl.rem.civilid']}"></h:outputText>
+														<p:inputText value="#{beneficaryTransactionBean.civilId}"
+															size="20" style="font-size:11px !important;"
+															readonly="true" />
+													</p:column>
+
+												</p:row>
+											</p:panelGrid>
+
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panelGrid style="width:100%;">
+
+												<p:row>
+
+													<p:column style="width:33%;">
+														<h:outputText value="#{msg['lbl.rem.passport']}">
+														</h:outputText>
+														<p:inputText id="passport"
+															value="#{beneficaryTransactionBean.passportNo}"
+															readonly="true" size="20">
+															<p:tooltip for="passport"
+																value="#{msg['lbl.rem.passport']}" />
+														</p:inputText>
+													</p:column>
+
+													<p:column style="width:33%;">
+														<h:outputText value="#{msg['lbl.rem.nickname']}"></h:outputText>
+														<p:inputText value="#{beneficaryTransactionBean.nickName}"
+															size="20" style="font-size:11px !important;"
+															readonly="true" />
+													</p:column>
+
+													<p:column style="width:33%;">
+														<h:outputText value="C.R No"></h:outputText>
+														<p:inputText id="crno"
+															value="#{beneficaryTransactionBean.crNo}" size="20"
+															readonly="true">
+															<p:tooltip for="crno" value="#{msg['lbl.rem.crno']}" />
+														</p:inputText>
+													</p:column>
+
+												</p:row>
+											</p:panelGrid>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panelGrid style="width:100%;">
+
+												<p:row>
+
+													<p:column style="width:33%;">
+														<h:outputText value="#{msg['lbl.rem.phoffice']}"></h:outputText>
+														<p:inputText
+															value="#{beneficaryTransactionBean.officeTelephone}"
+															style="font-size:11px !important;" readonly="true" />
+													</p:column>
+
+													<p:column style="width:33%;">
+														<h:outputText value="#{msg['lbl.rem.phresi']}"></h:outputText>
+														<p:inputText id="residenceTelephone"
+															value="#{beneficaryTransactionBean.residenceTelephone}"
+															readonly="true">
+															<p:tooltip for="name" value="#{msg['lbl.rem.phresi']}" />
+														</p:inputText>
+													</p:column>
+
+													<p:column style="width:33%;">
+														<h:outputText value="#{msg['lbl.rem.mobile']}"></h:outputText>
+														<p:inputText value="#{beneficaryTransactionBean.mobileNo}"
+															style="font-size:11px !important;" readonly="true" />
+													</p:column>
+
+												</p:row>
+											</p:panelGrid>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panelGrid style="width:100%;">
+												<p:row>
+
+													<p:column style="width:33%;">
+														<h:outputText value="#{msg['lbl.rem.acestatus']}"></h:outputText>
+														<p:inputText
+															value="#{beneficaryTransactionBean.aceamlStatus}"
+															style="font-size:11px !important;" readonly="true" />
+													</p:column>
+
+													<p:column style="width:33%;">
+														<h:outputText value="#{msg['lbl.user']}"></h:outputText>
+														<p:inputText value="#{beneficaryTransactionBean.userName}"
+															style="font-size:11px !important;" readonly="true" />
+													</p:column>
+
+													<p:column style="width:33%;">
+														<h:outputText value="#{msg['lbl.noofhits']}"></h:outputText>
+														<p:inputText id="status22"
+															value="#{beneficaryTransactionBean.numberOfHits}"
+															readonly="true">
+															<p:tooltip for="status22" value="" />
+														</p:inputText>
+													</p:column>
+
+												</p:row>
+											</p:panelGrid>
+
+											<p:panelGrid style="width:100%;">
+												<p:row>
+													<p:column style="width:33%;">
+														<h:outputText value="#{msg['lbl.amldate']}"></h:outputText>
+														<p:inputText value="#{beneficaryTransactionBean.amlDate}"
+															style="font-size:11px !important;" readonly="true" />
+													</p:column>
+													<p:column style="width:33%;">
+													</p:column>
+													<p:column style="width:33%;">
+													</p:column>
+												</p:row>
+											</p:panelGrid>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="10px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<div style="width: 100%; border-bottom: 1px solid black;"></div>
+
+											<p:spacer height="10px" />
+
+											<p:dataTable style="width:100%;" id="dataTable"
+												styleClass="mydatatableclass"
+												value="#{beneficaryTransactionBean.customerInquiryDataList}"
+												var="d" rowIndexVar="rowIndex"
+												emptyMessage="#{msg['lbl.norecordfound']}" rows="15"
+												paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="15,20,25" paginatorPosition="bottom">
+
+												<p:column headerText="#{msg['lbl.sNo']}"
+													style="width:3% !important;">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.rem.trnxref']}"
+													style="width:10% !important;">
+													<p:commandLink
+														value="#{d.documentFinanceYear} / #{d.transactionNumber}"
+														style="font-weight: bold; font-size: 12px !important; color:blue !important; text-decoration:underline !important;"
+														action="#{beneficaryTransactionBean.gotoCustonmerInquiry(d)}"
+														onstart="process.show();" onsuccess="process.hide()"
+														process="@this" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.rem.transactiontype']}"
+													sortBy="#{d.product}" style="width:8% !important;">
+													<h:outputText value="#{d.product}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.rem.tranxdate']}"
+													style="width:7% !important;" sortBy="#{d.transferDate}">
+													<h:outputText value="#{d.transferDate}">
+														<f:convertDateTime pattern="dd-MM-yyyy" />
+													</h:outputText>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.rem.benedet']}"
+													style="width:22% !important;">
+													<h:outputText value="#{d.beneDetails}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.rem.bank']}"
+													style="width:28% !important;word-wrap: break-word;">
+													<h:outputText value="#{d.bankPayable}" />
+												</p:column>
+
+												<!-- <p:column headerText="#{msg['lbl.currency']}" style="width:6% !important;">
+													<h:outputText value="#{d.currencyName}" />
+												</p:column> -->
+
+												<p:column headerText="#{msg['lbl.rem.amt']}"
+													style="width:10% !important;">
+													<h:outputText
+														value="#{d.transactionAmount} [#{d.currencyName}]" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.rem.tranxstatus']}"
+													style="width:6% !important;">
+													<h:outputText value="#{d.status}" />
+												</p:column>
+
+												<p:column headerText=" #{msg['lbl.report']}">
+													<h:commandLink
+														value="REPRINT"
+														action="#{beneficaryTransactionBean.report(d)}"
+														style="color:blue !important; text-decoration:underline !important;"
+														immediate="true" update="mainPanel" process="@this" />
+												</p:column>
+
+												<p:column headerText="Declaration #{msg['lbl.report']}">
+													<h:commandLink
+														value="#{d.declarationReport  eq true?'REPRINT' :''}"
+														action="#{beneficaryTransactionBean.reportDeclaration(d)}"
+														style="color:blue !important; text-decoration:underline !important;"
+														immediate="true" update="mainPanel" process="@this" />
+												</p:column>
+
+											</p:dataTable>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="#{msg['lbl.back']}"
+													style="margin-left:10px;" process="@this"
+													action="#{beneficaryTransactionBean.backToRemitanceFirstPanel}"
+													immediate="true" update="mainPanel" />
+												<div class="clearfix"></div>
+											</h:panelGroup>
+
+										</p:panel>
+
+									</p:panel>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+					</h:panelGroup></td>
+			</tr>
+		</table>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

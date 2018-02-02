@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions">
+<h:head>
+
+	<style>
+myRadioCtrl span {
+	padding-right: 10px;
+}
+</style>
+
+
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+		history.pushState(null, null, 'loyaltyPrivileges.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'loyaltyPrivileges.xhtml');
+	    });
+	</script>
+</h:head>
+<p:dialog id="succsses" widgetVar="succsses" width="270" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip"
+	closeOnEscape="true" closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.benisuccessfull']}" />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{loyaltyPrivilegesBean.pageNavigation}" process="@this" />
+</p:dialog>
+
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;" id="HideHandle" name="HideHandle" src="../images/toggle_plus.png" alt="" onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="loyaltyPrivilegesForm">
+								<h1>
+									<h:outputText value="#{msg['lbl.ltyPrivileges']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h2>
+										<h:outputText value="#{msg['lbl.ltyPrivileges']}" />
+									</h2>
+
+                                   <p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{loyaltyPrivilegesBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+
+
+									<p:confirmDialog id="exception" header="#{msg['lbl.warning']}"
+										widgetVar="exception" width="600" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{loyaltyPrivilegesBean.errorMessage}">
+
+										<p:commandButton value="#{msg['lbl.ok']}"
+											onclick="exception.hide()" process="@this" update="mainPanel" />
+
+									</p:confirmDialog>
+									
+									<p:confirmDialog id="csp" widgetVar="csp" width="500" showHeader="false" resizable="false" header="Warning Message"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip" message="#{loyaltyPrivilegesBean.errorMessage}">
+									</p:confirmDialog>
+
+									<p:dialog id="save" widgetVar="save" width="270" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip"
+										closeOnEscape="true" closable="true" modal="true">
+										<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} " />
+										<br />
+										<p:spacer width="15px" />
+										<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{loyaltyPrivilegesBean.pageNavigation}" onclick="PF('save').hide()" process="@this" update="mainPanel" />
+									</p:dialog>
+
+
+
+									<p:panel styleClass="panel_border">
+										<p:panel id="headerPanel">
+
+											<p:panel styleClass="left_col" id="relationPanel">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.username']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgUserName" for="userName" display="text" />
+													<p:selectOneMenu id="userName" value="#{loyaltyPrivilegesBean.userName}" filter="true"  filterMatchMode="startsWith"  required="true" requiredMessage="Please select User Name">
+														<f:selectItem itemLabel="#{msg['lbl.selectusername']}" itemValue="" />
+														<f:selectItems value="#{loyaltyPrivilegesBean.employeeList}" var="c" itemLabel="#{c.userName}" itemValue="#{c.userName}" />
+														
+														<p:ajax event="change" listener="#{loyaltyPrivilegesBean.populateData}" update="msgUserName,loyaltyPrivilegesForm" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()"  />
+														<p:ajax event="blur" listener="#{loyaltyPrivilegesBean.populateData}" update="msgUserName,loyaltyPrivilegesForm"  />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											
+											<h:panelGroup layout="block" class="clearfix" />
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.ltyCategory']}" />
+												</p:panel>
+												<p:panel>
+
+													<p:message id="msgLive" for="liveindi" display="text" />
+													<h:selectOneRadio styleClass="labelcall" id="liveindi"  style=" padding-right: 10px;" value="#{loyaltyPrivilegesBean.loyaltyCategory}" label="Method Type" required="true" requiredMessage="Please choose Live Indicator" >
+														<f:selectItem itemValue="Y" itemLabel="#{msg['lbl.yes']}" id="y11" />
+														<f:selectItem itemValue="N" itemLabel="#{msg['lbl.no']}" id="n11" />
+														<p:ajax update="msgLive" />
+													</h:selectOneRadio>
+												</p:panel>
+
+											</p:panel>
+
+
+
+
+
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.ltytype']}" />
+													<!-- <h:outputText value="*" style="color:red !important;" /> -->
+												</p:panel>
+												<p:panel>
+													<!-- <p:message id="msgNEFT" for="neft" display="text" /> -->
+													<h:selectOneRadio styleClass="labelcall" id="neft"  style=" padding-right: 10px;" value="#{loyaltyPrivilegesBean.loyaltyType}" immediate="true" layout="custom">
+														<f:selectItem itemValue="Y" itemLabel="#{msg['lbl.yes']}" id="y" />
+														<f:selectItem itemValue="N" itemLabel="#{msg['lbl.no']}" id="no"  />
+														<!-- <p:ajax update="msgNEFT" /> -->
+														<p:ajax />
+
+
+
+													</h:selectOneRadio>
+												</p:panel>
+
+											</p:panel>
+											<div class="clearfix"></div>
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.ltyparam']}" />
+													<!-- <h:outputText value="*" style="color:red !important;" /> -->
+												</p:panel>
+												<p:panel>
+													<!-- <p:message id="msgRTGS" for="rtgs" display="text" /> -->
+													<h:selectOneRadio styleClass="labelcall" id="rtgs"  style=" padding-right: 10px;" value="#{loyaltyPrivilegesBean.loyaltyParameter}" immediate="true">
+														<f:selectItem itemValue="Y" itemLabel="#{msg['lbl.yes']}" id="ye" />
+														<f:selectItem itemValue="N" itemLabel="#{msg['lbl.no']}" id="no1" />
+														<!-- <p:ajax update="msgRTGS" /> -->
+														<p:ajax />
+
+
+
+													</h:selectOneRadio>
+												</p:panel>
+
+											</p:panel>
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.ltypro']}" />
+													<!-- <h:outputText value="*" style="color:red !important;" /> -->
+												</p:panel>
+												<p:panel>
+													<!-- <p:message id="msgXML" for="xml" display="text" /> -->
+													<h:selectOneRadio styleClass="labelcall" id="xml"  style=" padding-right: 10px;" value="#{loyaltyPrivilegesBean.loyaltyPromotion}" label="Method Type" immediate="true">
+														<f:selectItem itemValue="Y" itemLabel="#{msg['lbl.yes']}" id="yes1" />
+														<f:selectItem itemValue="N" itemLabel="#{msg['lbl.no']}" id="no2" />
+
+
+														<p:ajax />
+
+
+													</h:selectOneRadio>
+												</p:panel>
+
+											</p:panel>
+											<div class="clearfix"></div>
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.encashment']}" />
+													<!-- <h:outputText value="*" style="color:red !important;" /> -->
+												</p:panel>
+												<p:panel>
+													<style>
+.labelcall label {
+	margin-right: 35px !important;
+}
+</style>
+													<!-- <p:message id="msgOWSFalg" for="owsflag" display="text" /> -->
+													<h:selectOneRadio styleClass="labelcall" id="owsflag"  style="margin-right: 35px !important;" value="#{loyaltyPrivilegesBean.encashment}" immediate="true">
+														<f:selectItem itemValue="Y" itemLabel="#{msg['lbl.yes']}" id="yes2" />
+														<f:selectItem itemValue="N" itemLabel="#{msg['lbl.no']}" id="no3" />
+														<!-- 	<p:ajax update="msgOWSFalg" />
+													 <p:ajax  /> 
+ -->
+
+
+													</h:selectOneRadio>
+												</p:panel>
+
+											</p:panel>
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.claimreq']}" />
+													<!-- <h:outputText value="*" style="color:red !important;" /> -->
+												</p:panel>
+												<p:panel>
+													<!-- <p:message id="msgXML" for="xml" display="text" /> -->
+													<h:selectOneRadio styleClass="labelcall" id="claimreq"  style=" padding-right: 10px;" value="#{loyaltyPrivilegesBean.claimRequest}" label="Method Type" immediate="true">
+														<f:selectItem itemValue="Y" itemLabel="#{msg['lbl.yes']}" id="claimreqyes1" />
+														<f:selectItem itemValue="N" itemLabel="#{msg['lbl.no']}" id="claimreqno2" />
+
+
+														<p:ajax />
+
+
+													</h:selectOneRadio>
+												</p:panel>
+
+											</p:panel>
+											<div class="clearfix"></div>
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.claimapproval']}" />
+													<!-- <h:outputText value="*" style="color:red !important;" /> -->
+												</p:panel>
+												<p:panel>
+													<!-- <p:message id="msgXML" for="xml" display="text" /> -->
+													<h:selectOneRadio styleClass="labelcall" id="claimapproval"  style=" padding-right: 10px;" value="#{loyaltyPrivilegesBean.claimApproval}" label="Method Type" immediate="true">
+														<f:selectItem itemValue="Y" itemLabel="#{msg['lbl.yes']}" id="claimapprovalyes1" />
+														<f:selectItem itemValue="N" itemLabel="#{msg['lbl.no']}" id="claimapprovalno2" />
+
+
+														<p:ajax />
+
+
+													</h:selectOneRadio>
+												</p:panel>
+
+											</p:panel>
+											<div class="clearfix"></div>
+
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.calc']}" />
+													<!-- <h:outputText value="*" style="color:red !important;" /> -->
+												</p:panel>
+												<p:panel>
+													<!-- <p:message id="msgXML" for="xml" display="text" /> -->
+													<h:selectOneRadio styleClass="labelcall" id="calc"  style=" padding-right: 10px;" value="#{loyaltyPrivilegesBean.calculation}" label="Method Type" immediate="true">
+														<f:selectItem itemValue="Y" itemLabel="#{msg['lbl.yes']}" id="calcyes1" />
+														<f:selectItem itemValue="N" itemLabel="#{msg['lbl.no']}" id="calcno2" />
+
+
+														<p:ajax />
+
+
+													</h:selectOneRadio>
+												</p:panel>
+
+											</p:panel>
+											<div class="clearfix"></div>
+
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.statement']}" />
+													<!-- <h:outputText value="*" style="color:red !important;" /> -->
+												</p:panel>
+												<p:panel>
+													<!-- <p:message id="msgXML" for="xml" display="text" /> -->
+													<h:selectOneRadio styleClass="labelcall" id="statement"  style=" padding-right: 10px;" value="#{loyaltyPrivilegesBean.statementAccount}" label="Method Type" immediate="true">
+														<f:selectItem itemValue="Y" itemLabel="#{msg['lbl.yes']}" id="statementyes1" />
+														<f:selectItem itemValue="N" itemLabel="#{msg['lbl.no']}" id="statementcalcno2" />
+
+
+														<p:ajax />
+
+
+													</h:selectOneRadio>
+												</p:panel>
+
+											</p:panel>
+											<div class="clearfix"></div>
+
+
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.ltypointreport']}" />
+													<!-- <h:outputText value="*" style="color:red !important;" /> -->
+												</p:panel>
+												<p:panel>
+													<!-- <p:message id="msgXML" for="xml" display="text" /> -->
+													<h:selectOneRadio styleClass="labelcall" id="ltypointreport"  style=" padding-right: 10px;" value="#{loyaltyPrivilegesBean.loyaltyPointReport}" label="Method Type" immediate="true">
+														<f:selectItem itemValue="Y" itemLabel="#{msg['lbl.yes']}" id="ltypointreportyes1" />
+														<f:selectItem itemValue="N" itemLabel="#{msg['lbl.no']}" id="ltypointreportno2" />
+
+
+														<p:ajax />
+
+
+													</h:selectOneRadio>
+												</p:panel>
+
+											</p:panel>
+											<div class="clearfix"></div>
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.cumbr']}" />
+													<!-- <h:outputText value="*" style="color:red !important;" /> -->
+												</p:panel>
+												<p:panel>
+													<!-- <p:message id="msgXML" for="xml" display="text" /> -->
+													<h:selectOneRadio styleClass="labelcall" id="cumbr"  style=" padding-right: 10px;" value="#{loyaltyPrivilegesBean.loyaltycumReport}" label="Method Type" immediate="true">
+														<f:selectItem itemValue="Y" itemLabel="#{msg['lbl.yes']}" id="cumbryes1" />
+														<f:selectItem itemValue="N" itemLabel="#{msg['lbl.no']}" id="cumbrno2" />
+
+
+														<p:ajax />
+
+
+													</h:selectOneRadio>
+												</p:panel>
+
+											</p:panel>
+											<div class="clearfix"></div>
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.custpointsummary']}" />
+													<!-- <h:outputText value="*" style="color:red !important;" /> -->
+												</p:panel>
+												<p:panel>
+													<!-- <p:message id="msgXML" for="xml" display="text" /> -->
+													<h:selectOneRadio styleClass="labelcall" id="custpointsummary"  style=" padding-right: 10px;" value="#{loyaltyPrivilegesBean.customerReport}" label="Method Type" immediate="true">
+														<f:selectItem itemValue="Y" itemLabel="#{msg['lbl.yes']}" id="custpointsummaryyes1" />
+														<f:selectItem itemValue="N" itemLabel="#{msg['lbl.no']}" id="custpointsummaryno2" />
+
+
+														<p:ajax />
+
+
+													</h:selectOneRadio>
+												</p:panel>
+
+											</p:panel>
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.custpointbal']}" />
+													<!-- <h:outputText value="*" style="color:red !important;" /> -->
+												</p:panel>
+												<p:panel>
+													<!-- <p:message id="msgXML" for="xml" display="text" /> -->
+													<h:selectOneRadio styleClass="labelcall" id="custpointbal"  style=" padding-right: 10px;" value="#{loyaltyPrivilegesBean.customerBalanceReport}" label="Method Type" immediate="true">
+														<f:selectItem itemValue="Y" itemLabel="#{msg['lbl.yes']}" id="custpointbalyes1" />
+														<f:selectItem itemValue="N" itemLabel="#{msg['lbl.no']}" id="custpointbalno2" />
+
+
+														<p:ajax />
+
+
+													</h:selectOneRadio>
+												</p:panel>
+
+											</p:panel>
+											<div class="clearfix"></div>
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.ltyclaimreport']}" />
+													<!-- <h:outputText value="*" style="color:red !important;" /> -->
+												</p:panel>
+												<p:panel>
+													<!-- <p:message id="msgXML" for="xml" display="text" /> -->
+													<h:selectOneRadio styleClass="labelcall" id="ltyclaimreport"  style=" padding-right: 10px;" value="#{loyaltyPrivilegesBean.claimReport}" label="Method Type" immediate="true">
+														<f:selectItem itemValue="Y" itemLabel="#{msg['lbl.yes']}" id="ltyclaimreportyes1" />
+														<f:selectItem itemValue="N" itemLabel="#{msg['lbl.no']}" id="ltyclaimreportno2" />
+
+
+														<p:ajax />
+
+
+													</h:selectOneRadio>
+												</p:panel>
+
+											</p:panel>
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.usrprivileges']}" />
+													<!-- <h:outputText value="*" style="color:red !important;" /> -->
+												</p:panel>
+												<p:panel>
+													<!-- <p:message id="msgXML" for="xml" display="text" /> -->
+													<h:selectOneRadio styleClass="labelcall" id="usrprivileges"  style=" padding-right: 10px;" value="#{loyaltyPrivilegesBean.setPrivileges}" label="Method Type" immediate="true">
+														<f:selectItem itemValue="Y" itemLabel="#{msg['lbl.yes']}" id="usrprivilegesyes1" />
+														<f:selectItem itemValue="N" itemLabel="#{msg['lbl.no']}" id="usrprivilegesno2" />
+
+
+														<p:ajax />
+
+
+													</h:selectOneRadio>
+												</p:panel>
+
+											</p:panel>
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.calcscheduler']}" />
+													<!-- <h:outputText value="*" style="color:red !important;" /> -->
+												</p:panel>
+												<p:panel>
+													<!-- <p:message id="msgXML" for="xml" display="text" /> -->
+													<h:selectOneRadio styleClass="labelcall" id="calcscheduler"  style=" padding-right: 10px;" value="#{loyaltyPrivilegesBean.calcScheduler}" label="Method Type" immediate="true">
+														<f:selectItem itemValue="Y" itemLabel="#{msg['lbl.yes']}" id="calcscheduleryes1" />
+														<f:selectItem itemValue="N" itemLabel="#{msg['lbl.no']}" id="calcschedulerno2" />
+
+
+														<p:ajax />
+
+
+													</h:selectOneRadio>
+												</p:panel>
+
+											</p:panel>
+											<div class="clearfix"></div>
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.logoptions']}" />
+													<!-- <h:outputText value="*" style="color:red !important;" /> -->
+												</p:panel>
+												<p:panel>
+													<!-- <p:message id="msgXML" for="xml" display="text" /> -->
+													<h:selectOneRadio styleClass="labelcall" id="logoptions"  style=" padding-right: 10px;" value="#{loyaltyPrivilegesBean.logOptions}" label="Method Type" immediate="true">
+														<f:selectItem itemValue="Y" itemLabel="#{msg['lbl.yes']}" id="logoptionsyes1" />
+														<f:selectItem itemValue="N" itemLabel="#{msg['lbl.no']}" id="logoptionsno2" />
+														<p:ajax />
+
+
+													</h:selectOneRadio>
+												</p:panel>
+
+											</p:panel>
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.emailConf']}" />
+													<!-- <h:outputText value="*" style="color:red !important;" /> -->
+												</p:panel>
+												<p:panel>
+													<!-- <p:message id="msgXML" for="xml" display="text" /> -->
+													<h:selectOneRadio styleClass="labelcall" id="emailConf"  style=" padding-right: 10px;" value="#{loyaltyPrivilegesBean.mailOptions}" label="Method Type" immediate="true">
+														<f:selectItem itemValue="Y" itemLabel="#{msg['lbl.yes']}" id="emailConfyes1" />
+														<f:selectItem itemValue="N" itemLabel="#{msg['lbl.no']}" id="emailConfno2" />
+
+
+														<p:ajax />
+
+
+													</h:selectOneRadio>
+												</p:panel>
+
+											</p:panel>
+											<div class="clearfix"></div>
+
+
+
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.save']}" action="#{loyaltyPrivilegesBean.save}" update="mainPanel" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" />
+
+											<p:commandButton value="#{msg['lbl.exit']}" action="#{loyaltyPrivilegesBean.clickOnExit}" immediate="true" />
+											<p:commandButton value="#{msg['lbl.clear']}" action="#{loyaltyPrivilegesBean.clearAll}" update="mainPanel" process="@this" immediate="true" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+										<p:panel styleClass="left_col">
+											<h:outputText id="mandatory" value=" #{msg['lbl.*filedsAreMandatory']}" style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+								</p:panel>
+							</h:form>
+
+							<pe:blockUI widgetVar="blockUIWidget">
+								<h:panelGrid columns="2">
+									<p:graphicImage value="../images/ajax_loader.gif" />
+									<h:outputText value="#{msg['lbl.dataBeingProcessing']}" style="white-space: nowrap;" />
+								</h:panelGrid>
+							</pe:blockUI>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

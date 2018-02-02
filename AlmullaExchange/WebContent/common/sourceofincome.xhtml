@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+
+ <script type="text/javascript" language="javascript">
+ 
+	 history.pushState(null, null, 'sourceofincome.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'sourceofincome.xhtml');
+	    });
+	</script>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</h:head>
+<p:dialog id="complete" widgetVar="complete" width="400" height="80"
+	resizable="false" style="background-color: white !important;"
+	styleClass="success" header="#{msg['lbl.success']}" closable="false"
+	showEffect="clip" hideEffect="clip">
+	<p:outputLabel
+		value=" Source Of Income  #{msg['lbl.recrdSavedSuccessfully']} "
+		style="text-align: center; font-size:15px !important;" />
+	<br />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{sourceOfIncomeBean.pageNavigationToSourceOfIncome}"
+		process="@this" style="margin-left: 150px !important;" />
+</p:dialog>
+<p:confirmDialog id="recordAlreadyExist" widgetVar="recordAlreadyExist"
+	width="400" resizable="false"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.forthiscombinationrecords']}">
+</p:confirmDialog>
+<p:confirmDialog id="norecordsfound" widgetVar="norecordsfound"
+	width="400" resizable="false"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.norecordfound']}">
+</p:confirmDialog>
+<p:confirmDialog id="remarksEmpty" widgetVar="remarksEmpty" width="400"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.remarksShouldNotBeEmpty']}">
+</p:confirmDialog>
+<p:confirmDialog id="recordAlreadyExist1"
+	widgetVar="recordAlreadyExist1" width="400" resizable="false"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="This SourceCode Already Record Existed">
+	<p:commandButton value="#{msg['lbl.ok']}" action="#{sourceOfIncomeBean.clearPopulatedData}" onclick="PF('recordAlreadyExist1').hide();" update="sourceofincomeform" ></p:commandButton>
+</p:confirmDialog>
+<p:dialog id="alreadyapprov" widgetVar="alreadyapprov" width="400"
+	height="80" resizable="false"
+	style="background-color: white !important;" styleClass="warning"
+	header="#{msg['lbl.warningDailog']}" closable="false" showEffect="clip"
+	hideEffect="clip">
+	<p:outputLabel value="#{msg['lbl.approvedbyanother']}"
+		style="text-align: center; font-size:15px !important;" />
+	<br />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{sourceOfIncomeApprovalBean.pageNavigationToSourceIncomeApproval}"
+		process="@this" style="margin-left: 150px !important;" />
+</p:dialog>
+
+
+<p:dialog id="approve" widgetVar="approve" width="400" height="80"
+	resizable="false" style="background-color: white !important;"
+	styleClass="success" header="#{msg['lbl.success']}" closable="false"
+	showEffect="clip" hideEffect="clip">
+	<p:outputLabel value="#{msg['lbl.approvedSuccess']} "
+		style="text-align: center; font-size:15px !important;" />
+	<br />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{sourceOfIncomeApprovalBean.pageNavigationToSourceIncomeApproval}"
+		process="@this" style="margin-left: 150px !important;" />
+</p:dialog>
+
+
+
+
+<p:dialog id="permanentDelete" widgetVar="permanentDelete" width="400"
+	height="80" resizable="false"
+	style="background-color: white !important;" styleClass="warning"
+	header="#{msg['lbl.deleteRecrd']}" closable="false" showEffect="clip"
+	hideEffect="clip">
+	<p:outputLabel value="#{msg['lbl.douWantDeleteRecordPermentely']}"
+		style="text-align: center; font-size:15px !important;" />
+	<br />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{sourceOfIncomeBean.confirmPermanentDelete}"
+		process="@this" oncomplete="PF('permanentDelete').hide();"
+		update="sourceofincomeform" style="margin-left: 150px !important;" />
+	<p:commandButton value="#{msg['lbl.cancel']}"
+		onclick="PF('permanentDelete').hide();" immediate="true"
+		style="margin-left:10px;" />
+</p:dialog>
+<p:dialog id="pending" widgetVar="pending" width="400" height="80"
+	resizable="false" style="background-color: white !important;"
+	styleClass="warning" header="#{msg['lbl.warningDailog']}"
+	closable="false" showEffect="clip" hideEffect="clip">
+	<p:outputLabel value="#{msg['lbl.plsApproveRecord']}"
+		style="text-align: center; font-size:15px !important;" />
+	<br />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		onclick="PF('pending').hide();" immediate="true"
+		style="margin-left: 150px !important;" />
+</p:dialog>
+
+<p:dialog id="activateRecord" widgetVar="activateRecord" width="400"
+	height="80" resizable="false"
+	style="background-color: white !important;" styleClass="warning"
+	header="#{msg['lbl.activateRecrd']}" closable="false" showEffect="clip"
+	hideEffect="clip">
+	<p:outputLabel value="#{msg['lbl.doyouactivaterecord']}"
+		style="text-align: center; font-size:15px !important;" />
+	<br />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{sourceOfIncomeBean.activateRecord}" process="@this"
+		oncomplete="PF('activateRecord').hide();" update="sourceofincomeform"
+		style="margin-left: 150px !important;" />
+	<p:commandButton value="#{msg['lbl.cancel']}"
+		onclick="PF('activateRecord').hide();" immediate="true"
+		style="margin-left:10px;" />
+</p:dialog>
+
+
+
+
+
+
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="sourceofincomeform">
+
+								<h1>
+									<h:outputText value="#{msg['lbl.sourceofincomemaster']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+
+									<h2>
+										<h:outputText value="#{msg['lbl.sourceofincomemaster']}" />
+									</h2>
+									
+									<p:confirmDialog id="error" widgetVar="error" width="600" visible="#{sourceOfIncomeBean.booVisible}"
+										showHeader="true" resizable="false" header="Warning Message"
+										styleClass="ui-confirmdialog-yes"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:green; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{sourceOfIncomeBean.errorMessage}">
+									</p:confirmDialog>
+
+									<p:dialog id="remarks" widgetVar="remarks" width="480"
+										resizable="false" style="background-color: white !important;"
+										styleClass="info" header="Remarks" closable="false"
+										showEffect="clip" hideEffect="clip">
+										<p:panel>
+											<table>
+												<tr>
+													<td><h:outputText value="#{msg['lbl.approvedDate']} :" /></td>
+													<td><h:outputText
+															value="#{sourceOfIncomeBean.approvedDate}"
+															style="color:red !important;" /></td>
+												</tr>
+												<tr>
+													<td><h:outputText value="#{msg['lbl.approvedBy']} :" /></td>
+													<td><h:outputText
+															value="#{sourceOfIncomeBean.approvedBy}"
+															style="color:red !important;" /></td>
+												</tr>
+											</table>
+										</p:panel>
+										<p:spacer height="10px" />
+										<p:panel>
+											<h:outputText value="#{msg['lbl.enterremarks']}" />
+											<h:outputText value="*" style="color:red !important;" />
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel>
+											<h:inputTextarea id="remarksId"
+												value="#{sourceOfIncomeBean.remarks}"
+												validatorMessage="Maximum 255 charectors allowed">
+												<p:ajax />
+												<f:validateLength maximum="255"></f:validateLength>
+											</h:inputTextarea>
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel style="padding-left:160px;">
+											<p:commandButton value="#{msg['lbl.ok']}"
+												style="margin-right:10px; "
+												actionListener="#{sourceOfIncomeBean.remarkSelectedRecord}"
+												process="@this" update="mainPanel,error" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												actionListener="#{sourceOfIncomeBean.clearRemarks}"
+												process="@this" update="mainPanel" />
+										</p:panel>
+									</p:dialog>
+
+
+
+									<p:panel styleClass="left_col" id="sourceofincomeCodePanel">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['lbl.sourceofincomecode']}" />
+											<h:outputText value="*" style="color:red !important;" />
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:message id="msgsourceofincomecode"
+												for="sourceofincomecodeid" display="text" />
+											<p:autoComplete id="sourceofincomecodeid"
+												value="#{sourceOfIncomeBean.sourceCode}"
+												completeMethod="#{sourceOfIncomeBean.autoComplete}"
+												maxlength="10" maxResults="10" onchange="clearAll(this);"
+												required="true"
+												requiredMessage="Please Enter Complaint Code"
+												readonly="#{sourceOfIncomeBean.readOnly}">
+												<f:validateRegex pattern="[a-zA-Z0-9]+" />
+												<p:ajax update="msgsourceofincomecode,mainPanel,error"
+													event="itemSelect"
+													listener="#{sourceOfIncomeBean.populateAllFields}" />
+												<p:ajax update="msgsourceofincomecode,mainPanel,error"
+													event="change"
+													listener="#{sourceOfIncomeBean.populateAllFields}" />
+												<!-- 	<p:ajax update="mainPanel" event="blur" process="@this" listener="#{sourceOfIncomeBean.populateAllFields}" /> -->
+											</p:autoComplete>
+
+										</p:panel>
+									</p:panel>
+									<div class="clearfix" />
+
+
+									<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['lbl.fullDesc']}" />
+											<h:outputText value="*" style="color:red !important;" />
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:message id="msgfulldescid" for="fulldescid" display="text" />
+											<p:inputTextarea id="fulldescid"
+												value="#{sourceOfIncomeBean.srcIncomeEngFullDesc}"
+												required="true"
+												requiredMessage="Please Enter Full Description"
+												style="height:30px !important;" maxlength="80"
+												validatorMessage="please Enter English Language"
+												readonly="#{sourceOfIncomeBean.readOnly}">
+												<f:validateRegex pattern="[a-zA-Z0-9 ]+" />
+												<p:ajax event="blur" update="msgfulldescid" />
+											</p:inputTextarea>
+										</p:panel>
+									</p:panel>
+
+									<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['lbl.shortDesc']}" />
+											<h:outputText value="*" style="color:red !important;" />
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:message id="msgshortdescid" for="shortdescid"
+												display="text" />
+											<p:inputText id="shortdescid"
+												value="#{sourceOfIncomeBean.srcIncomeEngShortDesc}"
+												required="true"
+												requiredMessage="Please Enter  Short Description"
+												maxlength="10"
+												validatorMessage="please Enter English Language"
+												readonly="#{sourceOfIncomeBean.readOnly}">
+												<f:validateRegex pattern="[a-zA-Z0-9 ]+" />
+												<p:ajax event="blur" update="msgshortdescid" />
+											</p:inputText>
+										</p:panel>
+									</p:panel>
+
+									<div class="clearfix" />
+
+									<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['lbl.localfulldescription']}" />
+											<h:outputText value="*" style="color:red !important;" />
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:message id="msgfulldesclocal" for="fulldesclocalid"
+												display="text" />
+											<p:inputTextarea id="fulldesclocalid"
+												value="#{sourceOfIncomeBean.srcIncomeArabicFullDesc}"
+												required="true"
+												requiredMessage="Please Enter Full Description"
+												style="height:30px !important;text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;"
+												maxlength="80" dir="RTL"
+												validatorMessage="Please Enter full description in local"
+												readonly="#{sourceOfIncomeBean.readOnly}">
+												<f:validator validatorId="arabicValidator" />
+												<p:ajax event="blur" update="msgfulldesclocal" />
+											</p:inputTextarea>
+										</p:panel>
+									</p:panel>
+
+
+
+
+
+									<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['lbl.localshortdescription']}" />
+											<h:outputText value="*" style="color:red !important;" />
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:message id="msgshortdesclocal" for="localshortid"
+												display="text" />
+											<p:inputText id="localshortid"
+												value="#{sourceOfIncomeBean.srcIncomeArabicShortDesc}"
+												required="true"
+												requiredMessage="Please Enter  Short Description "
+												maxlength="10"
+												style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;"
+												dir="RTL"
+												validatorMessage="Please Enter short description in local"
+												readonly="#{sourceOfIncomeBean.readOnly}">
+												<f:validator validatorId="arabicValidator" />
+												<p:ajax event="blur" update="msgshortdesclocal" />
+											</p:inputText>
+										</p:panel>
+									</p:panel>
+
+									<div class="clearfix" />
+									<p:panel styleClass="left_col">
+										<h:outputText id="mandatory"
+											value=" #{msg['lbl.*filedsAreMandatory']}"
+											style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:outputText value="#{msg['lbl.arbicLanguaue']}"
+											style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+									</p:panel>
+									<div class="clearfix" />
+									<p:spacer height="20px" />
+									<h:panelGroup layout="block" class="clearfix" />
+									<h:panelGroup layout="block" styleClass="shadow_button"
+										rendered="#{sourceOfIncomeBean.booRenderViewPanel}">
+
+										<p:commandButton value="#{msg['lbl.add']}"
+											action="#{sourceOfIncomeBean.addRecordsToDataTable}"
+											update=":sourceofincomeform,error" />
+										<p:commandButton value="#{msg['lbl.view']}"
+											action="#{sourceOfIncomeBean.viewAll}" process="@this"
+											immdiate="true" update=":sourceofincomeform,error" />
+
+
+
+
+										<p:commandButton id="clearid" value="#{msg['lbl.clear']}"
+											action="#{sourceOfIncomeBean.clearAll}"
+											update=":sourceofincomeform" process="@this"
+											disabled="#{sourceOfIncomeBean.hideClearButton}" />
+
+									</h:panelGroup>
+									<h:panelGroup layout="block" styleClass="shadow_button"
+										rendered="#{sourceOfIncomeBean.booRenderApprove}">
+										<p:commandButton value="#{msg['lbl.approve']}"
+											action="#{sourceOfIncomeBean.approve}"
+											update=":sourceofincomeform" />
+
+										<p:commandButton value="#{msg['lbl.cancel']}"
+											action="#{sourceOfIncomeApprovalBean.pageNavigationToSourceIncomeApproval}"
+											immediate="true" update=":sourceofincomeform" process="@this" />
+
+									</h:panelGroup>
+
+
+
+									<p:dataTable var="c" value="#{sourceOfIncomeBean.srcIncDTList}"
+										rows="10" paginator="true"
+										paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+										rowsPerPageTemplate="5,10,15" editable="true" id="datatable"
+										emptyMessage="#{msg['lbl.norecordfound']}"
+										rowIndexVar="rowIndex" paginatorPosition="bottom"
+										styleClass="mydatatableclass"
+										rendered="#{sourceOfIncomeBean.booRenderDataTable}">
+
+										<p:column headerText="#{msg['lbl.sino']}"
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputText value="#{rowIndex+1}" />
+										</p:column>
+										<p:column headerText="#{msg['lbl.sourceofincomecode']}"
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputText value="#{c.sourceOfIncomeCode}" />
+										</p:column>
+
+										<p:column headerText="#{msg['lbl.sourceofincomefulldesc']}"
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputText value="#{c.sourceOfIncomeEngFullDesc}" />
+										</p:column>
+										<p:column headerText="#{msg['lbl.sourceofincomeshortdesc']}"
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputText value="#{c.sourceOfIncomeEngShortDesc}" />
+										</p:column>
+
+										<p:column
+											headerText="#{msg['lbl.sourceofincomefulldesclocal']}"
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputText value=" #{c.sourceOfIncomeArabicFullDesc}" />
+										</p:column>
+										<p:column
+											headerText="#{msg['lbl.sourceofincomeshortdesclocal']}"
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputText value="#{c.sourceOfIncomeArabicShortDesc}" />
+										</p:column>
+
+										<p:column headerText="#{msg['lbl.edit']}"
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<p:commandButton id="imgEdit" styleClass="edit" value=""
+												update=":sourceofincomeform" process="@this"
+												action="#{sourceOfIncomeBean.editRecord(c)}"
+												disabled="#{sourceOfIncomeBean.hideEditButton}" />
+										</p:column>
+										<p:column headerText="#{msg['lbl.activatedeactivate']}"
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<p:commandLink
+												action="#{sourceOfIncomeBean.checkStatusType(c)}"
+												value="#{c.dynamicLabelForActivateDeactivcate}"
+												style="color:blue !important; text-decoration:underline !important;"
+												update=":sourceofincomeform" immediate="true"
+												process="@this" />
+										</p:column>
+
+
+									</p:dataTable>
+
+
+									<h:panelGroup layout="block" styleClass="shadow_button"
+										id="subid" rendered="#{sourceOfIncomeBean.booSubmitPanel}">
+
+										<p:commandButton value="#{msg['lbl.submit']}"
+											action="#{sourceOfIncomeBean.saveDataTableRecords}"
+											immediate="true" process="@this" update="mainPanel" disabled="#{sourceOfIncomeBean.hideSubmitButton}"/>
+
+										<p:commandButton value="#{msg['lbl.exit']}" immediate="true"
+											action="#{sourceOfIncomeBean.exitButton}" />
+
+									</h:panelGroup>
+
+									<p:dialog modal="true" showHeader="true" header="Please wait.."
+										widgetVar="process" id="process" width="400" height="100"
+										resizable="false" draggable="false" closable="false"
+										style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+										<div style="text-align: center;">
+											<p:graphicImage value="../images/preloader.gif" />
+										</div>
+									</p:dialog>
+								</p:panel>
+
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

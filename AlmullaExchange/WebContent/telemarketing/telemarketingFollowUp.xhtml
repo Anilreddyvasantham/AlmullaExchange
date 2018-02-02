@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+	</script>
+	<script>
+		history.pushState(null, null, 'telemarketingFollowUp.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'telemarketingFollowUp.xhtml');
+		});
+	</script>
+
+	<style>
+.table-no-select-all .ui-chkbox-all {
+	display: none !important;
+}
+</style>
+
+</h:head>
+
+<p:confirmDialog id="error" widgetVar="error" resizable="false"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all"
+	message="#{telemarketingBean.errorMessage}">
+</p:confirmDialog>
+
+<p:confirmDialog id="successMsg" widgetVar="successMsg" width="700"
+	height="20" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="Information is successfully saved!">
+</p:confirmDialog>
+
+<p:confirmDialog id="checkBox" widgetVar="checkBox" resizable="false"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all" message="Please Select One Record!">
+</p:confirmDialog>
+
+<p:confirmDialog id="checkBoxCount" widgetVar="checkBoxCount"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all"
+	message="Please select only one record at a time!">
+</p:confirmDialog>
+
+<p:confirmDialog id="folwUpCd" widgetVar="folwUpCd" resizable="false"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all" message="Please select Follow-up code!">
+</p:confirmDialog>
+
+<p:confirmDialog id="nextFolwDT" widgetVar="nextFolwDT"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all"
+	message="Please select Next Follow-up date!">
+</p:confirmDialog>
+
+<p:confirmDialog id="followupDataTable" widgetVar="followupDataTable"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all" message="No Records Found in Data Table!">
+</p:confirmDialog>
+
+<p:dialog id="saveSelectedFol" widgetVar="saveSelectedFol" width="300"
+	height="70" showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" modal="true">
+	<p:outputLabel value="Information is successfully saved!" />
+	<p:spacer height="10px" />
+	<p:panel>
+		<p:commandButton value="#{msg['lbl.ok']}" style="margin-right:10px; "
+			actionListener="#{telemarketingBean.okSelectedInFollowUp}"
+			process="@this" oncomplete="PF('saveSelected').hide();"
+			update=":teleMarkFolwUpForm" />
+	</p:panel>
+</p:dialog>
+
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="teleMarkFolwUpForm">
+
+								<h1>
+									<h:outputText value="#{msg['lbl.telemarketing']}" />
+								</h1>
+
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h3>
+										<h:outputText value="#{msg['lbl.telemarkFolwUp']}" />
+									</h3>
+
+									<p:dialog modal="true" showHeader="true"
+										header="#{msg['lbl.pleasewait']}" widgetVar="process"
+										id="process" width="300" height="50" resizable="false"
+										draggable="false" closable="false"
+										style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+										<div style="text-align: center;">
+											<p:graphicImage value="../images/preloader.gif" />
+										</div>
+									</p:dialog>
+
+									<p:dialog id="inquiryDlg" widgetVar="inquiryDlg" width="80%"
+										height="60%" header="Inquiry" draggable="true" closable="true"
+										showHeader="true" resizable="true"
+										style=" border:3px solid #00a53e !important;  font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="puff" modal="true">
+
+										<p:panel styleClass="shadow" id="inquiryPanel">
+
+											<p:panel styleClass="panel_border"
+												style="margin-top: -30px !important">
+
+												<p:spacer height="20px" />
+
+												<p:dataTable id="drillDownTableId" var="d"
+													styleClass="mydatatableclass"
+													value="#{telemarketingBean.telemarketingDrillDownTable}"
+													rowIndexVar="rowIndex"
+													emptyMessage="#{msg['lbl.norecordfound']}" rows="10"
+													paginator="true"
+													paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+													rowsPerPageTemplate="10,20,30" paginatorPosition="bottom">
+
+													<p:column headerText="#{msg['lbl.sNo']}" style="width:2%;">
+														<h:outputText value="#{rowIndex+1}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.customerRef']}"
+														style="width:3%;" sortBy="#{d.customerRefNum}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputLabel value="#{d.customerRefNum}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.custName']}"
+														style="width:15%;" sortBy="#{d.customerName}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputLabel value="#{d.customerName}"
+															style="float:left;margin-left:5px;margin-right:5px;" />
+													</p:column>
+
+													<p:column headerText="Mobile Number" style="width:5%;"
+														sortBy="#{d.mobileNum}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputLabel value="#{d.mobileNum}"
+															style="float:left;margin-left:5px;margin-right:5px;" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.lastFolwUpDt']}"
+														style="width:5%;" sortBy="#{d.lastFollowUpDate}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputLabel value="#{d.lastFollowUpDate}"
+															style="float:left;margin-left:5px;margin-right:5px;">
+															<f:convertDateTime pattern="dd/MM/yyyy" />
+														</h:outputLabel>
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.lastFolwUp']}"
+														sortBy="#{d.lastFollowUpCode}" style="width:5%;"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputLabel value="#{d.lastFollowUpCode}"
+															style="float:left;margin-left:5px;margin-right:5px;" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.remarks']}"
+														style="width:7%;"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputLabel value="#{d.remarks}"
+															style="float:left;margin-left:5px;margin-right:5px;" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.staffAllocated']}"
+														style="width:5%;"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputLabel value="#{d.employeeName}"
+															style="float:left;margin-left:5px;margin-right:5px;" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.allocatedDt']}"
+														sortBy="#{d.allocatedDate}" style="width:5%;"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputLabel value="#{d.allocatedDate}"
+															style="float:left;margin-left:5px;margin-right:5px;">
+															<f:convertDateTime pattern="dd/MM/yyyy" />
+														</h:outputLabel>
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.nextFolwupDt']}"
+														style="width:5%;" sortBy="#{d.nextFollowUpDate}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputLabel value="#{d.nextFollowUpDate}"
+															style="float:left;margin-left:5px;margin-right:5px;">
+															<f:convertDateTime pattern="dd/MM/yyyy" />
+														</h:outputLabel>
+													</p:column>
+												</p:dataTable>
+
+											</p:panel>
+										</p:panel>
+									</p:dialog>
+
+									<p:panel styleClass="panel_border">
+										<p:panel>
+											<p:panel id="headerPanel">
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputLabel value="#{msg['lbl.branch']}"
+															style="color:#05000a;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText tabindex="-1"
+															value="#{sessionScope.branchCode}-#{sessionScope.location}"
+															styleClass="ui-state-disabled" readonly="true">
+														</p:inputText>
+													</p:panel>
+													<div class="clearfix"></div>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputLabel value="#{msg['lbl.staff']}"
+															style="color:#05000a;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText tabindex="-1"
+															value="#{sessionScope.loginUserDetail} - #{sessionScope.userName}"
+															styleClass="ui-state-disabled" readonly="true">
+														</p:inputText>
+													</p:panel>
+													<div class="clearfix"></div>
+												</p:panel>
+
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="20px" />
+											<p:dataTable id="dataTableId" styleClass="mydatatableclass"
+												widgetVar="dataTableBene" tabindex="2"
+												value="#{telemarketingBean.telemarketingFollowUpDataTable}"
+												var="f" rowIndexVar="rowIndex"
+												emptyMessage="#{msg['lbl.norecordfound']}" rows="10"
+												paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="10,20,30" paginatorPosition="bottom">
+
+												<p:column headerText="#{msg['lbl.sNo']}" style="width:2%;">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.customerRef']}"
+													style="width:3%;" sortBy="#{f.customerRefNum}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{f.customerRefNum}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.custName']}"
+													style="width:15%;" sortBy="#{f.customerName}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{f.customerName}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="Mobile Number" style="width:5%;"
+													sortBy="#{f.mobileNum}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{f.mobileNum}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.lastFolwUpDt']}"
+													style="width:5%;" sortBy="#{f.lastFollowUpDate}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{f.lastFollowUpDate}"
+														style="float:left;margin-left:5px;margin-right:5px;">
+														<f:convertDateTime pattern="dd/MM/yyyy" />
+													</h:outputLabel>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.lastFolwUp']}"
+													style="width:5%;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{f.lastFollowUp}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.remarks']}"
+													style="width:10%;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{f.remarks}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.nextFolwupDt']}"
+													style="width:5%;" sortBy="#{f.nextFollowUpDate}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{f.nextFollowUpDate}"
+														style="float:left;margin-left:5px;margin-right:5px;">
+														<f:convertDateTime pattern="dd/MM/yyyy" />
+													</h:outputLabel>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.select']}"
+													style="width:2% !important; text-align:center !important; margin-left:10px;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:selectBooleanCheckbox value="#{f.selectedRecords}">
+														<p:ajax event="change"
+															listener="#{telemarketingBean.onRowFollowupSelect(f)}"
+															update=":teleMarkFolwUpForm:mainPanel"
+															onstart="process.show();" onsuccess="process.hide();" />
+													</p:selectBooleanCheckbox>
+												</p:column>
+
+												<p:column headerText="Inquiry"
+													sortBy="#{f.lastFollowUpCode}" style="width:2%;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:commandLink value="View"
+														action="#{telemarketingBean.popUpHistoryDetails(f)}"
+														update=":teleMarkFolwUpForm:mainPanel" process="@this"
+														onstart="process.show();" onsuccess="process.hide();"
+														style="margin-left:5px;margin-right:5px;color:blue !important; text-decoration:underline !important;" />
+												</p:column>
+
+											</p:dataTable>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.folwupCode']}:" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:selectOneMenu value="#{telemarketingBean.followupCode}"
+													id="followUpCode" filter="true" filterMatchMode="contains" required="true" requiredMessage="please select Followup Code ">
+													<f:selectItem itemLabel="---Select Item---" itemValue="" />
+													<f:selectItems value="#{telemarketingBean.followUpCodes}"
+														var="flw"
+														itemLabel="#{flw.tmFollowUpCOde} - #{flw.tmFollowUpDescription}"
+														itemValue="#{flw.tmFollowUpCOde}" />
+													<p:ajax event="change" update="followUpCode"></p:ajax>
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.nextFolwupDt']}:" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:calendar id="nextFolwDate"
+													value="#{telemarketingBean.nextFollowupDate}" mode="popup"
+													navigator="true" pattern="dd/MM/yyyy"
+													mindate="#{telemarketingBean.nextFolwDate}"
+													maxdate="#{telemarketingBean.nextFolwDateMax}">
+													<p:ajax event="dateSelect" update="mainPanel" />
+												</p:calendar>
+											</p:panel>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.remarks']}:" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="remarks"
+													value="#{telemarketingBean.remarks}">
+													<p:ajax update="remarks"></p:ajax>
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton id="save" value="#{msg['lbl.bco.save']}"
+												update=":teleMarkFolwUpForm:mainPanel"
+												style="margin-right:10px;"
+												action="#{telemarketingBean.saveTelemartFollowUp}"
+												onstart="process.show();" onsuccess="process.hide();" />
+											<p:commandButton value="#{msg['lbl.exit']}"
+												update=":teleMarkFolwUpForm:mainPanel"
+												style="margin-right:10px;"
+												action="#{telemarketingBean.exit}" process="@this"
+												onstart="process.show();" onsuccess="process.hide();" />
+											<p:commandButton value="#{msg['lbl.clear']}"
+												update=":teleMarkFolwUpForm:mainPanel"
+												action="#{telemarketingBean.clear}" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+										<p:spacer height="20px" />
+									</p:panel>
+
+									<h:panelGroup layout="block" class="clearfix" />
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

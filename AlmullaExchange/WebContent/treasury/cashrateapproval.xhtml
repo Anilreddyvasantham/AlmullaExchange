@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</h:head>
+<p:dialog id="complete" widgetVar="complete" width="270" height="70"
+	showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.approvedSuccess']}  " />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{cashRateBean.approvalOk}" process="@this" />
+</p:dialog>
+<p:confirmDialog id="username" widgetVar="username" width="370"
+	styleClass="red" showHeader="false" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip"
+	message="#{msg['lbl.sameusernotabletoapprove']} "
+	header="Warning Message">
+</p:confirmDialog>
+<p:confirmDialog id="notValidUser" widgetVar="notValidUser" width="370"
+	styleClass="red" showHeader="false" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip"
+	message="#{msg['lbl.sameusernotabletoapprove']}">
+</p:confirmDialog>
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="cashRateApprovalForm">
+
+
+								<h1>
+									<h:outputText value="#{msg['lbl.cashrateapproval']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{cashRateBean.errorMessage}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{cashRateBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+									<h3>
+										<h:outputText value="#{msg['lbl.cashrateapproval']}" />
+										<p:commandLink action="#{documentApprovalBean.goHome}"
+											process="@this">
+											<p:graphicImage value="../images/return.jpg" width="25"
+												height="25" id="imgEdit" styleClass="icon_right"
+												style="float:right;" />
+											<p:tooltip for="imgEdit" value="Go to Home" />
+										</p:commandLink>
+									</h3>
+
+									<p:panel styleClass="panel_border">
+
+										<p:panel id="headerPanel">
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel id="firstPanel"
+												rendered="#{cashRateBean.booInputPanel}">
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.alternatecurrency']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="alternateCurrencyId" display="text"
+															id="alternateCurrencyIdmsg" />
+
+														<p:inputText id="alternateCurrencyId" readonly="true"
+															value="#{cashRateBean.altenativeCurrencyDescrption}"
+															required="true"
+															requiredMessage="Please Enter Currency Name"
+															maxlength="60">
+															<p:ajax event="change"
+																update="alternateCurrencyId,mainPanel" />
+														</p:inputText>
+
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.basecurrency']}" />
+
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgbaseCurrencyCode" for="baseCurrencyCode"
+															display="text" />
+														<p:inputText id="baseCurrencyCode" readonly="true"
+															value="#{cashRateBean.baseCurrencyCode}" required="true"
+															requiredMessage="Please Enter Currency Name"
+															maxlength="60">
+															<p:ajax event="change"
+																update="baseCurrencyCode,mainPanel" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.countrybranch']}" />
+														<!-- <h:outputText value="*" style="color:red !important;" /> -->
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="countryBranchId" display="text"
+															id="countryBranchIdmsg" />
+
+														<p:inputText id="countryBranchId"
+															value="#{cashRateBean.countryBranchName}"
+															required="false" readonly="true"
+															requiredMessage="Please Enter Country Branch"
+															maxlength="60">
+															<p:ajax event="change" update="countryBranchId,mainPanel" />
+														</p:inputText>
+
+
+													</p:panel>
+
+												</p:panel>
+
+
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.minimumsellrate']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgsaleMinRate" for="saleMinRate"
+															display="text" />
+														<p:inputText id="saleMinRate"
+															value="#{cashRateBean.saleMinRate}" required="true"
+															readonly="true"
+															requiredMessage="Please Enter Sell Minimum Rate"
+															maxlength="60">
+															<p:ajax event="change" update="saleMinRate,mainPanel"
+																listener="#{cashRateBean.checkMax}" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.maximumsellrate']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgsaleMaxRate" for="saleMaxRate"
+															display="text" />
+														<p:inputText id="saleMaxRate" readonly="true"
+															value="#{cashRateBean.saleMaxRate}" required="true"
+															requiredMessage="Please Enter Sell Maximum Rate"
+															maxlength="60">
+															<p:ajax event="change" update="saleMaxRate,mainPanel"
+																listener="#{cashRateBean.checkMax}" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.minimumbuyrate']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgbuyRateMin" for="buyRateMin"
+															display="text" />
+														<p:inputText id="buyRateMin" readonly="true"
+															value="#{cashRateBean.buyRateMin}" required="true"
+															requiredMessage="Please Enter Minimum Buy Rate"
+															maxlength="60">
+															<p:ajax event="change" update="buyRateMin"
+																listener="#{cashRateBean.checkBuyMin}" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.maximumBuyrate']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgbuyRateMax" for="buyRateMax"
+															display="text" />
+														<p:inputText id="buyRateMax"
+															value="#{cashRateBean.buyRateMax}" required="true"
+															readonly="true"
+															requiredMessage="Please Enter Maximum Buy Rate"
+															maxlength="60">
+															<p:ajax event="change" update="buyRateMax"
+																listener="#{cashRateBean.checkBuyMax}" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix" />
+
+												<p:spacer height="20px" />
+												<h:panelGroup layout="block" class="clearfix" />
+												<h:panelGroup layout="block" styleClass="shadow_button">
+													<p:commandButton value="#{msg['lbl.approved']}"
+														action="#{cashRateBean.approvedSave}" update="mainPanel"
+														process="@this" immediate="true" />
+
+													<p:commandButton value="#{msg['lbl.exit']}"
+														action="#{cashRateBean.approvalOk}" />
+												</h:panelGroup>
+											</p:panel>
+
+
+
+											<p:panel id="secondPanel"
+												rendered="#{cashRateBean.booDataTablePanel}">
+
+
+
+
+
+												<p:dataTable id="dataTable"
+													value="#{cashRateBean.lstFromUser}" var="d"
+													rowIndexVar="rowIndex" emptyMessage="No records Found"
+													rows="10" paginator="true"
+													paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+													paginatorPosition="bottom" rowsPerPageTemplate="5,10,15"
+													sortMode="multiple" styleClass="mydatatableclass">
+
+													<p:column headerText="#{msg['lbl.sino']}"
+														style="width:30px;"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{rowIndex+1}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.basecurrencycode']}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{d.baseCurrencyCode}" />
+													</p:column>
+													<!-- <p:column headerText="Base Currency Decscription" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.baseCurrencyDescription} "/>
+											</p:column> -->
+													<p:column headerText="#{msg['lbl.alternatecurrencycode']}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value=" #{d.altenateCurrencyCode}" />
+													</p:column>
+													<!-- <p:column headerText="Alternate Currency" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.altenativeCurrencyDescrption} " />
+											</p:column> -->
+													<!-- <p:column headerText="Branch " styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputText value="#{d.countryBranshId} "/>
+											</p:column> -->
+													<p:column headerText="#{msg['lbl.countrybranch']}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{d.branchDescriprion} " />
+													</p:column>
+													<p:column headerText="#{msg['lbl.minimumsellrate']}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{d.minSellRate}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.maximumsellrate']}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{d.maxSellRate}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.minimumbuyrate']}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{d.minBuyRate}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.maximumBuyrate']}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{d.maxBuyRate}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.approved']}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<p:commandLink actionListener="#{cashRateBean.approve(d)}"
+															update=":cashRateApprovalForm"
+															style="color:blue !important; text-decoration:underline !important;"
+															process="@this">
+															<p:graphicImage value="../images/approve.jpg" width="25"
+																height="25" id="imgEdit" />
+															<p:tooltip for="imgEdit" value="#{msg['lbl.Approve']}" />
+														</p:commandLink>
+													</p:column>
+
+												</p:dataTable>
+
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+									</p:panel>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

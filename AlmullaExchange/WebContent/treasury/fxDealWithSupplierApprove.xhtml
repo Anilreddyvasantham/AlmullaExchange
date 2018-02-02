@@ -1,0 +1,510 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+		history.pushState(null, null, 'fxDealWithSupplierApprove.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'fxDealWithSupplierApprove.xhtml');
+	    });
+		
+	</script>
+</h:head>
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<h:form id="fxDealWithSupplier">
+		
+		<p:dialog modal="true" widgetVar="statusDialog" id="statusDialog" draggable="false" closable="false" showHeader="false">
+				<p:graphicImage value="../images/loaderImage.gif" />
+		</p:dialog>
+		
+		
+		
+	<p:confirmDialog id="unapprove" widgetVar="unapprove" width="400"
+		height="17" resizable="false"
+		style="background-color: white !important;" header="#{msg['lbl.warningDailog']}"
+		styleClass="warning" showEffect="clip" hideEffect="clip"
+		closeOnEscape="true" closable="true"
+		message="#{msg['lbl.sameUserNot']}">
+	</p:confirmDialog>
+	
+	
+	
+		
+				<table align="left" width="100%" style="height: 100%;" >
+					<tr>
+						<td align="left" valign="top" style="height: 100%;">
+								<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+								</td>
+		
+						<td class="rightColumn" valign="top"><h:panelGroup
+								layout="block" class="container">
+								<h:panelGroup layout="block" class="main_div">
+									<div class="menu_button">
+										<img style="cursor: pointer; position: relative; left: 15px;"
+											id="HideHandle" name="HideHandle"
+											src="../images/toggle_plus.png" alt=""
+											onclick='hideLeftCol("leftCol");closeMenus();' />
+									</div>
+									<h1>
+										<h:outputText value="#{msg['lbl.fxdealWithSupplierApprove']}" />
+									</h1>
+		
+		
+		
+		
+									<p:panel styleClass="shadow" id="mainPanel"
+										style="background-color:#FFF !important; ">
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{fXDealSupplierApproveBean.errorMessage}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{fXDealSupplierApproveBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+									<h2>
+											<h:outputText value="#{msg['lbl.fxdealWithSupplierApprove']}" />
+										</h2>
+		
+										<p:panel styleClass="panel_border">
+
+										<p:dialog id="approve" widgetVar="approve" width="400"
+											height="80" resizable="false"
+											style="background-color: white !important;"
+											styleClass="success" header="#{msg['lbl.success']}" closable="false"
+											showEffect="clip" hideEffect="clip">
+											<p:outputLabel value="#{msg['lbl.approvedSuccess']}"
+												style="text-align: center; font-size:15px !important;" />
+											<br />
+											<p:commandButton value="#{msg['lbl.ok']}"
+												actionListener="#{fXDealSupplierApproveBean.navigatetoFxDealWithSupplierApprovePage}"
+												process="@this" update="mainPanel"
+												style="margin-left: 150px !important;" />
+										</p:dialog>
+	<p:confirmDialog id="sqlexception" widgetVar="sqlexception"  
+		resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{fXDealSupplierApproveBean.errorMessage}" >
+	</p:confirmDialog>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.company']}" /> <h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{fXDealSupplierApproveBean.companyName}"  readonly="true" />
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.document']}" /> <h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:inputText  value="#{fXDealSupplierApproveBean.documentDescription}" readonly="true" />
+											</p:panel>
+										</p:panel>
+						<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.fxDealwithBankYear/Ref']}" /> <h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:98%;">
+														<p:row>
+															<p:column
+																style="width:45% !important; padding:0px 13px 0px 0px !important;">
+																<!-- <p:inputText value="#{fXDealSupplierApproveBean.finaceYear}"  readonly="true">
+																	<p:ajax />
+																</p:inputText> -->
+																
+																<p:selectOneMenu id="dealYearId" tabindex="1"
+																	widgetVar="orderActionWidget" styleClass="dropdown"
+																	value="#{fXDealSupplierApproveBean.finaceYear}"
+																	filterMatchMode="contains" filter="true"
+																	required="true"
+																	requiredMessage="please Select Deal Year">
+																	<f:selectItem itemLabel="#{msg['lbl.selectyear']}" />
+																	<f:selectItems
+																		value="#{fXDealSupplierApproveBean.trnxYearList}"
+																		var="c" itemLabel="#{c.financialYear}"
+																		itemValue="#{c.financialYear}" />
+																	<p:ajax event="change" listener="#{fXDealSupplierApproveBean.getDocumentNoDropDown}"
+																		update="mainPanel,dealYearId,documentId" process="@this"
+																		onstart="statusDialog.show();" onsuccess="statusDialog.hide();"/>
+																</p:selectOneMenu>
+																
+															</p:column>
+															<p:column
+																style="width:50% !important; padding:0px !important;">
+																<p:message for="documentId" display="text"
+																	id="msgDocumentSerialId" />
+																<p:selectOneMenu id="documentId" filter="true" value="#{fXDealSupplierApproveBean.documentNo}"
+																required="true" filterMatchMode="startsWith" requiredMessage=" Please Select Document Number">
+																<f:selectItem itemLabel="#{msg['lbl.selectDocNo']}" itemValue="" />
+																<f:selectItems value="#{fXDealSupplierApproveBean.lstofUnApproved}"
+																	var="c" itemLabel="#{c.treasuryDocumentNumber}" itemValue="#{c.treasuryDocumentNumber}" />
+																<p:ajax for="PDbankID" event="change" listener="#{fXDealSupplierApproveBean.fetchSupplierRecords}"
+																	update="msgDocumentSerialId,mainPanel" process="@this"  onstart="process.show();" onsuccess="process.hide();"/>
+																	<p:ajax onstart="process.show();" onsuccess="process.hide();"/>
+															</p:selectOneMenu>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.dealdate']}" /> <h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:calendar value="#{fXDealSupplierApproveBean.hdCalValueDate}" disabled="true" />
+											</p:panel>
+										</p:panel>
+							<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.dealedWith']}" /> <h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											
+											<p:panel styleClass="inner_right_col">
+											<p:inputText  value="#{fXDealSupplierApproveBean.customerReference}"  readonly="true" />
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.contact']}" /> <h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText  value="#{fXDealSupplierApproveBean.fxDlwithSupplierConttract}" readonly="true" />
+											</p:panel>
+										</p:panel>
+						<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.concludedby']}" /> <h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText  value="#{fXDealSupplierApproveBean.fxDlSupplierConcludedby}" readonly="true" />
+											</p:panel>
+										</p:panel>
+
+										<!-- <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.reutersref']}" /> <h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText value="#{fXDealSupplierApproveBean.fxDlSupplierReutersRef}"  readonly="true" />
+											</p:panel>
+										</p:panel> -->
+					<!-- <h:panelGroup layout="block" class="clearfix" /> -->
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.remarks']}" /> <h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputTextarea value="#{fXDealSupplierApproveBean.fxDlSupplierRemarks}" readonly="true" />
+											</p:panel>
+										</p:panel>
+
+	
+						
+										<div class="clearfix"></div>
+								
+											<p:panel styleClass="left_col" >
+												<h:outputText   value=" #{msg['lbl.*filedsAreMandatory']}"  style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+											</p:panel>	
+										<div class="clearfix"></div>
+	
+		
+										</p:panel>
+										<div class="clearfix"></div>
+										<p:spacer height="10px"/>
+										<div class="clearfix"></div>
+										<h2>
+											<h:outputText value="#{msg['lbl.purchasedetails']}" />
+										</h2>
+										
+										<p:panel styleClass="panel_border">
+												
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bank']}" /><h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText  value="#{fXDealSupplierApproveBean.pdBankName}"  readonly="true" />	
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col" id="pdCurrencyPanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currency']}" /><h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:inputText  value="#{fXDealSupplierApproveBean.pdCurrencyName}"  readonly="true" />
+											</p:panel>
+										</p:panel>
+										<div class="clearfix"></div>
+										
+										<p:panel styleClass="left_col" id="pdFxDlSupplierAccNoPanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bankaccountnumber']}" /> <h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText  value="#{fXDealSupplierApproveBean.pdAccNoForUpdate}"  readonly="true" />		
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.valuedate']}" /> <h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:calendar value="#{fXDealSupplierApproveBean.pdCalValueDate}" disabled="true" />
+											</p:panel>
+										</p:panel>
+										<div class="clearfix"></div>
+										
+										<p:panel styleClass="left_col" id="fcpanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.fcamount']}" /> <h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:inputText  value="#{fXDealSupplierApproveBean.pdFCAmount}" readonly="true" />
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col" id="pdMultiplicationdivisionidpanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.multidiv']}" /> <h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:inputText  value="#{fXDealSupplierApproveBean.pdMultipleDivision}" readonly="true" />
+											</p:panel>
+										</p:panel>
+										<div class="clearfix"></div>
+										
+										<p:panel styleClass="left_col" id="pdFCAmountPanel">
+											
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.exchangerate']}" /> <h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{fXDealSupplierApproveBean.pdExchangeRate}"  readonly="true" />
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col" id="pdAmountPanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.amount']}" /> <h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{fXDealSupplierApproveBean.pdAmount}"  readonly="true" />
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col" id="pdLocalExchangeRatePanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.localexchangerate']}" /> <h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+										<p:inputText  value="#{fXDealSupplierApproveBean.pdLocalExchangeRate}"  readonly="true" />
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col" id="pdLocalAmpountPanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.localamount']}" /><h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:inputText  value="#{fXDealSupplierApproveBean.pdLocalAmount}"  readonly="true" />
+											</p:panel>
+										</p:panel>
+
+										
+										
+										<div class="clearfix"></div>
+								
+											<p:panel styleClass="left_col" >
+												<h:outputText   value=" #{msg['lbl.*filedsAreMandatory']}"  style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+											</p:panel>	
+										<div class="clearfix"></div>
+			
+								
+										</p:panel>
+										
+									<div class="clearfix"></div>
+										<p:spacer height="10px"/>
+										<div class="clearfix"></div>
+										
+										<h2>
+											<h:outputText value="#{msg['lbl.payableAccountNO']}" /> 
+										</h2>
+										<p:panel styleClass="panel_border" id="saleDetailsPanel">
+										
+										<p:panel styleClass="left_col" >
+											<p:panel styleClass="inner_left_col" style="margin-bottom:5px !important;">
+												<h:outputText value="#{msg['lbl.payableAccountNO']}" /> <h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:inputText  value="#{fXDealSupplierApproveBean.pdPayableAccountNumber}" readonly="true" />
+											</p:panel>
+										</p:panel>
+										
+										
+										<div class="clearfix"></div>
+										</p:panel>
+										
+										<h2>
+											<h:outputText value="#{msg['lbl.saledetails']}" />
+										</h2>
+										
+										<p:panel styleClass="panel_border">
+												
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bank']}" /><h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText value="#{fXDealSupplierApproveBean.sdBankName}"  readonly="true" />
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col" id="sdCurrencyPanel"  >
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currency']}" /><h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{fXDealSupplierApproveBean.sdCurrencyName}"  readonly="true" />
+										</p:panel>
+										</p:panel>
+										
+										<div class="clearfix"></div>
+										
+										<p:panel styleClass="left_col" id ="sdFxDlSupplierAccNoPanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bankaccountnumber']}" /> <h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText value="#{fXDealSupplierApproveBean.fxDlSalesAccNo}"  readonly="true" />
+											</p:panel>
+											</p:panel>
+											
+												
+										<p:panel styleClass="left_col" id="sdBalancePanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bankBalance']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:inputText   value="#{fXDealSupplierApproveBean.sdBankBalance}"  readonly="true" />
+											</p:panel>
+										</p:panel>
+										<div class="clearfix"></div>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.valuedate']}" /> <h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:calendar value="#{fXDealSupplierApproveBean.sdCalValueDate}"  disabled="true" />
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col" id ="sdFxDlSuppliersdSaleAmountPanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.fxsaleAmount']}" /> <h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:inputText  value="#{fXDealSupplierApproveBean.sdSaleAmount}" readonly="true" />
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col" id="sdFxDlSuppliersdSaleAverageRate">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.averagerate']}" /> <h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:inputText  value="#{fXDealSupplierApproveBean.sdAverageRate}" readonly="true" />
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col" id="sdLocalAmountPanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.localamount']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{fXDealSupplierApproveBean.sdLocalAmount}"  readonly="true" />
+											</p:panel>
+										</p:panel>
+										
+											
+											<div class="clearfix"></div>
+								
+											<p:panel styleClass="left_col" >
+												<h:outputText   value=" #{msg['lbl.*filedsAreMandatory']}"  style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+											</p:panel>	
+										<div class="clearfix"></div>
+										</p:panel>
+									
+									
+									
+									
+										<div class="clearfix"></div>
+										<p:spacer height="10px"/>
+										<div class="clearfix"></div>
+										
+										<h:panelGroup layout="block" styleClass="shadow_button">
+										<p:commandButton value="#{msg['lbl.approved']}" action="#{fXDealSupplierApproveBean.approveRecord}" style="margin-right:10px;"   update="mainPanel,sqlexception"  onclick="statusDialog.show();"  onsuccess="statusDialog.hide();" />
+											<p:commandButton value="#{msg['lbl.exit']}" action="#{fXDealSupplierApproveBean.exit}"  process="@this" immediate="true" />
+											<div class="clearfix"></div>
+										</h:panelGroup>
+										
+											<div class="clearfix"></div>
+															<p:dialog modal="true" showHeader="true" header="#{msg['lbl.bco.plswait']}"  widgetVar="process"  id="process"   width="300" height="50" resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+							    	</p:dialog>
+										
+									</p:panel>
+								</h:panelGroup>
+								<h:panelGroup layout="block" class="clearfix" />
+								</h:panelGroup>
+								<h:panelGroup layout="block" class="clearfix" />
+						</td>
+					</tr>
+				</table>
+			</h:form>	
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

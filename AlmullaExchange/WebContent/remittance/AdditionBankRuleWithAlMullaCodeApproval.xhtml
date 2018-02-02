@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript">
+		var baseUri = "http://localhost:47289/SigWeb/";		
+		document.onkeydown = function(e) {
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+
+		 history.pushState(null, null, 'AdditionBankRuleWithAlMullaCodeApproval.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'AdditionBankRuleWithAlMullaCodeApproval.xhtml');
+		    });
+	</script>
+</h:head>
+<p:confirmDialog id="notApproved" widgetVar="notApproved" width="370"
+	styleClass="red" showHeader="false" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip"
+	message="#{msg['lbl.sameusernotabletoapprove']}">
+</p:confirmDialog>
+
+<p:dialog id="alreadyapprov" widgetVar="alreadyapprov" width="310"
+	height="70" showHeader="false" resizable="false"
+	style=" border:2px solid green !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.thisrecordalreadyapprovedby']}" />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{additionBankRuleWithAlMullaCodeApprovalBean.navigateToAdditionBankRuleWithAlmullaCodeApprovalPage}"
+		process="@this" />
+</p:dialog>
+
+<p:dialog id="approvedsucc" widgetVar="approvedsucc" width="260"
+	height="70" showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+
+	<p:outputLabel value="#{msg['lbl.approvedatasuccesfullmsg']}" />
+	<br />
+
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{additionBankRuleWithAlMullaCodeApprovalBean.navigateToAdditionBankRuleWithAlmullaCodeApprovalPage}" />
+</p:dialog>
+
+<p:dialog id="norecord" widgetVar="norecord" width="260" height="70"
+	showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+
+	<p:outputLabel value="#{msg['lbl.norecordfound']}" />
+	<br />
+
+	<p:commandButton value="#{msg['lbl.ok']}" oncomplete="norecord.hide()" />
+</p:dialog>
+
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<h:form id="approveForm">
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;">
+						<!-- <ui:include src="../common/fxdeal_menu.xhtml"></ui:include> -->
+						<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+					</td>
+
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle"
+										src="../images/toggle_plus.png" alt=""
+										onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+								<h1>
+									<h:outputText
+										value="#{msg['lbl.additionalbankrulewithalmullacodeapproval']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+
+
+									<h2>
+										<h:outputText
+											value="#{msg['lbl.additionalbankrulewithalmullacodeapproval']}" />
+
+										<p:commandLink action="#{bankBranchDetails.cancel}"
+											process="@this">
+											<p:graphicImage value="../images/return.jpg" width="25"
+												height="25" id="imgEdit" styleClass="icon_right"
+												style="float:right;" />
+											<p:tooltip for="imgEdit" value="Go to Home" />
+										</p:commandLink>
+									</h2>
+
+
+									<p:panel styleClass="panel_border">
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.country']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="nationality" display="text" />
+												<p:selectOneMenu
+													value="#{additionBankRuleWithAlMullaCodeApprovalBean.countryId}"
+													filter="true" filterMatchMode="contains" id="nationality"
+													label="nationality" style="width:185px;text-align:left;">
+													<f:selectItem itemLabel="#{msg['lbl.selectcountry']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{additionBankRuleWithAlMullaCodeApprovalBean.countryList}"
+														var="c"
+														itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+														itemValue="#{c.fsCountryMaster.countryId}" />
+													<p:ajax event="change"
+														listener="#{additionBankRuleWithAlMullaCodeApprovalBean.popFlex}"
+														update="mainPanel" onstart="process.show();"
+														onsuccess="process.hide();" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.flexField']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="flexfield" display="text" id="msgFlexifield" />
+												<p:selectOneMenu
+													value="#{additionBankRuleWithAlMullaCodeApprovalBean.flexField}"
+													filter="true" filterMatchMode="contains" id="flexfield"
+													label="flexfield" style="width:185px;text-align:left;">
+													<f:selectItem itemLabel="#{msg['lbl.selectFlex']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{additionBankRuleWithAlMullaCodeApprovalBean.additionalBankRuleMaps}"
+														var="c" itemLabel="#{c.flexField} - #{c.fieldName}"
+														itemValue="#{c.flexField}" />
+													<p:ajax />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.view']}"
+												action="#{additionBankRuleWithAlMullaCodeApprovalBean.fetchDataForApproval}"
+												update="mainPanel" immediate="true"
+												onstart="process.show();" onsuccess="process.hide();"
+												process="@this" style="margin-right:10px;"/>
+											<p:commandButton value="#{msg['lbl.clear']}"
+												action="#{additionBankRuleWithAlMullaCodeApprovalBean.navigateToAdditionBankRuleWithAlmullaCodeApprovalPage}"
+												update="mainPanel" ajax="false" immediate="true"/>
+										</h:panelGroup>
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" class="clearfix" />
+
+
+										<p:dataTable id="dataTable" var="c" rowIndexVar="rowIndex"
+											styleClass="mydatatableclass" paginatorPosition="bottom"
+											rows="10" paginator="true"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="5,10,15"
+											value="#{additionBankRuleWithAlMullaCodeApprovalBean.addtionalBankAllmulladataTableList}"
+											emptyMessage="#{msg['lbl.norecordfound']}"
+											rendered="#{additionBankRuleWithAlMullaCodeApprovalBean.renderDataTableButtonsAlmulla}">
+
+											<p:column headerText="#{msg['lbl.slNo']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" >
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.country']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.countryName}">
+												<h:outputText value="#{c.countryName}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.flexField']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.flexField}">
+												<h:outputText value="#{c.flexField}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.fieldname']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.fieldName}">
+												<h:outputText value="#{c.fieldName}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.alMullaCode']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.almullaCode}">
+												<h:outputText value="#{c.almullaCode}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.alMullaDescription']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.almullaDescription}">
+												<h:outputText value="#{c.almullaDescription}" />
+											</p:column>
+											
+											<p:column headerText="#{msg['lbl.username']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" sortBy="#{c.userName}">
+												<h:outputText value="#{c.userName}" />
+											</p:column>
+
+											<!-- <p:column headerText="#{msg['lbl.approve']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<p:commandLink
+													action="#{additionBankRuleWithAlMullaCodeApprovalBean.approveAlmullaAddtionBank(c)}"
+													style="color:blue !important; text-decoration:underline !important;"
+													process="@this">
+													<p:graphicImage value="../images/approve.jpg" width="25"
+														height="25" id="imgEdit" />
+													<p:tooltip for="imgEdit" value="#{msg['lbl.approve']}" />
+												</p:commandLink>
+											</p:column> -->
+
+											<p:column>
+												<f:facet name="header">
+													<p:outputLabel value="#{msg['lbl.selectAndDeselect']}"
+														style="text-align:center;"></p:outputLabel>
+													<p:selectBooleanCheckbox
+														value="#{additionBankRuleWithAlMullaCodeApprovalBean.selectAll}"
+														style="border: 5px solid white;">
+														<p:ajax event="change"
+															listener="#{additionBankRuleWithAlMullaCodeApprovalBean.selecatAndDeselectAll}"
+															update=":approveForm:dataTable" />
+													</p:selectBooleanCheckbox>
+												</f:facet>
+
+												<p:selectBooleanCheckbox value="#{c.isCheck}" id="cheid"
+													disabled="#{c.disableCheck}">
+													<p:ajax event="change"
+														listener="#{additionBankRuleWithAlMullaCodeApprovalBean.addingServiceAppApprovalRecord(c)}" />
+												</p:selectBooleanCheckbox>
+											</p:column>
+
+										</p:dataTable>
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:outputText value="* Same User Can't Able Approve" style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<div class="clearfix"></div>
+
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											rendered="#{additionBankRuleWithAlMullaCodeApprovalBean.renderDataTableButtonsAlmulla}">
+											<p:commandButton value="#{msg['lbl.approve']}"
+												action="#{additionBankRuleWithAlMullaCodeApprovalBean.approvalAllRecords}"
+												update=":approveForm:mainPanel" style="margin-right:10px; "
+												immediate="true">
+											</p:commandButton>
+
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												action="#{additionBankRuleWithAlMullaCodeApprovalBean.navigateToAdditionBankRuleWithAlmullaCodeApprovalPage}"
+												update="mainPanel" ajax="false" immediate="true">
+											</p:commandButton>
+										</h:panelGroup>
+
+
+									</p:panel>
+								</p:panel>
+								<div class="clearfix"></div>
+							</h:panelGroup>
+						</h:panelGroup></td>
+				</tr>
+			</table>
+		</h:form>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

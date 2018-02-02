@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+		
+		history.pushState(null, null, 'bankAccountDetailsView.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'bankAccountDetailsView.xhtml');
+	    });		
+	</script>
+</h:head>
+
+<p:confirmDialog id="noRecords" widgetVar="noRecords" width="200"  resizable="false" 
+      style="background-color: white !important;" header="Warning Dailog" styleClass="warning"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="No Records Found">
+      </p:confirmDialog>
+      
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<h:form id="approveForm">
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;">
+					<!-- <ui:include src="../common/fxdeal_menu.xhtml"></ui:include> -->
+					<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+							</td>
+
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle"
+										src="../images/toggle_plus.png" alt=""
+										onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+								<h1>
+									<h:outputText value="#{msg['lbl.bankaccountdetailsview']}"/>
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h2>
+										<h:outputText value="#{msg['lbl.bankaccountdetailsview']}" />
+										
+									</h2>
+
+
+									<p:panel styleClass="panel_border">
+									
+								<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText  value="#{msg['lbl.country']}"/><h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="country" display="text"  id="msgCountry"/>
+												<p:selectOneMenu id="country" required="true" requiredMessage="Please Select Country"
+													value="#{bankaccountdetails.countryId}" filter="true"
+													 filterMatchMode="contains">
+													<f:selectItem itemLabel="#{msg['lbl.selectCountry']}" itemValue="" />
+														<f:selectItems value="#{bankaccountdetails.countryNameList}" var="c"  itemLabel="#{c.bankCountryCode} - #{c.bankCountryName}" itemValue="#{c.bankCountryId}"/>
+													<p:ajax event="change" update="bank,msgCountry"
+														listener="#{bankaccountdetails.popBank}" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bank']}"/><h:outputText value="*"  style="color:red;font-weight:bold;"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="bank" display="text" id="bankmsg"/>
+												<p:selectOneMenu id="bank" required="true" requiredMessage="Please Select Bank"
+													value="#{bankaccountdetails.bankId}"
+													filterMatchMode="contains" filter="true">
+													<f:selectItem itemLabel="#{msg['lbl.selectBank']}" itemValue="" />
+													<f:selectItems value="#{bankaccountdetails.bankMasterList}"
+														var="c" itemLabel="#{c.bankCode} - #{c.bankFullName}"
+														itemValue="#{c.bankId}" />
+														<p:ajax event="change" update="bankmsg"/>
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										<div class="clearfix"></div>
+											<p:spacer height="20px"/>
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.view']}"
+													action="#{bankaccountdetails.viewRelatedData}" update=":approveForm:mainPanel"  style=" margin-right:10px; " onstart="process.show();" onsuccess="process.hide();"/>
+													<p:commandButton value="#{msg['lbl.exit']}"
+													action="#{bankaccountdetails.exit}" immediate="true"
+													ajax="false" >
+												</p:commandButton>
+													</h:panelGroup>
+										<p:spacer height="20px"/>
+									
+									<p:dataTable  styleClass="mydatatableclass"   rowIndexVar="rowIndex" value="#{bankaccountdetails.bankAccountDetailsDataTableList}" var="c"
+									paginatorPosition="bottom" rendered="#{bankaccountdetails.renderDataTable}"
+									rows="10" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  rowsPerPageTemplate="5,10,15"
+									  emptyMessage="#{msg['lbl.norecordfound']}"> 
+										
+										<p:column headerText= "#{msg['lbl.slNo']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputText value="#{rowIndex+1}" />
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.country']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+										<h:outputText value="#{c.countryName}" />
+										</p:column>  
+										
+										<p:column headerText="#{msg['lbl.bankFullName']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+										<h:outputText value="#{c.bankName}" />
+										</p:column>  
+                                  
+										<p:column headerText="#{msg['lbl.accountno']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+										<h:outputText value="#{c.accountNo}" />
+										</p:column>  
+
+										<p:column headerText="#{msg['lbl.currencyname']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+										<h:outputText value="#{c.currencyName}" />
+										</p:column>  
+
+										<p:column headerText="#{msg['lbl.accounttype']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+										<h:outputText value="#{c.accountType}" />
+										</p:column>  
+										
+										<p:column headerText="#{msg['lbl.status']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+										<h:outputText value="#{c.status}" />
+										</p:column>
+										
+									</p:dataTable>
+									<div class="clearfix"></div>
+									</p:panel>
+									
+							<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>		
+									
+								</p:panel>
+								<div class="clearfix"></div>
+							</h:panelGroup>
+						</h:panelGroup></td>
+				</tr>
+			</table>
+		</h:form>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

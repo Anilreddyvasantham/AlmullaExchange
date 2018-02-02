@@ -1,0 +1,538 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+	</script>
+	<script >
+		 	
+		 history.pushState(null, null, 'documentserialitymaster.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'documentserialitymaster.xhtml');
+		    });
+	</script>
+	<script src="../js/script.js"></script>
+</h:head>
+<p:confirmDialog id="dataNotFund" widgetVar="dataNotFund" width="400"
+	height="17" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="Data not found...!">
+</p:confirmDialog>
+<p:confirmDialog id="dataExist" widgetVar="dataExist" width="400"
+	height="17" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="This combination record already exist ...!">
+</p:confirmDialog>
+<p:confirmDialog id="datatable" widgetVar="datatable" width="300"
+	showHeader="false" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip"
+	message="#{msg['lbl.thisrecordalreadyexisted']}">
+
+
+</p:confirmDialog>
+<p:dialog id="complete" widgetVar="complete" width="270" height="70"
+	showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} " />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{documentSerialityMasterBean.clickOnOK}"
+		process="@this" />
+</p:dialog>
+<p:dialog id="activateRecord" widgetVar="activateRecord" width="300"
+	height="70" showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.doyouactivaterecord']}" />
+	<p:spacer height="10px" />
+	<p:panel>
+		<p:commandButton value="#{msg['lbl.ok']}" style="margin-right:10px; "
+			actionListener="#{documentSerialityMasterBean.activateRecord}"
+			process="@this" oncomplete="PF('activateRecord').hide();" />
+		<p:commandButton value="#{msg['lbl.cancel']}"
+			onclick="PF('activateRecord').hide();" immediate="true" />
+	</p:panel>
+</p:dialog>
+<p:dialog id="maxgreater" widgetVar="maxgreater" width="260" height="70"
+	showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+
+	<p:outputLabel value="#{msg['lbl.greatertthanmin']}" />
+	<br />
+
+	<p:commandButton value="#{msg['lbl.ok']}"
+		oncomplete="maxgreater.hide()" />
+</p:dialog>
+<p:dialog id="permanentDelete" widgetVar="permanentDelete" width="300"
+	height="70" showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.douWantDeleteRecordPermentely']}" />
+	<p:spacer height="10px" />
+	<p:panel>
+		<p:commandButton value="#{msg['lbl.ok']}" style="margin-right:10px; "
+			actionListener="#{documentSerialityMasterBean.confirmPermanentDelete}"
+			process="@this" oncomplete="PF('permanentDelete').hide();" />
+		<p:commandButton value="#{msg['lbl.cancel']}"
+			onclick="PF('permanentDelete').hide();" immediate="true" />
+	</p:panel>
+</p:dialog>
+<p:confirmDialog id="remarksEmpty" widgetVar="remarksEmpty" width="400"
+	styleClass="red" showHeader="false" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip"
+	message="This Record Already Approved.Not Able To Delete">
+</p:confirmDialog>
+
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form">
+
+								<p:dialog id="delete" widgetVar="delete" width="270" height="70"
+									showHeader="false" resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+									<p:outputLabel value="#{msg['lbl.art.delsuccess']} " />
+									<br />
+									<p:spacer width="15px" />
+									<p:commandButton value="#{msg['lbl.ok']}"
+										actionListener="#{documentSerialityMasterBean.clickOnOK}"
+										process="@this" />
+								</p:dialog>
+
+								<!-- <p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog> -->
+
+								<h1>
+									<h:outputText value="#{msg['lbl.documentserialitymaster']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h2>
+										<h:outputText value="#{msg['lbl.documentserialitymaster']}" />
+									</h2>
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{documentSerialityMasterBean.errorMessage}">
+									</p:confirmDialog>
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{documentSerialityMasterBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+									<p:dialog id="pending" widgetVar="pending" width="400"
+										height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.warningDailog']}"
+										closable="false" showEffect="clip" hideEffect="clip">
+										<p:outputLabel value="#{msg['lbl.plsApproveRecord']}"
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											onclick="PF('pending').hide();" immediate="true"
+											style="margin-left: 150px !important;" />
+									</p:dialog>
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+
+
+									<p:dialog id="remarks" widgetVar="remarks" width="480"
+										resizable="false" style="background-color: white !important;"
+										styleClass="info" header="Remarks" closable="false"
+										showEffect="clip" hideEffect="clip" modal="true">
+										<p:panel styleClass="shadow">
+											<p:panel>
+
+												<table>
+													<tr>
+														<td><h:outputText
+																value="#{msg['lbl.approvedDate']} :" /></td>
+														<td><h:outputText
+																value="#{documentSerialityMasterBean.approvedDate}"
+																style="color:red !important;" /></td>
+													</tr>
+													<tr>
+														<td><h:outputText value="#{msg['lbl.approvedBy']} :" /></td>
+														<td><h:outputText
+																value="#{documentSerialityMasterBean.approvedBy}"
+																style="color:red !important;" /></td>
+													</tr>
+												</table>
+
+											</p:panel>
+											<p:spacer height="10px" />
+											<p:panel>
+												<h:outputText value="#{msg['lbl.enterremarks']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:spacer height="5px" />
+											<p:panel>
+
+												<h:inputTextarea
+													value="#{documentSerialityMasterBean.remarks}"
+													validatorMessage="Maximum 200 charectors allowed" rows="5"
+													cols="50">
+													<p:ajax />
+													<f:validateLength maximum="200"></f:validateLength>
+												</h:inputTextarea>
+											</p:panel>
+											<p:spacer width="5px" />
+
+											<p:panel style="padding-left:160px;">
+												<p:commandButton value="#{msg['lbl.ok']}"
+													style="margin-right:10px; "
+													actionListener="#{documentSerialityMasterBean.remarkSelectedRecord}"
+													process="@this" />
+												<p:commandButton value="#{msg['lbl.cancel']}"
+													actionListener="#{documentSerialityMasterBean.clearRemarks}"
+													process="@this" update="mainPanel" />
+											</p:panel>
+										</p:panel>
+									</p:dialog>
+
+									<h:panelGroup layout="block" class="clearfix" />
+									<p:panel styleClass="panel_border">
+										<p:panel id="headerPanel"
+											rendered="#{documentSerialityMasterBean.booDocumentSeriality}">
+											<p:panel styleClass="left_col">
+
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.applicationCountry']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="country" display="text" id="msgcountry" />
+
+													<p:selectOneMenu id="country" styleClass="dropdown"
+														filter="true" filterMatchMode="contains"
+														value="#{documentSerialityMasterBean.country}"
+														required="true" requiredMessage="Please select country"
+														tabindex="1">
+														<f:selectItem itemLabel="#{msg['lbl.beleselect']}"
+															id="select" />
+														<f:selectItems
+															value="#{documentSerialityMasterBean.countryNameList}"
+															var="c"
+															itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+															itemValue="#{c.fsCountryMaster.countryId}" />
+														<p:ajax event="change" update="country,msgcountry" />
+
+
+													</p:selectOneMenu>
+
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.bccompany']}"></h:outputText>
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="company" display="text" id="msgcompany" />
+													<p:selectOneMenu id="company"
+														value="#{documentSerialityMasterBean.company}"
+														filter="true" filterMatchMode="contains" required="true"
+														requiredMessage="Please select company" tabindex="2">
+														<f:selectItem itemLabel="#{msg['lbl.selectcompany']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{documentSerialityMasterBean.companyNameList}"
+															var="c"
+															itemLabel="#{c.fsCompanyMaster.companyCode} - #{c.companyName}"
+															itemValue="#{c.fsCompanyMaster.companyId}" />
+														<p:ajax event="change" update="company,msgcompany" />
+														<!-- listener="#{documentSerialityMasterBean.generateLevel}"  -->
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											<!--   -->
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.docCode']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+
+													<p:message for="documentCode" display="text"
+														id="msgdocumentcode" />
+													<p:selectOneMenu id="documentCode"
+														value="#{documentSerialityMasterBean.document}"
+														required="true"
+														requiredMessage="Please select document code"
+														filter="true" filterMatchMode="contains" tabindex="3">
+														<f:selectItem itemLabel="#{msg['lbl.selectdocumentcode']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{documentSerialityMasterBean.documentNameList}"
+															var="c" itemLabel="#{c.documentCode} - #{c.documentDesc}"
+															itemValue="#{c.documentCode}" />
+														<p:ajax event="change"
+															update="documentCode,msgdocumentcode" />
+														<!-- -#{c.documentDesc} -->
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.financialyear']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="financialYear" display="text"
+														id="msgfinancialyear" />
+
+													<p:selectOneMenu id="financialYear"
+														value="#{documentSerialityMasterBean.userFinancialYear}"
+														required="true" filter="true" filterMatchMode="contains"
+														requiredMessage="Please select financial year"
+														tabindex="4">
+														<f:selectItem
+															itemLabel=" #{msg['lbl.selectfinancialyear']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{documentSerialityMasterBean.allUserFinancialYearList}"
+															var="c" itemLabel="#{c.financialYear}"
+															itemValue="#{c.financialYear}" />
+														<p:ajax event="change"
+															update="financialYear,msgfinancialyear" />
+
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											<!--  -->
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.startno']}" />
+													<h:outputText value="*" style="color:red !important;" />
+
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="startNo" display="text" id="msgstartno" />
+													<p:inputText id="startNo"
+														value="#{documentSerialityMasterBean.startNo}"
+														required="true" requiredMessage="Please enter start no"
+														converterMessage="Please Enter Number only " tabindex="5">
+														<f:validator
+															validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+
+														<p:ajax event="blur" update="mainPanel,msgstartno"
+															listener="#{documentSerialityMasterBean.checkMin}" />
+														<!-- listener="#{documentSerialityMasterBean.checkMin}" -->
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.endno']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="endNo" display="text" id="msgendno" />
+													<p:inputText id="endNo"
+														value="#{documentSerialityMasterBean.endNo}"
+														required="true" requiredMessage="Please enter end no"
+														converterMessage="Please Enter Number only " tabindex="6">
+														<f:validator
+															validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+														<p:ajax event="blur" update="msgendno"
+															listener="#{documentSerialityMasterBean.checkMax}" />
+														<!-- listener="#{documentSerialityMasterBean.checkMax}" -->
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="#{msg['lbl.add']}"
+													action="#{documentSerialityMasterBean.duplicateChekingComplaintTypeCode}"
+													update="mainPanel" style=" margin-right:10px;" tabindex="7"
+													onstart="process.show();" onsuccess="process.hide();" />
+												<p:commandButton value="#{msg['lbl.view']}"
+													action="#{documentSerialityMasterBean.view}"
+													onstart="process.show();" onsuccess="process.hide();"
+													process="@this" update="mainPanel"
+													style=" margin-right:10px; " tabindex="8" />
+												<p:commandButton value="#{msg['lbl.clear']}"
+													disabled="#{documentSerialityMasterBean.booBtnClear}"
+													action="#{documentSerialityMasterBean.clear}"
+													process="@this" update="mainPanel" tabindex="9" />
+
+												<h:panelGroup layout="block" class="clearfix" />
+											</h:panelGroup>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel
+											rendered="#{documentSerialityMasterBean.booDocumentSerialityDetails}">
+											<p:spacer height="20px" />
+											<p:panel>
+												<p:dataTable id="dataTable" var="c" rows="10"
+													styleClass="mydatatableclass"
+													value="#{documentSerialityMasterBean.lstofDataTable}"
+													paginator="true"
+													paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+													rowsPerPageTemplate="5,10,15" rowIndexVar="rowIndex"
+													editable="true" editMode="cell"
+													emptyMessage="#{msg['lbl.norecordfound']}"
+													paginatorPosition="bottom">
+
+													<p:column headerText="#{msg['lbl.sino']}"
+														style="width:50px;">
+														<h:outputText value="#{rowIndex+1}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.country']}"
+														sortBy="#{c.countryName}">
+														<h:outputText value="#{c.countryName}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.bccompany']}"
+														sortBy="#{c.companyName}">
+														<h:outputText value="#{c.companyName}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.docCode']}"
+														sortBy="#{c.exDocument}">
+														<h:outputText value="#{c.exDocument}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.financialyear']}"
+														sortBy="">
+														<h:outputText value="#{c.docFinancialYear}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.startno']}"
+														sortBy="#{c.startNo}">
+														<h:outputText value="#{c.startNo}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.endno']}"
+														sortBy="#{c.endNo}">
+														<h:outputText value="#{c.endNo}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.edit']}">
+														<p:commandLink
+															action="#{documentSerialityMasterBean.editRecord(c)}"
+															disabled="#{documentSerialityMasterBean.booEdit}"
+															update=":form" process="@this" tabindex="10">
+															<p:graphicImage value="../images/edit.png" id="imgEdit" />
+															<p:tooltip for="imgEdit" value="#{msg['lbl.edit']}" />
+														</p:commandLink>
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.active/deactive']}"
+														sortBy="#{c.dynamicLabelForActivateDeactivate}"
+														style="text-align:center !important;">
+														<p:commandLink update=":form"
+															value="#{c.dynamicLabelForActivateDeactivate}"
+															action="#{documentSerialityMasterBean.checkStatusType(c)}"
+															style="color:blue !important; text-decoration:underline !important;"
+															immediate="true" tabindex="11" />
+													</p:column>
+												</p:dataTable>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:spacer height="10px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" styleClass="shadow_button"
+												id="submitpanel">
+												<p:commandButton value="#{msg['lbl.submit']}"
+													action="#{documentSerialityMasterBean.save}"
+													disabled="#{documentSerialityMasterBean.isdisable}"
+													style="margin-right:10px; " process="@this" tabindex="11" />
+												<p:commandButton value="#{msg['lbl.exit']}"
+													action="#{documentSerialityMasterBean.exit}"
+													immediate="true" tabindex="12" />
+											</h:panelGroup>
+										</p:panel>
+									</p:panel>
+
+
+
+
+
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

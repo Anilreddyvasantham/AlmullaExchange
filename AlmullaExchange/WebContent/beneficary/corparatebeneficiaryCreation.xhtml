@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions">
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+	</script>
+</h:head>
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<f:event listener="#{corparatebeneficiaryCreationBean.populateBenificaryDetails}" type="preRenderView" />
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;" id="HideHandle" name="HideHandle" src="../images/toggle_plus.png" alt="" onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form1">
+								<h1>
+									<h:outputText value="#{msg['lbl.createbenificiary']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+
+										<p:confirmDialog id="error" widgetVar="error" width="500" showHeader="false" resizable="false" header="Warning Message" visible="#{corparatebeneficiaryCreationBean.visible}"
+														styleClass="warning" style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="explode" hideEffect="explode" message="#{corparatebeneficiaryCreationBean.errmsg}">
+											</p:confirmDialog>
+
+
+									<p:dialog id="teleRelaAccountExist" widgetVar="teleRelaAccountExist" width="650" header="Telephone Exist" resizable="false" style="background-color: white !important;" styleClass="info" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+										<p:dataTable styleClass="mydatatableclass" value="#{corparatebeneficiaryCreationBean.lstBeneficaryAccountDailog}" var="c">
+											<p:column headerText="Beneficary Name">
+												<p:outputLabel value="#{c.beneficaryName}" />
+											</p:column>
+											<p:column headerText="Bank Name">
+												<p:commandLink value="#{c.bankFullName}" style="color:blue !important; text-decoration:underline !important;" actionListener="#{corparatebeneficiaryCreationBean.getSelectRecordFrom(c)}" process="@this" update=":form1:mainPanel" />
+											</p:column>
+											<p:column headerText="Branch Name">
+												<p:outputLabel value="#{c.branchFullName}" />
+											</p:column>
+											<p:column headerText="Account Number">
+												<p:outputLabel value="#{c.bankAccountNumber}" />
+											</p:column>
+										</p:dataTable>
+									</p:dialog>
+									<p:dialog id="teleCountryExist" widgetVar="teleCountryExist" width="350" height="80" resizable="false" style="background-color: white !important;" header="Warning Dailog" styleClass="warning" closable="false" showEffect="clip" hideEffect="clip">
+										<p:outputLabel value="Please select telephone country code" style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="OK" oncomplete="teleCountryExist.hide()" process="@this" update="teli" style="margin-left: 150px !important;" />
+									</p:dialog>
+									<p:confirmDialog widgetVar="checking" id="checking" height="17" resizable="false" width="500" style="background-color: white !important;" header="Warning Dailog" styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"
+										message="#{msg['lbl.plsselectanyoneofdateofbirth']}">
+									</p:confirmDialog>
+									<p:dialog id="beneficarycomplete" widgetVar="beneficarycomplete" width="300" height="80" resizable="false" style="background-color: white !important;" styleClass="success" header="Success" closable="false" showEffect="clip" hideEffect="clip">
+										<p:outputLabel value="#{msg['lbl.bebificaiarycreatedsuccessfully']}" style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{corparatebeneficiaryCreationBean.personalRemittanceMainScreen}" update="mainPanel" style="margin-left: 150px !important;" />
+									</p:dialog>
+									<p:panel style=" background-color:#FFF !important;" id="benificaryStatusPanel">
+										<h2>
+											<h:outputText value="#{msg['lbl.createbenificiary']}" />
+										</h2>
+										<p:panel style="padding-bottom:0px !important;" styleClass="panel_border">
+											<p:panel styleClass="left_col,panel_border" style="padding: 30px 100px  !important">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.benificiary']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:message for="inditual" display="text" id="indivmsg" />
+												<p:panel styleClass="inner_right_col">
+													<p:selectOneMenu id="inditual" value="#{corparatebeneficiaryCreationBean.beneficaryStatusId}"  filterMatchMode="startwith" required="true" requiredMessage=" Select Beneficary ">
+														<f:selectItem itemLabel="#{msg['lbl.benificiarysl']} " />
+														<f:selectItems value="#{corparatebeneficiaryCreationBean.benificaryStatusList}" var="c" itemLabel="#{c.beneficaryStatusName}" itemValue="#{c.beneficaryStatusId}" />
+														<p:ajax event="change" listener="#{corparatebeneficiaryCreationBean.changeIndidualorNonIndidual}" update="benificaryStatusPanel,indivmsg,beneficaryIndividualId" process="@this" onstart="processIcon.show();" onsuccess="processIcon.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+												<p:dialog modal="true" showHeader="true" header="Please wait.." widgetVar="processIcon" id="processIcon" width="300" height="50" resizable="false" draggable="false" closable="false"
+													style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+													<div style="text-align: center;">
+														<p:graphicImage value="../images/preloader.gif" />
+													</div>
+												</p:dialog>
+												<h:panelGroup layout="block" class="clearfix" />
+												<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{corparatebeneficiaryCreationBean.renderBackButton}">
+													<p:commandButton value="#{msg['lbl.back']}" action="#{corparatebeneficiaryCreationBean.backToBenificaryListScreen}" process="@this" update="mainPanel" />
+												</h:panelGroup>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel id="beneficaryIndividualId" styleClass="panel_border" style=" background-color:#FFF !important;" rendered="#{corparatebeneficiaryCreationBean.booRenderIndBenificaryStatusPanel}">
+												<p:panel style="padding-bottom:0px !important;">
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.beneficaryType']}" />
+															<h:outputText value="*" style="color:red !important;" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message for="beneficiatypeid" display="text" id="beneficiarymsg" />
+															<p:selectOneMenu id="beneficiatypeid" value="#{corparatebeneficiaryCreationBean.beneficaryTypeId}" disabled="#{corparatebeneficiaryCreationBean.booDisableBeneficaryType}" filterMatchMode="startwith" required="true" requiredMessage="please Select Beneficary Type ">
+																<f:selectItem itemLabel="#{msg['lbl.benificiartype']}" itemValue="0" />
+																<!-- <f:selectItem itemLabel="#{msg['lbl.self']}" itemValue="1" /> -->
+																<f:selectItem itemLabel="#{msg['lbl.others']}" itemValue="2" />
+																<p:ajax event="change" listener="#{corparatebeneficiaryCreationBean.checkBeneficaryType}" update="beneficaryIndividualId,beneficiarymsg,error" onstart="processIcon.show();" onsuccess="processIcon.hide();" />
+															</p:selectOneMenu>
+														</p:panel>
+													</p:panel>
+													<!-- <p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.firstName']}" />
+															<h:outputText value="*" style="color:red !important;" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message id="firstnameMsg" for="ffirstname" display="text" />
+															<p:inputText id="ffirstname" value="#{corparatebeneficiaryCreationBean.firstName}" onkeyup="this.value=this.value.toUpperCase()" required="true" requiredMessage="Please Enter FirstName" disabled="#{corparatebeneficiaryCreationBean.disableDataOfBirth}">
+																<p:ajax event="blur" update="firstnameMsg" />
+															</p:inputText>
+														</p:panel>
+													</p:panel> -->
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.firstName']}" />
+															<h:outputText value="*" style="color:red !important;" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message id="firstnameMsg" for="ffirstname" display="text" />
+															<p:inputText id="ffirstname" value="#{corparatebeneficiaryCreationBean.firstName}" maxlength="40" onkeyup="this.value=this.value.toUpperCase()" disabled="#{corparatebeneficiaryCreationBean.disableDataOfBirth}" required="true" requiredMessage="Please Enter SecondName">
+															<f:validator validatorId="AllowCharectorswithSpace" />
+																<p:ajax event="blur" update="firstnameMsg" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+													
+													<h:panelGroup layout="block" class="clearfix" />
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.secondName']}" />
+															<h:outputText value="*" style="color:red !important;" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message id="secondnameMsg" for="secondname" display="text" />
+															<p:inputText id="secondname" value="#{corparatebeneficiaryCreationBean.secondName}" maxlength="40" onkeyup="this.value=this.value.toUpperCase()" disabled="#{corparatebeneficiaryCreationBean.disableDataOfBirth}" required="true" requiredMessage="Please Enter SecondName">
+															<f:validator validatorId="AllowCharectorswithSpace" />
+																<p:ajax event="blur" update="secondnameMsg" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.thirdName']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message id="thirdnameMsg" for="thirdname" display="text" />
+															<p:inputText id="thirdname" onkeyup="this.value=this.value.toUpperCase()" maxlength="40" value="#{corparatebeneficiaryCreationBean.thirdName}">
+															<f:validator validatorId="AllowCharectorswithSpace" />
+															<p:ajax event="blur" update="thirdnameMsg" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+													<h:panelGroup layout="block" class="clearfix" />
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value=" #{msg['lbl.fourthName']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message id="fourthMsg" for="fourthName" display="text" />
+															<p:inputText id="fourthName" onkeyup="this.value=this.value.toUpperCase()" maxlength="40" value="#{corparatebeneficiaryCreationBean.fourthName}">
+																<f:validator validatorId="AllowCharectorswithSpace" />
+															<p:ajax event="blur" update="fourthMsg" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value=" #{msg['lbl.fifthName']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+														<p:message id="fifthMsg" for="fifththName" display="text" />
+															<p:inputText id="fifththName" onkeyup="this.value=this.value.toUpperCase()" maxlength="40" value="#{corparatebeneficiaryCreationBean.fifthName}">
+																<f:validator validatorId="AllowCharectorswithSpace" />
+															<p:ajax event="blur" update="fifthMsg" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+													<h:panelGroup layout="block" class="clearfix" />
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.relationshipToCustomer']}" />
+															<h:outputText value="*" style="color:red !important;" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message id="relatioMsg" for="relationId" display="text" />
+															<p:selectOneMenu id="relationId" value="#{corparatebeneficiaryCreationBean.relationId}" disabled="#{corparatebeneficiaryCreationBean.booDisableBeneficaryType}" filterMatchMode="startwith" required="true" requiredMessage="Please select Relation Id" readonly="#{corparatebeneficiaryCreationBean.readOnlyRelations}" >
+																<f:selectItem itemLabel="#{msg['lbl.relationship']}" />
+																<f:selectItems value="#{corparatebeneficiaryCreationBean.relationDescList}" var="c" itemValue="#{c.relations.relationsId}" itemLabel="#{c.localRelationsDescription}" />
+																<p:ajax update="relatioMsg,error" event="change" listener="#{corparatebeneficiaryCreationBean.checkRelationExistFromDb}" />
+															</p:selectOneMenu>
+														</p:panel>
+													</p:panel>
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.nationality']}" />
+															<h:outputText value="*" style="color:red !important;" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message id="natinalityMsg" for="natinality" display="text" />
+															<p:selectOneMenu id="natinality" value="#{corparatebeneficiaryCreationBean.nationalityName}" filter="true" filterMatchMode="startsWith" required="true" requiredMessage="Please Select Nationality" disabled="#{corparatebeneficiaryCreationBean.disableNationality}">
+																<f:selectItem itemLabel="#{msg['lbl.selectnationality']}" itemValue="" />
+																<f:selectItems value="#{corparatebeneficiaryCreationBean.nationalityList}" var="c" itemLabel="#{c.nationality}" itemValue="#{c.fsCountryMaster.countryId}" />
+																<p:ajax update="natinalityMsg,countryCodePanel" />
+															</p:selectOneMenu>
+														</p:panel>
+													</p:panel>
+													<h:panelGroup layout="block" class="clearfix" />
+													<p:panel styleClass="left_col" id="countryCodePanel">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.countryCodeOrTelephoneNo']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:panelGrid style="width:100%;">
+																<p:row>
+																	<p:column style="width:40% !important;padding:0px 3px 0px 0px !important;">
+																		<p:message id="msgCountrCode" for="countrCode" display="text" />
+																		<p:selectOneMenu id="countrCode" value="#{corparatebeneficiaryCreationBean.countryCode}" filterMatchMode="startsWith" filter="true">
+																			<f:selectItem itemLabel="#{msg['lbl.selectcode']}" itemValue="" />
+																			<f:selectItems value="#{corparatebeneficiaryCreationBean.lstCountry}" var="c" itemLabel="#{c.countryName} - #{c.fsCountryMaster.countryTelCode}" itemValue="#{c.fsCountryMaster.countryTelCode}" />
+																			<p:ajax update="msgCountrCode" />
+																		</p:selectOneMenu>
+																	</p:column>
+																	<p:column style="width:70% !important;padding:0px 0px 0px 0px !important;">
+																		<p:message id="teliphoneMsg" for="teli" display="text" />
+																		<p:inputText id="teli" value="#{corparatebeneficiaryCreationBean.telephoneNumber}" maxlength="10">
+																			<p:ajax update="teliphoneMsg ,teleRelaAccountExist,error" listener="#{corparatebeneficiaryCreationBean.checktelephoneNumberExist}" event="blur" />
+																		</p:inputText>
+																	</p:column>
+																</p:row>
+															</p:panelGrid>
+														</p:panel>
+													</p:panel>
+													<p:panel styleClass="left_col" id="countryCodePanel1">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.countryCodeOrMobileNo']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:panelGrid style="width:100%;">
+																<p:row>
+																	<p:column style="width:40% !important;padding:0px 3px 0px 0px !important;">
+																		<p:message id="msgCountrCode1" for="countrCode1" display="text" />
+																		<p:selectOneMenu id="countrCode1" value="#{corparatebeneficiaryCreationBean.mcountryCode}" filterMatchMode="startsWith" filter="true">
+																			<f:selectItem itemLabel="#{msg['lbl.selectcode']}" itemValue="" />
+																			<f:selectItems value="#{corparatebeneficiaryCreationBean.lstCountry}" var="c" itemLabel="#{c.countryName} - #{c.fsCountryMaster.countryTelCode}" itemValue="#{c.fsCountryMaster.countryTelCode}" />
+																			<p:ajax update="msgCountrCode1" />
+																		</p:selectOneMenu>
+																	</p:column>
+																	<p:column style="width:70% !important;padding:0px 0px 0px 0px !important;">
+																		<p:message id="tmobiMsg" for="mobi" display="text" />
+																		<p:inputText id="mobi" value="#{corparatebeneficiaryCreationBean.mobileNumber}" maxlength="10">
+																			<p:ajax update="tmobiMsg ,teleRelaAccountExist,error" listener="#{corparatebeneficiaryCreationBean.mobileNumberExistInDB}" event="change" />
+																		</p:inputText>
+																	</p:column>
+																</p:row>
+															</p:panelGrid>
+														</p:panel>
+													</p:panel>
+													<h:panelGroup layout="block" class="clearfix" />
+													<p:confirmDialog id="csp" widgetVar="csp" width="500" showHeader="false" resizable="false" header="Warning Message" styleClass="warning"
+														style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="explode" hideEffect="explode" message="#{corparatebeneficiaryCreationBean.errmsg}">
+													</p:confirmDialog>
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.professionOrOccupation']}" />
+															<h:outputText value="*" style="color:red !important;" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message id="msgOccupation" for="occupation" display="text" />
+															<p:inputText id="occupation" value="#{corparatebeneficiaryCreationBean.occupation}" onkeyup="this.value=this.value.toUpperCase()" maxlength="40" required="true" requiredMessage="Please Enter Occupation" readonly="#{corparatebeneficiaryCreationBean.readOnlyOccupation}" disabled="#{corparatebeneficiaryCreationBean.disableDataOfBirth}">
+																<f:validator validatorId="AllowCharectorswithSpace" />
+																<p:ajax event="blur" update="msgOccupation" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+													<p:panel styleClass="left_col">
+														<!-- <p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.yearOfBrith']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message for="yearbir" display="text" id="msgendno" />
+															<p:inputText id="yearbir" value="#{corparatebeneficiaryCreationBean.yearOfBrith}" maxlength="4" required="true" requiredMessage="Please enter year of birth"  validatorMessage="Please enter numbers only" readonly="#{corparatebeneficiaryCreationBean.readOnlyYearOfBirth}" disabled="#{corparatebeneficiaryCreationBean.disableDataOfBirth}">
+																<f:validator validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+																	<p:ajax  update="msgendno,csp" listener="#{corparatebeneficiaryCreationBean.yearOfBithSelect}"/>
+																<p:ajax event="change" listener="#{corparatebeneficiaryCreationBean.yearOfBithSelect}" update="yearbir,csp,msgendno" />
+															</p:inputText>
+														</p:panel> -->
+														
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.dateOfBrith']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:calendar id="dobid" widgetVar="calendarWidget" value="#{corparatebeneficiaryCreationBean.dateOfBrith}"   pattern="dd/MM/yyyy" maxdate="#{corparatebeneficiaryCreationBean.effectiveMinDate}" navigator="true" yearRange="c-62:c+80" readonly="#{corparatebeneficiaryCreationBean.readOnlyDateOfBirth}"
+																disabled="#{corparatebeneficiaryCreationBean.disableDataOfBirth}">
+																<!-- <p:ajax event="dateSelect" listener="#{corparatebeneficiaryCreationBean.ageValidation}" update="csp,dobid,mainPanel" /> -->
+																<p:ajax event="dateSelect"  listener="#{corparatebeneficiaryCreationBean.ageValidation}" update="dobid,msgdobid,age,yearbir"/>
+															</p:calendar>
+															<p:message for="dobid" display="text" id="msgdobid" />
+															<p:commandButton value="#{msg['lbl.reset']}" onclick="calendarWidget.setDate(null)" update="age,yearbir,dobid,mainPanel" action="#{corparatebeneficiaryCreationBean.clearDateofBirth}" immediate="true" disabled="#{corparatebeneficiaryCreationBean.disableDataOfBirth}" rendered="#{!corparatebeneficiaryCreationBean.disableDataOfBirth}" />
+														</p:panel>
+														
+														
+													</p:panel>
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.age']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message for="age" display="text" id="mgeaage" />
+															<p:inputText id="age" value="#{corparatebeneficiaryCreationBean.age}" maxlength="3" readonly="#{corparatebeneficiaryCreationBean.readOnlyAge}"  validatorMessage="Age limit should be between 18 and 80" disabled="#{corparatebeneficiaryCreationBean.disableDataOfBirth}">
+																<p:ajax event="change" listener="#{corparatebeneficiaryCreationBean.ageSelect}" update="csp,mgeaage,mainPanel" />
+															<p:ajax update="mgeaage"/>
+																<f:validateLongRange maximum="80" minimum="18" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.yearOfBrith']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message for="yearbir" display="text" id="msgendno" />
+															<p:inputText id="yearbir" value="#{corparatebeneficiaryCreationBean.yearOfBrith}" maxlength="4"   validatorMessage="Please enter numbers only" readonly="#{corparatebeneficiaryCreationBean.readOnlyYearOfBirth}" disabled="#{corparatebeneficiaryCreationBean.disableDataOfBirth}">
+																<f:validator validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+																	<p:ajax  update="msgendno,csp" listener="#{corparatebeneficiaryCreationBean.yearOfBithSelect}"/>
+																<p:ajax event="change" listener="#{corparatebeneficiaryCreationBean.yearOfBithSelect}" update="yearbir,csp,msgendno" />
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+													<h:panelGroup layout="block" class="clearfix" />
+													<h:panelGroup layout="block" class="clearfix" />
+													<h:outputText id="Note" value="#{msg['lbl.benifciarynote']}" style="color:red; padding:10px !important; font-size:10.5px; font-weight:bold;" />
+													<h:panelGroup layout="block" class="clearfix" />
+													<h:panelGroup layout="block" class="clearfix" />
+													<h:panelGroup layout="block" styleClass="shadow_button">
+														<p:commandButton value="#{msg['lbl.back']}" style="margin-right:10px;" action="#{corparatebeneficiaryCreationBean.backToBenificaryListScreen}" process="@this" update="mainPanel" />
+														<p:commandButton value="#{msg['lbl.next']}" action="#{corparatebeneficiaryCreationBean.gotoBeneficaryAccountDetails}" update="mainPanel" />
+														<h:panelGroup layout="block" class="clearfix" />
+													</h:panelGroup>
+													<h:outputText id="mandatory" value=" #{msg['lbl.*filedsAreMandatory']}" style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+													<h:panelGroup layout="block" class="clearfix" />
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="10px" />
+										</p:panel>
+									</p:panel>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

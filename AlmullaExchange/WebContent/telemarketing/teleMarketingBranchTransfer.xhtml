@@ -1,0 +1,251 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script type="text/javascript" language="javascript">
+		history.pushState(null, null, 'teleMarketingBranchTransfer.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'teleMarketingBranchTransfer.xhtml');
+		});
+	</script>
+</h:head>
+
+<p:confirmDialog id="selectSourceBranch" widgetVar="selectSourceBranch"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all" message="Please select Source Branch!">
+</p:confirmDialog>
+
+<p:confirmDialog id="selectTransferBranch"
+	widgetVar="selectTransferBranch" resizable="false"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all" message="Please select Transfer Branch!">
+</p:confirmDialog>
+
+<p:confirmDialog id="selectBranch" widgetVar="selectBranch"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all"
+	message="Source Branch and Transfer Branch should not same!">
+</p:confirmDialog>
+
+<p:confirmDialog id="countZero" widgetVar="countZero" resizable="false"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all"
+	message="There is no records to transfer!">
+</p:confirmDialog>
+
+
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form">
+								<h1>
+									<h:outputText value="Tele Marketing Branch Transfer" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h3>
+										<h:outputText value="Tele Marketing Branch Transfer" />
+									</h3>
+									<p:panel styleClass="panel_border">
+										<p:panel id="headerPanel">
+
+											<p:dialog modal="true" showHeader="true"
+												header="#{msg['lbl.pleasewait']}" widgetVar="process"
+												id="process" width="300" height="50" resizable="false"
+												draggable="false" closable="false"
+												style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+												<div style="text-align: center;">
+													<p:graphicImage value="../images/preloader.gif" />
+												</div>
+											</p:dialog>
+
+											<p:dialog id="success" widgetVar="success" width="270"
+												height="70" showHeader="false" resizable="false"
+												style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+												showEffect="clip" hideEffect="clip" closeOnEscape="true"
+												closable="true" modal="true">
+												<p:outputLabel
+													value="The records are transfered successfully!" />
+												<br />
+												<p:spacer width="15px" />
+												<p:commandButton value="#{msg['lbl.ok']}" process="@this"
+													action="#{telemarketingBranchTransferMbean.okSelected}"
+													update="mainPanel" oncomplete="success.hide()" />
+											</p:dialog>
+
+											<p:confirmDialog id="errorPage" widgetVar="errorPage"
+												resizable="false"
+												style="background-color: white !important;"
+												header="#{msg['lbl.warningDailog']}" styleClass="warning"
+												showEffect="clip" hideEffect="clip" closeOnEscape="true"
+												closable="true" update="@all"
+												message="#{telemarketingBranchTransferMbean.errorMessage}">
+											</p:confirmDialog>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="Source Branch" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:selectOneMenu
+														value="#{telemarketingBranchTransferMbean.fromBranchId}"
+														id="fBranch" filter="true" filterMatchMode="contains">
+														<f:selectItem itemLabel="----Select Source Branch---"
+															itemValue="" />
+														<f:selectItems
+															value="#{telemarketingBranchTransferMbean.countryBranchList}"
+															var="cou" itemLabel="#{cou.branchId} - #{cou.branchName}"
+															itemValue="#{cou.countryBranchId}" />
+														<p:ajax event="change" update="fBranch,noofRecords" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="Nationality" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:selectOneMenu
+														value="#{telemarketingBranchTransferMbean.nationalityId}"
+														id="nationalityid" filter="true"
+														filterMatchMode="contains" required="true">
+														<f:selectItem itemLabel="----Select Nationality----"
+															itemValue="" />
+														<f:selectItems
+															value="#{telemarketingBranchTransferMbean.nationalityList}"
+															var="crb"
+															itemLabel="#{crb.fsCountryMaster.countryCode} - #{crb.nationality}"
+															itemValue="#{crb.fsCountryMaster.countryId}" />
+														<p:ajax event="change" update="nationalityid,noofRecords" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="Total Records" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText readonly="true" id="noofRecords"
+														value="#{telemarketingBranchTransferMbean.noOfRecords}">
+														<p:ajax></p:ajax>
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="10px"></p:spacer>
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="SEARCH" style="margin-right:5px;"
+													immediate="true" process="@this"
+													update=":form:mainPanel,errorPage"
+													action="#{telemarketingBranchTransferMbean.searchRecords}"
+													onstart="process.show();" onsuccess="process.hide();" />
+											</h:panelGroup>
+
+
+											<p:panel styleClass="left_col"
+												rendered="#{telemarketingBranchTransferMbean.searchSelected}">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="Transfer Branch" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:selectOneMenu
+														value="#{telemarketingBranchTransferMbean.toBranchId}"
+														id="toBranch" filter="true" filterMatchMode="contains"
+														required="true">
+														<f:selectItem itemLabel="----Select Transfer Branch----"
+															itemValue="" />
+														<f:selectItems
+															value="#{telemarketingBranchTransferMbean.transferBranchList}"
+															var="c" itemLabel="#{c.branchId} - #{c.branchName}"
+															itemValue="#{c.countryBranchId}" />
+														<p:ajax event="change" update="toBranch," />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+										</p:panel>
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px"></p:spacer>
+
+
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											rendered="#{telemarketingBranchTransferMbean.searchSelected}">
+
+											<p:commandButton value="SAVE" style="margin-right:10px;"
+												immediate="true" process="@this"
+												update=":form:mainPanel,errorPage"
+												action="#{telemarketingBranchTransferMbean.update}"
+												onstart="process.show();" onsuccess="process.hide();" />
+
+											<p:commandButton value="CLEAR" style="margin-right:10px;"
+												action="#{telemarketingBranchTransferMbean.clear}"
+												immediate="true" process="@this" update=":form:mainPanel"
+												onstart="process.show();" onsuccess="process.hide();" />
+
+											<p:commandButton value="EXIT" style="margin-right:10px;"
+												action="#{telemarketingBranchTransferMbean.exit}"
+												immediate="true" onstart="process.show();"
+												onsuccess="process.hide();" />
+
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+
+										<p:spacer height="20px"></p:spacer>
+
+										<p:panel styleClass="left_col">
+											<h:outputText id="mandatory"
+												value=" #{msg['lbl.*filedsAreMandatory']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+
+									</p:panel>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+
+</html>

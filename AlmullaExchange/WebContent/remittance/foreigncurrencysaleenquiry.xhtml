@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+		history.pushState(null, null, 'foreigncurrencysaleenquiry.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'foreigncurrencysaleenquiry.xhtml');
+		});
+	</script>
+</h:head>
+<p:confirmDialog id="nodatafound" widgetVar="nodatafound" width="300"
+	header="#{msg['lbl.warningDailog']}" height="17" resizable="false"
+	style=" border:2px solid green !important; padding:0px !important;  color:solid green !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="explode" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.nodatafound']}">
+</p:confirmDialog>
+<p:confirmDialog id="nodatafound1" widgetVar="nodatafound1" width="300"
+	header="#{msg['lbl.warningDailog']}" height="17" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.SelectDocYearAndNumber']}">
+</p:confirmDialog>
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<h:form id="form1" target="_blank">
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;"><ui:include
+							src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle"
+										src="../images/toggle_plus.png" alt=""
+										onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+								<h1>
+									<h:outputText value="#{msg['lbl.fcSaleEnq']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+
+									<h2>
+										<h:outputText value="#{msg['lbl.fcSaleEnq']}" />
+									</h2>
+
+
+									<p:confirmDialog id="csp" widgetVar="csp"
+										visible="#{fcsaleEnquiryBean.booError}" showHeader="false"
+										resizable="false" header="Warning Message"
+										styleClass="warning"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="explode" hideEffect="explode"
+										message="#{fcsaleEnquiryBean.errorMsg}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="nullPoiterId" widgetVar="nullPoiterId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{fcsaleEnquiryBean.errorMsg} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+
+
+
+									<p:panel styleClass="panel_border">
+
+										<p:panel
+											rendered="#{fcsaleEnquiryBean.renderForRemittanceBranchWiseEnquiry}">
+											<p:panel styleClass="left_col">
+
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.documentYear']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+
+													<p:message id="msgDocumentYear" for="documentid"
+														display="text" />
+													<p:selectOneMenu id="documentid"
+														value="#{fcsaleEnquiryBean.documentFinancialYear}"
+														filter="true" filterMatchMode="startsWith" required="true"
+														requiredMessage="Please Select DocumentYear">
+														<f:selectItem itemLabel="#{msg['lbl.selectDocumentYear']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{fcsaleEnquiryBean.userFinancialYearList}"
+															var="c" itemLabel="#{c.financialYear}"
+															itemValue="#{c.financialYear}" />
+														<p:ajax event="change" update="msgDocumentYear"
+															onstart="process.show();" onsuccess="process.hide();" />
+													</p:selectOneMenu>
+
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.documentNum']} " />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="docnomsg" for="documentnoid" display="text" />
+													<p:inputText id="documentnoid"
+														value="#{fcsaleEnquiryBean.documentNo}" required="true"
+														requiredMessage="Please Enter Document Number">
+
+														<p:ajax event="blur" update="docnomsg" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<h:outputText id="mandatory"
+													value=" #{msg['lbl.*filedsAreMandatory']}"
+													style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+											</p:panel>
+											
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="#{msg['lbl.enquiry']}"
+													action="#{fcsaleEnquiryBean.fcsaleEnquiry}"
+													style="margin-right:10px;" update="form1"
+													onstart="process.show();" onsuccess="process.hide();" />
+												<p:commandButton value="#{msg['lbl.exit']}"
+													action="#{fcsaleEnquiryBean.exit}"
+													style="margin-right:10px;" process="@this"
+													onstart="process.show();" onsuccess="process.hide();" />
+												<p:commandButton value="#{msg['lbl.clear']}"
+													action="#{fcsaleEnquiryBean.clearAll}"
+													style="margin-right:10px;" update="form1" immediate="true"
+													process="@this" onstart="process.show();"
+													onsuccess="process.hide();" />
+												<h:panelGroup layout="block" class="clearfix" />
+											</h:panelGroup>
+										</p:panel>
+										<h:panelGroup layoutR="block" class="clearfix" />
+										<p:panel>
+											<h2>
+												<h:outputText value="#{msg['lbl.customerInfo']}" />
+											</h2>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.customerRefNo']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{fcsaleEnquiryBean.customerReference}"
+														readonly="true">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.custName']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{fcsaleEnquiryBean.customerName}"
+														readonly="true">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.telephoneNo']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{fcsaleEnquiryBean.telephoneNo}"
+														readonly="true">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.location']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{fcsaleEnquiryBean.location}"
+														readonly="true">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<!-- <h2>
+											<h:outputText value="Collection Information" />
+										</h2>
+										 <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Collection Mode" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{fcsaleEnquiryBean.collectionMode}" readonly="true">
+											<p:ajax/> 
+											</p:inputText>
+											</p:panel>
+										</p:panel>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Collection Amount" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{fcsaleEnquiryBean.collectionAmount}" readonly="true">
+												<p:ajax/> 
+											</p:inputText>
+											</p:panel>
+										</p:panel>  
+									<h:panelGroup layout="block" class="clearfix"/>
+									<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Purchase Currency" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{fcsaleEnquiryBean.purchaseCurrency}" readonly="true">
+											<p:ajax/>
+											</p:inputText>
+											</p:panel>
+										</p:panel>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Sale Currency" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{fcsaleEnquiryBean.saleCurrency}" readonly="true">
+											<p:ajax/> 
+											</p:inputText>
+											</p:panel>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix"/>
+									<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Paid Amount" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{fcsaleEnquiryBean.paidAmount}" readonly="true">
+											<p:ajax/> 
+											</p:inputText>
+											</p:panel>
+										</p:panel>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Net Amount" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{fcsaleEnquiryBean.netAmount}" readonly="true">
+											<p:ajax/> 
+											</p:inputText>
+											</p:panel>
+										</p:panel>
+											<h:panelGroup layout="block" class="clearfix"/>
+									<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Refund Amount"  />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{fcsaleEnquiryBean.refundAmount}"  readonly="true">
+												<p:ajax/> 
+											</p:inputText>
+											</p:panel>
+										</p:panel>
+										 -->
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<h2>
+												<h:outputText value="#{msg['lbl.receiptPaymentInfo']}" />
+											</h2>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.sourceOfIncome']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{fcsaleEnquiryBean.sourceofIncome}"
+														readonly="true">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.purpose']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{fcsaleEnquiryBean.purpose}"
+														readonly="true">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.foreginCurrency']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{fcsaleEnquiryBean.foreignCurrency}"
+														readonly="true">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.foreignCurrencyAmount']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{fcsaleEnquiryBean.foreignTrnxAmount}"
+														readonly="true">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.localCurrency']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{fcsaleEnquiryBean.localCurrency}"
+														readonly="true">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.currencyamount']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{fcsaleEnquiryBean.localTrnxAmount}"
+														readonly="true">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.localNetAmount']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{fcsaleEnquiryBean.localNetAmount}"
+														readonly="true">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.averagerate']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{fcsaleEnquiryBean.averageRate}"
+														readonly="true">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.transctionType']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{fcsaleEnquiryBean.transactionType}"
+														readonly="true">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Transaction Date and Time" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{fcsaleEnquiryBean.accountmmyy}"
+														readonly="true">
+														<f:convertDateTime pattern="dd-MM-yy HH:mm:ss" />
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.remarks']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{fcsaleEnquiryBean.remarks}"
+														readonly="true">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Created By" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{fcsaleEnquiryBean.createdBy}"
+														readonly="true">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:accordionPanel activeIndex="" styleClass="inner_accardion"
+												id="accordid">
+												<p:tab title="#{msg['lbl.currencyAdjustmentInformation']}"
+													id="tbid"
+													titletip="Click here to View  Currency Adjustment">
+													<p:dataTable id="currenctDatatable"
+														value="#{fcsaleEnquiryBean.fcsaleList}" var="c"
+														editable="true" editMode="cell" cellpadding="0"
+														cellspacing="0" border="1" rowIndexVar="rowIndex"
+														emptyMessage="#{msg['lbl.norecordfound']}"
+														styleClass="mydatatableclass">
+
+
+														<p:column headerText="#{msg['lbl.slNo']}">
+															<h:outputText value="#{rowIndex+1}" />
+														</p:column>
+
+
+														<p:column headerText="#{msg['lbl.adjAmount']}">
+															<p:outputLabel value="#{c.notesQty}" />
+														</p:column>
+
+														<p:column headerText="#{msg['lbl.denominationAmount']}">
+															<p:outputLabel value="#{c.denaminationAmount}" />
+														</p:column>
+														<p:column headerText="#{msg['lbl.adjAmount']}">
+															<p:outputLabel value="#{c.adjustmentAmount}" />
+														</p:column>
+
+
+														<p:column headerText="#{msg['lbl.exchangeRate']}">
+															<p:outputLabel value="#{c.exchangeRate}" />
+														</p:column>
+
+														<p:column headerText="#{msg['lbl.proGno']}">
+															<p:outputLabel value="#{c.progNo}" />
+														</p:column>
+														<p:column headerText="#{msg['lbl.transctionType']}">
+															<p:outputLabel value="#{c.transactionType}" />
+														</p:column>
+														<p:column headerText="#{msg['lbl.purposeOfTrans']}">
+															<p:outputLabel value="#{c.purpose}" />
+														</p:column>
+														<p:column headerText="#{msg['lbl.sourceOfIncome']}">
+															<p:outputLabel value="#{c.sourceOfIncome}" />
+														</p:column>
+
+														<p:column headerText="#{msg['lbl.notesQuentity']}">
+															<p:outputLabel value="#{c.notesQty}" />
+														</p:column>
+														<p:column
+															headerText="#{msg['lbl.bankTransferRequestDate']}">
+															<p:outputLabel value="#{c.documentDate}">
+																<f:convertDateTime pattern="dd-MM-yy" />
+															</p:outputLabel>
+														</p:column>
+														<p:column headerText="Transaction Date and Time">
+															<p:outputLabel value="#{c.accountMMYY}">
+																<f:convertDateTime pattern="dd-MM-yy HH:mm:ss" />
+															</p:outputLabel>
+														</p:column>
+														<p:column headerText="#{msg['lbl.remarks']}">
+															<p:outputLabel value="#{c.remarks}" />
+														</p:column>
+
+													</p:dataTable>
+												</p:tab>
+											</p:accordionPanel>
+										</p:panel>
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											rendered="#{fcsaleEnquiryBean.renderBackButtonForRemittanceBranchWiseEnquiry}">
+											<p:commandButton value="#{msg['lbl.back']}"
+												action="#{fcsaleEnquiryBean.goBackToRemittanceBranchWiseEnquiryScreen}" />
+										</h:panelGroup>
+
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											rendered="#{fcsaleEnquiryBean.renderBackButtonForRemittance}">
+											<p:commandButton value="#{msg['lbl.back']}"
+												action="#{personalRemittanceBean.callToBeneficaryTransactions}" />
+										</h:panelGroup>
+										<p:panel styleClass="left_col">
+											<!-- <h:outputText  id="mandatory" value=" #{msg['lbl.*filedsAreMandatory']}"  style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" /> -->
+										</p:panel>
+									</p:panel>
+									<p:dialog modal="true" showHeader="true"
+										header="#{msg['lbl.bco.plswait']}" widgetVar="process"
+										id="process" width="300" height="50" resizable="false"
+										draggable="false" closable="false"
+										style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+										<div style="text-align: center;">
+											<p:graphicImage value="../images/preloader.gif" />
+										</div>
+									</p:dialog>
+								</p:panel>
+							</h:panelGroup>
+						</h:panelGroup></td>
+				</tr>
+			</table>
+			<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+			<h:panelGroup layout="block" class="clearfix" />
+		</h:form>
+	</f:view>
+</h:body>
+</html>

@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+<script>
+	 
+</script>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</h:head>
+    <p:dialog id="approve" widgetVar="approve" width="270" height="70"
+	showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.approvedsuccessfully']}" />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{insuranceSetUpApprovalBean.clickOnOk}"
+		process="@this" />
+</p:dialog>  
+
+<p:dialog id="alreadyapprov" widgetVar="alreadyapprov" width="310" height="70" showHeader="false" resizable="false" style=" border:2px solid green !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"  >
+            											<p:outputLabel value="#{msg['lbl.thisrecordalreadyapprovedby']}"/><br/>
+            								<p:spacer width="15px" />
+            											<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{insuranceSetUpApprovalBean.clickOKButton}" process="@this"/>          
+</p:dialog>		
+ 
+<h:body>
+   
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+			 <ui:include src="#{facesBean.fxdeal_menu}"></ui:include>  
+				 </td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form1">
+				
+	
+								 
+								<h1>
+									<h:outputText value="#{msg['lbl.medicalInsuranceSetUp']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+
+									<h2>
+										<h:outputText value="#{msg['lbl.medicalInsuranceSetUp']}" />
+									</h2>
+									 
+									 <p:confirmDialog id="error" widgetVar="error" width="600" visible="#{insuranceSetUpApprovalBean.booVisible}"
+										showHeader="true" resizable="false" header="Warning Message"
+										styleClass="ui-confirmdialog-yes"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:green; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{insuranceSetUpApprovalBean.errorMessage}">
+									</p:confirmDialog>
+											
+									 
+									 
+									 <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.effectiveFrom']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col"> 
+												 <p:inputText id="fromid" value="#{insuranceSetUpApprovalBean.effectiveFromDate}" readonly="true">
+										 	 
+											  </p:inputText>
+											</p:panel>
+										</p:panel>
+										 
+											 <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.effectiveTo']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											 <p:inputText id="toid" value="#{insuranceSetUpApprovalBean.effectiveToDate}" readonly="true">
+										 
+											  </p:inputText>
+											</p:panel>
+										</p:panel> 
+									 
+											<div class="clearfix" />
+										
+										
+									 
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.fromAmount']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgfromamount" for="frmAmount"
+													display="text" />
+												<p:inputText id="frmAmount"
+													value="#{insuranceSetUpApprovalBean.fromAmount}" required="true"
+													requiredMessage="Please Enter From Amount" maxlength="10"  readonly="true">
+													<p:ajax event="blur" update="msgfromamount" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+								 
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.toAmount']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgtoamount" for="toAmountid"
+													display="text" />
+												<p:inputText id="toAmountid"
+													value="#{insuranceSetUpApprovalBean.toAmount}" required="true"
+													requiredMessage="Please Enter To Amount" maxlength="10"  readonly="true">
+													<p:ajax event="blur" update="msgtoamount" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.numOFDays']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgnoofdays" for="daysid"
+													display="text" />
+												<p:inputText id="daysid"
+													value="#{insuranceSetUpApprovalBean.insuranceDays}" required="true"
+													requiredMessage="Please Enter Number of Days" maxlength="3"  readonly="true">
+													 
+													<p:ajax event="blur" update="msgnoofdays" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+								 
+
+									 
+
+ 
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.earnedLoyalityPoints']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgearnedloyality" for="loyaltyid"
+													display="text" />
+												<p:inputText id="loyaltyid"
+													value="#{insuranceSetUpApprovalBean.loyaltyPoints}"
+													required="true"
+													requiredMessage="Please Enter Earned Loyality Points"
+													maxlength="10"  readonly="true"  >
+																										  
+													<p:ajax event="blur" update="msgearnedloyality" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix" />
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.insurAmount']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msginsuranceamount" for="insuranceamountid"
+													display="text" />
+												<p:inputText id="insuranceamountid"
+													value="#{insuranceSetUpApprovalBean.insuranceAmount}" required="true"
+													requiredMessage="Please Enter Insurance Amount" maxlength="10"  readonly="true">
+													 
+													<p:ajax update="msginsuranceamount" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.addAmount']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgadditionalamount" for="addtionalamountid"
+													display="text" />
+												<p:inputText id="addtionalamountid"
+													value="#{insuranceSetUpApprovalBean.insuranceAdditionalAmount}"
+													required="true"
+													readonly="true"
+													maxlength="10"    >
+														 
+													<p:ajax update="msgadditionalamount" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+										<div class="clearfix" />
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.insurMess']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											 <p:message id="msginsurancemessage"  for="insurancemesgid" display="text" />   
+												<p:inputTextarea id="insurancemesgid"
+													value="#{insuranceSetUpApprovalBean.insuranceMsgOne}"
+													required="true"
+													requiredMessage="Please Enter Insurance Message"
+													style="height:70px !important;" maxlength="500" readonly="true">
+													<p:ajax event="blur" update="msginsurancemessage"/>
+												</p:inputTextarea>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.addMess']}" />
+												
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgadditionalmessage"
+													for="addtionalmsgideng" display="text" />
+												<p:inputTextarea id="addtionalmsgideng"
+													value="#{insuranceSetUpApprovalBean.insuranceMsgTwo}" readonly="true" style="height:70px !important;" maxlength="500">
+																					 
+												<p:ajax event="blur" update="msgadditionalmessage" />
+												</p:inputTextarea>
+											</p:panel>
+										</p:panel>
+										 
+										<div class="clearfix" />
+										
+										
+										 <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.insuMessOrLocal']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											 <p:message id="msginsurancemessagelocal"  for="insurancemsglocalid" display="text" />   
+												<p:inputTextarea id="insurancemsglocalid"
+													value="#{insuranceSetUpApprovalBean.insuranceArabicMsgOne}"
+													required="true"
+													requiredMessage="Please Enter Insurance Message in Local" readonly="true"
+												  style="height:70px !important;text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;"
+													dir="RTL" maxlength="500" >
+													<f:validator validatorId="arabicValidator" />
+													<p:ajax event="blur" update="msginsurancemessagelocal"/>
+												</p:inputTextarea>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.addMessOrLocal']}" />
+												
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgadditionalmessagelocal"
+													for="addionalmsgloalid" display="text" />
+												<p:inputTextarea id="addionalmsgloalid"
+													value="#{insuranceSetUpApprovalBean.insuranceArabicMsgTwo}" readonly="true"  maxlength="500" style="height:70px !important;text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;"
+													dir="RTL" validatorMessage="Please Enter Arabic Language">
+													 										
+													<p:ajax event="blur" update="msgadditionalmessagelocal" />
+												</p:inputTextarea>
+											</p:panel>
+										</p:panel>
+									 
+
+										<div class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button">
+										<p:commandButton value="#{msg['lbl.approve']}"  action="#{insuranceSetUpApprovalBean.approve}"  update="form1"/>
+													 
+										<p:commandButton value="#{msg['lbl.cancel']}" action="#{insuranceSetUpApprovalBean.cancel}"  immediate="true" update="form1"  process="@this"/>
+												 
+										</h:panelGroup>
+		
+								
+									</p:panel>
+								 
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

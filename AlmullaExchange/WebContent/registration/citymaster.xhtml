@@ -1,0 +1,706 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<style type="text/css">
+.ui-dialog.dialogsuccess .ui-widget-content {
+	border: 3px solid #00a53e !important;
+	font-weight: bold;
+	padding: 0px 0px 0px 30px !important;
+}
+
+.ui-dialog.dialogsuccess .ui-widget-content label {
+	margin-right: 0px !important;
+}
+
+label {
+	margin-right: 26px !important;
+}
+</style>
+
+<script >
+		 history.pushState(null, null, 'citymaster.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'citymaster.xhtml'); 
+		    });
+</script>
+
+</h:head>
+
+<h:body>
+
+<p:confirmDialog id="mandatoryfields" widgetVar="mandatoryfields" 
+	width="400" height="20" resizable="false"
+	style="background-color: white !important;"
+	header="#{mag['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.selectCountryAndStateAndDistrict']}">
+</p:confirmDialog>
+<p:confirmDialog id="datatable" widgetVar="datatable" width="300"
+									showHeader="false" resizable="false"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip"
+									message="#{msg['lbl.recrdAlreadyExisted']}">
+									</p:confirmDialog>
+	<f:view>
+	<p:confirmDialog id="noFileUploded" widgetVar="noFileUploded" width="250" styleClass="red"  showHeader="false" showEffect="drop" hideEffect="explode" resizable="false" 	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									 message="#{msg['lbl.pleaseUploadExcelFile']}">
+      </p:confirmDialog>
+        <p:confirmDialog id="changeFile" widgetVar="changeFile" width="370" styleClass="red" showEffect="drop" hideEffect="explode" showHeader="false" resizable="false" 	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									 message="#{msg['lbl.pleaseUploadStateUploadedExcelFile']}">
+      </p:confirmDialog>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form">
+
+								<p:dialog id="complete" widgetVar="complete" width="260"
+									height="70" showHeader="false" resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+
+									<p:outputLabel value=" #{msg['lbl.dataissuccessfullysaved']}" />
+									<br />
+
+									<p:commandButton value="#{msg['lbl.ok']}"
+										actionListener="#{cityMasterBean.okSaved}" immediate="true"
+										update="mainPanel" />
+								</p:dialog>
+
+<p:dialog id="permanentDelete" widgetVar="permanentDelete" width="400" height="80" resizable="false" style="background-color: white !important;" styleClass="warning" header="#{msg['lbl.deleteRecrd']}" closable="false" showEffect="clip" hideEffect="clip">
+<p:outputLabel value="#{msg['lbl.douWantDeleteRecordPermentely']}" style="text-align: center; font-size:15px !important;" modal="true"/><br />
+<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{cityMasterBean.cityMasterForConformDelete}" process="@this" oncomplete="PF('permanentDelete').hide();" update="mainPanel" style="margin-left: 150px !important;" />
+<p:commandButton value="#{msg['lbl.cancel']}" onclick="PF('permanentDelete').hide();" immediate="true" style="margin-left:10px;" />
+</p:dialog>
+								<!-- <p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+									 -->
+									<p:dialog id="pending" widgetVar="pending"
+										width="400" height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.warningDailog']}" closable="false"
+										showEffect="clip" hideEffect="clip" modal="true">
+										<p:outputLabel
+											value="#{msg['lbl.plsApproveRecord']}"
+											 style="text-align: center; font-size:15px !important;"  />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											onclick="PF('pending').hide();" immediate="true"
+											style="margin-left: 150px !important;" />
+									</p:dialog>
+
+
+								<!-- <p:dialog id="remarks" widgetVar="remarks" width="550"
+									height="205" showHeader="false" resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+									<p:panel styleClass="shadow">
+
+										<p:panel>
+											<h:outputText value="#{msg['lbl.approvedDate']}" />&nbsp;<h:outputText
+												value="#{cityMasterBean.approvedDateString}" />&nbsp;&nbsp;&nbsp;
+            							<h:outputText value="#{msg['lbl.approvedBy']}" />&nbsp;<h:outputText
+												value="#{cityMasterBean.approvedBy}" />
+										</p:panel>
+
+										<div class="clearfix" />
+										<hr></hr>
+										<p:panel>
+											<h:outputText value="#{msg['lbl.enterremarks']}" />
+										</p:panel>
+										<p:panel>
+
+											<h:inputTextarea value="#{cityMasterBean.remarks}" rows="5"
+												cols="50">
+												<p:ajax />
+											</h:inputTextarea>
+										</p:panel>
+										<p:spacer width="15px" />
+										<div class="clearfix" />
+										<h:panelGroup styleClass="shadow">
+											<div class="clearfix" />
+											<p:commandButton value="#{msg['lbl.ok']}"
+												actionListener="#{cityMasterBean.clickOKApproval}"
+												process="@this" update=":form" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												oncomplete="remarks.hide()" update=":form" immediate="true" />
+											onclick="PF('remarks').hide();"
+										</h:panelGroup>
+									</p:panel>
+								</p:dialog> -->
+								<p:dialog id="remarks" widgetVar="remarks" width="480" resizable="false" style="background-color: white !important;" styleClass="info" header="Remarks" closable="false" showEffect="clip" hideEffect="clip" modal="true">
+                             		<p:panel>
+                             		<table>
+                             		<tr>
+                             		<td> <h:outputText value="#{msg['lbl.approvedDate']}" /></td>
+                             		<td><h:outputText value="#{cityMasterBean.approvedDateString}" style="color:red !important;"/> </td>
+                             		</tr>
+                             		<tr>
+                             		<td> <h:outputText value="#{msg['lbl.approvedBy']}" /> </td>
+                             		<td>	<h:outputText  value="#{cityMasterBean.approvedBy}"  style="color:red !important;"/> </td>
+                             		</tr>
+                             		</table>
+                             		</p:panel>
+                             		<p:spacer height="10px"/>
+                             		<p:panel>
+                             		<h:outputText value="#{msg['lbl.enterremarks']}" /><h:outputText value="*" style="color:red !important;" />
+                             		</p:panel>
+                             		<p:spacer height="5px"/>
+                             		<p:panel>
+                             		<h:inputTextarea id="remarksId" value="#{cityMasterBean.remarks}" validatorMessage="Maximum 255 charectors allowed" >
+                                           <f:validateLength maximum="255"/>
+                                            <p:ajax/>
+                                     </h:inputTextarea>
+                                    </p:panel>
+                                    <p:spacer height="5px"/>
+                                   	<p:panel style="padding-left:160px;">
+                                        <p:commandButton value="#{msg['lbl.ok']}" actionListener="#{cityMasterBean.clickOKApproval}" process="@this" update=":form"  /> 
+            							<p:commandButton value="#{msg['lbl.cancel']}" actionListener="#{cityMasterBean.cancelRemarksForDialog}" process="@this"/> 
+                             </p:panel>
+                               </p:dialog>
+
+								<p:dialog id="norecord" widgetVar="norecord" width="260"
+									height="70" showHeader="false" resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" >
+
+									<p:outputLabel value="#{msg['lbl.norecordfound']}" />
+									<br />
+
+									<p:commandButton value="#{msg['lbl.ok']}"
+										oncomplete="norecord.hide()" />
+								</p:dialog>
+
+								<p:dialog id="duplicate" widgetVar="duplicate" width="260"
+									height="70" showHeader="false" resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+
+									<p:outputLabel value="#{msg['lbl.duplicateRecordsNotFound']}" />
+									<br />
+
+									<p:commandButton value="#{msg['lbl.ok']}"
+										oncomplete="duplicate.hide()" />
+								</p:dialog>
+
+								<p:confirmDialog id="deleterecord" widgetVar="deleterecord"
+									width="400" styleClass="red" showHeader="false"
+									resizable="false"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip"
+									message="#{msg['lbl.recordAlreadyModifiedOrNotAbleToDelete']}">
+									<p:commandButton value="#{msg['lbl.ok']}"
+										oncomplete="deleterecord.hide()" immediate="true"
+										update=":form" />
+								</p:confirmDialog>
+
+								<p:dialog id="deletemsg" widgetVar="deletemsg" width="260"
+									height="70" showHeader="false" resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+
+									<p:outputLabel value="#{msg['lbl.recrdDeletedSuccess']}" />
+									<br />
+
+									<p:commandButton value="#{msg['lbl.ok']}"
+										oncomplete="deletemsg.hide()" immediate="true" update="form" />
+								</p:dialog>
+
+								<p:dialog id="imageupload" widgetVar="imageUpload" width="250"
+									height="40" resizable="false"
+									style=" border:5px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 15px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true">
+									<p:outputLabel value="#{msg['lbl.xlsUploaded']}" />
+								</p:dialog>
+
+								<h1>
+									<h:outputText value="#{msg['lbl.cityMaster']}" />
+								</h1>
+								
+								<p:panel id="mainPanel">
+								
+								<p:confirmDialog id="exception" widgetVar="exception"  
+		resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{cityMasterBean.errorMessage}" >
+	</p:confirmDialog>
+								<p:confirmDialog id="csp" widgetVar="csp" width="500"
+														showHeader="false" resizable="false"
+														header="Warning Message" styleClass="warning"
+														style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+														showEffect="explode" hideEffect="explode"
+														message="#{cityMasterBean.errmsg}">
+													</p:confirmDialog>
+									<p:panel styleClass="panel_border">
+
+
+										<p:dialog id="completeupload" widgetVar="completeupload"
+											width="260" height="70" showHeader="false" resizable="false"
+											style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true" modal="true">
+
+											<p:outputLabel
+												value="#{cityMasterBean.countNoOfRecords} #{msg['lbl.dataissuccessfullysaved']}" />
+											<br />
+
+											<p:commandButton value="#{msg['lbl.ok']}"
+												actionListener="#{cityMasterBean.okSaved}" immediate="true"
+												update="mainPanel" />
+										</p:dialog>
+										<p:panel id="dialogPanel"
+											rendered="#{cityMasterBean.radioRender}">
+
+
+											<p:panel>
+												<p:panel style="padding:50px 100px 50px 100px !important;">
+													<fieldset
+														style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+														<legend
+															style="font-size: 15px; font-weight: bold; color: #037712;"
+															align="top">&nbsp;"#{msg['lbl.modeofoperation']}"&nbsp;</legend>
+
+														<p:panel styleClass="left_col">
+															<p:panel styleClass="inner_left_col">
+																<!-- <h:outputText value="#{msg['lbl.remittance']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" /> -->
+															</p:panel>
+															<p:panel>
+
+																<h:selectOneRadio id="validselect" tabindex="1"
+																	value="#{cityMasterBean.selectType}"
+																	label="Method Type" required="true"
+																	requiredMessage="#{msg['lbl.modevalidation']}">
+																	<f:selectItem itemValue="manual"
+																		itemLabel="#{msg['lbl.manual']}" />
+																	<f:selectItem itemValue="file"
+																		itemLabel="#{msg['lbl.fileUpload']}" id="smart1" />
+																	<p:ajax event="change"
+																		listener="#{cityMasterBean.changeType}"
+																		update="mainPanel" />
+
+																</h:selectOneRadio>
+															</p:panel>
+															<div class="clearfix"></div>
+														</p:panel>
+
+														<h:panelGroup layout="block" class="clearfix" />
+
+
+														<h:panelGroup class="clearfix" />
+													</fieldset>
+												</p:panel>
+
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											
+										</p:panel>
+
+										<p:panel id="firstPanel"
+											rendered="#{cityMasterBean.manualRender}">
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.country']}" />
+													<h:outputText style="color:red" value="*" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="country" display="text" id="countrymsg" />
+													<p:selectOneMenu id="country"
+														value="#{cityMasterBean.countryId}" required="true"
+														requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.country']}"
+														tabindex="1" filter="true" filterMatchMode="contains">
+														<f:selectItem itemValue=""
+															itemLabel="--#{msg['lbl.select']} #{msg['lbl.country']}--" />
+														<f:selectItems value="#{cityMasterBean.countryList}"
+															var="c" itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+															itemValue="#{c.fsCountryMaster.countryId}" />
+														<p:ajax update="countrymsg,state,district,cityCodePanel,msgCity,city,cityLocal"
+															listener="#{cityMasterBean.populateState}" event="change" onstart="process.show();" onsuccess="process.hide();"/>
+
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="right_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.state']}" />
+													<h:outputText style="color:red" value="*" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="state" display="text" id="statemsg" />
+													<p:selectOneMenu id="state" tabindex="27"
+														value="#{cityMasterBean.stateId}"
+														 filter="true" filterMatchMode="contains" required="true"
+														requiredMessage="Please Select State">
+														<f:selectItem
+															itemLabel="--#{msg['lbl.select']} #{msg['lbl.state']}--"
+															itemValue=" " />
+														<f:selectItems value="#{cityMasterBean.stateList}" var="c"
+															itemLabel="#{c.fsStateMaster.stateCode} - #{c.stateName}"
+															itemValue="#{c.fsStateMaster.stateId}" />
+														<p:ajax update="district,statemsg,cityCodePanel,msgCity,city,cityLocal"
+															listener="#{cityMasterBean.populateDistrict}" onstart="process.show();" onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.district']}" />
+													<h:outputText style="color:red" value="*" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="district" display="text" id="distmsg" />
+													<p:selectOneMenu id="district" tabindex="28"
+														value="#{cityMasterBean.districtId}"
+														filter="true" filterMatchMode="contains" required="true"
+														requiredMessage="Please Select District">
+														<f:selectItem
+															itemLabel="--#{msg['lbl.select']} #{msg['lbl.district']}--"
+															itemValue=" " />
+														<f:selectItems value="#{cityMasterBean.districtList}"
+															var="c" itemLabel="#{c.fsDistrictMaster.districtCode} - #{c.district}"
+															itemValue="#{c.fsDistrictMaster.districtId}" />
+															<p:ajax update="distmsg,cityCodePanel,msgCity,city,cityLocal,district"
+															listener="#{cityMasterBean.fetchDistrictCode}" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col" id="cityCodePanel">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.cityCode']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgCity" for="cityCode" display="text" />
+													<p:message id="msgnum" for="cityCode" display="text" />
+													<p:autoComplete id="cityCode"
+														value="#{cityMasterBean.cityCode}" maxlength="4"
+														completeMethod="#{cityMasterBean.autoCompleteCityCode}"
+														maxResults="10" onchange="clearForm(this);"
+														required="true"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.cityCode']}"
+														validatorMessage="Numbers only Allowed">
+														<f:validator
+																validatorId="allowOnlyNumber" />
+														<!-- <f:validateRegex pattern="^[0-9]*$" for="msgnum" /> -->
+														
+														<p:ajax update="cityCodePanel,msgCity,city,cityLocal,process" event="blur" listener="#{cityMasterBean.fetchEngArbRecordsForCityCode}" onstart="process.show();" onsuccess="process.hide();"/>
+														
+													</p:autoComplete>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="right_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.englishCityDesc']}" />
+													<h:outputText style="color:red" value="*" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{cityMasterBean.cityName}" id="city"
+														required="true" requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.englishCityDesc']}">
+														<p:message for="city" display="text" id="citymsg" />
+
+														<p:ajax update="citymsg" />
+													</p:inputText>
+
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="right_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.localCityDesc']}" />
+													<h:outputText value="*" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{cityMasterBean.cityNameLocal}"
+														id="cityLocal" required="true"
+														requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.localCityDesc']}"
+														style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;"
+														dir="RTL">
+														<p:message for="cityLocal" display="text"
+															id="cityLocalmsg" />
+
+														<p:ajax update="cityLocalmsg" />
+														<f:validator  validatorId="arabicValidator" />
+													</p:inputText>
+
+												</p:panel>
+											</p:panel>
+
+											<p:spacer height="10px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="#{msg['lbl.add']}"
+													action="#{cityMasterBean.saveDataTabel}" update="mainPanel,exception,process"
+													process="firstPanel" style="margin-right:10px;" onstart="process.show();" onsuccess="process.hide();"/>
+												<p:commandButton value="#{msg['lbl.view']}" 
+													action="#{cityMasterBean.view}" update="mainPanel,process,:form"
+													immediate="true" style="margin-right:10px;" onstart="process.show();" onsuccess="process.hide();" disabled="#{cityMasterBean.disableSubmit}"/>
+												<p:commandButton value="#{msg['lbl.clear']}"
+													action="#{cityMasterBean.clearListData}" update="mainPanel,process"
+													process="@this" disabled="#{cityMasterBean.disableSubmit}"  />
+												<h:panelGroup layout="block" class="clearfix" onstart="process.show();" onsuccess="process.hide();"/>
+											</h:panelGroup>
+
+										</p:panel>
+
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+
+										<p:panel id="datatablePanel">
+								<p:dataTable id="dataTable" styleClass="mydatatableclass" value="#{cityMasterBean.datatableList}" 
+									rows="10" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="5,10,15" var="d" 
+									rowIndexVar="rowIndex" emptyMessage="#{msg['lbl.noRecordFound']}" paginatorPosition="bottom" rendered="#{cityMasterBean.booRenderDataTable}" >
+											<!-- <p:dataTable id="dataTable"
+												value="#{cityMasterBean.datatableList}" var="d"
+												rowIndexVar="rowIndex"
+												rendered="#{cityMasterBean.booRenderDataTable}" rows="10"
+												paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10,15" paginatorPosition="bottom"> -->
+
+												<p:column headerText="#{msg['lbl.sino']}"
+													style="width:30px;">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.country']}">
+													<h:outputText value="#{d.countryName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.state']}">
+													<h:outputText value="#{d.stateName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.district']}">
+													<h:outputText value="#{d.districtName}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.englishCityDesc']}">
+													<h:outputText value="#{d.cityName}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.localCityDesc']}">
+													<h:outputText value="#{d.cityNameLocal}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.cityCode']}">
+													<h:outputText value="#{d.cityCode}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.edit']}">
+													<p:commandButton id="imgEdit" styleClass="edit" value=""
+														action="#{cityMasterBean.editRecord(d)}" update=":form"
+														process="@this" disabled="#{cityMasterBean.editHide}" onstart="process.show();" onsuccess="process.hide();"/>
+
+												</p:column>
+												<p:column headerText="#{msg['lbl.active/deactive']}">
+
+													<p:commandLink
+														action="#{cityMasterBean.checkStatusType(d)}"
+														value="#{d.dynamicLabelForActivateDeactivate}"
+														style="color:blue !important; text-decoration:underline !important;"
+														update=":form,dataTable" immediate="true" process="@this" onstart="process.show();" onsuccess="process.hide();" />
+												</p:column>
+
+											</p:dataTable>
+										</p:panel>
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:spacer height="10px" />
+										<h:panelGroup layout="block" class="clearfix" />
+
+
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											rendered="#{cityMasterBean.booRenderDataTable}">
+											<p:commandButton value="#{msg['lbl.submit']}" style="margin-right:10px;"
+												action="#{cityMasterBean.saveMaster}" update="mainPanel,exception" partialSubmit="true"
+												immediate="true" disabled="#{cityMasterBean.disableSubmit}" onstart="process.show();" onsuccess="process.hide();" />
+											<p:commandButton value="#{msg['lbl.exit']}" onstart="process.show();" onsuccess="process.hide();"
+												action="#{cityMasterBean.exit}" update="mainPanel"
+												immediate="true" />
+
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+										
+										<!-- <h:panelGroup layout="block" class="clearfix" />
+											<h:outputText value="#{msg['lbl.*filedsAreMandatory']}"
+												style="color:red !important; padding-left:10px !important;" />
+											<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" class="clearfix" /> -->
+
+
+										<p:panel id="filePanel"
+											rendered="#{cityMasterBean.fileRender}">
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.fileUploaded']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+
+													<p:fileUpload id="fileUplod" mode="advanced"
+														fileUploadListener="#{cityMasterBean.exportExcel}"
+														fileLimit="1" fileLimitMessage="one File is Allowed"
+														update="messages" label="Choose a file"
+														sizeLimit="50485762222" allowTypes="/(\.|\/)(xls|xlsx)$/"
+														required="true" requiredMessage="Upload a File"
+														invalidSizeMessage="The maximum file size allowed is 1 Megabyte !"
+														invalidFileMessage="You are allowed to upload only XLS and XLSX !"
+														oncomplete="PF('imageUpload').show()">
+														<p:message id="messages" for="fileUplod"
+															value="File Not Selected" style="color:red;" />
+													</p:fileUpload>
+
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="#{msg['lbl.add']}"
+													action="#{cityMasterBean.uploadtoDatatable}"
+													update="mainPanel" process="filePanel" />
+
+												<h:panelGroup layout="block" class="clearfix" />
+											</h:panelGroup>
+
+										</p:panel>
+
+										<p:panel id="datatablePanelFileUpload">
+<p:dataTable id="dataTable1" styleClass="mydatatableclass" value="#{cityMasterBean.cityListFoXlx}" 
+									rows="10" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="5,10,15" var="d" 
+									rowIndexVar="rowIndex" emptyMessage="#{msg['lbl.noRecordFound']}" paginatorPosition="bottom" rendered="#{cityMasterBean.booRenderDataTableFile}" >
+											<!-- <p:dataTable id="dataTable1"
+												value="#{cityMasterBean.cityListFoXlx}" var="d"
+												rowIndexVar="rowIndex"
+												rendered="#{cityMasterBean.booRenderDataTableFile}"
+												rows="10" paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10,15" paginatorPosition="bottom"> -->
+
+												<p:column headerText="#{msg['lbl.sino']}"
+													style="width:30px;">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.country']}">
+													<h:outputText value="#{d.countryCode}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.state']}">
+													<h:outputText value="#{d.stateCode}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.district']}">
+													<h:outputText value="#{d.districtId}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.englishCityDesc']}">
+													<h:outputText value="#{d.cityName}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.localCityDesc']}">
+													<h:outputText value="#{d.cityNameLocal}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.cityCode']}">
+													<h:outputText value="#{d.cityCode}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.enqStatus']}">
+													<h:outputText value="#{d.checkStatus}" />
+
+													<!-- 	<p:commandLink action="#{cityMasterBean.checkStatus(d)}" value="#{d.dynamicLabelForActivateDeactivate}" style="color:blue !important; text-decoration:underline !important;" update=":form:dataTable" immediate="true" process="@this"/> -->
+												</p:column>
+
+											</p:dataTable>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											rendered="#{cityMasterBean.booRenderDataTableFile}">
+											<p:commandButton value="#{msg['lbl.submit']}"
+												action="#{cityMasterBean.saveMasterFile}" update="mainPanel" partialSubmit="true"
+												immediate="true" disabled="#{cityMasterBean.disableSubmit}" onstart="process.show();" onsuccess="process.hide();"/>
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{cityMasterBean.exit}" update="mainPanel" onstart="process.show();" onsuccess="process.hide();"
+												immediate="true" />
+
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:dialog modal="true" showHeader="false" widgetVar="process" id="process" width="300" height="60" resizable="false" draggable="false" closable="false"
+style=" border: 2px green solid !important;background-color: #FFF !important;">
+<div style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important; ">
+<p:graphicImage value="../images/processImg.gif" style="float: left !important; margin-right: 24px !important; "/>
+<p:outputLabel value="Please wait ........" style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" /></div>
+</p:dialog>	
+
+<h:panelGroup layout="block" class="clearfix" />
+											<h:outputText value="#{msg['lbl.*filedsAreMandatory']}"
+												style="color:red !important; padding-left:10px !important;" />
+											<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" class="clearfix" />
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

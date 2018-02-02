@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link href="../css/new_style.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	
+ 	<script language="JavaScript">
+		function generateReport(){
+		    document.getElementById("inputForm:reportId").click();
+		}
+		
+		
+		history.pushState(null, null, 'customerRegistrationSucessPage.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'customerRegistrationSucessPage.xhtml');
+	    });
+	</script>
+	
+ 
+</h:head>
+
+<h:body dir="#{facesBean.direction}" onload="generateReport();">
+
+<img id='HiddenLoadingImage' src='../images/progress.gif' style='display:none;' />
+
+	<f:view locale="#{facesBean.locale}" >
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+	
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:panelGroup layout="block" class="heading3">
+								<h:outputText value="#{msg['lbl.customerreg']}" />
+							</h:panelGroup>
+							<h:form id="inputForm">
+								<p:panel id="mainPanel" styleClass="shadow" >
+									<p:dialog modal="true" showHeader="true"   header="#{msg['lbl.pleasewait']}"  widgetVar="process"  id="process"   width="300"  resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+								        <p:outputLabel value="Report is generating Please Wait ......." style=" font-size:14px !important;"/>
+								        <p:spacer height="20px"/>
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+								        <p:spacer height="10px"/>
+								        <p:commandButton onclick="PF('process').hide();" value="OK" style="float:right;"/>
+							    	</p:dialog>
+							    	<p:dialog modal="true" showHeader="false" widgetVar="processbar"
+										id="processbar" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+									
+									<p:growl id="growl" globalOnly="true"/>
+							    	
+							    	
+											<h3>
+												<p:outputLabel value="#{msg['lbl.customersuccessreg']}" style="font-size: 20px !important; font-weight: bold; color: #FFFFFF !important;" />
+											</h3>
+											<p:panel styleClass="panel_border">
+											
+												<p:outputLabel value="#{msg['lbl.customerregprint']}"
+													style=" font-weight: bold; color: #037712; font-size: 12px !important; padding:10px 0px 0px 0px !important;">
+													<h:commandLink value="#{msg['lbl.clickHere']} " id="reportId" onclick="PF('process').show();" 
+														style="font-weight: bold; font-size:16px !important; color:blue !important; text-decoration:underline !important;"
+														actionListener="#{customerPersonalInfo.generateCustomerRegistrationReport()}"  
+														process="@this" immediate="true" />
+												</p:outputLabel>
+													<p:outputLabel rendered="#{customerPersonalInfo.booPepDescriptionReport}"
+													value="#{msg['lbl.pepDeclartionReport']}"
+													style=" font-weight: bold; font-size: 12px !important; color: #037712; padding:10px 0px 0px 0px !important;">
+													<h:commandLink value="#{msg['lbl.clickHere']} "
+													actionListener="#{customerPersonalInfo.generatePepDeclarationReport}"
+															style="font-weight: bold; font-size:16px !important; color:blue !important; text-decoration:underline !important;"
+														process="@this" immediate="true" onclick="document.body.style.cursor='wait'; return true;" />
+												</p:outputLabel>
+												
+												<p:panel rendered="#{customerPersonalInfo.isFromCustomer}" style="text-align:center;">
+														<p:outputLabel value="Do you want to continue with transactions ?" style="font-size: 20px !important; font-weight: bold; color: #000000 !important; text-align:center;" />
+														<p:spacer height="20px !important;"/>
+														
+														<h:panelGroup layout="block" styleClass="shadow_button" >
+														<p:commandButton value="#{msg['lbl.yes']}" 
+																actionListener="#{customerPersonalInfo.continueWithRemittanceTransaction}" 
+																process="@this" immediate="true"
+																style="margin-right:10px !important;" onstart="processbar.show();" onsuccess="processbar.hide();" update="growl"/>
+														<p:commandButton value="#{msg['lbl.no']}" 
+																actionListener="#{customerPersonalInfo.exit}" 
+																process="@this" immediate="true" onstart="processbar.show();" onsuccess="processbar.hide();" />
+														</h:panelGroup>
+												</p:panel>
+												
+												<h:panelGroup layout="block" styleClass="shadow_button"   rendered="#{customerPersonalInfo.isfromCorporatePage}" >
+													<p:commandButton value="Go  to  Corporate  Registration" 
+														actionListener="#{customerPersonalInfo.gotoCorporatePage}" 
+														process="@this" immediate="true" />
+												</h:panelGroup>
+												
+												<h:panelGroup layout="block" styleClass="shadow_button"   rendered="#{customerPersonalInfo.isFromWesternUnion}" >
+													<p:commandButton value="Go  to  Western  Union Upload" 
+														actionListener="#{customerPersonalInfo.gotoWesternUnionUpload}" 
+														process="@this" immediate="true" />
+												</h:panelGroup>
+												
+											</p:panel>
+								</p:panel>
+							</h:form>
+
+
+						</h:panelGroup>
+					</h:panelGroup>
+					<div class="clearfix"></div></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+
+
+</html>

@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+
+		history.pushState(null, null, 'assignSystemForEmployee.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'assignSystemForEmployee.xhtml');
+		});
+	</script>
+</h:head>
+
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form1">
+
+								<h1>
+									<h:outputText value="ASSIGNING SYSTEM FOR EMPLOYEE" />
+								</h1>
+
+								<p:panel styleClass="shadow" id="mainPanel">
+
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="Please wait ........"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+
+									<p:confirmDialog id="alertmsg" widgetVar="alertmsg"
+										header="Alert Message" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" showEffect="clip" hideEffect="clip"
+										closeOnEscape="true" closable="true"
+										message="#{assignSystemForEmployee.errorMessage}">
+									</p:confirmDialog>
+
+									<p:dialog id="appSave" widgetVar="appSave" width="400"
+										height="80" modal="true" resizable="false" focus="okbtn"
+										style="background-color: white !important;"
+										styleClass="success" header="#{msg['lbl.success']}"
+										closable="false" showEffect="clip" hideEffect="clip">
+										<p:outputLabel value="Successfully saved"
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}" id="okbtn"
+											style="margin-left: 150px !important;"
+											oncomplete="appSave.hide();" onstart="process.show();"
+											onsuccess="process.hide();" />
+									</p:dialog>
+
+									<p:dialog id="deletedlg" widgetVar="deletedlg" width="480"
+										resizable="false" style="background-color: white !important;"
+										styleClass="info" header="Remarks" closable="false"
+										showEffect="clip" hideEffect="clip" modal="true">
+										<p:spacer height="10px" />
+										<p:panel>
+											<h:outputText value="#{msg['lbl.enterremarks']}" />
+											<h:outputText value=" *" style="color:red !important;" />
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel>
+											<h:inputTextarea id="remarksId"
+												value="#{assignSystemForEmployee.remarks}"
+												validatorMessage="Maximum 255 charectors allowed">
+												<p:ajax />
+												<f:validateLength maximum="255"></f:validateLength>
+											</h:inputTextarea>
+										</p:panel>
+										<p:spacer height="5px" />
+
+										<p:commandButton value="#{msg['lbl.yes']}" update=":form1"
+											oncomplete="deletedlg.hide()" process="@this" immediate="true"
+											onstart="process.show();" onsuccess="process.hide();"
+											action="#{assignSystemForEmployee.deleteSystemDetailsOkButton}" />
+										<p:commandButton value="#{msg['lbl.no']}"
+											oncomplete="deletedlg.hide()" process="@this" />
+									</p:dialog>
+
+									<h2>
+										<h:outputText value="System Assign" />
+									</h2>
+
+									<p:panel id="systempanel" styleClass="panel_border"
+										style="padding-top:20px !important;">
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel
+													value="#{msg['lbl.employee']} #{msg['lbl.branch']}" />
+												<h:outputText value=" *" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="Empbranch" display="text" id="msgEmpbranch" />
+												<p:selectOneMenu id="Empbranch"
+													value="#{assignSystemForEmployee.employeeBranchId}"
+													filter="true" filterMatchMode="contains" required="true"
+													requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.branch']}">
+													<f:selectItem itemLabel="Select" itemValue="" />
+													<f:selectItems
+														value="#{assignSystemForEmployee.searchBranchList}"
+														var="c" itemLabel="#{c.branchId} - #{c.branchName}"
+														itemValue="#{c.countryBranchId}" />
+													<p:ajax event="change" update="msgEmpbranch,userPanel"
+														listener="#{assignSystemForEmployee.fetchUserNameByBranch}"
+														onstart="process.show();" oncomplete="process.hide();" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col" id="userPanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel for="userName" value="#{msg['lbl.username']}" />
+												<h:outputText value=" *" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="userName" display="text" id="msguserName" />
+												<p:selectOneMenu id="userName"
+													value="#{assignSystemForEmployee.employeeId}" filter="true"
+													filterMatchMode="contains" required="true"
+													requiredMessage="Please select username">
+													<f:selectItem itemLabel="Select" itemValue="" />
+													<f:selectItems
+														value="#{assignSystemForEmployee.lstEmployeeUserNames}"
+														var="c"
+														itemLabel="#{c.employeeNumber} - #{c.userName} - #{c.employeeName}"
+														itemValue="#{c.employeeId}" />
+													<p:ajax event="change" update="msguserName"
+														listener="#{assignSystemForEmployee.fetchEmployeeSystemAssignData}"
+														onstart="process.show();" oncomplete="process.hide();" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel value="#{msg['lbl.branch']}" />
+												<h:outputText value=" *" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="branch" display="text" id="msgbranch" />
+												<p:selectOneMenu id="branch"
+													value="#{assignSystemForEmployee.assignBranchId}"
+													filter="true" filterMatchMode="contains" required="true"
+													requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.branch']}">
+													<f:selectItem itemLabel="Select" itemValue="" />
+													<f:selectItems
+														value="#{assignSystemForEmployee.searchBranchList}"
+														var="c" itemLabel="#{c.branchId} - #{c.branchName}"
+														itemValue="#{c.countryBranchId}" />
+													<p:ajax event="change" update="msgbranch,systemNo"
+														listener="#{assignSystemForEmployee.fetchSystemNumber}"
+														onstart="process.show();" oncomplete="process.hide();" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="System Name"></h:outputText>
+												<h:outputText value=" *" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="systemNo" display="text" id="msgsystemNo" />
+												<p:selectOneMenu id="systemNo"
+													value="#{assignSystemForEmployee.systemName}" filter="true"
+													filterMatchMode="contains" required="true"
+													requiredMessage="Please select system name">
+													<f:selectItem itemLabel="Select" itemValue="" />
+													<f:selectItems
+														value="#{assignSystemForEmployee.lstBranchSysteminventory}"
+														var="c" itemLabel="#{c.systemName}"
+														itemValue="#{c.systemName}" />
+													<p:ajax />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton id="addSystem" value="#{msg['lbl.add']}"
+												action="#{assignSystemForEmployee.addSystemDetails}"
+												update="mainPanel" style="margin-right:10px;"
+												onstart="process.show();" onsuccess="process.hide();">
+											</p:commandButton>
+
+											<p:commandButton id="viewSystem" process="@this"
+												value="#{msg['lbl.view']}"
+												action="#{assignSystemForEmployee.viewSystemDetails}"
+												update="mainPanel" style="margin-right:10px;"
+												onstart="process.show();" onsuccess="process.hide();">
+											</p:commandButton>
+
+											<p:commandButton value="#{msg['lbl.clear']}"
+												style="margin-right:10px;"
+												action="#{assignSystemForEmployee.clear}" update="mainPanel"
+												immediate="true" process="@this"></p:commandButton>
+
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{assignSystemForEmployee.exit}" update="mainPanel"
+												immediate="true" process="@this"></p:commandButton>
+										</h:panelGroup>
+
+										<p:panel id="datatablePanel"
+											rendered="#{assignSystemForEmployee.renderSystemDetails}">
+											<p:dataTable id="employeeAddTable"
+												widgetVar="employeeAddTable" var="systemDt"
+												value="#{assignSystemForEmployee.lstSystemDetails}"
+												editable="true" paginatorPosition="bottom" rows="15"
+												paginator="true" rowIndexVar="rowIndex"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="15,25,50" styleClass="mydatatableclass">
+
+												<p:column headerText="#{msg['lbl.sino']}" style="width:2%">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.username']}"
+													style="width:10% !important; text-align:center !important; margin-left:10px;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{systemDt.userName}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.branch']}"
+													style="width:10% !important; text-align:center !important; margin-left:10px;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{systemDt.branchName}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="System Number"
+													style="width:10% !important; text-align:center !important; margin-left:10px;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{systemDt.system}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.status']}"
+													style="width:10% !important; text-align:center !important; margin-left:10px;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{systemDt.status}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.edit']}"
+													style="width:2% !important; text-align:center !important; margin-left:10px;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:commandButton value="" styleClass="edit"
+														onstart="process.show();" onsuccess="process.hide()"
+														actionListener="#{assignSystemForEmployee.editSystemDetails(systemDt)}"
+														process="@this" update=":form1" immediate="true"></p:commandButton>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.delete']}"
+													style="width:2% !important; text-align:center !important; margin-left:10px;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:commandButton value="" styleClass="delete"
+														onstart="process.show();" onsuccess="process.hide()"
+														actionListener="#{assignSystemForEmployee.deleteSystemDetails(systemDt)}"
+														process="@this" update=":form1:deletedlg,:form1:alertmsg" immediate="true"></p:commandButton>
+												</p:column>
+
+											</p:dataTable>
+										</p:panel>
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											rendered="#{assignSystemForEmployee.renderSystemDetails}">
+											<p:commandButton id="submitSystem" process="@this"
+												value="#{msg['lbl.submit']}"
+												action="#{assignSystemForEmployee.saveSystemDetails}"
+												update="mainPanel" onstart="process.show();"
+												onsuccess="process.hide();">
+											</p:commandButton>
+										</h:panelGroup>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+									</p:panel>
+
+								</p:panel>
+								<h:panelGroup layout="block" class="clearfix" />
+
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

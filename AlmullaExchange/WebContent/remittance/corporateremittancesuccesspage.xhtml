@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link href="../css/new_style.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	
+ 	<script language="JavaScript">
+		function generateReport(){
+		    document.getElementById("inputForm:reportId").click();
+		}
+		
+		
+		history.pushState(null, null, 'corporateremittancesuccesspage.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'corporateremittancesuccesspage.xhtml');
+	    });
+	</script>
+	
+ 
+</h:head>
+
+<h:body dir="#{facesBean.direction}" onload="generateReport();">
+
+<img id='HiddenLoadingImage' src='../images/progress.gif' style='display:none;' />
+
+	<f:view locale="#{facesBean.locale}" >
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+	
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							
+							<h:form id="inputForm">
+							<h1>
+								<h:outputText value="#{msg['lbl.corprateremittance']}" />
+							</h1>
+								<p:panel id="mainPanel" styleClass="shadow" >
+								
+									<p:dialog id="exceptioninReceipt" widgetVar="exceptioninReceipt"  visible="#{corporateRemittanceBean.visableExceptionDailogForReceipt}"
+										resizable="false" closable="false" showHeader="false"
+										style="background-color: white !important; border-radius: 7px !important;
+																			display: block;
+																			border: 4px solid #F00 !important;"
+										styleClass="warning" showEffect="clip" hideEffect="clip">
+										<p:outputLabel value="Warning"
+											style="font-size: 17px !important;
+																						font-weight: bold !important;
+																						color: rgba(255, 27, 0, 0.95) !important;" />
+										<p:outputLabel
+											value="#{corporateRemittanceBean.exceptionMessageForReport}"
+											style="font-size: 13px !important; font-weight: bold !important;" />
+										<br />
+										<p:commandLink value="#{msg['lbl.ok']}" style="float: right !important;"
+											styleClass="buttonStyle" onclick="PF('exceptioninReceipt').hide()" action="#{corporateRemittanceBean.closeExceptionReceiptDailog}"/>
+									</p:dialog>
+									
+								
+							    	
+							    	<fieldset
+										style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+										<legend
+											style="font-size: 18px; font-weight: bold; color: #037712;"
+											align="top">&nbsp;#{msg['lbl.success']}&nbsp;</legend>
+										<p:outputLabel value="#{msg['lbl.dataissuccessfullysaved']} with Receipt Number: #{corporateRemittanceBean.documentNo}"
+											style="font-size: 20px !important; font-weight: bold; color: #037712; padding:20px 100px 20px 260px !important;" />
+										<p:panel id="reportDispaly"  rendered="#{corporateRemittanceBean.booReportDisplay}">
+										<p:outputLabel
+											value="Modified Record While Rounding Personal Remittance Application Report  ?"
+											style=" font-weight: bold; color: #037712; padding:10px 0px 0px 0px !important;"
+											rendered="#{corporateRemittanceBean.booRenderModifiedApplTrnxReportByRound}">
+											<h:commandButton value="#{msg['lbl.clickHere']} " 
+												action="#{corporateRemittanceBean.generatePersonalRemittanceApplicationModified}"
+												onclick="this.form.target='_blank'" 
+												style="font-weight: bold !important; font-size: 12px !important; color: blue !important;
+    													  text-decoration: underline !important; border: none !important;  background: none !important;"
+    													
+												process="@this" immediate="true" />
+										</p:outputLabel>
+										
+										<p:outputLabel
+											value="Declaration Print Report  ?" rendered="#{corporateRemittanceBean.booDeclarationReportDisplay}"
+											style=" font-weight: bold; color: #037712; padding:10px 0px 0px 0px !important;">
+											<h:commandButton value="#{msg['lbl.clickHere']} " 
+												action="#{corporateRemittanceBean.generateDeclerationReports}"
+												onclick="this.form.target='_blank'" 
+												style="font-weight: bold !important; font-size: 12px !important; color: blue !important;
+    													  text-decoration: underline !important; border: none !important;  background: none !important;"
+												process="@this" immediate="true" />
+										</p:outputLabel>
+
+									<!-- 	<p:outputLabel
+											value="#{msg['lbl.doUWantPersonalRemittanceReceiptReport']}" 
+											style=" font-weight: bold; color: #037712; padding:10px 0px 0px 0px !important;">
+											<h:commandButton value="#{msg['lbl.clickHere']} "  id="reportId"
+												action="#{corporateRemittanceBean.generatePersonalRemittanceReceiptReport}" 
+												onclick="this.form.target='_blank'" 
+												style="font-weight: bold !important; font-size: 12px !important; color: blue !important;
+    													  text-decoration: underline !important; border: none !important;  background: none !important;"
+												process="@this" immediate="true" />
+										</p:outputLabel> -->
+										<p:spacer height="20px" />
+										</p:panel>
+										
+									<p:dialog modal="true" showHeader="false" widgetVar="process2"
+										id="process2" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+										
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="OK"
+												action="#{corporateRemittanceBean.finalSavePageNavigation}"
+												immediate="true" process="@this" onstart="process2.show();" onsuccess="process2.hide();"/>
+										</h:panelGroup>
+									</fieldset>
+								</p:panel>
+							</h:form>
+
+
+						</h:panelGroup>
+					</h:panelGroup>
+					<div class="clearfix"></div></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+
+
+</html>

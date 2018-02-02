@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</h:head>
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+		<h:form id="form">
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;"><ui:include
+							src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle"
+										src="../images/toggle_plus.png" alt=""
+										onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+								<h1>
+									<h:outputText value="Bank Prefix Approval" />
+								</h1>
+
+
+								<p:panel styleClass="shadow" id="mainPanel"
+									style="background-color:#FFF !important; ">
+
+									<h3>
+										<h:outputText value="Bank Prefix Approval" />
+									</h3>
+
+									<p:confirmDialog id="bankCodeEmpty" widgetVar="bankCodeEmpty"
+										width="450" height="17" resizable="false"
+										style=" border:2px solid red !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Please select bank code"
+										header="#{msg['lbl.warningdialog']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="noRecords" widgetVar="noRecords"
+										width="450" height="17" resizable="false"
+										style=" border:2px solid red !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Records are not existed "
+										header="#{msg['lbl.warningdialog']}">
+									</p:confirmDialog>
+									
+									<p:dialog id="approv" widgetVar="approv" width="270"
+										height="70" showHeader="false" resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel value="#{msg['lbl.approveSuccMessage']}" />
+										<br />
+										<p:spacer width="15px" />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{bankPrefixBean.approvalList}"
+											process="@this" update="mainPanel" />
+									</p:dialog>
+
+									<p:dialog id="alreadyapprov" widgetVar="alreadyapprov"
+										width="310" height="70" showHeader="false" resizable="false"
+										style=" border:2px solid green !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel
+											value="#{msg['lbl.thisrecordalreadyapprovedby']}" />
+										<br />
+										<p:spacer width="15px" />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{bankPrefixBean.cancel}" process="@this" />
+									</p:dialog>
+
+									<p:confirmDialog id="sameUser" widgetVar="sameUser"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{msg['lbl.sameusernotabletoapprove']}">
+									</p:confirmDialog>
+
+									<p:panel styleClass="panel_border">
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Bank Code *" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:selectOneMenu id="localBankId"
+													value="#{bankPrefixBean.bankCodeApproval}"
+													filterMatchMode="contains" filter="true" required="true"
+													requiredMessage="Please Select Bank">
+													<!-- <f:selectItem itemLabel="Select Bank" itemValue="" /> -->
+													<f:selectItem itemLabel="#{msg['lbl.selectBank']}"
+														itemValue="" />
+
+													<f:selectItems value="#{bankPrefixBean.localbankList}"
+														var="c" itemLabel="#{c.bankShortName} - #{c.bankFullName}"
+														itemValue="#{c.chequeBankCode}" />
+
+													<p:ajax update="mainPanel" event="change"
+														listener="#{bankPrefixBean.populateBankPrefix}"
+														onstart="process.show();" onsuccess="process.hide();" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix"></div>
+
+									</p:panel>
+
+
+									<div class="clearfix"></div>
+									<p:spacer height="10px" />
+									<div class="clearfix"></div>
+
+									<h:panelGroup layout="block" styleClass="shadow_button">
+
+										<p:commandButton value="#{msg['lbl.view']}"
+											style="margin-right:10px;"
+											action="#{bankPrefixBean.loadApproval}"
+											update=":form:mainPanel" immediate="true" process="@this"
+											onstart="process.show();" onsuccess="process.hide();" />
+
+										<p:commandButton value="#{msg['lbl.exit']}"
+											action="#{bankPrefixBean.exit}" process="@this" />
+										<div class="clearfix"></div>
+										
+									</h:panelGroup>
+
+
+									<div class="clearfix"></div>
+									<p:spacer height="10px" />
+									<div class="clearfix"></div>
+
+									<p:dataTable id="dataTable"
+										value="#{bankPrefixBean.lstApprovalBankPrefixDataTable}"
+										var="c"
+										rowStyleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+										rowIndexVar="rowIndex" style="width:100%;" paginator="true"
+										paginatorPosition="bottom"
+										paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+										rowsPerPageTemplate="5" styleClass="mydatatableclass"
+										rendered="#{bankPrefixBean.booRenderDatatableApproval}">
+
+										<p:column headerText="#{msg['lbl.sino']}" style="width:30px;">
+											<h:outputText value="#{rowIndex+1}" />
+										</p:column>
+
+										<p:column headerText="Bank Name">
+											<h:outputText value="#{c.bankName}" />
+										</p:column>
+
+										<p:column headerText="Bank Prefix">
+											<h:outputText value="#{c.bankPrefix}" />
+										</p:column>
+
+										<p:column headerText="#{msg['lbl.approve']}"
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<p:commandLink onclick="process.show();"
+												onsuccess="process.hide();"
+												action="#{bankPrefixBean.approveRecord(c)}"
+												update=":form:mainPanel"
+												style="color:blue !important; text-decoration:underline !important;"
+												process="@this">
+												<p:graphicImage value="../images/approve.jpg" width="25"
+													height="25" id="imgEdit" />
+												<p:tooltip for="imgEdit" value="#{msg['lbl.approve']}"
+													style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" />
+											</p:commandLink>
+										</p:column>
+
+
+									</p:dataTable>
+
+									<div class="clearfix"></div>
+
+									<div class="clearfix"></div>
+									<p:spacer height="10px" />
+									<div class="clearfix"></div>
+
+									<!-- <h:panelGroup layout="block" styleClass="shadow_button"
+											id="submitPanel" rendered="#{bankPrefixBean.booSubmit}">
+										<p:commandButton  id="save" value="#{msg['lbl.submit']}"  action="#{bankPrefixBean.saveBankPrefix}" update="error,dataTable" onstart="process.show();"
+													onsuccess="process.hide();"
+												style="margin-right:10px;" immediate="true"  disabled="#{bankPrefixBean.booSubmitHide}"/>
+											
+											<p:commandButton value="Exit"/>
+											<div class="clearfix"></div>
+										</h:panelGroup> -->
+								</p:panel>
+
+							</h:panelGroup>
+							<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+						</h:panelGroup></td>
+				</tr>
+			</table>
+		</h:form>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

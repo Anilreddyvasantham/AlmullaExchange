@@ -1,0 +1,975 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+		history.pushState(null, null, 'Bankexternalreference.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'Bankexternalreference.xhtml');
+		});
+	</script>
+
+</h:head>
+
+<h:body>
+
+	<p:dialog id="save" widgetVar="save" width="270" height="70"
+		showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+		<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} " />
+		<br />
+		<p:spacer width="15px" />
+		<p:commandButton value="#{msg['lbl.ok']}"
+			actionListener="#{bankExternalReferenceBean.clickOnOk}"
+			process="@this" />
+	</p:dialog>
+
+	<p:confirmDialog id="norecord" widgetVar="norecord" width="350"
+		height="17" resizable="false"
+		style=" border:2px solid #007f30 !important; padding:0px !important;  color:#007f30 !important; background:url('../images/warning.png') 10px 43px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.benifinorecords']}">
+	</p:confirmDialog>
+	<p:confirmDialog id="branchdetailsexisted" widgetVar="branchdetailsexisted" 
+	  resizable="false"
+		style=" border:2px solid #007f30 !important; padding:0px !important;  color:#007f30 !important; background:url('../images/warning.png') 10px 43px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="Branch Details Existed For this  Record Not Able to delete ">
+	</p:confirmDialog>
+	
+
+	<p:confirmDialog id="nobranch" widgetVar="nobranch" width="350"
+		height="17" resizable="false"
+		style=" border:2px solid #007f30 !important; padding:0px !important;  color:#007f30 !important; background:url('../images/warning.png') 10px 43px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true"
+		message="#{msg['lbl.yourarechoosingbranchexternalidno']}">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="nobranchdetails" widgetVar="nobranchdetails"
+		width="350" height="17" resizable="false"
+		style=" border:2px solid #007f30 !important; padding:0px !important;  color:#007f30 !important; background:url('../images/warning.png') 10px 43px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true"
+		message="#{msg['lbl.nobranchdetailsavailableforthisrecord']}">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="atleast" widgetVar="atleast" width="350"
+		height="17" resizable="false"
+		style=" border:2px solid #007f30 !important; padding:0px !important;  color:#007f30 !important; background:url('../images/warning.png') 10px 43px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true"
+		message="#{msg['lbl.pleaseaddatleastonebranchsexternaid']}">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="chooseAnyOne" widgetVar="chooseAnyOne" width="400"
+		height="17" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true"
+		message="#{msg['lbl.pleaseselectbankandcountryforview']}">
+	</p:confirmDialog>
+
+
+	<p:confirmDialog id="detailsexists" widgetVar="detailsexists"
+		width="600" header="Warning DialogBox" height="17" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true"
+		message="#{msg['lbl.bankexternalreferencealreadyexist']}">
+	</p:confirmDialog>
+	<p:confirmDialog id="databasedetailsexists" widgetVar="databasedetailsexists"
+		 header="Warning DialogBox"   resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true"
+		message="This Bank External Reference Already Existed Please click the view to verify">
+	</p:confirmDialog>
+
+
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form">
+
+								<p:confirmDialog id="remarksEmpty" widgetVar="remarksEmpty"
+									width="600" header="Warning DialogBox" height="17"
+									resizable="false"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" message="Remarks should not empty">
+								</p:confirmDialog>
+
+
+
+								<!-- Remarks Dailog  -->
+								<p:dialog id="remarks" widgetVar="remarks" width="550"
+									height="205" showHeader="false" resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+									showEffect="scale" hideEffect="scale" closeOnEscape="true"
+									closable="true" modal="true">
+									<p:panel styleClass="shadow">
+										<p:panel>
+											<h:outputText value="#{msg['lbl.activatedate']}" />
+											<h:outputText
+												value="#{bankExternalReferenceBean.approvedDate}" />&nbsp;&nbsp;&nbsp;
+                                        <h:outputText
+												value="#{msg['lbl.approvedBy']}" />
+											<h:outputText value="#{bankExternalReferenceBean.approvedBy}" />
+										</p:panel>
+										<div class="clearfix" />
+										<hr></hr>
+										<p:panel>
+											<h:outputText value="#{msg['lbl.enterremarks']}" />
+											<h:outputText value="*" style="color:red !important;" />
+										</p:panel>
+										<p:panel>
+											<h:inputTextarea value="#{bankExternalReferenceBean.remarks}"
+												rows="5" cols="50">
+												<p:ajax />
+											</h:inputTextarea>
+										</p:panel>
+										<p:spacer width="15px" />
+										<div class="clearfix" />
+										<h:panelGroup styleClass="shadow">
+											<div class="clearfix" />
+											<p:commandButton value="#{msg['lbl.ok']}"
+												actionListener="#{bankExternalReferenceBean.clickOnUpdateRemarks}"
+												process="@this" update="mainPanel" immediate="true" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												onclick="PF('remarks').hide()"
+												actionListener="#{bankExternalReferenceBean.cancelRemarks}"
+												process="@this" update="mainPanel" immediate="true" />
+										</h:panelGroup>
+									</p:panel>
+								</p:dialog>
+								<!-- dilaog remark -->
+
+
+								<h1>
+									<h:outputText value="#{msg['lbl.bankExternalReference']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+								
+								<!-- <p:dialog id="permanentDelete" widgetVar="permanentDelete" width="400" height="80" resizable="false" style="background-color: white !important;" styleClass="warning" header="#{msg['lbl.deleteRecrd']}" closable="false" showEffect="clip" hideEffect="clip" modal="true">
+									<p:outputLabel value="#{msg['lbl.douWantDeleteRecordPermentely']}" style="text-align: center; font-size:15px !important;" /><br />
+									<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{bankExternalReferenceBean.loyaltyParameterSettingConformDelete}" process="@this" oncomplete="PF('permanentDelete').hide();" update="mainPanel" style="margin-left: 150px !important;" />
+									<p:commandButton value="#{msg['lbl.cancel']}" onclick="PF('permanentDelete').hide();" immediate="true" style="margin-left:10px;" />
+								</p:dialog> -->
+
+										<p:dialog id="activateRecord" widgetVar="activateRecord" width="400" height="80" resizable="false" style="background-color: white !important;" styleClass="warning" header="#{msg['lbl.activateRecrd']}" closable="false" showEffect="clip" hideEffect="clip" modal="true">
+											<p:outputLabel value="#{msg['lbl.doyouactivaterecord']}" style="text-align: center; font-size:15px !important;" /><br />
+											<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{bankExternalReferenceBean.activateRecord}" process="@this" oncomplete="PF('activateRecord').hide();" update="mainPanel" style="margin-left: 150px !important;" />
+											<p:commandButton value="#{msg['lbl.cancel']}" onclick="PF('activateRecord').hide();" immediate="true" style="margin-left:10px;" />
+										</p:dialog>	
+										
+								
+									
+								<p:dialog id="remarksDetails" widgetVar="remarksDetails" width="480" resizable="false" style="background-color: white !important;" styleClass="info" header="Remarks" closable="false" showEffect="clip" hideEffect="clip" modal="true">
+                             		<p:panel>
+                             		<table>
+                             		<tr>
+                             		<td> <h:outputText value="#{msg['lbl.approvedDate']}" /></td>
+                             		<td><h:outputText value="#{bankExternalReferenceBean.approvedDate}" style="color:red !important;"/> </td>
+                             		</tr>
+                             		<tr>
+                             		<td> <h:outputText value="#{msg['lbl.approvedBy']}" /> </td>
+                             		<td>	<h:outputText  value="#{bankExternalReferenceBean.approvedBy}"  style="color:red !important;"/> </td>
+                             		</tr>
+                             		</table>
+                             		</p:panel>
+                             		<p:spacer height="10px"/>
+                             		<p:panel>
+                             		<h:outputText value="#{msg['lbl.enterremarks']}" /><h:outputText value="*" style="color:red !important;" />
+                             		</p:panel>
+                             		<p:spacer height="5px"/>
+                             		<p:panel>
+                             		<h:inputTextarea id="remarksId" value="#{bankExternalReferenceBean.remarks}" validatorMessage="Maximum 255 charectors allowed" >
+                                           <f:validateLength maximum="255"/>
+                                            <p:ajax/>
+                                            
+                                     </h:inputTextarea>
+                                    </p:panel>
+                                    <p:spacer height="5px"/>
+                                   	<p:panel style="padding-left:160px;">
+                                        <p:commandButton value="#{msg['lbl.ok']}" actionListener="#{bankExternalReferenceBean.clickOkRemarks}" onclick="PF('remarksDetails').hide()" update=":form:viewDataTable" process="@this" /> 
+            							<p:commandButton value="#{msg['lbl.cancel']}" actionListener="#{bankExternalReferenceBean.cancelRemarks}" process="@this"/> 
+                             </p:panel>
+                               </p:dialog>
+
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{bankExternalReferenceBean.errorMessage}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{bankExternalReferenceBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+									<h3>
+										<h:outputText value="#{msg['lbl.bankExternalReference']}" />
+									</h3>
+
+
+									<p:dialog id="permanentDelete" widgetVar="permanentDelete"
+									  showHeader="false" resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel
+											value="#{msg['lbl.doyouwanttodeleterecordperminently']}" />
+										<p:spacer height="10px" />
+										<p:panel>
+											<p:commandButton value="#{msg['lbl.ok']}"
+												style="margin-right:10px; "
+												actionListener="#{bankExternalReferenceBean.confirmPermanentDelete}"
+												process="@this" oncomplete="PF('permanentDelete').hide();"
+												update=":form" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												onclick="PF('permanentDelete').hide();" immediate="true" />
+										</p:panel>
+									</p:dialog>
+
+							<p:panel id="extenalYesId">
+									<p:dialog id="alreadyExist" widgetVar="alreadyExist"
+										 showHeader="false" resizable="false"
+										style="color:#FF0000 !important; border:2px solid #F33535 !important; padding:0px !important;  font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="false"
+										closable="false" modal="true"  >
+										
+											 
+										
+
+										<p:dataTable id="dialogDataTable" var="c"
+										 	paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10" rows="5" 
+											rowIndexVar="rowIndex" editable="true" editMode="cell"
+											value="#{bankExternalReferenceBean.bankRefDataTableList}"
+											emptyMessage="#{msg['lbl.norecordfound']}"  
+										  styleClass="mydatatableclass"  >
+
+											<p:column headerText="#{msg['lbl.sino']}" style="width:20px;">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.beneficiaryBranchCode']}"
+												style="width:50px;">
+												<h:outputText value="#{c.branchCode}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.description']}"
+												style="width:90px;">
+												<h:outputText value="#{c.branchDescription}" />
+											</p:column>
+
+											<p:column headerText="Branch External Id" style="width:90px;">
+												<p:message id="dexternalMsg" for="dexternalId"
+													display="text" />
+												<p:inputText id="dexternalId" value="#{c.branchExternalId}"
+													maxlength="20"
+													style="text-transform:uppercase">
+												<p:ajax  update=":form:dialogDataTable"/> <!-- validatorMessage="Enter valid Branch External Id" -->
+										 	<!-- <p:ajax event="blur"
+														listener="#{bankExternalReferenceBean.setBranchExternalIdForDT(c)}"
+														update="dexternalMsg" />   -->
+													<!-- <f:validator
+														validatorId="com.amg.exchange.validator.AlphaNumericValidator" /> -->
+												</p:inputText>
+											</p:column>
+
+											<p:column headerText="Flex Field1" style="width:90px;">
+												<p:inputText id="field1" value="#{c.flexField1}"
+													maxlength="20">
+												<p:ajax  update=":form:dialogDataTable"/> 
+										 <!--  <p:ajax event="blur" listener="#{bankExternalReferenceBean.setBranchExternalIdForDT(c)}"/>  --> 
+												</p:inputText>
+											</p:column>
+											<p:column headerText="Flex Field2" style="width:90px;">
+												<p:inputText id="field2" value="#{c.flexField2}"
+													maxlength="20">
+											<p:ajax  update=":form:dialogDataTable"/> 
+												  <!-- <p:ajax event="blur" listener="#{bankExternalReferenceBean.setBranchExternalIdForDT(c)}"/> -->  
+												</p:inputText>
+											</p:column>
+											<p:column headerText="Flex Field3" style="width:90px;">
+												<p:inputText id="field3" value="#{c.flexField3}"
+													maxlength="20">
+												<p:ajax  update=":form:dialogDataTable"/> 
+											  <!-- <p:ajax event="blur" listener="#{bankExternalReferenceBean.setBranchExternalIdForDT(c)}"/>  --> 
+												</p:inputText>
+											</p:column>
+
+
+										</p:dataTable>
+
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:commandButton value="#{msg['lbl.ok']}"  
+											action="#{bankExternalReferenceBean.clickDailogOk}"  update=":form:dialogDataTable" process="@this"
+											oncomplete="PF('alreadyExist').hide()" onstart="process.show();" onsuccess="process.hide();"/>
+									</p:dialog>
+									</p:panel>
+									
+								<p:dialog id="editalreadyExist" widgetVar="editalreadyExist"
+										width="900" showHeader="false" resizable="false"
+										style="color:#FF0000 !important; border:2px solid #F33535 !important; padding:0px !important;  font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="false"
+										closable="false" modal="true"  >
+										
+										
+										
+								<p:panel styleClass="left_col">
+									<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['lbl.country']}" />
+										</p:panel>
+									<p:panel styleClass="inner_right_col">
+										<p:inputText id="tbbankCountryName"
+											value="#{bankExternalReferenceBean.bankCountryName}"	readonly="true">
+										</p:inputText>
+
+									</p:panel>
+								</p:panel>
+
+								<p:panel styleClass="left_col">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.bank']}" />
+									
+									</p:panel>
+									<p:panel styleClass="inner_right_col">
+										<p:inputText id="tbbankId"	value="#{bankExternalReferenceBean.bankName}" readonly="true">
+
+										</p:inputText>
+									</p:panel>
+								</p:panel>
+															
+								<p:panel styleClass="left_col">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.beneficiaryBank']}" />
+									</p:panel>
+									<p:panel styleClass="inner_right_col">
+										<p:inputText id="tbbenebankCountryId"
+											value="#{bankExternalReferenceBean.benfiBankName}"	readonly="true">
+										</p:inputText>
+
+									</p:panel>
+								</p:panel>
+
+							<p:panel styleClass="left_col">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.bankExternalId']}" />
+										
+									</p:panel>
+									<p:panel styleClass="inner_right_col">
+										<p:inputText id="bankExternalId"	value="#{bankExternalReferenceBean.dataExternalId}"  >
+										<p:ajax/>
+										</p:inputText>
+									</p:panel>
+								</p:panel>
+								
+									<p:panel styleClass="left_col">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.branchExternalId(Y/N)']}" />
+									</p:panel>
+									
+									<p:panel styleClass="inner_right_col">
+										<p:inputText id="branchExtrnalId"	value="#{bankExternalReferenceBean.dataBranchExternalYesOrNo}" readonly="true" >
+											
+										</p:inputText>
+									</p:panel>
+											
+									
+								</p:panel>
+							
+								
+								<p:panel styleClass="left_col">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.flexFiled1']}" />
+									</p:panel>
+									<p:panel styleClass="inner_right_col">
+										<p:inputText id="dtflex1"
+													value="#{bankExternalReferenceBean.dataFlexFiled1}"
+													required="false"  >
+													<p:ajax/>
+										<p:ajax/> 
+										</p:inputText>
+									</p:panel>
+								</p:panel>
+								<h:panelGroup layout="block" class="clearfix" />		
+								
+								<p:panel styleClass="left_col">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.flexFiled2']}" />
+									</p:panel>
+									<p:panel styleClass="inner_right_col">
+										<p:inputText id="dtlex2" value="#{bankExternalReferenceBean.dataFlexFiled2}" 	required="false"  >
+																				
+									<p:ajax/> 
+										</p:inputText>
+									</p:panel>
+								</p:panel>
+								
+								<p:panel styleClass="left_col">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.flexFiled3']}" />
+									</p:panel>
+									<p:panel styleClass="inner_right_col">
+											<p:inputText id="dtlex3"
+													value="#{bankExternalReferenceBean.dataFlexFiled3}"
+													required="false" >
+														<p:ajax/> 
+										</p:inputText>
+									</p:panel>
+								</p:panel>
+										
+												<h:panelGroup layout="block" class="clearfix" />					 
+									
+										<p:dataTable id="dialogDataTable1" var="c"
+												paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5" rows="5" paginatorPosition="bottom"
+											rowIndexVar="rowIndex" editable="true" editMode="cell"
+											value="#{bankExternalReferenceBean.bankRefDataTableList}"
+											emptyMessage="#{msg['lbl.norecordfound']}"  
+										  styleClass="mydatatableclass"   >
+
+											<p:column headerText="#{msg['lbl.sino']}" style="width:20px;">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.beneficiaryBranchCode']}"
+												style="width:50px;">
+												<h:outputText value="#{c.branchCode}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.description']}"
+												style="width:90px;">
+												<h:outputText value="#{c.branchDescription}" />
+											</p:column>
+
+											<p:column headerText="Branch External Id1" style="width:90px;">
+												<p:message id="dexternalMsg" for="dexternalId"
+													display="text" />
+												<p:inputText id="dexternalId" value="#{c.branchExternalId}"
+													maxlength="20"
+													validatorMessage="Enter valid Branch External Id"
+													onkeyup="this.value=this.value.toUpperCase()">
+													<p:ajax event="blur" listener="#{bankExternalReferenceBean.updateStatus(c)}"
+														
+														update="dexternalMsg,:form:dialogDataTable1" />
+													<f:validator
+														validatorId="com.amg.exchange.validator.AlphaNumericValidator" />
+												</p:inputText>
+											</p:column>
+
+											<p:column headerText="Flex Field1" style="width:90px;">
+												<p:inputText id="field1" value="#{c.flexField1}"
+													maxlength="20">
+													<p:ajax event="blur" update=":form:dialogDataTable1" listener="#{bankExternalReferenceBean.updateStatus(c)}" />
+													<!-- <p:ajax event="blur" listener="#{bankExternalReferenceBean.setBranchExternalIdForDT(c)}"/> -->
+												</p:inputText>
+											</p:column>
+											<p:column headerText="Flex Field2" style="width:90px;">
+												<p:inputText id="field2" value="#{c.flexField2}"
+													maxlength="20">
+													<p:ajax event="blur" update=":form:dialogDataTable1" listener="#{bankExternalReferenceBean.updateStatus(c)}" />
+													<!-- <p:ajax event="blur" listener="#{bankExternalReferenceBean.setBranchExternalIdForDT(c)}"/> -->
+												</p:inputText>
+											</p:column>
+											<p:column headerText="Flex Field3" style="width:90px;">
+												<p:inputText id="field3" value="#{c.flexField3}"
+													maxlength="20">
+													<p:ajax event="blur" update=":form:dialogDataTable1"  listener="#{bankExternalReferenceBean.updateStatus(c)}" />
+													<!-- <p:ajax event="blur" listener="#{bankExternalReferenceBean.setBranchExternalIdForDT(c)}"/> -->
+												</p:inputText>
+											</p:column>
+
+
+										</p:dataTable>
+										
+										<h:panelGroup layout="block" style="width:100%; text-align:right; padding-top:10px !important;" >
+													<p:commandLink id="addnewbank"
+														value="#{msg['lbl.addNewBank']}" styleClass="link1"
+														action="#{bankExternalReferenceBean.dailogExternalTypeAlreadyExsist}"
+														update=":form:dialogDataTable1,:form:branchExtrnalId" process="@this" />
+												</h:panelGroup>
+
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:commandButton value="#{msg['lbl.ok']}"  
+											action="#{bankExternalReferenceBean.addRecordsWhenEdit}" update="mainPanel" immediate="true" process="@this"
+											onclick="PF('editalreadyExist').hide()" />
+									</p:dialog>	
+									
+										<p:dialog id="datatabledetails" width="900" overflow="auto" 
+										widgetVar="datatabledetails"
+										header="Bank External Reference For DataTable."
+										resizable="false"
+										styleclass="ui-dialog-content ui-widget-content"
+										style="height: auto; bottom:auto !important; border:3px solid #00a53e !important; font-weight:bold; background: #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="false" modal="true">
+
+									<p:dataTable id="viewDataTable"
+											value="#{bankExternalReferenceBean.popupinDataTable}" var="d"
+											rowIndexVar="rowIndex" editable="true" editMode="cell" paginator="true" rows="5"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10" 
+											emptyMessage="#{msg['lbl.norecordfound']}">
+											<p:column headerText="S.No" style="width:50px;">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.branchcode']}"
+												filterBy="#{c.branchCode}" filterMatchMode="contains">
+												<h:outputText value="#{d.branchCode}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.branch']}"
+												filterBy="#{c.branchDescription}" filterMatchMode="contains">
+												<h:outputText value="#{d.branchDescription}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.branchExternalId']}">
+												<p:inputText value="#{d.branchExternalId}" readonly="true" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.flexFiled1']}"
+												sortBy="#{d.flexField1}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.flexField1}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.flexFiled2']}"
+												sortBy="#{d.flexField2}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.flexField2}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.flexFiled3']}"
+												sortBy="#{d.flexField3}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.flexField3}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.activatedeactivate']}"
+													style="text-align:center !important;">
+													<p:commandLink
+														action="#{bankExternalReferenceBean.checkStatusType(d)}"
+														value="#{d.dynamicLabelActivateDeactivate}"
+														style="color:blue !important; text-decoration:underline !important;"
+														update=":form:viewDataTable"
+														immediate="true" process="@this" onclick="process.show();"
+														oncomplete="process.hide();" />
+												</p:column>
+											
+
+											
+										</p:dataTable>
+
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton id="detailsokid" value="#{msg['lbl.ok']}"
+												action="#{bankExternalReferenceBean.clearDatatabledetails}"
+												update="mainPanel,datatabledetails" immediate="true" />
+											<div class="clearfix"></div>
+										</h:panelGroup>
+
+									</p:dialog>
+
+									<p:panel styleClass="panel_border">
+								
+									<p:dialog id="pending" widgetVar="pending"
+										width="400" height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.warningDailog']}" closable="false"
+										showEffect="clip" hideEffect="clip" modal="true">
+										<p:outputLabel
+											value="#{msg['lbl.plsApproveRecord']}"
+											 style="text-align: center; font-size:15px !important;"  />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											onclick="PF('pending').hide();" immediate="true"
+											style="margin-left: 150px !important;" />
+								</p:dialog>
+									
+									
+									
+									
+									
+									
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.country']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgCountry" for="country" display="text" />
+												<p:selectOneMenu id="country"
+													value="#{bankExternalReferenceBean.bankCountryId}"
+													filter="true" required="true" filterMatchMode="contains"
+													requiredMessage="#{msg['lbl.pleaseSelectBankCountry']}">
+													<f:selectItem itemLabel="#{msg['lbl.selectcountry']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{bankExternalReferenceBean.bankCountryList}"
+														var="c"
+														itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+														itemValue="#{c.fsCountryMaster.countryId}" />
+													<p:ajax event="change"
+														listener="#{bankExternalReferenceBean.getBankBasedOnCountry}"
+														update="msgCountry,mainPanel" onstart="process.show();"
+														onsuccess="process.hide();" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col" id="bankPanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bank']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgBank" for="bank" display="text" />
+												<p:selectOneMenu id="bank"
+													value="#{bankExternalReferenceBean.bankId}" filter="true"
+													required="true" filterMatchMode="contains"
+													requiredMessage="#{msg['lbl.pleaseSelectBankCountry']}">
+													<f:selectItem itemLabel="#{msg['lbl.selectBank']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{bankExternalReferenceBean.bankList}" var="c"
+														itemLabel="#{c.bankMaster.bankCode} - #{c.bankMaster.bankFullName}"
+														itemValue="#{c.bankMaster.bankId}" />
+													<p:ajax event="change"
+														listener="#{bankExternalReferenceBean.getBeneficaryBankBasedOnBank}"
+														update="msgBank,beneficaryPanel" onstart="process.show();"
+														onsuccess="process.hide();" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col" id="beneficaryPanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.beneficiaryBank']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgBenfiBank" for="benfiBank" display="text" />
+												<p:selectOneMenu id="benfiBank"
+													value="#{bankExternalReferenceBean.benfiBankId}"
+													filter="true" required="true" filterMatchMode="contains"
+													requiredMessage="#{msg['lbl.pleaseSelectBankCountry']}">
+													<f:selectItem
+														itemLabel="#{msg['lbl.selectBeneficiaryBank']}"
+														 />
+													<f:selectItems
+														value="#{bankExternalReferenceBean.beneficaryBankList}"
+														var="c"
+														itemLabel="#{c.bankMaster.bankCode} - #{c.bankMaster.bankFullName}"
+														itemValue="#{c.bankMaster.bankId}" />
+													<!-- <p:ajax listener="#{bankExternalReferenceBean.getBankBasedOnBeneficaryBank}" update="msgBenfiBank,bankPanel" /> -->
+													<p:ajax event="change" listener="#{bankExternalReferenceBean.clearDailogDataTable}" update="msgBenfiBank,mainPanel,:form:dialogDataTable" onstart="process.show();"
+														onsuccess="process.hide();" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+
+										
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.branchExternalId(Y/N)']}" />
+												<!-- <h:outputText value="*" style="color:red !important;" /> -->
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgBranchExternalId" for="branchExternalId"
+													display="text" />
+												<p:selectOneMenu id="branchExternalId"
+													value="#{bankExternalReferenceBean.branchExternalId}"
+													required="false"
+													requiredMessage="Please Select Branch External Type"
+													filter="true">
+													<f:selectItem
+														itemLabel="#{msg['lbl.selectBranchExternal']}" />
+													<f:selectItem itemLabel="Yes" itemValue="1" />
+													<f:selectItem itemLabel="No" itemValue="2" />
+													<p:ajax event="change"
+														listener="#{bankExternalReferenceBean.externalTypeAlreadyExsist}"
+														update="msgBranchExternalId,extenalYesId"  onstart="process.show();" onsuccess="process.hide();" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bankExternalId']}" />
+												<!-- <h:outputText value="*" style="color:red !important;" /> -->
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgExternalId" for="externalId"
+													display="text" />
+												<!-- Start by subramanian for max length  -->
+												<p:inputText id="externalId"
+													value="#{bankExternalReferenceBean.externalId}"
+													
+													maxlength="20"
+													validatorMessage="Enter valid Bank External Id"
+													onkeyup="this.value=this.value.toUpperCase()">
+													<p:ajax 
+														update="msgExternalId" />
+													<!-- <p:ajax event="change"
+														listener="#{bankExternalReferenceBean.searchingRecordsinDataBase}"
+														update="mainPanel" /> -->
+													<!-- <f:validator
+														validatorId="com.amg.exchange.validator.AlphaNumericValidator" /> -->
+												</p:inputText>
+												<!-- End by subramanian for max length  -->
+											</p:panel>
+										</p:panel>
+										
+										<!--  Added by Rabil on 06/03/2016  -->
+										<p:panel styleClass="left_col" id="FlexiPanel1">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.flexFiled1']}" />
+												<!-- <h:outputText value="*" style="color:red !important;" /> -->
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="flex1"
+													value="#{bankExternalReferenceBean.flexField1}"
+													required="false">
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col" id="FlexiPanel2">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.flexFiled2']}" />
+												<!-- <h:outputText value="*" style="color:red !important;" /> -->
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="flex2"
+													value="#{bankExternalReferenceBean.flexField2}"
+													required="false">
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										<p:panel styleClass="left_col" id="FlexiPanel3">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.flexFiled3']}" />
+												<!-- <h:outputText value="*" style="color:red !important;" /> -->
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="flex3"
+													value="#{bankExternalReferenceBean.flexField3}"
+													required="false">
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+
+
+
+
+										<!--  End of Flexi filed   -->
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.add']}"
+												action="#{bankExternalReferenceBean.addRecordsToDataTable}" 
+												update="mainPanel" onstart="process.show();" oncomplete="process.hide();" />
+											<p:commandButton value="#{msg['lbl.view']}"
+												action="#{bankExternalReferenceBean.view}"
+												update="mainPanel,dataTable" immediate="true"
+												onstart="process.show();" onsuccess="process.hide();" />
+											<p:commandButton value="#{msg['lbl.clear']}"
+												action="#{bankExternalReferenceBean.clearAllFields}"
+												update="mainPanel" process="@this"
+												disabled="#{bankExternalReferenceBean.iscleardisable}" onstart="process.show();" onsuccess="process.hide();"/>
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<p:panel
+											rendered="#{bankExternalReferenceBean.booRenderDataTablePanel}">
+											<p:dataTable id="dataTable" var="c" rows="10"
+												paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10,15" rowIndexVar="rowIndex"
+												editable="true" editMode="cell"
+												value="#{bankExternalReferenceBean.mainDataTable}"
+												emptyMessage="#{msg['lbl.norecordfound']}"
+												paginatorPosition="bottom" styleClass="mydatatableclass">
+
+												<p:column headerText="#{msg['lbl.sino']}"
+													style="width:50px;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<!-- <p:column headerText="#{msg['lbl.country']}" sortBy="#{c.countryName}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{c.countryName}"/>
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.bank']}" sortBy="#{c.bankName}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{c.bankName}"/>
+												</p:column> -->
+
+												<p:column headerText="#{msg['lbl.beneficiaryBank']}"
+													sortBy="#{c.beneficaryBankName}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}" style="width:25%;">
+													<h:outputLabel value="#{c.beneficaryBankName}" style="float:left;margin-left:5px;margin-right:5px;color:blue !important; text-decoration:underline !important;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.bankExternalId']}"
+													sortBy="#{c.bankExternalId}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{c.bankExternalId}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.flexFiled1']}"
+													sortBy="#{c.flexField1}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{c.flexField1}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.flexFiled2']}"
+													sortBy="#{c.flexField2}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{c.flexField2}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.flexFiled3']}"
+													sortBy="#{c.flexField3}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{c.flexField3}" />
+												</p:column>
+
+
+												<p:column headerText="#{msg['lbl.viewbranch']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:commandLink id="branchappid"
+														actionListener="#{bankExternalReferenceBean.viewBranchData(c)}"
+														update=":form:datatabledetails,:form:mainPanel"  onstart="process.show();" onsuccess="process.hide();"
+														immediate="true" >
+														<h:outputText value="View Branch"
+															style="text-align:center; width:50px;text-decoration:underline !important;color:blue !important;" />
+													</p:commandLink>
+												</p:column>
+
+
+												<p:column headerText="#{msg['lbl.edit']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:commandButton value="" id="imgEdit" styleClass="edit"
+														action="#{bankExternalReferenceBean.editRecord(c)}"
+														disabled="#{bankExternalReferenceBean.hideEdit}"
+														update=":form" process="@this"  onstart="process.show();" onsuccess="process.hide();">
+													</p:commandButton>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.activatedeactivate']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+													sortBy="#{c.dynamicLabelForActivateDeactivate}" style="width:10%;text-align:center !important;">
+													<p:commandLink
+														action="#{bankExternalReferenceBean.removeRecord(c)}"
+														value="#{c.dynamicLabelForActivateDeactivate}"
+														style="color:blue !important; text-decoration:underline !important;"
+														update=":form" immediate="true" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+												</p:column>
+
+
+
+											</p:dataTable>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+
+
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:spacer height="10px" />
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{bankExternalReferenceBean.booRenderDataTablePanel}"
+											id="submitpanel">
+											<!-- rendered="#{bankExternalReferenceBean.booRenderSavePanel}" disabled="#{bankExternalReferenceBean.isdisable}" -->
+											<p:commandButton value="#{msg['lbl.submit']}"
+												style="margin-right:10px; "
+												action="#{bankExternalReferenceBean.saveDataTableRecords}"
+												update="mainPanel" process="@this"
+												onstart="process.show();" onsuccess="process.hide();" />
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{bankExternalReferenceBean.clickOnExit}"
+												update="mainPanel" immediate="true" />
+										</h:panelGroup>
+										<p:panel styleClass="left_col">
+											<h:outputText id="mandatory"
+												value=" #{msg['lbl.*filedsAreMandatory']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+												<h:panelGroup layout="block" class="clearfix" />
+												<h:outputText id="Note1"
+												value=" Note : After adding data into data table , if you click on view button it will populate new data "
+												style="color:red; padding:10px !important; font-size:11px; font-weight:bold; font-family: times new roman !important;" />
+												<h:panelGroup layout="block" class="clearfix" />
+												<h:outputText id="Note2"
+												value=" Note : If click on edit button , record staus will be changed to UnApproved Status. "
+												style="color:red; padding:10px !important; font-size:11px; font-weight:bold; font-family: times new roman !important;" />
+										</p:panel>
+						<h:panelGroup layout="block" class="clearfix" />
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+									<p:dialog modal="true" showHeader="true" header="Please wait.."
+										widgetVar="process" id="process" width="300" height="50"
+										resizable="false" draggable="false" closable="false"
+										style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+										<div style="text-align: center;">
+											<p:graphicImage value="../images/preloader.gif" />
+										</div>
+									</p:dialog>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

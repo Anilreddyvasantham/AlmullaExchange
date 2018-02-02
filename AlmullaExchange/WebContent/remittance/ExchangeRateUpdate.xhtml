@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+
+		history.pushState(null, null, 'ExchangeRateUpdate.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'ExchangeRateUpdate.xhtml');
+		});
+	</script>
+
+</h:head>
+
+<h:body>
+
+	<p:dialog id="complete" widgetVar="complete" width="270" height="70"
+		showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+		<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} " />
+		<br />
+		<p:spacer width="15px" />
+		<p:commandButton value="#{msg['lbl.ok']}"
+			actionListener="#{exchangeRateUpdateBean.clickOnOKSave}" process="@this" />
+	</p:dialog>
+
+	<p:confirmDialog id="dataNotFund" widgetVar="dataNotFund" width="400"
+		height="17" resizable="false"
+		style=" border:2px solid green !important; padding:0px !important;  color:green !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.addAlteastOneRecordtoDataTable']}">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="duplicate" widgetVar="duplicate" width="400"
+		height="17" resizable="false"
+		style=" border:2px solid green !important; padding:0px !important;  color:green !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true"
+		message="#{msg['lbl.thisrecordalreadyaddedtodatatable']}">
+	</p:confirmDialog>
+
+	<p:dialog id="duplicate1" widgetVar="duplicate1" width="270"
+		height="100" showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+		<p:outputLabel
+			value="#{msg['lbl.thisservicealreadyexistedcouldupdate']}" />
+		<br />
+		<p:spacer width="15px" />
+		<p:commandButton value="#{msg['lbl.yes']}"
+			actionListener="#{exchangeRateUpdateBean.updateRecord}" process="@this" />
+		<p:commandButton value="#{msg['lbl.no']}"
+			actionListener="#{exchangeRateUpdateBean.exitDialog}" process="@this" />
+	</p:dialog>
+
+	<p:confirmDialog header="Warning Header" id="sellrateerror"
+		widgetVar="sellrateerror" width="500" resizable="false"
+		style=" border:2px solid green !important; padding:0px !important;  color:green !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true"
+		message="#{msg['lbl.sellratemaximumshouldbegreaterthansellrateminimum']}">
+	</p:confirmDialog>
+
+	<p:confirmDialog header="Warning Header" id="buyrateerror"
+		widgetVar="buyrateerror" width="500" resizable="false"
+		style=" border:2px solid green !important; padding:0px !important;  color:green !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true"
+		message="#{msg['lbl.buyratemaximumshouldbegreaterthanbuyrateminimum']}">
+	</p:confirmDialog>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="rateUpdateForm">
+								<h1>
+									<h:outputText value="#{msg['lbl.exchangerate']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+
+									<p:confirmDialog id="checkExchangeRate"
+										widgetVar="checkExchangeRate" resizable="false"
+										style="background-color: white !important;" visible="#{exchangeRateUpdateBean.errorMessage == null ? 'false' : 'true'}"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="false"
+										closable="false" message="#{exchangeRateUpdateBean.errorMessage}">
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											update="rateUpdateForm" oncomplete="checkExchangeRate.hide()"
+											process="@this" onstart="process.show();" action="#{exchangeRateUpdateBean.clearErrMsg}"
+											onsuccess="process.hide();" />
+									</p:confirmDialog>
+
+									<p:confirmDialog id="deleteExchangeRate"
+										widgetVar="deleteExchangeRate" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="false"
+										closable="false" message="#{exchangeRateUpdateBean.errorMessage}">
+										<p:commandButton value="#{msg['lbl.yes']}"
+											update=":rateUpdateForm"
+											oncomplete="deleteExchangeRate.hide()" process="@this"
+											onstart="process.show();" onsuccess="process.hide();"
+											action="#{exchangeRateUpdateBean.deactiveExchangeRate}" />
+										<p:commandButton value="#{msg['lbl.no']}" action="#{exchangeRateUpdateBean.clearErrMsg}"
+											oncomplete="deleteExchangeRate.hide()" process="@this" />
+									</p:confirmDialog>
+
+									<p:confirmDialog header="Warning Header" id="dataTableNull"
+										widgetVar="dataTableNull" width="75%" resizable="false"
+										style=" border:2px solid green !important; padding:0px !important;  color:green !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="Please Enter Mandatory Fields For This Combination : #{exchangeRateUpdateBean.localErrorMsg}">
+									</p:confirmDialog>
+
+									<p:confirmDialog header="Warning Header" id="dataTableNull1"
+										widgetVar="dataTableNull1" resizable="false"
+										style=" border:2px solid green !important; padding:0px !important;  color:green !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{exchangeRateUpdateBean.localErrorMsg}">
+									</p:confirmDialog>
+
+									<h2>
+										<h:outputText value="#{msg['lbl.exchangerate']}" />
+									</h2>
+
+									<p:panel styleClass="panel_border" id="panel1">
+
+										<p:rowExpansion id="row1">
+											<p:dataTable id="exchangeRateId" var="d"
+												value="#{exchangeRateUpdateBean.ratesUpdateDataTableList}"
+												sortMode="multiple" rowIndexVar="rowIndex"
+												emptyMessage="#{msg['lbl.norecordfound']}"
+												styleClass="mydatatableclass" editable="true"
+												editMode="cell" paginator="true" rows="10"
+												paginatorPosition="bottom"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="10,15,20"
+												rowStyleClass="#{car.year le 1980 ? 'old' : null}">
+
+												<p:columnGroup type="header">
+													<p:row>
+														<p:column rowspan="2" headerText="#{msg['lbl.sNo']}"
+															style="text-align:center !important;" />
+														<p:column rowspan="2" headerText="#{msg['lbl.currency']}"
+															style="text-align:center !important;" />
+														<p:column rowspan="2" headerText="#{msg['lbl.country']}"
+															style="text-align:center !important;" />
+														<p:column rowspan="2" headerText="#{msg['lbl.bank']}"
+															style="text-align:center !important;" />
+														<p:column rowspan="2"
+															headerText="#{msg['lbl.serviceMode']}"
+															style="text-align:center !important;" />
+														<p:column rowspan="2" headerText="#{msg['lbl.branch']}"
+															style="text-align:center !important;" />
+														<p:column colspan="2"
+															headerText="#{msg['lbl.sellingRate']}"
+															style="text-align:center !important;" />
+														<p:column colspan="2"
+															headerText="#{msg['lbl.buyingRate']}"
+															style="text-align:center !important;" />
+														<!-- <p:column rowspan="2"
+															headerText="#{msg['lbl.corporateRate']}"
+															style="text-align:center !important;" /> -->
+														<p:column rowspan="2" headerText="#{msg['lbl.delete']}" />
+													</p:row>
+													<p:row>
+														<p:column headerText="#{msg['lbl.minimum']}"
+															style="text-align:center !important;" />
+														<p:column headerText="#{msg['lbl.maximum']}"
+															style="text-align:center !important;" />
+														<p:column headerText="#{msg['lbl.minimum']}"
+															style="text-align:center !important;" />
+														<p:column headerText="#{msg['lbl.maximum']}"
+															style="text-align:center !important;" />
+													</p:row>
+												</p:columnGroup>
+
+												<p:column>
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column>
+													<p:selectOneMenu id="currency" value="#{d.currencyId}"
+														filter="true" filterMatchMode="contains" required="true"
+														requiredMessage="Please Select Currency">
+														<f:selectItem itemLabel="#{msg['lbl.currency']}"
+															itemValue="" />
+														<f:selectItems value="#{d.currencyList}" var="c"
+															itemLabel="#{c.currencyCode} - #{c.currencyName}"
+															itemValue="#{c.currencyId}" />
+														<p:ajax update="currency" onstart="process.show();"
+															onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:column>
+
+												<p:column>
+													<p:selectOneMenu id="country" value="#{d.countryId}"
+														filter="true" filterMatchMode="contains">
+														<f:selectItem itemLabel="#{msg['lbl.country']}"
+															itemValue="" />
+														<f:selectItems value="#{d.countryList}" var="c"
+															itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+															itemValue="#{c.fsCountryMaster.countryId}" />
+														<p:ajax update="country,bank" event="change"
+															listener="#{exchangeRateUpdateBean.fetchBank(d)}"
+															onstart="process.show();" onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:column>
+
+												<p:column>
+													<p:selectOneMenu id="bank" value="#{d.bankId}"
+														filter="true" filterMatchMode="contains">
+														<f:selectItem itemLabel="#{msg['lbl.bank']}"
+															itemValue="" />
+														<f:selectItems value="#{d.bankList}" var="c"
+															itemLabel="#{c.bankCode} - #{c.bankFullName}"
+															itemValue="#{c.bankId}" />
+														<p:ajax update="bank" onstart="process.show();"
+															onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:column>
+
+												<p:column>
+													<p:selectOneMenu id="service" value="#{d.serviceId}"
+														filter="true" filterMatchMode="contains">
+														<f:selectItem itemLabel="#{msg['lbl.serviceMode']}"
+															itemValue="" />
+														<f:selectItems value="#{d.serviceMasters}" var="c"
+															itemLabel="#{c.serviceMaster.serviceCode}-#{c.localServiceDescription}"
+															itemValue="#{c.serviceMaster.serviceId}" />
+														<p:ajax update="service" onstart="process.show();"
+															onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:column>
+
+												<p:column>
+													<p:selectOneMenu id="branch" value="#{d.branchId}"
+														filter="true" filterMatchMode="contains">
+														<f:selectItem itemLabel="#{msg['lbl.branch']}"
+															itemValue="" />
+														<f:selectItems value="#{d.countryBranchList}" var="c"
+															itemLabel="#{c.branchId}-#{c.branchName}"
+															itemValue="#{c.countryBranchId}" />
+														<p:ajax update="branch" onstart="process.show();"
+															onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:column>
+
+												<p:ajax event="cellEdit"
+													listener="#{exchangeRateUpdateBean.onCellEdit}"
+													update=":rateUpdateForm:exchangeRateId" />
+
+												<p:column id="sellMinId">
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{d.sellingRateMin}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:panel id="minPanel">
+																<p:message id="minMsg" for="min" display="text" />
+																<p:inputText value="#{d.sellingRateMin}" id="min"
+																	required="true"
+																	requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.sellingRate']} #{msg['lbl.min']}">
+																	<f:validator
+																		validatorId="com.amg.exchange.validator.doubleCheckValidator" />
+																	<!-- <p:ajax event="blur" update="minPanel,minMsg" /> -->
+																	<p:ajax event="blur"
+																		update="minPanel,minMsg,:rateUpdateForm:exchangeRateId:sellMinId,:rateUpdateForm:exchangeRateId:sellMaxId,:rateUpdateForm:checkExchangeRate"
+																		listener="#{exchangeRateUpdateBean.checkSellRateMinMax(d)}" />
+																</p:inputText>
+															</p:panel>
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+
+												<p:column id="sellMaxId">
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{d.sellingRateMax}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:panel id="maxPanel">
+																<p:message id="maxMsg" for="max" display="text" />
+																<p:inputText value="#{d.sellingRateMax}" id="max"
+																	required="true"
+																	requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.sellingRate']} #{msg['lbl.max']}">
+																	<f:validator
+																		validatorId="com.amg.exchange.validator.doubleCheckValidator" />
+																	<p:ajax event="blur"
+																		update="maxPanel,maxMsg,:rateUpdateForm:exchangeRateId:sellMinId,:rateUpdateForm:exchangeRateId:sellMaxId,:rateUpdateForm:checkExchangeRate"
+																		listener="#{exchangeRateUpdateBean.checkSellRateMinMax(d)}" />
+																</p:inputText>
+															</p:panel>
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+
+												<p:column id="buyMinId">
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{d.buyingRateMin}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:panel id="minbuyPanel">
+																<p:message id="minbuyMsg" for="minbuy" display="text" />
+																<p:inputText value="#{d.buyingRateMin}" id="minbuy"
+																	required="true"
+																	requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.buyingRate']} #{msg['lbl.min']}">
+																	<f:validator
+																		validatorId="com.amg.exchange.validator.doubleCheckValidator" />
+																	<p:ajax event="blur" update="" />
+																	<p:ajax event="blur"
+																		update="minbuyPanel,minbuyMsg,:rateUpdateForm:exchangeRateId:buyMinId,:rateUpdateForm:exchangeRateId:buyMaxId,:rateUpdateForm:checkExchangeRate"
+																		listener="#{exchangeRateUpdateBean.checkBuyRateMinMax(d)}" />
+																</p:inputText>
+															</p:panel>
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+
+												<p:column id="buyMaxId">
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{d.buyingRateMax}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:panel id="maxbuyPanel">
+																<p:message id="maxbuyMsg" for="maxbuy" display="text" />
+																<p:inputText value="#{d.buyingRateMax}" id="maxbuy"
+																	required="true"
+																	requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.buyingRate']} #{msg['lbl.max']}">
+																	<f:validator
+																		validatorId="com.amg.exchange.validator.doubleCheckValidator" />
+																	<p:ajax event="blur"
+																		update="maxbuyPanel,maxbuyMsg,:rateUpdateForm:exchangeRateId:buyMinId,:rateUpdateForm:exchangeRateId:buyMaxId,:rateUpdateForm:checkExchangeRate"
+																		listener="#{exchangeRateUpdateBean.checkBuyRateMinMax(d)}" />
+																</p:inputText>
+															</p:panel>
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+
+												<!-- <p:column>
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{d.corporateRate}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:panel id="corpPanel">
+																<p:message id="corpMsg" for="corp" display="text" />
+																<p:inputText value="#{d.corporateRate}" id="corp"
+																	required="true"
+																	requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.max']}">
+																	<f:validator
+																		validatorId="com.amg.exchange.validator.doubleCheckValidator" />
+																	<p:ajax event="blur" update="corpMsg,corpMsg" />
+																</p:inputText>
+															</p:panel>
+														</f:facet>
+													</p:cellEditor>
+												</p:column> -->
+
+												<p:column>
+													<p:commandButton value=""
+														actionListener="#{exchangeRateUpdateBean.removeRecord(d)}"
+														immediate="true" styleClass="delete" onstart="process.show();" onsuccess="process.hide();"
+														update="exchangeRateId,:rateUpdateForm:deleteExchangeRate" />
+												</p:column>
+
+											</p:dataTable>
+										</p:rowExpansion>
+
+										<div class="clearfix"></div>
+										<h:panelGroup layout="block"
+											style="width:100%; text-align:right; padding-top:10px !important;">
+											<p:spacer height="40px" />
+											<p:commandLink id="addmorefield"
+												style=" font-size: 15px !important;"
+												value="+ Add More Rates" styleClass="link1"
+												action="#{exchangeRateUpdateBean.addEmptyRow}"
+												immediate="true" update="exchangeRateId,mainPanel,checkExchangeRate"
+												onstart="process.show();" onsuccess="process.hide();" />
+										</h:panelGroup>
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.save']}"
+												style="margin-right:10px; "
+												action="#{exchangeRateUpdateBean.saveDataTableRecods}"
+												update="dataTableNull,mainPanel,checkExchangeRate" process="@this"
+												onstart="process.show();" onsuccess="process.hide();" />
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{exchangeRateUpdateBean.exit}" immediate="true"
+												onstart="process.show();" onsuccess="process.hide();" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col">
+											<h:outputText id="mandatory"
+												value=" #{msg['lbl.*filedsAreMandatory']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

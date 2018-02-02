@@ -1,0 +1,596 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<style>
+#goTop {
+	padding: 6px 25px 42px 23px !important;
+	position: fixed;
+	right: 10px;
+	margin: left !important;
+	margin-top: 350px !important;
+	margin-right: 40px !important;
+	background-image: url('../images/topscroll.png');
+}
+</style>
+
+	<script>
+		function clearForm() {
+
+			var dat1 = document
+					.getElementById("accountType:accountTypeLocalDesc");
+			dat1.value = '';
+			var dat2 = document.getElementById("accountType:accountTypeDesc");
+			dat2.value = '';
+		}
+
+		$(document).ready(function() {
+			$(window).scroll(function() {
+				if ($(this).scrollTop() > 100) {
+					$('#goTop').stop().animate({
+						bottom : '30px'
+					}, 300);
+				} else {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				}
+			});
+			$('#goTop').click(function() {
+				$('html, body').stop().animate({
+					scrollTop : 0
+				}, 500, function() {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				});
+			});
+		});
+		 history.pushState(null, null, 'communicationMethod.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'communicationMethod.xhtml');
+		    });
+	</script>
+</h:head>
+
+<h:body>
+	<p:confirmDialog id="upload" widgetVar="upload" width="300"
+		resizable="false" style="background-color: white !important;"
+		header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.pleaseUploadAFile']}">
+	</p:confirmDialog>
+	<p:confirmDialog id="alreadyApproved" widgetVar="alreadyApproved"
+		width="400" resizable="false"
+		style="background-color: white !important;"
+		header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true"
+		message="#{msg['lbl.recordAlreadyModifiedOrNotAbleToDelete']}">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="remarksEmpty" widgetVar="remarksEmpty" width="400"
+		resizable="false" style="background-color: white !important;"
+		header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.remarksShouldNotBeEmpty']}">
+	</p:confirmDialog>
+
+	<p:dialog id="approve" widgetVar="approve" width="400" height="80"
+		resizable="false" style="background-color: white !important;"
+		styleClass="success" header="#{msg['lbl.success']}" closable="false"
+		showEffect="clip" hideEffect="clip">
+		<p:outputLabel value="#{msg['lbl.communicationMethodMasterApproval']}"
+			style="text-align: center; font-size:15px !important;" />
+		<br />
+		<p:commandButton value="#{msg['lbl.ok']}"
+			actionListener="#{communicationMethod.communivationmethodApprovalOk}"
+			process="@this" style="margin-left: 150px !important;" />
+	</p:dialog>
+
+	<p:dialog id="notapprove" widgetVar="notapprove" width="400"
+		height="80" resizable="false"
+		style="background-color: white !important;" styleClass="warning"
+		header="#{msg['lbl.warningDailog']}" closable="false"
+		showEffect="clip" hideEffect="clip">
+		<p:outputLabel value="#{msg['lbl.approvedbyanother']}"
+			style="text-align: center; font-size:15px !important;" />
+		<br />
+		<p:commandButton value="#{msg['lbl.ok']}"
+			actionListener="#{communicationMethod.navigateToBankAccountTypeApprovalPage}"
+			process="@this" style="margin-left: 150px !important;" />
+	</p:dialog>
+	<p:confirmDialog id="noRecords" widgetVar="noRecords" width="300"
+		resizable="false" style="background-color: white !important;"
+		header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.noRecordFound']}">
+	</p:confirmDialog>
+
+
+	<f:view>
+
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<h:form id="commuMethod">
+
+
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;"><ui:include
+							src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle"
+										src="../images/toggle_plus.png" alt=""
+										onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+
+								<h1>
+									<h:outputText value="#{msg['lbl.communicationMethod']}" />
+								</h1>
+
+
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h2>
+										<h:outputText value="#{msg['lbl.communicationMethod']}" />
+
+									</h2>
+									<p:dialog modal="true" showHeader="true"
+										header="#{msg['lbl.bco.plswait']}" widgetVar="process"
+										id="process" width="300" height="50" resizable="false"
+										draggable="false" closable="false"
+										style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+										<div style="text-align: center;">
+											<p:graphicImage value="../images/preloader.gif" />
+										</div>
+									</p:dialog>
+									<p:confirmDialog id="recordAlreadyExist"
+										widgetVar="recordAlreadyExist" width="400" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{msg['lbl.recrdAlreadyExisted']}">
+									</p:confirmDialog>
+
+
+									<p:dialog id="complete" widgetVar="complete" width="400"
+										height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="success" header="#{msg['lbl.success']}"
+										closable="false" showEffect="clip" hideEffect="clip"
+										modal="true">
+										<p:outputLabel
+											value="#{msg['lbl.communicationMethodSavedSuccess']}  "
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{communicationMethod.navigateToCommunicationMethodPage}"
+											process="@this" style="margin-left: 150px !important;" />
+									</p:dialog>
+									<p:dialog id="permanentDelete" widgetVar="permanentDelete"
+										width="400" height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.deleteRecrd']}"
+										closable="false" showEffect="clip" hideEffect="clip">
+										<p:outputLabel
+											value="#{msg['lbl.douWantDeleteRecordPermentely']}"
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{communicationMethod.confirmPermanentDelete}"
+											process="@this" oncomplete="PF('permanentDelete').hide();"
+											update="mainPanel" style="margin-left: 150px !important;" />
+										<p:commandButton value="#{msg['lbl.cancel']}"
+											onclick="PF('permanentDelete').hide();" immediate="true"
+											style="margin-left:10px;" />
+									</p:dialog>
+									<p:dialog id="pending" widgetVar="pending" width="400"
+										height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.warningDailog']}"
+										closable="false" showEffect="clip" hideEffect="clip">
+										<p:outputLabel value="#{msg['lbl.plsApproveRecord']}"
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											onclick="PF('pending').hide();" immediate="true"
+											style="margin-left: 150px !important;" />
+									</p:dialog>
+
+									<p:dialog id="activateRecord" widgetVar="activateRecord"
+										width="400" height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.activateRecrd']}"
+										closable="false" showEffect="clip" hideEffect="clip">
+										<p:outputLabel value="#{msg['lbl.doyouactivaterecord']}"
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{communicationMethod.activateRecord}"
+											process="@this" oncomplete="PF('activateRecord').hide();"
+											update="mainPanel" style="margin-left: 150px !important;" />
+										<p:commandButton value="#{msg['lbl.cancel']}"
+											onclick="PF('activateRecord').hide();" immediate="true"
+											style="margin-left:10px;" />
+									</p:dialog>
+
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{communicationMethod.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+
+
+									<p:confirmDialog id="exception" header="#{msg['lbl.warning']}"
+										widgetVar="exception" width="600" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{communicationMethod.errorMessage}">
+
+										<p:commandButton value="#{msg['lbl.ok']}"
+											onclick="exception.hide()" process="@this" update="mainPanel" />
+
+									</p:confirmDialog>
+
+									<p:dialog id="remarks" widgetVar="remarks" width="480"
+										resizable="false" style="background-color: white !important;"
+										styleClass="info" header="Remarks" closable="false"
+										showEffect="clip" hideEffect="clip" modal="true">
+										<p:panel>
+											<table>
+												<tr>
+													<td><h:outputText value="#{msg['lbl.approvedDate']} :" /></td>
+													<td><h:outputText
+															value="#{communicationMethod.approvedDate}"
+															style="color:red !important;" /></td>
+												</tr>
+												<tr>
+													<td><h:outputText value="#{msg['lbl.approvedBy']} :" /></td>
+													<td><h:outputText
+															value="#{communicationMethod.approvedBy}"
+															style="color:red !important;" /></td>
+												</tr>
+											</table>
+										</p:panel>
+										<p:spacer height="10px" />
+										<p:panel>
+											<h:outputText value="#{msg['lbl.enterremarks']}" />
+											<h:outputText value="*" style="color:red !important;" />
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel>
+											<h:inputTextarea id="remarksId"
+												value="#{communicationMethod.remarks}"
+												validatorMessage="Maximum 255 charectors allowed">
+												<p:ajax />
+												<f:validateLength maximum="255"></f:validateLength>
+											</h:inputTextarea>
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel style="padding-left:160px;">
+											<p:commandButton value="#{msg['lbl.ok']}"
+												style="margin-right:10px; "
+												actionListener="#{communicationMethod.remarkSelectedRecord}"
+												process="@this" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												actionListener="#{communicationMethod.clearRemarks}"
+												process="@this" update="mainPanel" />
+										</p:panel>
+									</p:dialog>
+
+
+									<p:panel styleClass="panel_border" id="headerPanel">
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.methodCode']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgCommunicationMethodCode"
+													for="communicationMethodCode" display="text" />
+												<p:autoComplete id="communicationMethodCode"
+													onkeyup="this.value=this.value.toUpperCase()"
+													value="#{communicationMethod.communicationMethodCode}"
+													readonly="#{communicationMethod.readOnlyCommunicationCode}"
+													required="true"
+													requiredMessage="Please Enter Communication Method Code"
+													completeMethod="#{communicationMethod.populate}"
+													maxResults="10" maxlength="10">
+													<p:ajax
+														update="msgCommunicationMethodCode,emailId,communicationFullDesc,communicationFullDescLocal,communicationShortDesc,communicationShortDescLocal"
+														event="itemSelect"
+														listener="#{communicationMethod.itemSelectPopulate}"
+														process="@this" />
+													<p:ajax event="blur"
+														update="msgCommunicationMethodCode,emailId,communicationFullDesc,communicationFullDescLocal,communicationShortDesc,communicationShortDescLocal"
+														listener="#{communicationMethod.itemSelectPopulate}" />
+												</p:autoComplete>
+											</p:panel>
+										</p:panel>
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.email']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgEmail" for="emailId" display="text" />
+												<!-- <p:inputText value="#{communicationMethod.email}"
+													required="true" id="email"
+													readonly="#{communicationMethod.readOnlyEmail}"
+													requiredMessage="Please Enter Email" >
+													<f:validator validatorId="com.amg.exchange.validator.EmailValidator"/>
+													<p:ajax event="blur" update="msgEmail,buttonPanel"
+														listener="#{communicationMethod.disableSubmit}" /> 
+												</p:inputText>-->
+												<p:selectOneMenu id="emailId"
+													value="#{communicationMethod.email}"
+													disabled="#{communicationMethod.readOnlyEmail}"
+													required="true" requiredMessage="Please Select Email Type"
+													filter="startWith">
+													<f:selectItem itemLabel="#{msg['lbl.selectForEmail']}" />
+													<f:selectItem itemLabel="#{msg['lbl.yes']}" itemValue="Y" />
+													<f:selectItem itemLabel="#{msg['lbl.no']}" itemValue="N" />
+													<p:ajax update="msgEmail" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.fulldescription']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgCommunicationFullDesc"
+													for="communicationFullDesc" display="text" />
+												<p:inputTextarea id="communicationFullDesc"
+													value="#{communicationMethod.communicationFullDesc}"
+													required="true"
+													requiredMessage="Please Enter English FullDescription"
+													style="height:30px !important;"
+													readonly="#{communicationMethod.readOnlyCommunicationFullDesc}"
+													maxlength="80">
+													<!-- <p:inputText
+													value="#{communicationMethod.communicationFullDesc}"
+													id="communicationFullDesc"
+													readonly="#{communicationMethod.readOnlyCommunicationFullDesc}"
+													required="true"
+													requiredMessage="Please Enter  Full Description" validatorMessage="Please Enter English Charectors"> -->
+													<f:validateRegex pattern="[a-zA-Z ]+"
+														for="communicationShortDesc" />
+													<p:ajax update="msgCommunicationFullDesc" event="blur"
+														listener="#{communicationMethod.disableSubmit}" />
+												</p:inputTextarea>
+											</p:panel>
+										</p:panel>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.shortdescription']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgCommunicationShortDesc"
+													for="communicationShortDesc" display="text" />
+												<p:inputText
+													value="#{communicationMethod.communicationShortDesc}"
+													id="communicationShortDesc"
+													readonly="#{communicationMethod.readOnlyCommunicationShortDesc}"
+													required="true"
+													onkeyup="this.value=this.value.toUpperCase()"
+													maxlength="10"
+													requiredMessage="Please Enter English Short Description"
+													validatorMessage="Please Enter English Charectors">
+													<f:validateRegex pattern="[a-zA-Z ]+"
+														for="communicationShortDesc" />
+													<p:ajax
+														update="msgCommunicationShortDesc,disableSubmitButton"
+														event="blur"
+														listener="#{communicationMethod.disableSubmit}" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.localfulldescription']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgCommunicationFullDescLocal"
+													for="communicationFullDescLocal" display="text" />
+												<p:inputTextarea
+													value="#{communicationMethod.communicationFullDescLocal}"
+													id="communicationFullDescLocal"
+													readonly="#{communicationMethod.readOnlyCommunicationFullDescLocal}"
+													required="true"
+													style="height:30px !important;text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;"
+													dir="RTL"
+													requiredMessage="Please Enter Arabic Full Description ">
+													<p:ajax
+														update="msgCommunicationFullDescLocal,disableSubmitButton"
+														event="blur"
+														listener="#{communicationMethod.disableSubmit}" />
+													<f:validator validatorId="arabicValidator" />
+												</p:inputTextarea>
+											</p:panel>
+										</p:panel>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.localshortdescription']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgCommunicationShortDescLocal"
+													for="communicationShortDescLocal" display="text" />
+												<p:inputText
+													value="#{communicationMethod.communicationShortDescLocal}"
+													id="communicationShortDescLocal"
+													onkeyup="this.value=this.value.toUpperCase()"
+													maxlength="10"
+													readonly="#{communicationMethod.readOnlyCommunicationShortDescLocal}"
+													required="true"
+													style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;"
+													dir="RTL"
+													requiredMessage="Please Enter Arabic Short Description">
+													<p:ajax
+														update="msgCommunicationShortDescLocal,disableSubmitButton"
+														event="blur"
+														listener="#{communicationMethod.disableSubmit}" />
+													<f:validator validatorId="arabicValidator" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col">
+											<h:outputText id="mandatory"
+												value=" #{msg['lbl.*filedsAreMandatory']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:outputText value="#{msg['lbl.arbicLanguaue']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+										<div class="clearfix"></div>
+										<div class="clearfix"></div>
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											id="buttonPanel"
+											rendered="#{communicationMethod.renderSavePanel}">
+											<p:commandButton value="#{msg['lbl.add']}"
+												style="margin-right:10px; " onstart="process.show();"
+												onsuccess="process.hide();"
+												action="#{communicationMethod.addRecordsToDataTable}"
+												update="mainPanel" />
+											<p:commandButton value="#{msg['lbl.view']}"
+												style="margin-right:10px; "
+												action="#{communicationMethod.viewAllrecords}"
+												onstart="process.show();" onsuccess="process.hide();"
+												immediate="true" update=":commuMethod"
+												disabled="#{communicationMethod.disableClearButton}" />
+											<p:commandButton value="#{msg['lbl.clear']}"
+												action="#{communicationMethod.clearRecords}"
+												immediate="true" update=":commuMethod:mainPanel"
+												process="@this"
+												disabled="#{communicationMethod.disableClearButton}" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											rendered="#{communicationMethod.renderUpdatePanel}">
+											<p:commandButton value="#{msg['lbl.approve']}"
+												style="margin-right:10px; "
+												action="#{communicationMethod.approveRecord}"
+												update=":commuMethod:mainPanel" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												action="#{communicationMethod.communcationMethodCancel}"
+												immediate="true" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+
+										<p:dataTable sortMode="multiple" styleClass="mydatatableclass"
+											id="dataTable"
+											value="#{communicationMethod.communicationMethodList}"
+											var="c" rendered="#{communicationMethod.renderDataTable}"
+											rows="10" rowIndexVar="rowIndex"
+											emptyMessage="#{msg['lbl.noRecordFound']}"
+											paginatorPosition="bottom" paginator="true"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="5,10,15">
+
+											<p:column headerText="#{msg['lbl.sNo']}" style="width:30px;">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.methodCode']}">
+												<h:outputText value="#{c.communicationMethodCode}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.email']}">
+												<h:outputText value="#{c.emailId}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.fulldescription']}">
+												<h:outputText value="#{c.communicationFullDesc}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.shortdescription']}">
+												<h:outputText value="#{c.communicationShortDesc}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.localfulldescription']}">
+												<h:outputText value="#{c.communicationFullDescLocal}" />
+											</p:column>
+
+
+											<p:column headerText="#{msg['lbl.localshortdescription']}">
+												<h:outputText value="#{c.communicationShortDescLocal}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.edit']}">
+												<p:commandButton styleClass="edit" value=""
+													action="#{communicationMethod.editRecord(c)}"
+													update=":commuMethod:mainPanel" process="@this"
+													disabled="#{communicationMethod.disableEditButton}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.active/deactive']}"
+												style="text-align:center !important;">
+												<p:commandLink
+													action="#{communicationMethod.checkStatusType(c)}"
+													value="#{c.dynamicLabelForActivateDeactivate}"
+													style="color:blue !important; text-decoration:underline !important;"
+													update=":commuMethod:mainPanel" immediate="true"
+													process="@this" />
+											</p:column>
+
+										</p:dataTable>
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											rendered="#{communicationMethod.renderSaveButton}">
+											<p:commandButton id="disableSubmitButton"
+												value="#{msg['lbl.submit']}" style="margin-right:10px; "
+												action="#{communicationMethod.saveRecords}" immediate="true"
+												disabled="#{communicationMethod.disableSubmitButton}"
+												update="mainPanel" />
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{communicationMethod.exit}" immediate="true" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+										<h:panelGroup layout="block" class="clearfix" />
+
+									</p:panel>
+								</p:panel>
+							</h:panelGroup>
+							<h:panelGroup layout="block" class="clearfix" />
+						</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+				</tr>
+			</table>
+		</h:form>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+		<a id="goTop" />
+	</f:view>
+</h:body>
+</html>

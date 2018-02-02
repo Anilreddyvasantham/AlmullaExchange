@@ -1,0 +1,594 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+	document.onkeydown = function(e) {
+		//Enter button pressed 
+		/* if (e.keyCode === 13) {
+			return false;
+		} */
+	};
+
+	 history.pushState(null, null, 'additionalbankruleadditionaldata.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'additionalbankruleadditionaldata.xhtml');
+	    });
+	</script>
+</h:head>
+
+<h:body>
+
+	<f:view>
+
+		<p:confirmDialog id="notApproved" widgetVar="notApproved" width="400"
+			styleClass="red" showHeader="false" resizable="false"
+			style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+			showEffect="clip" hideEffect="clip"
+			message="#{msg['lbl.approvedbyanother']}">
+			<p:spacer height="30px" />
+			<p:commandButton value="#{msg['lbl.ok']}"
+				actionListener="#{additionalBankRule.cancelFromApproval}"
+				process="@this" />
+		</p:confirmDialog>
+
+		<p:confirmDialog id="recordExistInDB" widgetVar="recordExistInDB"
+			width="350" height="17" resizable="false"
+			style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+			showEffect="clip" hideEffect="clip" closeOnEscape="true"
+			closable="true" message="#{msg['lbl.thisrecordalreadyexistedindb']}">
+		</p:confirmDialog>
+		<p:confirmDialog id="recordnotfounded" widgetVar="recordnotfounded"
+			width="350" height="17" resizable="false"
+			style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+			showEffect="clip" hideEffect="clip" closeOnEscape="true"
+			closable="true" message="No Records Found">
+		</p:confirmDialog>
+		<p:confirmDialog id="pleaseselect" widgetVar="pleaseselect"
+			width="350" height="70" resizable="false"
+			style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+			showEffect="clip" hideEffect="clip" closeOnEscape="true"
+			closable="true" message="please select county ,Flexifield and Bank are mandatory">
+		</p:confirmDialog>
+
+		<p:dialog id="approved" widgetVar="approved" width="270" height="70"
+			showHeader="false" resizable="false"
+			style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+			showEffect="clip" hideEffect="clip" closeOnEscape="true"
+			closable="true" modal="true">
+			<p:outputLabel value="#{msg['lbl.approvedsuccessfully']}" />
+			<br />
+			<p:spacer width="15px" />
+			<p:commandButton value="#{msg['lbl.ok']}"
+				actionListener="#{additionalBankRule.clickOnOKGotoAddtionalBankRulePanel}"
+				process="@this" />
+		</p:dialog>
+		<p:dialog id="complete" widgetVar="complete" width="270" height="70"
+			showHeader="false" resizable="false"
+			style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+			showEffect="clip" hideEffect="clip" closeOnEscape="true"
+			closable="true" modal="true">
+			<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} " />
+			<br />
+			<p:spacer width="15px" />
+			<p:commandButton value="#{msg['lbl.ok']}"
+				actionListener="#{additionalBankRule.clickOnSaveOne}"
+				process="@this" />
+		</p:dialog>
+
+		<p:dialog id="succ" widgetVar="succ" width="270" height="100"
+			showHeader="false" resizable="false"
+			style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+			showEffect="clip" hideEffect="clip" closeOnEscape="true"
+			closable="true" modal="true">
+			<p:outputLabel value="#{msg['lbl.recordexists']}" />
+			<br />
+			<p:spacer width="15px" />
+			<p:commandButton value="#{msg['lbl.yes']}"
+				actionListener="#{additionalBankRule.updateRecorDescription}"
+				process="@this" />
+			<p:commandButton value="#{msg['lbl.no']}"
+				actionListener="#{additionalBankRule.exitDialogAmiec}"
+				process="@this" />
+		</p:dialog>
+
+		<p:confirmDialog widgetVar="bankruledataExists" width="500"
+			showHeader="false" resizable="false"
+			style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+			showEffect="clip" hideEffect="clip"
+			message=" #{msg['lbl.recordalreadyexistclickedittoupdate']} ">
+		</p:confirmDialog>
+
+		<p:confirmDialog id="recordExists" widgetVar="recordExists"
+			width="600" header="Warning DialogBox" height="17" resizable="false"
+			style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+			showEffect="clip" hideEffect="clip" closeOnEscape="true"
+			closable="true" message="#{msg['lbl.recordwithflexifieldalredyavailable']}">
+		</p:confirmDialog>
+		<p:confirmDialog id="norecords" widgetVar="norecords" width="600"
+			header="Warning DialogBox" height="17" resizable="false"
+			style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+			showEffect="clip" hideEffect="clip" closeOnEscape="true"
+			closable="true" message="#{msg['lbl.norecordsindatatable']}">
+		</p:confirmDialog>
+		<p:confirmDialog id="updated" widgetVar="updated" width="600"
+			header="Warning DialogBox" height="17" resizable="false"
+			style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+			showEffect="clip" hideEffect="clip" closeOnEscape="true"
+			closable="true" message="#{msg['lbl.recordsuccessfullydeleted']}">
+		</p:confirmDialog>
+
+
+
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form1">
+
+
+
+
+								<h1>
+									<h:outputText value="#{msg['lbl.additionBankRule']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h2>
+										<h:outputText value="#{msg['lbl.additionBankRule']}" />
+									</h2>
+									<p:dialog id="activateRecord" widgetVar="activateRecord"
+										width="300" height="70" showHeader="false" resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel value="#{msg['lbl.doyouactivaterecord']}" />
+										<p:spacer height="10px" />
+										<p:panel>
+											<p:commandButton value="#{msg['lbl.ok']}"
+												style="margin-right:10px; "
+												actionListener="#{additionalBankRule.activateRecordBankRule}"
+												process="@this" oncomplete="PF('activateRecord').hide();"
+												update="mainPanel" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												onclick="PF('activateRecord').hide();" immediate="true" />
+										</p:panel>
+									</p:dialog>
+
+									<p:dialog id="permanentDelete" widgetVar="permanentDelete"
+										width="300" height="70" showHeader="false" resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel
+											value="#{msg['lbl.doyouwanttodeleterecordperminently']}" />
+										<p:spacer height="10px" />
+										<p:panel>
+											<p:commandButton value="#{msg['lbl.ok']}"
+												style="margin-right:10px; "
+												actionListener="#{additionalBankRule.confirmPermanentDeleteBankRule}"
+												process="@this" oncomplete="PF('permanentDelete').hide();"
+												update="mainPanel" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												onclick="PF('permanentDelete').hide();" immediate="true" />
+										</p:panel>
+									</p:dialog>
+									<!-- Remarks Dailog  -->
+									<p:dialog id="remarks" widgetVar="remarks" width="480"
+										height="280" showHeader="false" resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:panel>
+											<table>
+												<tr>
+													<td><h:outputText value="#{msg['lbl.activateddate']}     :" /></td>
+													<td><h:outputText
+															value="#{additionalBankRule.activateDate}"
+															style="color:red !important;" /></td>
+												</tr>
+												<tr>
+													<td><h:outputText value="#{msg['lbl.activatedby']}     :" /></td>
+													<td><h:outputText
+															value="#{additionalBankRule.activateBy}"
+															style="color:red !important;" /></td>
+												</tr>
+											</table>
+										</p:panel>
+										<p:spacer height="10px" />
+										<p:panel>
+											<h:outputText value="#{msg['lbl.pleaseenterremarks']}*" />
+											<h:outputText value="*" style="color:red !important;" />
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel>
+											<h:inputTextarea
+												value="#{additionalBankRule.remarksForBankRule}"
+												required="true"
+												validatorMessage="Maximum 255 charectors allowed">
+												<p:ajax />
+												<f:validateLength maximum="255"></f:validateLength>
+											</h:inputTextarea>
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel style="padding-left:160px;">
+											<p:commandButton value="#{msg['lbl.ok']}"
+												actionListener="#{additionalBankRule.remarkSelectedRecordForBankRule}"
+												process="@this" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												actionListener="#{additionalBankRule.clearRemarksBankMap}"
+												style="margin-left:10px;" update=":form1:mainPanel"
+												process="@this" />
+										</p:panel>
+									</p:dialog>
+									<!-- Remarks Dailog  -->
+									<p:confirmDialog id="remarksEmpty" widgetVar="remarksEmpty"
+										header="Warning DialogBox" height="17" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{msg['lbl.remarksnotempty']}">
+									</p:confirmDialog>
+
+									<p:panel styleClass="panel_border" id="addPanel">
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.country']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col"
+												rendered="#{additionalBankRule.renderCountryId}">
+												<p:message for="nationality" display="text" />
+												<p:selectOneMenu value="#{additionalBankRule.countryId}"
+													filter="true" filterMatchMode="contains" id="nationality"
+													label="nationality" style="width:185px;text-align:left;"
+													required="true" requiredMessage="Please Select Country">
+													<f:selectItem itemLabel="#{msg['lbl.selectcountry']}"
+														itemValue="" />
+													<f:selectItems value="#{additionalBankRule.countryList}"
+														var="c" itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+														itemValue="#{c.fsCountryMaster.countryId}" />
+													<p:ajax event="change"
+														listener="#{additionalBankRule.popCountryFlex}"
+														update="flexfield,mainPanel"  onstart="process.show();" onsuccess="process.hide();"/>
+
+												</p:selectOneMenu>
+											</p:panel>
+
+											<p:panel styleClass="inner_right_col"
+												rendered="#{additionalBankRule.renderCountryIdForApprove}">
+												<p:inputText value="#{additionalBankRule.countryName}"
+													readonly="true" />
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.flexField']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col"
+												rendered="#{additionalBankRule.renderFlexField}">
+												<p:message for="flexfield" display="text" />
+												<p:selectOneMenu value="#{additionalBankRule.flexField}"
+													filter="true" filterMatchMode="contains" id="flexfield"
+													label="flexfield" style="width:185px;text-align:left;"
+													required="true" requiredMessage="please select flex field">
+													<f:selectItem itemLabel="#{msg['lbl.selectFlex']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{additionalBankRule.additionalBankRuleMaps}"
+														var="c" itemLabel="#{c.flexField} - #{c.fieldName}"
+														itemValue="#{c.flexField}" />
+													<p:ajax event="change"
+														listener="#{additionalBankRule.viewRecordAddBankData}"
+														update="mainPanel"  onstart="process.show();" onsuccess="process.hide();"/>
+
+												</p:selectOneMenu>
+											</p:panel>
+											<p:panel styleClass="inner_right_col"
+												rendered="#{additionalBankRule.renderFlexFieldForApprove}">
+												<p:inputText value="#{additionalBankRule.flexFieldName}"
+													readonly="true" />
+											</p:panel>
+										</p:panel>
+										
+										<!-- <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.flexField']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col"
+												rendered="#{additionalBankRule.renderFlexField}">
+												<p:message for="flexfield" display="text" />
+												<p:selectOneMenu value="#{additionalBankRule.flexField}"
+													filter="true" filterMatchMode="contains" id="flexfield"
+													label="flexfield" style="width:185px;text-align:left;"
+													required="true" requiredMessage="please select flex field">
+													<f:selectItem itemLabel="#{msg['lbl.selectFlex']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{additionalBankRule.lstflexfieldsfromview}"
+														var="c" itemLabel="#{c.flexField}"
+														itemValue="#{c.flexField}" />
+													<p:ajax event="change"
+														listener="#{additionalBankRule.viewRecordAddBankData}"
+														update="mainPanel"  onstart="process.show();" onsuccess="process.hide();"/>
+
+												</p:selectOneMenu>
+											</p:panel>
+											<p:panel styleClass="inner_right_col"
+												rendered="#{additionalBankRule.renderFlexFieldForApprove}">
+												<p:inputText value="#{additionalBankRule.flexFieldName}"
+													readonly="true" />
+											</p:panel>
+										</p:panel> -->
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col" id="pnlBank">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bank']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col"
+												rendered="#{additionalBankRule.renderBankId}">
+												<p:message for="bankId" display="text" />
+												<p:selectOneMenu id="bankId"
+													value="#{additionalBankRule.bankId}" filter="true"
+													filterMatchMode="contains" required="true"
+													requiredMessage="Please Select Bank">
+													<f:selectItem itemLabel="#{msg['lbl.selectbank']}"
+														itemValue="" />
+													<f:selectItems value="#{additionalBankRule.bankList}"
+														var="c"
+														itemLabel="#{c.bankMaster.bankCode} - #{c.bankMaster.bankFullName}"
+														itemValue="#{c.bankMaster.bankId}" />
+													<p:ajax event="change"
+														listener="#{additionalBankRule.viewRecordAddBankData}"
+														update="mainPanel"  onstart="process.show();" onsuccess="process.hide();"/>
+												</p:selectOneMenu>
+											</p:panel>
+
+											<p:panel styleClass="inner_right_col"
+												rendered="#{additionalBankRule.renderBankIdForApprove}">
+												<p:inputText value="#{additionalBankRule.bankName}"
+													readonly="true" />
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bankCode']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col"
+												rendered="#{additionalBankRule.renderBankCode}">
+												<p:message id="msgadditionalData" for="additionalDataId"
+													display="text" />
+
+												<p:autoComplete id="additionalDataId"
+													value="#{additionalBankRule.additionalData}"
+													onkeyup="this.value=this.value.toUpperCase()"
+													maxlength="30" required="true"
+													requiredMessage="#{msg['lbl.additionalData']}"
+													completeMethod="#{additionalBankRule.autoCompleteAdditionalData}">
+													
+													<p:ajax update="msgadditionalData,mainPanel"
+														event="itemSelect"
+														listener="#{additionalBankRule.populateAddBankRuleDesc}" />
+
+												</p:autoComplete>
+
+											</p:panel>
+
+											<p:panel styleClass="inner_right_col"
+												rendered="#{additionalBankRule.renderBankCodeForApprove}">
+												<p:inputText value="#{additionalBankRule.additionalData}"
+													readonly="true" />
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col" id="addDescId">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bankdescription']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col"
+												rendered="#{additionalBankRule.renderBankDesc}">
+												<p:message id="msgadditionalDescription"
+													for="additionalDescriptionId" display="text" />
+												<p:inputText
+													value="#{additionalBankRule.additionalDescription}"
+													onkeyup="this.value=this.value.toUpperCase()"
+													id="additionalDescriptionId" required="true" maxlength="100"
+													requiredMessage="please select Additional Description">
+													<p:ajax
+														update="msgadditionalDescription,saveAdditionalBankRule3"
+														event="blur"
+														listener="#{additionalBankRule.hideSubmitButtonForBankRule}" />
+												</p:inputText>
+											</p:panel>
+											<p:panel styleClass="inner_right_col"
+												rendered="#{additionalBankRule.renderBankDescForApprove}">
+												<p:inputText
+													value="#{additionalBankRule.additionalDescription}"
+													readonly="true" />
+											</p:panel>
+										</p:panel>
+
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col">
+											<h:outputText id="mandatory"
+												value=" #{msg['lbl.*filedsAreMandatory']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											rendered="#{additionalBankRule.renderAddButtonPanel}">
+											<p:commandButton value="#{msg['lbl.add']}"
+												action="#{additionalBankRule.checkingDTBankRuleData}"
+												style="margin-right:10px;" process="addPanel" onstart="process.show();" onsuccess="process.hide();"
+												update="mainPanel" />
+											<p:commandButton value="#{msg['lbl.view']}" style="margin-right:10px;"
+												action="#{additionalBankRule.getAdditionBankRuleRecords}"
+												update="mainPanel,addDescId" immediate="true" onstart="process.show();" onsuccess="process.hide();"/>
+												<p:commandButton value="#{msg['lbl.clear']}"
+												action="#{additionalBankRule.clearAllAddtionalBankRule}" disabled="#{additionalBankRule.booclearPanelForBankRule}"
+												update="mainPanel" immediate="true" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+										</h:panelGroup>
+
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											rendered="#{additionalBankRule.renderApproveCancelButtonPanel}">
+											<p:commandButton value="#{msg['lbl.approve']}"
+												action="#{additionalBankRule.approveRecords}"
+												update=":form1:mainPanel" style="margin-right:10px; "
+												immediate="true">
+											</p:commandButton>
+
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												action="#{additionalBankRule.cancelFromApproval}"
+												update="mainPanel" ajax="false" immediate="true">
+											</p:commandButton>
+										</h:panelGroup>
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<!-- 	<h:outputText value="* fields are  Mandatory " style="color:red !important; padding-left:10px !important;" /> -->
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:spacer height="10px" />
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel id="additionalBankRuleAddDataRendered"
+											rendered="#{additionalBankRule.additionalBankRuleAddDataRendered}">
+											<p:dataTable
+												value="#{additionalBankRule.additionalBankRuleDataList3}"
+												var="o" styleClass="mydatatableclass"
+												rendered="#{additionalBankRule.additionalBankRuleAddDataRendered}"
+												rows="10" paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10,15" editable="true" id="datatable"
+												emptyMessage="#{msg['lbl.norecordfound']}"
+												rowIndexVar="rowIndex" paginatorPosition="bottom">
+
+												<p:column headerText="#{msg['lbl.sino']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.country']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.countryName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.bank']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.bankName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.flexField']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.flexField}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.bankCode']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.bankCode}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.bankdescription']}" 
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.bankDescription}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.edit']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:commandButton value=""
+														actionListener="#{additionalBankRule.editRecordAdditionalBankRule(o)}"
+														styleClass="edit" update=":form1:mainPanel"
+														process="@this"
+														disabled="#{additionalBankRule.disableEditBankRule}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.remarks']}">
+													
+													<h:outputText value="#{o.remarksForBankRule}" />
+													
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.activatedeactivate']}"
+													style="text-align:center !important;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:commandLink
+														action="#{additionalBankRule.checkStatusTypeForBankRule(o)}"
+														value="#{o.dynamicLabelForActivateDeactivateForBankRule}"
+														style="color:blue !important; text-decoration:underline !important;"
+														update=":form1:mainPanel" immediate="true" process="@this" />
+												</p:column>
+
+											</p:dataTable>
+											<!-- </p:panel> -->
+
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<!-- <p:spacer height="20px"/> -->
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<p:panel id="saveAdditionalBankRule3"
+											styleClass="shadow_button"
+											rendered="#{additionalBankRule.saveAdditionalBankRule3}">
+											<!-- style="shadow_button" styleClass="left_col" style="background-color:none !important; padding:0px !important;float:center;margin-left:550px" -->
+											<p:panel layout="block" style="align:center;">
+												<p:commandButton value="#{msg['lbl.submit']}"
+													action="#{additionalBankRule.saveAdditionalBankRule3}"
+													disabled="#{additionalBankRule.disableSubmitButtonForBankRule}"
+													immediate="true" style="margin-right:10px;"  onstart="process.show();" onsuccess="process.hide();"/>
+												<p:commandButton value="#{msg['lbl.exit']}"
+													action="#{additionalBankRule.exit}" immediate="true" />
+												<h:panelGroup layout="block" class="clearfix" />
+												<div class="clearfix"></div>
+											</p:panel>
+
+
+
+										</p:panel>
+
+									</p:panel>
+								<p:dialog modal="true" showHeader="true" header="Please wait.." widgetVar="process"  id="process"   width="400" height="100" resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+							    	</p:dialog> 				
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+					</h:panelGroup></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

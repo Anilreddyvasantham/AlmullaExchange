@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+	</script>
+	<script>
+		history.pushState(null, null, 'telemarketingEnquiry.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'telemarketingEnquiry.xhtml');
+		});
+	</script>
+</h:head>
+
+<p:confirmDialog id="successMsg" widgetVar="successMsg" width="700"
+	height="20" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="Information is successfully saved!">
+</p:confirmDialog>
+
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="teleMarkEnquiryForm">
+								<h1>
+									<h:outputText value="#{msg['lbl.telemarketing']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h3>
+										<h:outputText value="#{msg['lbl.telemarEnquiry']}"
+											rendered="#{telemarketingBean.teleEnquiryTable}" />
+										<h:outputText value="#{msg['lbl.telemarkDrillDown']}"
+											rendered="#{telemarketingBean.teleDrillDownTable}" />
+									</h3>
+
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" update="@all"
+										message="#{telemarketingBean.errorMessage}">
+									</p:confirmDialog>
+
+									<p:dialog modal="true" showHeader="true"
+										header="#{msg['lbl.pleasewait']}" widgetVar="process"
+										id="process" width="300" height="50" resizable="false"
+										draggable="false" closable="false"
+										style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+										<div style="text-align: center;">
+											<p:graphicImage value="../images/preloader.gif" />
+										</div>
+									</p:dialog>
+
+									<p:panel styleClass="panel_border">
+										<p:panel rendered="#{telemarketingBean.teleEnquiryTable}">
+											<p:panel id="headerPanel">
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputLabel value="#{msg['lbl.branch']}"
+															style="color:#05000a;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText tabindex="-1"
+															value="#{sessionScope.branchCode}-#{sessionScope.location}"
+															styleClass="ui-state-disabled" readonly="true">
+														</p:inputText>
+													</p:panel>
+													<div class="clearfix"></div>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputLabel value="#{msg['lbl.staff']}"
+															style="color:#05000a;" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col"
+														rendered="#{telemarketingBean.teleEnquiryStaffDD}">
+														<p:selectOneMenu id="staff"
+															value="#{telemarketingBean.selectEnquiryStaff}"
+															filter="true" filterMatchMode="contains">
+															<f:selectItem itemLabel="---Select Staff---" itemValue="" />
+															<f:selectItems value="#{telemarketingBean.employeeNames}"
+																var="e" itemLabel="#{e.employeeName} - #{e.userName}"
+																itemValue="#{e.employeeId}" />
+															<p:ajax event="change" update="staff,teleMarkEnquiryForm"
+																listener="#{telemarketingBean.staffAllocatedEnquiry}" onstart="process.show();" onsuccess="process.hide();" />
+														</p:selectOneMenu>
+													</p:panel>
+													<p:panel styleClass="inner_right_col"
+														rendered="#{telemarketingBean.teleEnquiryStaffInput}">
+														<p:inputText tabindex="-1"
+															value="#{telemarketingBean.loginUsername}"
+															styleClass="ui-state-disabled" readonly="true">
+															<p:ajax update="dataTableId"></p:ajax>
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Customer Ref No" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="rateFilter2"
+															value="#{telemarketingBean.teleEnquirySearchCO}"
+															placeholder="Enter Customer Ref No" >
+															<p:ajax event="keyup"
+																listener="#{telemarketingBean.checkByCustomerBeneDt('CO')}"
+																process="@this" update="dataTableId"
+																onstart="process.show();" onsuccess="process.hide();" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Customer Name" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="rateFilter3"
+															value="#{telemarketingBean.teleEnquirySearchCN}"
+															placeholder="Enter Customer Name">
+															<p:ajax event="keyup"
+																listener="#{telemarketingBean.checkByCustomerBeneDt('CN')}"
+																process="@this" update="dataTableId"
+																onstart="process.show();" onsuccess="process.hide();" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Mobile No" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="rateFilter1"
+															value="#{telemarketingBean.teleEnquirySearchMO}"
+															placeholder="Enter Mobile No">
+															<p:ajax event="keyup"
+																listener="#{telemarketingBean.checkByCustomerBeneDt('MO')}"
+																process="@this" update="dataTableId"
+																onstart="process.show();" onsuccess="process.hide();" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="20px" />
+											<p:dataTable id="dataTableId" var="c"
+												styleClass="mydatatableclass" widgetVar="dataTableInq"
+												value="#{telemarketingBean.telemarketingEnquiryDataTable}"
+												rowIndexVar="rowIndex"
+												emptyMessage="#{msg['lbl.norecordfound']}" rows="10"
+												paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="10,20,30" paginatorPosition="bottom">
+
+												<p:column headerText="#{msg['lbl.sNo']}" style="width:2%;">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.customerRef']}"
+													style="width:2%;" sortBy="#{c.customerRefNum}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{c.customerRefNum}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.custName']}"
+													style="width:15%;" sortBy="#{c.customerName}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{c.customerName}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="Mobile Number" style="width:5%;"
+													sortBy="#{c.mobileNum}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{c.mobileNum}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.lastFolwUpDt']}"
+													style="width:5%;" sortBy="#{c.lastFollowUpDate}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{c.lastFollowUpDate}"
+														style="float:left;margin-left:5px;margin-right:5px;">
+														<f:convertDateTime pattern="dd/MM/yyyy" />
+													</h:outputLabel>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.lastFolwUp']}"
+													sortBy="#{c.lastFollowUpCode}" style="width:5%;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:commandLink value="#{c.lastFollowUpCode}"
+														action="#{telemarketingBean.drillDownSelected(c)}"
+														update=":teleMarkEnquiryForm:mainPanel"
+														onstart="process.show();" onsuccess="process.hide();"
+														style="float:left;margin-left:5px;margin-right:5px;color:blue !important; text-decoration:underline !important;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.remarks']}"
+													style="width:10%;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{c.remarks}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.staffAllocated']}"
+													style="width:5%;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{c.employeeName}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.allocatedDt']}"
+													sortBy="#{c.allocatedDate}" style="width:5%;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{c.allocatedDate}"
+														style="float:left;margin-left:5px;margin-right:5px;">
+														<f:convertDateTime pattern="dd/MM/yyyy" />
+													</h:outputLabel>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.nextFolwupDt']}"
+													style="width:5%;" sortBy="#{c.nextFollowUpDate}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{c.nextFollowUpDate}"
+														style="float:left;margin-left:5px;margin-right:5px;">
+														<f:convertDateTime pattern="dd/MM/yyyy" />
+													</h:outputLabel>
+												</p:column>
+											</p:dataTable>
+										</p:panel>
+
+										<p:panel rendered="#{telemarketingBean.teleDrillDownTable}">
+											<p:dataTable id="drillDownTableId" var="d"
+												styleClass="mydatatableclass"
+												widgetVar="dataTabledrillDownTable"
+												value="#{telemarketingBean.telemarketingDrillDownTable}"
+												rowIndexVar="rowIndex"
+												emptyMessage="#{msg['lbl.norecordfound']}" rows="10"
+												paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="10,20,30" paginatorPosition="bottom">
+
+												<p:column headerText="#{msg['lbl.sNo']}" style="width:2%;">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.customerRef']}"
+													style="width:3%;" sortBy="#{d.customerRefNum}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{d.customerRefNum}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.custName']}"
+													style="width:15%;" sortBy="#{d.customerName}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{d.customerName}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="Mobile Number" style="width:5%;"
+													sortBy="#{d.mobileNum}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{d.mobileNum}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.lastFolwUpDt']}"
+													style="width:5%;" sortBy="#{d.lastFollowUpDate}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{d.lastFollowUpDate}"
+														style="float:left;margin-left:5px;margin-right:5px;">
+														<f:convertDateTime pattern="dd/MM/yyyy" />
+													</h:outputLabel>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.lastFolwUp']}"
+													sortBy="#{d.lastFollowUpCode}" style="width:5%;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{d.lastFollowUpCode}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.remarks']}"
+													style="width:7%;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{d.remarks}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.staffAllocated']}"
+													style="width:5%;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{d.employeeName}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.allocatedDt']}"
+													sortBy="#{d.allocatedDate}" style="width:5%;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{d.allocatedDate}"
+														style="float:left;margin-left:5px;margin-right:5px;">
+														<f:convertDateTime pattern="dd/MM/yyyy" />
+													</h:outputLabel>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.nextFolwupDt']}"
+													style="width:5%;" sortBy="#{d.nextFollowUpDate}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{d.nextFollowUpDate}"
+														style="float:left;margin-left:5px;margin-right:5px;">
+														<f:convertDateTime pattern="dd/MM/yyyy" />
+													</h:outputLabel>
+												</p:column>
+											</p:dataTable>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											id="submitPanel"
+											rendered="#{telemarketingBean.teleDrillDownTable}">
+											<p:commandButton id="back" value="#{msg['lbl.back']}"
+												update=":teleMarkEnquiryForm:mainPanel"
+												action="#{telemarketingBean.drillDownBackSelected}"
+												immediate="true" onstart="process.show();"
+												onsuccess="process.hide();" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+										<p:spacer height="20px" />
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

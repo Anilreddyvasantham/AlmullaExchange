@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	  <link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	  <script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+		history.pushState(null, null, 'FxDealWithSupplierForm.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'FxDealWithSupplierForm.xhtml');
+	    });
+	</script>
+</h:head>
+<h:body>
+<p:confirmDialog id="notApproved" widgetVar="notApproved" width="370" styleClass="red" header="#{mag['lbl.warningDailog']}" resizable="false" 	
+style="background-color: white !important;" showEffect="clip" hideEffect="clip" message="#{msg['lbl.isNoRecrds']}">
+      </p:confirmDialog>
+<!-- view validation check for data avaliablity -->
+
+	
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		
+			<h:form id="Form">
+		
+				<table align="left" width="100%" style="height: 100%;">
+					<tr>
+						<td align="left" valign="top" style="height: 100%;">
+								<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+								</td>
+		
+						<td class="rightColumn" valign="top">
+						<h:panelGroup	layout="block" class="container">
+								<h:panelGroup layout="block" class="main_div">
+									<div class="menu_button">
+										<img style="cursor: pointer; position: relative; left: 15px;"
+											id="HideHandle" name="HideHandle"
+											src="../images/toggle_plus.png" alt=""
+											onclick='hideLeftCol("leftCol");closeMenus();' />
+									</div>
+									<h1>
+										<h:outputText value="#{msg['lbl.fxdealSupplierEnq']}" />
+									</h1>
+		
+		
+									<p:panel styleClass="shadow" id="mainPanel"
+										style="background-color:#FFF !important; " >
+						<p:confirmDialog id="error" widgetVar="error"  
+							resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" 
+							showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{fxdealBankEnquiryBean.errorMessage}" >
+						</p:confirmDialog>
+							 
+							 <p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"  
+									resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" 
+									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{fxdealBankEnquiryBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}" >
+								</p:confirmDialog>
+
+							 				
+		
+										<h2>
+											<h:outputText value="#{msg['lbl.fxdealSupplierEnq']}" />
+											<p:commandLink action="#{bankBranchDetails.cancel}"
+														 process="@this">
+														<p:graphicImage value="../images/return.jpg" width="25" height="25" id="imgEdit" styleClass="icon_right" style="float:right;" />
+														<p:tooltip for="imgEdit" value="Go to Home" />
+													</p:commandLink>
+										</h2>
+		
+									<p:panel styleClass="panel_border">
+												
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.accMonthOrYear']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message for="dealDate" display="text" id="msgDealDate" />
+											 	<p:calendar id="dealDate" value="#{fxdealBankEnquiryBean.dealDate}" mode="popup" pattern="MM/yy" maxdate="#{fxdealBankEnquiryBean.minDate}"  navigator="true" readonlyInput="true" required="true" requiredMessage="Enter Deal Date" >
+        													<p:ajax event="dateSelect" listener="#{fxdealBankEnquiryBean.onSelectDate}" update="mainPanel,dataTable" />
+    											</p:calendar> 
+											</p:panel>
+										</p:panel>
+										
+										
+										<div class="clearfix"></div>
+										
+										
+										<div class="clearfix"></div>
+										<p:spacer height="10px"/>
+										
+										
+										<div class="clearfix"></div>
+								
+										
+										
+										<div class="clearfix"></div>
+										<p:spacer height="10px"/>
+										<div class="clearfix"></div>
+										<!-- <h3>
+											<h:outputText value="Deal Type Spot Rate" />
+										</h3> -->
+										
+										
+									
+									<!-- <p:dataTable var="c" id="dealTrackerTable" value="#{dealTrackerInfoBean.lstDealTrackerInfoDTBean}" rowIndexVar="rowIndex"  editable="true" editMode="cell"  emptyMessage="#{msg['lbl.norecordfound']}" > -->
+									<p:panel id="dataPanel">
+									<p:dataTable id="dataTable" styleClass="mydatatableclass"
+										value="#{fxdealBankEnquiryBean.treasuryDealInfoList}"
+										rows="15" paginator="true"
+										paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+										rowsPerPageTemplate="15,20,25" var="d" rowIndexVar="rowIndex"
+										emptyMessage="#{msg['lbl.noRecordFound']}" paginatorPosition="bottom">
+										<p:column headerText="#{msg['lbl.sino']}" style="width:30px;">
+											<h:outputText value="#{rowIndex+1}" />
+										</p:column>
+
+										<p:column headerText="#{msg['lbl.dealyear']}" filterBy="#{d.documentFinanceYear}" filterMatchMode="contains" style="width:15% !important; text-align:center !important; margin-left:10px;" >
+											<h:outputText value="#{d.documentFinanceYear}" />
+										</p:column>
+
+										<p:column headerText="#{msg['lbl.delanumbe']}" filterBy="#{d.dealNo}" filterMatchMode="contains" style="width:15% !important; text-align:center !important; margin-left:10px;"  >
+											<h:outputText value="#{d.dealNo}"  />
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.companyId']}" filterBy="#{d.companyid}" filterMatchMode="contains" style="width:15% !important; text-align:center !important; margin-left:10px;"  >
+											<h:outputText value="#{d.companyid}"  />
+										</p:column>
+
+										<p:column headerText="#{msg['lbl.dealConcluedWith']}">
+											<h:outputText value="#{d.dealConcludedWith}" />
+										</p:column>
+										<p:column headerText="#{msg['lbl.dealConcluedBy']}">
+											<h:outputText value="#{d.dealConcludedBy}" />
+										</p:column>
+										
+										<p:column headerText="#{msg['lbl.dealWithType']}">
+											<h:outputText value="#{d.dealWithType}" />
+										</p:column>
+										<p:column headerText="#{msg['lbl.createdBy']}">
+											<h:outputText value="#{d.createBy}" />
+										</p:column>
+										<p:column headerText="#{msg['lbl.createddate']}">
+											<h:outputText value="#{d.createDate}">
+												<f:convertDateTime pattern="dd-MM-yyyy" />
+											</h:outputText>
+										</p:column>
+										<p:column headerText="#{msg['lbl.enqStatus']}">
+											<h:outputText value="#{d.isActive}" />
+										</p:column>
+										<p:column headerText="#{msg['lbl.view']}">
+											<p:commandLink value="#{d.view}"
+												action="#{fxdealBankEnquiryBean.fetchingAllRecordsFromDBEnquireSupplier(d)}" process="@this" update="dataTable"
+												style="color:blue !important; text-decoration:underline !important;" />
+										</p:column>
+									</p:dataTable>
+									
+											</p:panel>
+											<div class="clearfix"></div>
+											<h:panelGroup layout="block" class="clearfix"/>
+										<p:panel styleClass="left_col" >
+										<h:outputText  id="mandatory" value=" #{msg['lbl.*filedsAreMandatory']}"  style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+											</p:panel>
+											</p:panel>
+										<div class="clearfix"></div>
+										<p:spacer height="10px"/>
+										<div class="clearfix"></div>
+										
+										
+										
+									
+								</h:panelGroup>
+								
+							</h:panelGroup>
+						</td>
+					</tr>
+				</table>
+			</h:form>	
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

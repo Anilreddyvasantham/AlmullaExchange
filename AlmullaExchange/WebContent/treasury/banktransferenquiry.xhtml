@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link href="css/style1.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+		history.pushState(null, null, 'banktransferenquiry.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'banktransferenquiry.xhtml');
+	    });
+	</script>
+	 
+</h:head>
+
+
+<h:body dir="#{facesBean.direction}">
+
+
+	<f:view locale="#{facesBean.locale}">
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:panelGroup layout="block" class="heading1">
+								<h:outputText value="#{msg['lbl.bankTranfExq']}" />
+							</h:panelGroup>
+							<h:form id="inputForm">
+								
+
+	
+								<p:panel id="mainPanel" styleClass="shadow"
+									style="margin: 20px 10px !important; background-color:#FFF !important;">
+							<p:confirmDialog id="error" widgetVar="error"  
+								resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" 
+								showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{bankTransferEnquiryBean.errorMessage}" >
+							</p:confirmDialog>
+							<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"  
+									resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" 
+									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{bankTransferEnquiryBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}" >
+							</p:confirmDialog>
+										
+									
+									<h2>
+										<h:outputText value="#{msg['lbl.bankTranfExq']}" />
+										<p:commandLink action="#{bankTransferEnquiryBean.goHome}"
+														 process="@this">
+														<p:graphicImage value="../images/return.jpg" width="25" height="25" id="imgEdit" styleClass="icon_right" style="float:right;" />
+														<p:tooltip for="imgEdit" value="Go to Home" />
+													</p:commandLink>
+									</h2>
+
+									<p:panel styleClass="panel_border" id="panelBorder">
+									<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.accMonthOrYear']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message for="dealDate" display="text" id="msgDealDate" />
+											 	<p:calendar id="dealDate" value="#{bankTransferEnquiryBean.dealDate}" mode="popup" maxdate="#{fxdealBankEnquiryBean.minDate}" pattern="MM/yy" navigator="true" readonlyInput="true" required="true" requiredMessage="Select  Date" >
+        													<p:ajax event="dateSelect" listener="#{bankTransferEnquiryBean.onSelectDateSelect}" update="datatable " onstart="process.show();" onsuccess="process.hide();" immediate="true"/>
+    											</p:calendar> 
+											</p:panel>
+										</p:panel>
+										<p:dialog modal="true" showHeader="false" widgetVar="process"
+												id="process" width="300" height="60" resizable="false"
+												draggable="false" closable="false"
+												style=" border: 3px green solid !important;background-color: #FFF !important;">
+												<div
+													style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+													<p:graphicImage value="../images/processImg.gif"
+														style="float: left !important; margin-right: 24px !important; " />
+													<p:outputLabel value="Please wait ........"
+														style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+												</div>
+												</p:dialog>
+
+										<div class="clearfix"></div>
+										<p:panel id="tablePanel">
+										
+											<p:dataTable styleClass="mydatatableclass"
+												value="#{bankTransferEnquiryBean.bankTrnsferList}"
+												rowIndexVar="rowIndex" var="o"
+												style=" font-family: Arial; font-size: 13px;"
+												paginatorPosition="bottom" widgetVar="50" editable="true"
+												id="datatable" emptyMessage="#{msg['lbl.norecordfound']}"
+												rows="10" paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10,15">
+
+												<p:column headerText="#{msg['lbl.sNo']}"
+													styleClass="auto_width">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.bankTransferRequestBankTransferYear/Ref']}" id="filterRef"
+												filterStyle="border-radius: 24px !important; padding: 1px 1px 0px 0px !important; text-align: center; box-shadow: none !important;"   filterBy="#{o.bankTransferReference}" filterMatchMode="contains"
+													styleClass="auto_width">
+													<h:outputText value="#{o.bankTransferYear} / #{o.bankTransferReference}" />
+												</p:column>
+										 
+ 
+											  <p:column headerText="#{msg['lbl.bankTransferRequestDocumentCode']}"
+													styleClass="auto_width">
+													<h:outputText value="#{o.documentDecsrption}" />
+												</p:column>  
+												<p:column headerText="#{msg['lbl.bankTransferRequestDate']}" styleClass="auto_width">
+													<h:outputText value="#{o.documentDate}">
+														<f:convertDateTime pattern="dd/MM/YYYY" />
+													</h:outputText>
+												</p:column>
+												<p:column headerText="#{msg['lbl.valuedate']}" styleClass="auto_width">
+													<h:outputText value="#{o.valueDate}">
+														<f:convertDateTime pattern="dd/MM/YYYY" />
+													</h:outputText>
+												</p:column>
+												<p:column headerText="#{msg['lbl.bankTransferRequestAttention']}" styleClass="auto_width">
+													<h:outputText value="#{o.attention}" />
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.bankTransferRequestDescription']}" styleClass="auto_width">
+													<h:outputText value=" #{o.description}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.createdBy']}" styleClass="auto_width">
+													<h:outputText value=" #{o.createdBy}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.createddate']}" styleClass="auto_width">
+													<h:outputText value=" #{o.createdDate}" >
+													<f:convertDateTime pattern="dd/MM/YYYY" />
+													</h:outputText>
+												</p:column>
+												<p:column headerText="#{msg['lbl.enqStatus']}" styleClass="auto_width">
+													<h:outputText value=" #{o.isActive}" />
+												</p:column> 
+ 
+												<p:column headerText="#{msg['lbl.depositreport']} ">												
+													<h:commandLink value="#{msg['lbl.reprint']}"
+														actionListener="#{bankTransferEnquiryBean.generateBankTransferDepositReport(o)}"
+														style="color:blue !important; text-decoration:underline !important;"  
+														  update="mainPanel" process="@this"  immediate="true"/>
+													 
+												</p:column>
+													<p:column headerText="#{msg['lbl.faxreport']}">
+													<h:commandLink value="#{msg['lbl.reprint']}"
+														actionListener="#{bankTransferEnquiryBean.generateBankTransferFaxReport(o)}"  
+														style="color:blue !important; text-decoration:underline !important;"
+														  update="mainPanel" process="@this"  immediate="true" /> 
+													</p:column>
+												<p:column headerText="#{msg['lbl.view']}"
+													style="width:50px !important; text-align:center !important; ">
+													<p:commandLink value="#{msg['lbl.viewDetails']}" action="#{bankTransferEnquiryBean.gotoBankTransferEnquiry(o)}"
+														style="color:blue !important; text-decoration:underline !important;"
+														update=":inputForm" immediate="true" process="@this" />
+												</p:column>
+
+											</p:dataTable>
+										</p:panel>
+									</p:panel>
+								</p:panel>
+
+
+							</h:form>
+
+
+						</h:panelGroup>
+					</h:panelGroup>
+					<div class="clearfix"></div></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+
+
+</html>

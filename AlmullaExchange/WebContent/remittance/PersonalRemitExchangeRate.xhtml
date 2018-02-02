@@ -1,0 +1,470 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script src="../js/SigWeb.js" type="text/javascript"></script>
+	<script src="../js/digitalsignature.js"></script>
+	<script type="text/javascript">
+		var baseUri = makeUri();
+		history.pushState(null, null, 'PersonalRemitExchangeRate.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'PersonalRemitExchangeRate.xhtml');
+		});
+
+		$(document).ready(function() {
+			$(window).scroll(function() {
+				if ($(this).scrollTop() > 100) {
+					$('#goTop').stop().animate({
+						bottom : '30px'
+					}, 300);
+				} else {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				}
+			});
+			$('#goTop').click(function() {
+				$('html, body').stop().animate({
+					scrollTop : 0
+				}, 500, function() {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				});
+			});
+		});
+		
+		function showStatus() {
+		    statusDialog.show();
+		}
+		 
+		function hideStatus() {
+		    statusDialog.hide();
+		}
+	</script>
+	<style>
+.centeralign {
+	margin-left: auto;
+	margin-right: auto;
+	width: 6em
+}
+
+.buttonStyle:hover {
+	padding: 4px 10px 4px 7px !important;
+	border-top: 2px solid rgb(18, 139, 242) !important;
+	border-right: 2px solid rgb(18, 139, 242) !important;
+	border-bottom: 2px solid rgb(18, 139, 242) !important;
+	border-left: 2px solid rgb(18, 139, 242) !important;
+	border-radius: 4px !important;
+	background-color: white !important;
+	font-size: 18px !important;
+	font-weight: bold !important;
+	floar: right;
+}
+</style>
+</h:head>
+
+<h:body onload="javascript:onClear()">
+
+
+	<f:view>
+
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+		<p:dialog id="error" widgetVar="error" visible="#{personalRemitBean.visible}" width="400" height="70" styleClass="warning" header="#{msg['lbl.warningDailog']}" draggable="flase" closable="false" showHeader="true" resizable="false"
+			style=" border:3px solid #00a53e !important;  font-weight:bold; background:224px 45px no-repeat #FFF !important;" showEffect="clip" hideEffect="puff" modal="true">
+			<p:outputLabel value="#{personalRemitBean.errmsg}" />
+			<p:spacer height="10px" />
+			<p:panel>
+				<p:commandButton value="#{msg['lbl.ok']}" onclick="PF('error').hide()" process="@this" />
+			</p:panel>
+		</p:dialog>
+
+
+
+
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;" id="HideHandle" name="HideHandle" src="../images/toggle_plus.png" alt="" onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+
+							<h:form id="form1" onkeypress="if (event.keyCode == 13) { return false; }">
+
+
+								<p:dialog modal="true" showHeader="false" widgetVar="process" id="process" width="300" height="60" resizable="false" draggable="false" closable="false" style=" border: 2px green solid !important;background-color: #FFF !important;">
+									<div style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+										<p:graphicImage value="../images/processImg.gif" style="float: left !important; margin-right: 24px !important; " />
+										<p:outputLabel value="#{msg['lbl.pleaseWait']}" style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+									</div>
+								</p:dialog>
+
+
+
+								<p:confirmDialog id="alertmsg" widgetVar="alertmsg" header="Alert Message" resizable="false" style="background-color: white !important;" styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{personalRemitBean.exceptionMessage}">
+								</p:confirmDialog>
+
+
+								<p:confirmDialog id="sqlexception" widgetVar="sqlexception" header="#{msg['lbl.remitApplicationExceptionMessage']}" resizable="false" style="background-color: white !important;" styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"
+									message="#{msg['lbl.procedureErrorMessage']} : #{personalRemitBean.exceptionMessage}">
+								</p:confirmDialog>
+
+
+								<p:confirmDialog id="dataexception" widgetVar="dataexception" header="#{msg['lbl.remitApplicationExceptionMessage']}" resizable="false" width="700" style="background-color: white !important;" styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"
+									message="#{msg['lbl.indicator']} : #{personalRemitBean.exceptionMessage} #{msg['lbl.setupmissing']}">
+								</p:confirmDialog>
+
+
+								<p:confirmDialog id="additionaldatanot" widgetVar="additionaldatanot" height="20" resizable="false" width="500" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"
+									message="#{msg['lbl.additionalmsgnot']}">
+									<p:commandButton value="#{msg['lbl.ok']}" oncomplete="additionaldatanot.hide()" process="@this" />
+								</p:confirmDialog>
+
+
+
+								<h1>
+									<h:outputText value="REMITTANCE" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel" style=" background-color:#FFF !important;">
+									<h:panelGroup layout="block" class="clearfix" />
+
+									<h2>
+										<h:outputText value="#{msg['lbl.customerDetails']}" />
+									</h2>
+									<p:panel styleClass="panel_border" style="padding-bottom:0px !important;">
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel value="#{msg['lbl.customerName']}" style="color:#05000a;" />
+												<h:outputText />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText styleClass="ui-state-disabled" value="#{personalRemitBean.customerFullName}" readonly="true" style="font-size:11px !important;">
+												</p:inputText>
+											</p:panel>
+											<div class="clearfix"></div>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputLabel value="#{msg['lbl.CustomerLocalName']}" style="color:#05000a;" />
+												<h:outputText />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText styleClass="ui-state-disabled" value="#{personalRemitBean.customerLocalFullName}" readonly="true" style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;font-size:11px !important;"
+																dir="RTL">
+												</p:inputText>
+											</p:panel>
+											<div class="clearfix"></div>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.benificaryName']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText styleClass="ui-state-disabled" value="#{personalRemitBean.benificiaryryNameRemittance}" readonly="true" />
+											</p:panel>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+
+									</p:panel>
+
+									<h2>
+										<h:outputText value="#{msg['lbl.remittanceService']}" />
+									</h2>
+									<p:panel styleClass="panel_border" style="padding-bottom:0px !important;" id="additionalBankDetails">
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.exchangeRate']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText styleClass="ui-state-disabled" value="#{personalRemitBean.exchangeRate}" readonly="true" />
+											</p:panel>
+										</p:panel>
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.accountNumber']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText styleClass="ui-state-disabled" value="#{personalRemitBean.dataAccountnum}" readonly="true" />
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.charges']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText value="#{personalRemitBean.overseasamt}" styleClass="ui-state-disabled" readonly="true" />
+											</p:panel>
+										</p:panel>
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currency']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText value="#{personalRemitBean.databenificarycurrencyname}" styleClass="ui-state-disabled" readonly="true" />
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.commission']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText value="#{personalRemitBean.commission}" styleClass="ui-state-disabled" readonly="true" />
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.country']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText styleClass="ui-state-disabled" value="#{personalRemitBean.databenificarycountryname}" readonly="true" />
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.grossAmountCalculated']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText styleClass="ui-state-disabled" value="#{personalRemitBean.grossAmountCalculated}" readonly="true" />
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bankName']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText styleClass="ui-state-disabled" value="#{personalRemitBean.databenificarybankname}" readonly="true" />
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.loyaltyAmountAvailed']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText styleClass="ui-state-disabled" value="#{personalRemitBean.loyaltyAmountAvailed}" readonly="true" />
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.branch']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText styleClass="ui-state-disabled" value="#{personalRemitBean.databenificarybranchname}" readonly="true" style="font-size:12px !important;" />
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.netAmountPayable']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText styleClass="ui-state-disabled" value="#{personalRemitBean.netAmountPayable}" readonly="true" />
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.netAmountSent']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText styleClass="ui-state-disabled" value="#{personalRemitBean.netAmountSent}" readonly="true" />
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="shadow" style="padding-bottom:0px !important;" id="additionalPanel">
+
+
+											<h2>
+												<h:outputText value="#{msg['lbl.addtionalbankdetails']}" />
+											</h2>
+
+
+											<p:panel styleClass="panel_border">
+
+												<p:panel rendered="#{personalRemitBean.booRenderInstructions}">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.furthuerInstructions']}" />
+														<h:outputText value="*" style="color:red;font-weight:bold;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msginstruction" for="instruction" display="text" />
+														<p:inputText style="width: 118% !important; margin-left: -145px !important;" id="instruction" value="#{personalRemitBean.furthuerInstructions}">
+															<p:ajax update="msginstruction" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<style>
+table.ui-panelgrid tr td {
+	border: 1px solid red;
+	width: 10% !important;
+}
+</style>
+
+												<p:panel styleClass="left_col" style="width:100% !important;" rendered="#{personalRemitBean.booRenderSwiftBank1}">
+													<p:panel styleClass="inner_left_col" style="width:15% !important;">
+														<h:outputText value="#{msg['lbl.intermediaryBank']} 1" />
+
+													</p:panel>
+													<p:panel styleClass="inner_right_col" style="width:80% !important;">
+
+														<p:message id="msgswiftbank1" for="swiftbank1" display="text" />
+														<p:selectOneMenu style="width:10% !important;float:left;margin-right:5px !important;font-size:12px !important;" id="swiftbank1" value="#{personalRemitBean.beneSwiftBank1}" filterMatchMode="contains" filter="true">
+															<f:selectItem itemLabel="#{msg['lbl.selct']}" itemValue="" />
+															<f:selectItems value="#{personalRemitBean.lstSwiftMasterBank1}" var="c" itemLabel="#{c.populateName}" itemValue="#{c.populateId}" />
+															<!-- <p:ajax update="msgswiftbank1" /> -->
+															<p:ajax event="change" listener="#{personalRemitBean.fetchBeneSwiftBankName1}" update="additionalBankDetails" />
+														</p:selectOneMenu>
+
+
+														<p:message id="msgswiftBankAddr1" for="swiftBankAddr1" display="text" />
+														<p:inputText styleClass="ui-state-disabled" style="width:60% !important;font-size:12px !important;" id="swiftBankAddr1" value="#{personalRemitBean.beneSwiftBankAddr1}" readonly="true">
+															<p:ajax />
+														</p:inputText>
+
+
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panel styleClass="left_col" style="width:100% !important;" rendered="#{personalRemitBean.booRenderSwiftBank2}">
+													<p:panel styleClass="inner_left_col" style="width:15% !important;">
+														<h:outputText value="#{msg['lbl.intermediaryBank']} 2" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col" style="width:80% !important;">
+														<p:message id="msgswiftbank2" for="swiftbank2" display="text" />
+														<p:selectOneMenu id="swiftbank2" style="width:10% !important;float:left;margin-right:5px !important;font-size:12px !important;" value="#{personalRemitBean.beneSwiftBank2}" filterMatchMode="contains" filter="true">
+															<f:selectItem itemLabel="#{msg['lbl.selct']}" itemValue="" />
+															<f:selectItems value="#{personalRemitBean.lstSwiftMasterBank2}" var="c" itemLabel="#{c.populateName}" itemValue="#{c.populateId}" />
+															<p:ajax event="change" listener="#{personalRemitBean.fetchBeneSwiftBankName2}" update="additionalBankDetails" />
+														</p:selectOneMenu>
+
+														<p:message id="msgswiftBankAddr2" for="swiftBankAddr2" display="text" />
+														<p:inputText style="width:60% !important;font-size:12px !important;" styleClass="ui-state-disabled" id="swiftBankAddr2" value="#{personalRemitBean.beneSwiftBankAddr2}" readonly="true">
+															<p:ajax />
+														</p:inputText>
+
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.sourceOfIncome']}" />
+														<h:outputText value="*" style="color:red;font-weight:bold;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgSourceOfInc" for="sourceOfInc" display="text" />
+														<p:selectOneMenu id="sourceOfInc" value="#{personalRemitBean.sourceOfIncome}" required="true" requiredMessage="Please Enter Source of Income">
+															<f:selectItem itemLabel="#{msg['lbl.selectSourceofincome']} " itemValue="" />
+															<f:selectItems value="#{personalRemitBean.lstSourceofIncome}" var="c" itemLabel="#{c.sourceOfIncomeFullDesc}" itemValue="#{c.sourceOfIncomeId.sourceId}" />
+															<p:ajax update="msgSourceOfInc" />
+														</p:selectOneMenu>
+
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panel style="padding:0px 50px 0px 0px;">
+													<p:dataList value="#{personalRemitBean.listAdditionalBankDataTable}" var="c" id="additionaldatalist" emptyMessage="">
+														<p:panel styleClass="left_col">
+															<p:panel styleClass="inner_left_col">
+																<h:outputText value="#{c.additionalDesc}" style="font-size: 15px !important" />
+																<h:outputText value="#{c.mandatory}" style="color:red !important;" />
+															</p:panel>
+															<p:panel styleClass="inner_right_col" style="margin-left: 5px !important; width: 263px !important;">
+																<p:panel rendered="#{c.renderInputText}">
+																	<p:inputText id="varName" value="#{c.variableName}" maxlength="#{c.maxLenght}" validatorMessage="Please Enter Minimum Length #{c.minLenght}" required="#{c.required}" requiredMessage="Please Enter #{c.additionalDesc}">
+																		<f:validateLength minimum="#{personalRemitBean.minLenght}" />
+																		<p:ajax update="varnamemsg,varName" />
+																		<p:message display="text" for="varName" id="varnamemsg" />
+																	</p:inputText>
+																</p:panel>
+																<p:panel rendered="#{c.renderSelect}" styleClass="inner_right_col" style="width: 350px !important;">
+																	<p:message for="dynamiccombo" id="dynamiccombomsg" display="text" />
+																	<p:selectOneMenu id="dynamiccombo" filter="true" filterMatchMode="contains" required="#{c.required}" requiredMessage="Please Select #{c.additionalDesc}" value="#{c.variableName}">
+																		<f:selectItem itemLabel="-- #{msg['lbl.select']} #{c.additionalDesc} --" />
+																		<f:selectItems value="#{c.listadditionAmiecData}" var="d" itemLabel="#{d.amiecCode} - #{d.amieceDescription}" itemValue="#{d.amiecCode}-#{d.amieceDescription}" />
+																		<p:ajax update="dynamiccombomsg" />
+																	</p:selectOneMenu>
+
+																</p:panel>
+															</p:panel>
+														</p:panel>
+														<h:panelGroup layout="block" class="clearfix" />
+													</p:dataList>
+												</p:panel>
+
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.back']}" onstart="process.show();" onsuccess="process.hide()" style="margin-right:10px;" action="#{personalRemitBean.backToServiceFirstPanel}" process="@this" update="mainPanel" />
+											<!-- 	 onclick="javascript:onClear()" -->
+											<p:commandButton value="#{msg['lbl.next']}" action="#{personalRemitBean.booAmlCheck}" update="mainPanel,sqlexception, :form1:additionaldatalist,dataexception" style="margin-right:10px;" onstart="process.show();" onsuccess="process.hide();" />
+											<!-- onclick="javascript:onClear()" -->
+											<p:commandButton value="#{msg['lbl.exit']}" onstart="process.show();" onsuccess="process.hide()" style="margin-right:10px;" action="#{personalRemitBean.exitFromPersonalRemmitance}" immediate="true" update="mainPanel" ajax="false" />
+										</h:panelGroup>
+										<h:panelGroup layout="block" class="clearfix" />
+
+									</p:panel>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+					</h:panelGroup></td>
+			</tr>
+		</table>
+
+
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+		<a id="goTop" />
+	</f:view>
+</h:body>
+</html>

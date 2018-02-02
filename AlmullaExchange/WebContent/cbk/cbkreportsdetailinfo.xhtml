@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+
+	<script type="text/javascript">
+		var baseUri = makeUri();
+		history.pushState(null, null, 'cbkreportsdetailinfo.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'cbkreportsdetailinfo.xhtml');
+		});
+
+		$(document).ready(function() {
+			$(window).scroll(function() {
+				if ($(this).scrollTop() > 100) {
+					$('#goTop').stop().animate({
+						bottom : '30px'
+					}, 300);
+				} else {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				}
+			});
+			$('#goTop').click(function() {
+				$('html, body').stop().animate({
+					scrollTop : 0
+				}, 500, function() {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				});
+			});
+		});
+	</script>
+	<style>
+.centeralign {
+	margin-left: auto;
+	margin-right: auto;
+	width: 6em
+}
+
+.ui-datatable .ui-state-highlight {
+	background-color: red;
+}
+</style>
+</h:head>
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+		<h:form>
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;"><ui:include
+							src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle"
+										src="../images/toggle_plus.png" alt=""
+										onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+								<h1>
+									<h:outputText value="CBK Reports" />
+								</h1>
+
+								<p:panel styleClass="shadow" id="mainPanel"
+									style="background-color:#FFF !important; ">
+									<!--  Process Dialog Box -->
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{cbk.errorMessage}">
+									</p:confirmDialog>
+									
+									<div class="clearfix"></div>
+									<p:panel id="cbkinfpfodetailpanel">
+										<p:dataTable id="dataTable" widgetVar="dataTable"
+											styleClass="mydatatableclass" value="#{cbk.cbkInfoDetailList}"
+											var="d" rowIndexVar="rowIndex"
+											emptyMessage="#{msg['lbl.norecordfound']}" paginator="false"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="5,10,15" paginatorPosition="bottom">
+											<f:facet name="header">
+										            CBK Reports - Details
+										    </f:facet>
+										    
+											<p:column headerText="#{msg['lbl.sNo']}" style="width:5%;"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+
+											<p:column headerText="Company Code" style="width:5%;"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<p:inputText value="#{d.companyCode}" />
+											</p:column>
+											
+											<p:column headerText="Activity Code" style="width:25%;"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<p:inputText value="#{d.activityCode}" />
+											</p:column>
+											
+											<p:column headerText="Activity Center" style="width:10%;"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<p:inputText value="#{d.activityCenter}" />											
+											</p:column>
+											
+											<p:column headerText="Account Class" style="width:10%;"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<p:inputText value="#{d.acountClass}" />
+											</p:column>	
+																					
+											<p:column headerText="Account Category" style="width:10%;"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<p:inputText value="#{d.acountCategory}" />
+											</p:column>
+											
+											<p:column headerText="Description" style="width:10%;"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<p:inputText value="#{d.description}" />
+											</p:column>
+											
+											<p:column headerText="delete" style="width:10%;">
+												<h:outputText value="delete" />
+											</p:column>
+										</p:dataTable>
+									</p:panel>
+									
+									<h:panelGroup layout="block" class="clearfix" />
+									<h:panelGroup layout="block" styleClass="shadow_button">
+										<p:commandButton value="BACK"
+											 update="mainPanel"
+											immediate="true" onstart="process.show();"
+											onsuccess="process.hide();" style="margin-right:10px;"
+											process="@this" />
+										<p:commandButton value="EXIT" onstart="process.show();"
+											onsuccess="process.hide()" action="#{cbk.exitcbk}"
+											process="@this" update="mainPanel" />
+
+										<h:panelGroup layout="block" class="clearfix" />
+									</h:panelGroup>
+									<div class="clearfix"></div>
+
+
+								</p:panel>
+							</h:panelGroup>
+							<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+						</h:panelGroup></td>
+				</tr>
+			</table>
+		</h:form>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

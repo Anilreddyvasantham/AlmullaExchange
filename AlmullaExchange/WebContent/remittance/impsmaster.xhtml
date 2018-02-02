@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+
+		history.pushState(null, null, 'impsmaster.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'impsmaster.xhtml');
+		});
+	</script>
+	<!-- <script>
+	 
+	</script> -->
+</h:head>
+<p:dialog id="complete" widgetVar="complete" width="400"
+										height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="success" header="#{msg['lbl.success']}" closable="false"
+										showEffect="clip" hideEffect="clip">
+										<p:outputLabel
+											value="Imps #{msg['lbl.recrdSavedSuccessfully']} "
+											style="text-align: center; font-size:15px !important;" />
+										<br/>
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{impsBean.pageNavigationToImps}"
+											process="@this" style="margin-left: 150px !important;" />
+</p:dialog>
+<p:confirmDialog id="recordAlreadyExist"
+										widgetVar="recordAlreadyExist" width="400" 
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="#{msg['lbl.forthiscombinationrecords']}">
+</p:confirmDialog>
+<p:confirmDialog id="norecordsfound"
+										widgetVar="norecordsfound" width="400" 
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="#{msg['lbl.norecordfound']}">
+</p:confirmDialog> 
+<p:confirmDialog id="remarksEmpty" widgetVar="remarksEmpty" width="400"
+		resizable="false"
+		style="background-color: white !important;" header="#{msg['lbl.warningDailog']}"
+		styleClass="warning" showEffect="clip" hideEffect="clip"
+		closeOnEscape="true" closable="true"
+		message="#{msg['lbl.remarksShouldNotBeEmpty']}">
+</p:confirmDialog>
+
+
+
+							<p:dialog id="permanentDelete" widgetVar="permanentDelete"
+										width="400" height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.deleteRecrd']}" closable="false"
+										showEffect="clip" hideEffect="clip">
+										<p:outputLabel
+											value="#{msg['lbl.douWantDeleteRecordPermentely']}"
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{impsBean.confirmPermanentDelete}"
+											process="@this" oncomplete="PF('permanentDelete').hide();"
+											update="documentMasterForm" style="margin-left: 150px !important;" />
+										<p:commandButton value="#{msg['lbl.cancel']}"
+											onclick="PF('permanentDelete').hide();" immediate="true"
+											style="margin-left:10px;" />
+									</p:dialog>
+									<p:dialog id="pending" widgetVar="pending"
+										width="400" height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.warningDailog']}" closable="false"
+										showEffect="clip" hideEffect="clip">
+										<p:outputLabel
+											value="#{msg['lbl.plsApproveRecord']}"
+											 style="text-align: center; font-size:15px !important;"  />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											onclick="PF('pending').hide();" immediate="true"
+											style="margin-left: 150px !important;" />
+									</p:dialog>
+									
+									<p:dialog id="activateRecord" widgetVar="activateRecord"
+										width="400" height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.activateRecrd']}" closable="false"
+										showEffect="clip" hideEffect="clip">
+										<p:outputLabel value="#{msg['lbl.doyouactivaterecord']}"
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{impsBean.activateRecord}"
+											process="@this" oncomplete="PF('activateRecord').hide();"
+											update="documentMasterForm" style="margin-left: 150px !important;" />
+										<p:commandButton value="#{msg['lbl.cancel']}"
+											onclick="PF('activateRecord').hide();" immediate="true"
+											style="margin-left:10px;" />
+									</p:dialog>
+
+
+<h:body>
+	 
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="documentMasterForm">
+								 
+							<h1>
+									<h:outputText value="IMPS" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h3>
+										<h:outputText value="IMPS" />
+									</h3>
+									<p:confirmDialog id="csp" widgetVar="csp"   showHeader="false" resizable="false" header="Warning Message" styleClass="warning"
+														style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="explode" hideEffect="explode" message="#{impsBean.errorMessage}">
+							  		</p:confirmDialog>
+								 	<p:confirmDialog id="nullPoiterId"
+                                                                     widgetVar="nullPoiterId" resizable="false"
+                                                                     style="background-color: white !important;"
+                                                                     header="#{msg['lbl.warningDailog']}" styleClass="warning"
+                                                                     showEffect="clip" hideEffect="clip" closeOnEscape="true"
+                                                                     closable="true"
+                                                                     message="#{impsBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+									
+									<p:dialog id="remarks" widgetVar="remarks" width="480"
+										 resizable="false"
+										style="background-color: white !important;"
+										styleClass="info" header="Remarks" closable="false"
+										showEffect="clip" hideEffect="clip">
+										<p:panel>
+											<table>
+												<tr>
+													<td><h:outputText value="#{msg['lbl.approvedDate']} :" /></td>
+													<td><h:outputText
+															value="#{impsBean.approvedDate}"
+															style="color:red !important;" /></td>
+												</tr>
+												<tr>
+													<td><h:outputText value="#{msg['lbl.approvedBy']} :" /></td>
+													<td><h:outputText
+															value="#{impsBean.approvedBy}"
+															style="color:red !important;" /></td>
+												</tr>
+											</table>
+										</p:panel>
+										<p:spacer height="10px" />
+										<p:panel>
+											<h:outputText value="#{msg['lbl.enterremarks']}" />
+											<h:outputText value="*" style="color:red !important;" />
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel>
+											<h:inputTextarea id="remarksId"
+												value="#{impsBean.remarks}"
+												validatorMessage="Maximum 255 charectors allowed">
+												<p:ajax />
+												<f:validateLength maximum="255"></f:validateLength>
+											</h:inputTextarea>
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel style="padding-left:160px;">
+											<p:commandButton value="#{msg['lbl.ok']}"
+												style="margin-right:10px; "
+												actionListener="#{impsBean.remarkSelectedRecord}"
+												process="@this" update="mainPanel"/>
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												actionListener="#{impsBean.clearRemarks}"
+												process="@this" update="mainPanel" />
+										</p:panel>
+									</p:dialog>
+
+									<p:panel styleClass="panel_border">
+										<p:panel id="headerPanel">
+										
+										<p:panel styleClass="left_col"  >
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.correspondentBank']}  " />  <h:outputText value="*" style="color:red !important;" /> 
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												    <p:message id="msgBank"  for="bank" display="text" />
+													<p:selectOneMenu id="bank" value="#{impsBean.corrspBankId}" filter="true" filterMatchMode="contains"  required="true" requiredMessage="Please select bank" >
+													<f:selectItem itemLabel="#{msg['lbl.selectBank']}" itemValue="" />
+													 <f:selectItems value="#{impsBean.corrBankList}" var="c"  itemLabel="#{c.bankCode} - #{c.bankDecs}" itemValue="#{c.bankId}"/> 
+													 <p:ajax  update="msgBank" />
+													 
+												</p:selectOneMenu>
+											</p:panel>
+										 										
+											</p:panel>
+												<h:panelGroup layout="block" class="clearfix" />
+										 
+										<p:panel styleClass="left_col" >
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.beneficaryBank']} " />  <h:outputText value="*" style="color:red !important;" /> 
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												    <p:message id="msgBank1" for="bank1" display="text" />
+													<p:selectOneMenu id="bank1" value="#{impsBean.beneBankId}" filter="true" filterMatchMode="contains"  required="true" requiredMessage="Please select bank" disabled="#{impsBean.disableBank}">
+													<f:selectItem itemLabel="#{msg['lbl.selectBank']}" itemValue="" />
+													 <f:selectItems value="#{impsBean.beneBankList}" var="c"  itemLabel="#{c.bankCode} - #{c.bankDecs}" itemValue="#{c.bankId}"/> 
+													 <p:ajax  update="msgBank1" />
+													 
+												</p:selectOneMenu>
+											</p:panel>
+										 
+										
+											</p:panel>
+											
+											
+											
+											
+											
+											 
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" styleClass="shadow_button" >
+												
+												<p:commandButton value="#{msg['lbl.add']}"
+													 
+													style="margin-right:10px;" update="mainPanel" action="#{impsBean.addToDataTable}"/>
+												<p:commandButton value="#{msg['lbl.view']}" style="margin-right:10px;"
+													 
+													update=":documentMasterForm:mainPanel" immediate="true"
+													process="@this" action="#{impsBean.viewAll}"/>
+												<p:commandButton value="#{msg['lbl.clear']}" immediate="true"
+													 process="@this" update=":documentMasterForm:mainPanel"	  action="#{impsBean.clearAll}"  />
+												<h:panelGroup layout="block" class="clearfix" />
+											</h:panelGroup>
+											
+										 
+											
+											
+											
+											
+											<p:panel  
+												id="dataTablePanel">
+												<p:dataTable id="dataTable"
+													value="#{impsBean.impsDataTableList}" var="d"
+													rowIndexVar="rowIndex" emptyMessage="#{msg['lbl.noRecordFound']}"
+													rows="10" paginator="true"
+													paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+													paginatorPosition="bottom" rowsPerPageTemplate="5,10,15"
+													sortMode="multiple" styleClass="mydatatableclass" rendered="#{impsBean.booRenderDataTable}">
+													
+												 
+	 
+													<p:column headerText="#{msg['lbl.sino']}"
+														style="width:30px;">
+														<h:outputText value="#{rowIndex+1}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.corrbankcode']}">
+														<h:outputText value="#{d.corrspBankCode}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.correspondentBank']}">
+														<h:outputText value="#{d.correspBankDesc}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.benebankcode']}">
+														<h:outputText value="#{d.beneBankCode}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.beneficaryBank']}">
+														<h:outputText value="#{d.beneBankDesc}" />
+													</p:column>
+
+												 
+													<p:column headerText="#{msg['lbl.active/deactive']}"
+														style="text-align:center !important;">
+														<p:commandLink	action="#{impsBean.checkStatusType(d)}"												 
+															style="color:blue !important; text-decoration:underline !important;"
+															update=":documentMasterForm"
+															immediate="true" process="@this" value="#{d.dynamicLabelForActivateDeactivate}" />
+													</p:column>
+
+												</p:dataTable>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{impsBean.booSubmitPanel}">
+												<p:commandButton id="#{msg['lbl.submit']}" value="#{msg['lbl.submit']}" action="#{impsBean.saveAllRecords}"
+													 style="margin-right:10px;" immediate="true" update="csp,nullPoiterId"/>
+													  
+												<p:commandButton value="#{msg['lbl.exit']}" action="#{impsBean.exitButton}" process="@this" />
+													 
+												<h:panelGroup layout="block" class="clearfix" />
+											</h:panelGroup>
+											 
+ 
+											<p:panel styleClass="left_col">
+												<h:outputText id="mandatory"
+													value=" #{msg['lbl.*filedsAreMandatory']}"
+													style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+											</p:panel>
+
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+									</p:panel>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

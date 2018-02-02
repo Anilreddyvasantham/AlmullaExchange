@@ -1,0 +1,867 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+
+
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link href="css/style1.css" rel="stylesheet" type="text/css" />
+	<script type="text/javascript">
+		 history.pushState(null, null, 'usercreation.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'usercreation.xhtml');
+		    });
+	</script>
+</h:head>
+<h:body dir="#{facesBean.direction}">
+	<f:view locale="#{facesBean.locale}">
+		<ui:include src="../common/onlineheader.xhtml"></ui:include>
+		<h:panelGroup layout="block" class="container"
+			style="margin-top:-24px;">
+			<h:panelGroup layout="block" class="main_div1">
+
+				<p:dialog id="openInfo" widgetVar="openInfo" width="600"
+					height="400" showHeader="true" resizable="false"
+					style=" border:2px solid #F33535 !important; padding:0px !important;  color:blue !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+					showEffect="clip" hideEffect="clip" closeOnEscape="true"
+					closable="true" modal="true">
+					<p:outputLabel value="#{msg['lbl.whydoask']}" />
+					<p:outputLabel value="#{msg['lbl.usermsg1']}" />
+					<p:outputLabel value="#{msg['lbl.usermsg2']}" />
+					<p:outputLabel value="#{msg['lbl.usermsg3']}" />
+					<p:outputLabel value="#{msg['lbl.usermsg4']}" />
+					<p:outputLabel value="#{msg['lbl.usermsg5']}" />
+					<p:outputLabel value="#{msg['lbl.usermsg6']}" />
+					<p:outputLabel value="#{msg['lbl.usermsg7']}" />
+				</p:dialog>
+				
+				<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important; ">
+												<p:graphicImage value="../images/processImg.gif" style="float: left !important; margin-right: 24px !important; "/>
+												<p:outputLabel value="Please wait ........" style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>	
+
+
+				<h:panelGroup layout="block" id="common">
+
+				
+
+
+					<h:form title="New User Creation" id="usercreation">
+						<p:panel id="usercreationPanel" styleClass="shadow"
+							style="background-color:#FFF !important;">
+
+							<p:panel styleClass="panel_border" id="usernamePanel"
+								rendered="#{userCreationBean.renderUserNamepanel}">
+                          	<h1>#{msg['lbl.usercreationnew']}
+                          	
+                          <!-- 	<p:ajaxStatus id="usernamestatuspanel2" style="float:right;">
+										<f:facet name="start">
+											<h:graphicImage value="../images/progress.GIF" />
+										</f:facet>
+										<f:facet name="start">
+											<h:graphicImage value="" />
+										</f:facet>
+									</p:ajaxStatus> -->
+                          	</h1>
+
+								<p:panel styleClass="left_col" style="width:65% !important;">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText id="lbl_country"></h:outputText>
+									</p:panel>
+									<p:panel styleClass="inner_right_col"
+										style="width:40% !important;">
+										<p:message for="country" display="text" id="msgCountry" />
+										<p:selectOneMenu id="country" rendered="false" tabindex="1"
+											value="#{userCreationBean.country}" filter="true"
+											label="Nationality">
+											<f:selectItem itemValue="" itemLabel="#{msg['lbl.select']}" />
+											<f:selectItems value="#{userCreationBean.countryNameList}"
+												var="c" itemLabel="#{c.countryName}"
+												itemValue="#{c.fsCountryMaster.countryId}" />
+											<!-- <f:selectItems
+														value="#{userCreationBean.countryNameList}"
+														var="c" itemLabel="#{c.value}" itemValue="#{c.key}" /> -->
+											<!-- <p:ajax event="change" update="usercreatin,msgCountry"
+														listener="#{userCreationBean.changeCountry}" onsuccess="" /> -->
+														<p:ajax update="msgCountry"/>
+										</p:selectOneMenu>
+									</p:panel>
+								</p:panel>
+								<div class="clearfix"></div>
+
+
+
+
+								<p:panel styleClass="left_col" id="panel_username"
+									style="width:65% !important;">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText value="#{msg['lbl.nationalid']} *" />
+									</p:panel>
+									<p:panel styleClass="inner_right_col"
+										style="width:40% !important;">
+										<p:outputLabel value="#{msg['lbl.validwrongcivil']}"
+																	rendered="#{userCreationBean.booIdTypeCheck}"
+																	style="color: red; font-weight:bold;" />
+										<p:message id="msgUsername" for="username" display="text" />
+										<p:inputText id="username" tabindex="2"
+											value="#{userCreationBean.userName}" autocomplete="off" maxlength="12" required="true" requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.nationalid']}"
+											>
+											<p:ajax event="blur"
+												update="msgUsername,username,availableStatus,panel_username"
+												partialSubmit="true"
+												listener="#{userCreationBean.currentStatus}"
+												process="username" />
+											<!-- <p:ajax event="focus" update="availableStatus"
+														listener="#{userCreationBean.resetCurrentStatus}" /> -->
+											<p:focus context="username" />
+										</p:inputText>
+										<h:outputText id="availableStatus"
+											value="#{userCreationBean.statusMsg}" />
+									</p:panel>
+								</p:panel>
+
+								<div class="clearfix"></div>
+
+								<p:panel styleClass="left_col" id="panel_email"
+									style="width:65% !important;">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText id="lbl_email" />
+									</p:panel>
+									<p:panel styleClass="inner_right_col"
+										style="width:40% !important;">
+
+										<p:outputLabel value="#{msg['lbl.emaileisexist']}"
+											rendered="#{userCreationBean.booEmailCheck}"
+											style="color:red;" />
+										<p:inputText value="#{userCreationBean.email}" id="email"
+											tabindex="3" label="Email" onkeyup="this.value=this.value.toLowerCase()">
+											<p:ajax update="panel_email,emailmsg" event="blur"
+												listener="#{userCreationBean.checkEmail}" process="email" />
+											<p:message for="email" display="text" id="emailmsg"/>
+										</p:inputText>
+									</p:panel>
+								</p:panel>
+								<div class="clearfix"></div>
+								<h:panelGroup layout="block" styleClass="shadow_button">
+
+									<p:commandButton value="#{msg['lbl.next']}" tabindex="4"
+										style="margin-right:10px;"  
+										action="#{userCreationBean.saveUserPanel}"
+										update="usercreationPanel" onstart="process.show();" onsuccess="process.hide();">
+									</p:commandButton>
+
+									<p:commandButton value="#{msg['lbl.cancel']}"
+										action="#{userCreationBean.cancel}" ajax="false" tabindex="5"
+										immediate="true">
+									</p:commandButton>
+
+
+									<div class="clearfix"></div>
+								</h:panelGroup>
+							</p:panel>
+							<div class="clearfix"></div>
+
+							<p:panel styleClass="panel_border" id="passwordPanel"
+								rendered="#{userCreationBean.renderPasswordpanel}">
+
+	             <h1>#{msg['lbl.enterprimesecpw']}
+	             
+	            <!--  <p:ajaxStatus id="usernamestatuspanel" style="float:right;">
+										<f:facet name="start">
+											<h:graphicImage value="../images/progress.GIF" />
+										</f:facet>
+										<f:facet name="start">
+											<h:graphicImage value="" />
+										</f:facet>
+									</p:ajaxStatus> -->
+	             </h1>
+								<p:panel>
+									<h2>#{msg['lbl.registeredloginpw']}</h2>
+								</p:panel>
+
+								<p:panel>
+									<h3>#{msg['lbl.loginpassword']}</h3>
+								</p:panel>
+
+								<p:panel styleClass="left_col" id="panel_primarypassword"
+									style="width:65% !important;">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText id="lbl_primarypassword" />
+									</p:panel>
+									<p:panel styleClass="inner_right_col"
+										style="width:40% !important;">
+										<p:message for="primarypassword" display="text" id="msg1st" />
+										<p:password value="#{userCreationBean.password}" tabindex="6" label="Primary Password"
+											feedback="true" id="primarypassword" 
+											promptLabel="#{msg['lbl.passwordpromptlabel']}"
+											weakLabel="#{msg['lbl.passwordweeklabel']}"
+											goodLabel="#{msg['lbl.passwordgoodlabel']}"
+											strongLabel="#{msg['lbl.passwordstronglabel']}">
+											<p:ajax update="msg1st" />
+											<f:validator  validatorId="passwordValidation"/>
+										</p:password>
+										<!--match="retypeprimarypassword"   -->
+									</p:panel>
+								</p:panel>
+								<div class="clearfix"></div>
+
+								<p:panel styleClass="left_col" style="width:65% !important;"
+									id="panel_retypeprimarypassword">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText id="lbl_retypeprimarypassword" />
+									</p:panel>
+									<p:panel styleClass="inner_right_col"
+										style="width:40% !important;">
+										<p:message for="retypeprimarypassword" display="text" 
+											id="msg1sts" />
+										<p:password value="#{userCreationBean.retypePassword}"
+											tabindex="7" id="retypeprimarypassword" label="Retype Primary Password" >
+											<p:ajax update="msg1sts" />
+											<f:validator  validatorId="passwordValidation"/>
+										</p:password>
+									</p:panel>
+								</p:panel>
+								<div class="clearfix"></div>
+
+								<p:panel>
+									<b> <h:outputText value="#{msg['lbl.strongpassword']}" />
+									</b>
+									<br />
+									<br />
+									<div class="clearfix"></div>
+									<b> <h:outputText value="#{msg['lbl.charminlength']}" />
+									</b>
+									<br />
+									<br />
+									<b> <h:outputText value="#{msg['lbl.combinationpassword']}" />
+									</b>
+									<!-- <b>
+										<h:outputText value=" is a 14 CHARACTER(EIGHT MINIMUM) in LENGTH" />
+										</b>
+											<b>
+										<h:outputText value="is a COMBINATION OF LETTERS(LOWER CASE OR UPPER CASE) AND AT LEAST ONE NUMBER AND ONE SPECIAL CHARACTER(eg.: @, #, %, &)" />
+										</b> -->
+								</p:panel>
+
+								<p:panel>
+									<h3>#{msg['lbl.secondarypwd']}</h3>
+								</p:panel>
+
+
+								<p:panel styleClass="left_col" id="panel_secondarypassword"
+									style="width:65% !important;">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText id="lbl_secondarypassword" />
+									</p:panel>
+									<p:panel styleClass="inner_right_col"
+										style="width:40% !important;">
+										<p:message for="secondarypassword" display="text" id="msg2nd" />
+										<p:password value="#{userCreationBean.secoundaryPassword}"
+											tabindex="8" feedback="true" id="secondarypassword"
+											promptLabel="#{msg['lbl.passwordpromptlabel']}"
+											weakLabel="#{msg['lbl.passwordweeklabel']}"
+											goodLabel="#{msg['lbl.passwordgoodlabel']}"
+											strongLabel="#{msg['lbl.passwordstronglabel']}"
+											label="Secondary Password" alt="">
+												<f:validator  validatorId="passwordValidation"/>
+											<p:ajax update="msg2nd" />
+										</p:password>
+
+										<!--match="retypesecondarypassword"  -->
+									</p:panel>
+								</p:panel>
+								<div class="clearfix"></div>
+
+								<p:panel styleClass="left_col" style="width:65% !important;"
+									id="panel_retypesecondarypassword">
+									<p:panel styleClass="inner_left_col">
+										<h:outputText id="lbl_retypesecondarypassword" />
+									</p:panel>
+									<p:panel styleClass="inner_right_col"
+										style="width:40% !important;">
+										<p:message for="retypesecondarypassword" display="text"
+											id="msg2nds" />
+										<p:password
+											value="#{userCreationBean.retypeSecoundaryPassword}"
+											tabindex="9" id="retypesecondarypassword" label="Retype Secondary Password" >
+                                      <f:validator  validatorId="passwordValidation"/>
+											<p:ajax update="msg2nds" />
+										</p:password>
+										<!-- <p:outputLabel id="passMsg" value="#{msg['lbl.passmatch']}"
+													rendered="#{userCreationBean.boopasswordChec}"
+													style="color: red"></p:outputLabel> -->
+									</p:panel>
+								</p:panel>
+								<div class="clearfix"></div>
+								<h:panelGroup layout="block" styleClass="shadow_button">
+
+									<p:commandButton value="#{msg['lbl.save']}"
+										update="usercreationPanel"
+										action="#{userCreationBean.nextPassword}"
+										style="margin-right:10px;" tabindex="10" onstart="process.show();" onsuccess="process.hide();">
+									</p:commandButton>
+
+									<p:commandButton value="#{msg['lbl.cancel']}"
+										action="#{userCreationBean.cancel}" ajax="false" tabindex="11"
+										immediate="true">
+									</p:commandButton>
+
+
+									<div class="clearfix"></div>
+								</h:panelGroup>
+
+								<div class="clearfix"></div>
+
+								<p:panel>
+									<b> <h:outputText
+											value="#{msg['lbl.strongpasswordsecondary']}" />
+									</b>
+									<br />
+									<br />
+									<div class="clearfix"></div>
+									<b> <h:outputText value="#{msg['lbl.charminlength']}" />
+									</b>
+									<br />
+									<br />
+									<b> <h:outputText value="#{msg['lbl.combinationpassword']}" />
+									</b>
+
+								</p:panel>
+
+
+
+							</p:panel>
+
+							<div class="clearfix"></div>
+							<p:panel styleClass="panel_border" id="securityQuestPanel"
+								rendered="#{userCreationBean.renderSecurityQuespanel}">
+								<h1>#{msg['lbl.securityquestion']}
+								<p:ajaxStatus id="usernamestatuspanel3" style="float:right;">
+										<f:facet name="start">
+											<h:graphicImage value="../images/progress.GIF" />
+										</f:facet>
+										<f:facet name="start">
+											<h:graphicImage value="" />
+										</f:facet>
+									</p:ajaxStatus>
+								</h1>
+
+								<p:panel id="lbl_Qmenu1">
+									<h2 id="fortesting">#{msg['lbl.securityquestionpick']}</h2>
+								</p:panel>
+
+
+
+
+
+								<p:panel id="panel_Qmenu1">
+									<h:panelGroup styleClass="left_col">
+										<h:panelGroup styleClass="inner_left_col">
+											<h:outputText id="lbl_secAns1"
+												value="#{msg['lbl.question']} 1:" />
+										</h:panelGroup>
+										<h:panelGroup styleClass="inner_right_col"
+											style="width:65% !important;">
+											<p:message for="Qmenu1" display="text" id="msgques1" />
+											<p:selectOneMenu id="Qmenu1" tabindex="12"
+												value="#{userCreationBean.secureQuest1}"
+												label="Security Question">
+												<f:selectItem itemValue="" itemLabel="#{msg['lbl.select']}" />
+												<f:selectItems
+													value="#{userCreationBean.questionOne.entrySet()}" var="c"
+													itemLabel="#{c.value}" itemValue="#{c.key}" />
+												<p:ajax event="change"
+													update="Qmenu1,Qmenu2,Qmenu3,Qmenu4,Qmenu5,msgques1"
+													process="@this"
+													listener="#{userCreationBean.generateSecurityQuestions}" />
+											</p:selectOneMenu>
+										</h:panelGroup>
+										
+									</h:panelGroup>
+									<div class="clearfix"></div>
+                                        <h:panelGroup styleClass="left_col">
+										<h:panelGroup styleClass="inner_left_col">
+											<h:outputText id="lbl_answer_0" />
+										</h:panelGroup>
+                                       
+										<h:panelGroup styleClass="inner_right_col">
+
+											<p:inputText value="#{userCreationBean.secureAnsr1}"
+												tabindex="13" id="answer_0" label="ANSWER">
+												<p:message for="answer_0" display="text" id="ansmsg1" />
+												<p:ajax update="ansmsg1" />
+											</p:inputText>
+										</h:panelGroup>
+									</h:panelGroup>
+									<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+								</p:panel>
+<div class="clearfix"></div>
+
+								<p:panel id="panel_Qmenu2">
+									<h:panelGroup styleClass="left_col">
+										<h:panelGroup styleClass="inner_left_col">
+											<h:outputText id="lbl_secAns2"
+												value="#{msg['lbl.question']} 2:" />
+										</h:panelGroup>
+										<h:panelGroup styleClass="inner_right_col"
+											style="width:65% !important;">
+											<p:message for="Qmenu2" display="text" id="msgques2" />
+											<p:selectOneMenu id="Qmenu2" tabindex="14"
+												value="#{userCreationBean.secureQuest2}"
+												label="Security Question">
+												<f:selectItem itemValue="" itemLabel="#{msg['lbl.select']}" />
+												<f:selectItems
+													value="#{userCreationBean.drpdList2.entrySet()}" var="c"
+													itemLabel="#{c.value}" itemValue="#{c.key}" />
+												<p:ajax event="change"
+													update="Qmenu1,Qmenu2,Qmenu3,Qmenu4,Qmenu5,msgques2"
+													process="@this"
+													listener="#{userCreationBean.generateSecurityQuestions}" />
+											</p:selectOneMenu>
+										</h:panelGroup>
+	</h:panelGroup>
+									<div class="clearfix"></div>
+                                        <h:panelGroup styleClass="left_col">
+
+										<h:panelGroup styleClass="inner_left_col">
+											<h:outputText id="lbl_answer_1" />
+										</h:panelGroup>
+										<h:panelGroup styleClass="inner_right_col">
+
+											<p:inputText value="#{userCreationBean.secureAnsr2}"
+												tabindex="15" id="answer_1" label="ANSWER">
+												<p:message for="answer_1" display="text" id="ansmsg2" />
+												<p:ajax update="ansmsg2" />
+											</p:inputText>
+										</h:panelGroup>
+									</h:panelGroup>
+									<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+								</p:panel>
+
+								<p:panel id="panel_Qmenu3">
+
+									<h:panelGroup styleClass="left_col">
+										<h:panelGroup styleClass="inner_left_col">
+											<h:outputText id="lbl_secAns3"
+												value="#{msg['lbl.question']} 3:" />
+										</h:panelGroup>
+										<h:panelGroup styleClass="inner_right_col"
+											style="width:65% !important;">
+											<p:message for="Qmenu3" display="text" id="msgques3" />
+											<p:selectOneMenu id="Qmenu3" tabindex="16"
+												value="#{userCreationBean.secureQuest3}"
+												label="Security Question">
+												<f:selectItem itemValue="" itemLabel="#{msg['lbl.select']}" />
+												<f:selectItems
+													value="#{userCreationBean.drpdList3.entrySet()}" var="c"
+													itemLabel="#{c.value}" itemValue="#{c.key}" />
+												<p:ajax event="change"
+													update="Qmenu1,Qmenu2,Qmenu3,Qmenu4,Qmenu5,msgques3"
+													process="@this"
+													listener="#{userCreationBean.generateSecurityQuestions}" />
+											</p:selectOneMenu>
+										</h:panelGroup>
+											</h:panelGroup>
+									<div class="clearfix"></div>
+                                        <h:panelGroup styleClass="left_col">
+										<h:panelGroup styleClass="inner_left_col">
+											<h:outputText id="lbl_answer_2" />
+										</h:panelGroup>
+										<h:panelGroup styleClass="inner_right_col">
+
+											<p:inputText value="#{userCreationBean.secureAnsr3}"
+												tabindex="17" id="answer_2" label="ANSWER">
+												<p:message for="answer_2" display="text" id="ansmsg3" />
+												<p:ajax update="ansmsg3" />
+											</p:inputText>
+
+										</h:panelGroup>
+									</h:panelGroup>
+									<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+								</p:panel>
+
+								<p:panel id="panel_Qmenu4">
+									<h:panelGroup styleClass="left_col">
+										<h:panelGroup styleClass="inner_left_col">
+											<h:outputText id="lbl_secAns4"
+												value="#{msg['lbl.question']} 4:" />
+										</h:panelGroup>
+										<h:panelGroup styleClass="inner_right_col"
+											style="width:65% !important;">
+											<p:message for="Qmenu4" display="text" id="msgques4" />
+											<p:selectOneMenu id="Qmenu4" tabindex="18"
+												value="#{userCreationBean.secureQuest4}"
+												label="Security Question">
+												<f:selectItem itemValue="" itemLabel="#{msg['lbl.select']}" />
+												<f:selectItems
+													value="#{userCreationBean.drpdList4.entrySet()}" var="c"
+													itemLabel="#{c.value}" itemValue="#{c.key}" />
+												<p:ajax event="change"
+													update="Qmenu1,Qmenu2,Qmenu3,Qmenu4,Qmenu5,msgques4"
+													process="@this"
+													listener="#{userCreationBean.generateSecurityQuestions}" />
+											</p:selectOneMenu>
+										</h:panelGroup>
+											</h:panelGroup>
+									<div class="clearfix"></div>
+                                        <h:panelGroup styleClass="left_col">
+
+										<h:panelGroup styleClass="inner_left_col">
+											<h:outputText id="lbl_answer_3" />
+										</h:panelGroup>
+										<h:panelGroup styleClass="inner_right_col">
+
+											<p:inputText value="#{userCreationBean.secureAnsr4}"
+												tabindex="19" id="answer_3" label="ANSWER">
+												<p:message for="answer_3" display="text" id="ansmsg4" />
+												<p:ajax update="ansmsg4" />
+											</p:inputText>
+										</h:panelGroup>
+									</h:panelGroup>
+									<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+								</p:panel>
+
+								<p:panel id="panel_Qmenu5">
+									<h:panelGroup styleClass="left_col">
+										<h:panelGroup styleClass="inner_left_col">
+											<h:outputText id="lbl_secAns5"
+												value="#{msg['lbl.question']} 5:" />
+										</h:panelGroup>
+										<h:panelGroup styleClass="inner_right_col"
+											style="width:65% !important;">
+											<p:message for="Qmenu5" display="text" id="msgques5" />
+											<p:selectOneMenu id="Qmenu5" tabindex="20"
+												value="#{userCreationBean.secureQuest5}"
+												label="Security Question">
+												<f:selectItem itemValue="" itemLabel="#{msg['lbl.select']}" />
+												<f:selectItems
+													value="#{userCreationBean.drpdList5.entrySet()}" var="c"
+													itemLabel="#{c.value}" itemValue="#{c.key}" />
+												<p:ajax event="change"
+													update="Qmenu1,Qmenu2,Qmenu3,Qmenu4,Qmenu5,msgques5"
+													process="@this"
+													listener="#{userCreationBean.generateSecurityQuestions}" />
+											</p:selectOneMenu>
+										</h:panelGroup>
+											</h:panelGroup>
+									<div class="clearfix"></div>
+                                        <h:panelGroup styleClass="left_col">
+
+										<h:panelGroup styleClass="inner_left_col">
+											<h:outputText id="lbl_answer_4" />
+										</h:panelGroup>
+										<h:panelGroup styleClass="inner_right_col">
+
+											<p:inputText value="#{userCreationBean.secureAnsr5}"
+												tabindex="21" id="answer_4" label="ANSWER">
+												<p:message for="answer_4" display="text" id="ansmsg5" />
+												<p:ajax update="ansmsg5" />
+											</p:inputText>
+										</h:panelGroup>
+									</h:panelGroup>
+									<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+								</p:panel>
+
+								<div class="clearfix"></div>
+								<p:panel styleClass="left_col">
+									<h:outputText value="#{msg['lbl.fieldaremandatory']}"
+										style="color:red; padding:10px !important; font-size:10px;" />
+								</p:panel>
+								<div class="clearfix"></div>
+
+								<p:panel styleClass="shadow_button"
+									style="background-color:#FFF !important;">
+
+									<p:commandButton value="#{msg['lbl.continue']}"
+										style="margin-right:10px;" tabindex="22"
+										action="#{userCreationBean.goContinue}"
+										update="usercreationPanel" onstart="process.show();" onsuccess="process.hide();"/>
+
+									<p:commandButton value="#{msg['lbl.cancel']}" tabindex="23"
+										style="margin-right:10px;" action="#{userCreationBean.cancel}"
+										ajax="false" immediate="true" />
+
+
+								</p:panel>
+
+								<p:panel>
+
+
+									<p:commandLink value="#{msg['lbl.whydoask']}"
+										style="font-size: 13px !important; text-decoration: underline; font-weight:bold; color:Blue; text-align:center !important; display:block;"
+										action="#{userCreationBean.popInfo}" immediate="true" 
+										update="securityQuestPanel" />
+
+								</p:panel>
+
+							</p:panel>
+
+							<p:panel id="phisingPanel" styleClass="panel_border"
+								rendered="#{userCreationBean.renderPhisingImagepanel}">
+								
+							<h1>#{msg['lbl.phisingprotectionpass']}
+							
+							<p:ajaxStatus id="usernamestatuspanel4" style="float:right;">
+										<f:facet name="start">
+											<h:graphicImage value="../images/progress.GIF" />
+										</f:facet>
+										<f:facet name="start">
+											<h:graphicImage value="" />
+										</f:facet>
+									</p:ajaxStatus>
+							</h1>
+								
+								<p:panel styleClass="left_col">
+
+									<p:panel id="img" cache="false" styleClass="panel_border">
+
+										<p:commandLink update="phisingPanel" immediate="true">
+											<f:setPropertyActionListener
+												target="#{userCreationBean.imageUrl}"
+												value="../registrationimage/file1.jpg" />
+											<p:graphicImage value="../registrationimage/file1.jpg"
+												width="60" height="60" />
+										</p:commandLink>
+										<a></a>
+
+										<p:commandLink update="phisingPanel" immediate="true">
+											<f:setPropertyActionListener
+												target="#{userCreationBean.imageUrl}"
+												value="../registrationimage/file2.jpg" />
+											<p:graphicImage value="../registrationimage/file2.jpg"
+												width="60" height="60" />
+										</p:commandLink>
+										<a></a>
+										<p:commandLink update="phisingPanel" immediate="true">
+											<f:setPropertyActionListener
+												target="#{userCreationBean.imageUrl}"
+												value="../registrationimage/file3.jpg" />
+											<p:graphicImage value="../registrationimage/file3.jpg"
+												width="60" height="60" />
+										</p:commandLink>
+										<a></a>
+										<p:commandLink update="phisingPanel" immediate="true">
+											<f:setPropertyActionListener
+												target="#{userCreationBean.imageUrl}"
+												value="../registrationimage/file4.jpg" />
+											<p:graphicImage value="../registrationimage/file4.jpg"
+												width="60" height="60" />
+										</p:commandLink>
+										<a></a>
+										<p:commandLink update="phisingPanel" immediate="true">
+											<f:setPropertyActionListener
+												target="#{userCreationBean.imageUrl}"
+												value="../registrationimage/file5.jpg" />
+											<p:graphicImage value="../registrationimage/file5.jpg"
+												width="60" height="60" />
+										</p:commandLink>
+										<a></a>
+										<p:commandLink update="phisingPanel" immediate="true">
+											<f:setPropertyActionListener
+												target="#{userCreationBean.imageUrl}"
+												value="../registrationimage/file6.jpg" />
+											<p:graphicImage value="../registrationimage/file6.jpg"
+												width="60" height="60" />
+										</p:commandLink>
+										<a></a>
+										<p:commandLink update="phisingPanel" immediate="true">
+											<f:setPropertyActionListener
+												target="#{userCreationBean.imageUrl}"
+												value="../registrationimage/file7.jpg" />
+											<p:graphicImage value="../registrationimage/file7.jpg"
+												width="60" height="60" />
+										</p:commandLink>
+										<a></a>
+										<p:commandLink update="phisingPanel" immediate="true">
+											<f:setPropertyActionListener
+												target="#{userCreationBean.imageUrl}"
+												value="../registrationimage/file8.jpg" />
+											<p:graphicImage value="../registrationimage/file8.jpg"
+												width="60" height="60" />
+										</p:commandLink>
+										<a></a>
+										<p:commandLink update="phisingPanel" immediate="true">
+											<f:setPropertyActionListener
+												target="#{userCreationBean.imageUrl}"
+												value="../registrationimage/file9.jpg" />
+											<p:graphicImage value="../registrationimage/file9.jpg"
+												width="60" height="60" />
+										</p:commandLink>
+										<a></a>
+										<p:commandLink update="phisingPanel" immediate="true">
+											<f:setPropertyActionListener
+												target="#{userCreationBean.imageUrl}"
+												value="../registrationimage/file10.jpg" />
+											<p:graphicImage value="../registrationimage/file10.jpg"
+												width="60" height="60" />
+										</p:commandLink>
+										<a></a>
+										<p:commandLink update="phisingPanel" immediate="true">
+											<f:setPropertyActionListener
+												target="#{userCreationBean.imageUrl}"
+												value="../registrationimage/file11.jpg" />
+											<p:graphicImage value="../registrationimage/file11.jpg"
+												width="60" height="60" />
+										</p:commandLink>
+										<a></a>
+										<p:commandLink update="phisingPanel" immediate="true">
+											<f:setPropertyActionListener
+												target="#{userCreationBean.imageUrl}"
+												value="../registrationimage/file12.jpg" />
+											<p:graphicImage value="../registrationimage/file12.jpg"
+												width="60" height="60" />
+										</p:commandLink>
+										<a></a>
+										<p:commandLink update="phisingPanel" immediate="true">
+											<f:setPropertyActionListener
+												target="#{userCreationBean.imageUrl}"
+												value="../registrationimage/file13.jpg" />
+											<p:graphicImage value="../registrationimage/file13.jpg"
+												width="60" height="60" />
+										</p:commandLink>
+
+<a></a>
+										<p:commandLink update="phisingPanel" immediate="true">
+											<f:setPropertyActionListener
+												target="#{userCreationBean.imageUrl}"
+												value="../registrationimage/file14.jpg" />
+											<p:graphicImage value="../registrationimage/file14.jpg"
+												width="60" height="60" />
+										</p:commandLink>
+
+<a></a>
+										<p:commandLink update="phisingPanel" immediate="true">
+											<f:setPropertyActionListener
+												target="#{userCreationBean.imageUrl}"
+												value="../registrationimage/file15.jpg" />
+											<p:graphicImage value="../registrationimage/file15.jpg"
+												width="60" height="60" />
+										</p:commandLink>
+										
+										
+
+
+
+									</p:panel>
+								</p:panel>
+								<p:panel styleClass="right_col">
+
+									<p:panel styleClass="panel_border">
+
+
+										<p:panel id="imageWrapper" style="margin: 10px auto !important;width: auto !important;display: table;text-align: center !important;padding: 10px !important;
+	background-color: #FFF !important;
+	-webkit-border-radius: 3px 3px 3px 3px !important;">
+											<p:graphicImage id="myImage" 
+												value="#{userCreationBean.imageUrl}" width="60" height="60"  />
+										</p:panel>
+									<!-- 	<p:panel>
+											<pe:imageAreaSelect id="areaSelect" for="myImage"
+												widgetVar="areaSelectWidget" autoHide="true" handles="false"
+												movable="false" persistent="false" resizable="false"
+												parentSelector="#imageWrapper">
+
+											</pe:imageAreaSelect>
+										</p:panel> -->
+
+
+
+										<div class="clearfix"></div>
+
+										<p:panel>
+											<h:outputText
+												value="#{msg['lbl.selectimgcreation']}" />
+										</p:panel>
+										<div class="clearfix"></div>
+										<p:panel styleClass="inner_left_col">
+											<h:outputText id="lbl_caption" />
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputText id="caption" value="#{userCreationBean.caption}" label="Caption" tabindex="24">
+												<p:message for="caption" display="text" id="captionmsg" />
+												<p:ajax update="captionmsg" />
+											</p:inputText>
+										</p:panel>
+										<div class="clearfix"></div>
+
+
+										<p:panel styleClass="shadow_button"
+											style="background-color:#FFF !important;">
+
+											<p:commandButton value="#{msg['lbl.submit']}"
+												style="margin-right:10px;" tabindex="25"
+												action="#{userCreationBean.saveSecurityPanel}"
+												update="usercreationPanel" onstart="process.show();" onsuccess="process.hide();"/>
+
+
+
+
+										</p:panel>
+
+										<p:panel>
+
+
+											<p:commandLink value="#{msg['lbl.whydoask']}"
+												style="font-size: 13px !important; text-decoration: underline; font-weight:bold; color:Blue; text-align:center !important; display:block;"
+												action="#{userCreationBean.popInfo}" immediate="true"
+												update="securityQuestPanel" />
+
+										</p:panel>
+									</p:panel>
+								</p:panel>
+
+								<div class="clearfix"></div>
+
+					
+
+							</p:panel>
+							
+							<p:panel id="successPanel" styleClass="panel_border" rendered="#{userCreationBean.renderSuccesspanel}">
+							
+							<p:panel styleClass="panel_border" style="font-weight:bold;">
+							<p:graphicImage value="../images/tick-green.png"
+												 />
+												<h:outputText  value="#{msg['lbl.successcreation']}" />
+							
+							
+							</p:panel>
+							
+							  <br/>
+							  <p:panel>
+							  <h:outputText value="#{msg['lbl.gobackpage']}" style="font-weight:bold; color:Blue;margin:20px;" />
+   					<p:commandButton value="#{msg['lbl.home']}" 
+   										action="#{userCreationBean.redirectLogin}" ajax="false" />
+					</p:panel>
+							
+							</p:panel>
+
+						</p:panel>
+
+					</h:form>
+
+
+				</h:panelGroup>
+
+
+			</h:panelGroup>
+
+		</h:panelGroup>
+		<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+
+		<ui:include src="#{facesBean.footer}"></ui:include>
+
+	</f:view>
+</h:body>
+
+
+</html>

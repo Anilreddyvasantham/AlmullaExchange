@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+	document.onkeydown = function(e) {
+		//Enter button pressed 
+		/* if (e.keyCode === 13) {
+			return false;
+		} */
+	};
+
+	 history.pushState(null, null, 'RelationShip.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'RelationShip.xhtml');
+	    });
+	    
+	function clearForm(){
+		
+		var dat1 = document.getElementById("relationForm:englishId");
+		dat1.value='';
+		var dat2 = document.getElementById("relationForm:localId");
+		dat2.value='';
+		//alert("HELLO"+dat.value);
+		
+	}
+	
+	</script>
+
+</h:head>
+<p:dialog id="complete" widgetVar="complete" width="270" height="70"
+	showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} " />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{ relationsBean.clickOnOKSave}" process="@this" />
+</p:dialog>
+<p:confirmDialog id="exist" widgetVar="exist" width="400" height="17"
+	resizable="false"
+	style=" border:2px solid green !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.recordnotfound']}">
+</p:confirmDialog>
+<p:confirmDialog id="succdesc" widgetVar="succdesc" width="400"
+	height="17" resizable="false"
+	style=" border:2px solid green !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.thisrelationalreadyexisted']}">
+</p:confirmDialog>
+
+<p:confirmDialog widgetVar="succ" width="300" showHeader="false"
+	resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip"
+	message="#{msg['lbl.thisrelationalreadyexisted']}">
+
+
+</p:confirmDialog>
+<p:confirmDialog id="notexist" widgetVar="notexist" width="460"
+	styleClass="red" showHeader="false" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  font-color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip"
+	message="#{msg['lbl.thisrecordnotexistindatabasepleasesavetherecord']}">
+</p:confirmDialog>
+<p:confirmDialog id="couldnot" widgetVar="couldnot" width="450"
+	height="17" resizable="false"
+	style=" border:2px solid red !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true"
+	message="This Record  is Pending For Approval"
+	header="Warning Message">
+</p:confirmDialog>
+
+
+<p:confirmDialog id="dataNotFund" widgetVar="dataNotFund" width="400"
+	height="17" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.addAlteastOneRecordtoDataTable']}">
+</p:confirmDialog>
+<!--   <p:dialog id="username" widgetVar="username" width="270" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+            											<p:outputLabel value="Not Eligible To Approve "/><br/>
+            								<p:spacer width="15px" />
+            											<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{ relationsBean.cancel}" process="@this"/>          
+</p:dialog> -->
+
+<p:dialog id="approv" widgetVar="approv"  width="400" height="80"  resizable="false" 
+	style="background-color: white !important;" styleClass="success" header="Success" closable="false" showEffect="clip" hideEffect="clip" >
+           <p:outputLabel value="#{msg['lbl.approvedsuccessfully']} " style="text-align: center; font-size:15px !important;"/><br/>
+           <p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{ relationsBean.clickOnOk}" process="@this" style="margin-left: 150px !important;"/>          
+     </p:dialog>
+     
+
+
+<p:confirmDialog id="username" widgetVar="username" width="370"
+	styleClass="red" showHeader="false" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip"
+	message="#{msg['lbl.sameusernotabletoapprove']}">
+</p:confirmDialog>
+<p:dialog id="permanentDelete" widgetVar="permanentDelete" width="300"
+	height="70" showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.doyouwanttodeleterecordperminently']}" />
+	<p:spacer height="10px" />
+	<p:panel>
+		<p:commandButton value="#{msg['lbl.ok']}" style="margin-right:10px; "
+			actionListener="#{relationsBean.confirmPermanentDelete}"
+			process="@this" oncomplete="PF('permanentDelete').hide();"
+			update=":relationForm" />
+		<p:commandButton value="#{msg['lbl.cancel']}"
+			onclick="PF('permanentDelete').hide();" immediate="true" />
+	</p:panel>
+</p:dialog>
+<p:dialog id="alreadyapprov" widgetVar="alreadyapprov" width="310"
+	height="70" showHeader="false" resizable="false"
+	style=" border:2px solid green !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.thisrecordalreadyapprovedby']}" />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{relationsBean.clickOnOkButton}" process="@this" />
+</p:dialog>
+<p:dialog id="existed" widgetVar="existed"  width="300" height="70"  resizable="false" styleClass="red"
+	style="background-color: white !important;"   header=" Warning Message" closable="false" showEffect="clip" hideEffect="clip" >
+           <p:outputLabel value="This Relations Code Already Existed" style="text-align: center; font-size:15px !important;"/><br/>
+           <p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{relationsBean.clickOnOkExisted}" onclick="PF('existed').hide();" update=":relationForm" style="margin-left: 150px !important;"/>          
+  </p:dialog>
+
+
+
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="relationForm">
+							
+								<!-- Remarks Dailog  -->
+								<p:dialog id="remarks" widgetVar="remarks" width="550"
+									height="205" showHeader="false" resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+									<p:panel styleClass="shadow">
+										<p:panel>
+											<h:outputText value="#{msg['lbl.activateddate']}: " />
+											<h:outputText value="#{relationsBean.approvedDate}" />&nbsp;&nbsp;&nbsp;
+                                        <h:outputText
+												value="#{msg['lbl.activatedby']}: " />
+											<h:outputText value="#{relationsBean.approvedBy}" />
+										</p:panel>
+										<div class="clearfix" />
+										<hr></hr>
+										<p:panel>
+											<h:outputText value="#{msg['lbl.pleaseenterremarks']}" />
+										</p:panel>
+										<p:panel>
+											<h:inputTextarea value="#{relationsBean.remarks}" rows="5"
+												cols="50">
+												<p:ajax />
+											</h:inputTextarea>
+										</p:panel>
+										<p:spacer width="15px" />
+										<div class="clearfix" />
+										<h:panelGroup styleClass="shadow">
+											<div class="clearfix" />
+											<p:commandButton value="#{msg['lbl.ok']}"
+												actionListener="#{relationsBean.remarkSelectedRecord}"
+												process="@this" oncomplete="PF('remarks').hide();"
+												update="mainPanel" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												actionListener="#{relationsBean.cancelRemarks}"
+												process="@this" />
+											<!-- onclick="PF('remarks').hide();" -->
+										</h:panelGroup>
+									</p:panel>
+								</p:dialog>
+								<!-- dilaog remark -->
+								
+								
+																	<h1>
+									<h:outputText value="#{msg['lbl.relationShip']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+								
+								<p:confirmDialog id="csp" widgetVar="csp"   showHeader="false" resizable="false" header="Warning Message" styleClass="warning"
+														style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="explode" hideEffect="explode" message="#{relationsBean.errmsg}">
+							  	</p:confirmDialog>
+								 <p:confirmDialog id="nullPoiterId"
+                                                                     widgetVar="nullPoiterId" resizable="false"
+                                                                     style="background-color: white !important;"
+                                                                     header="#{msg['lbl.warningDailog']}" styleClass="warning"
+                                                                     showEffect="clip" hideEffect="clip" closeOnEscape="true"
+                                                                     closable="true"
+                                                                     message="#{relationsBean.errmsg} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+								
+								
+									<h2>
+										<h:outputText value="#{msg['lbl.relationShip']}" />
+									</h2>
+
+									<p:panel styleClass="panel_border">
+									
+									
+									
+
+										<p:panel styleClass="left_col" id="relationPanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.relationcode']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgdelivery" for="modeId" display="text" />
+												<p:autoComplete id="modeId"
+													value="#{relationsBean.relationsId}" required="true"
+													completeMethod="#{relationsBean.autoCompleteData}" requiredMessage="Please Select Relation Code"
+													readonly="#{relationsBean.booReadonly}" maxlength="15"
+													maxResults="10" onchange="clearForm(this);"  >
+													<p:ajax update="mainPanel,msgdelivery,modeId,csp"
+														event="itemSelect"
+														listener="#{relationsBean.checkRelations}" />
+														
+														<!-- <p:ajax update="mainPanel,msgdelivery,modeId,csp"
+														listener="#{relationsBean.checkRelations}" /> -->
+												</p:autoComplete>
+
+												<!-- /*Ended to populate the DB Values added @Koti 20/02/2015**/ -->
+											</p:panel>
+										</p:panel>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.englishraltionshipdescription']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgenglish" for="englishId" display="text" />
+												<p:inputText value="#{relationsBean.englishRelationsDesc}"
+													id="englishId" required="true"
+													requiredMessage="Please Enter English Relations Desc"
+													autocomplete="off"
+													onkeyup="this.value=this.value.toUpperCase()"
+													validatorMessage="Character only allow"
+													readonly="#{relationsBean.booReadonly}" maxlength="40">
+													<!-- <f:validator validatorId="allowOnlyCharectors" /> -->
+													<f:validateRegex pattern="[a-zA-Z _-]+" />
+													<p:ajax event="blur" update="msgenglish,submitPanel"
+														listener="#{relationsBean.hideSubmitButton}" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.localrelationshipdescription']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msglocal" for="localId" display="text" />
+												<p:inputText value="#{relationsBean.arabicRelationsDesc}"
+													id="localId" required="true"
+													requiredMessage="Please Enter Local Relations Desc"
+													readonly="#{relationsBean.booReadonly}"
+													style="text-align:right !important;color:#015825 !important; text-decoration:none !important; font-weight:bold;"
+													dir="RTL" maxlength="40">
+
+
+													<p:ajax event="blur" update="msglocal,submitPanel"
+														listener="#{relationsBean.hideSubmitButton}" />
+													<f:validator validatorId="arabicValidator" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											rendered="#{relationsBean.boohideButton}">
+											<p:commandButton value="#{msg['lbl.add']}"
+												action="#{relationsBean.allDetailsToList}" style="margin-right:10px;"
+												update="mainPanel" />
+
+											<p:commandButton value="#{msg['lbl.view']}"
+												action="#{relationsBean.getAllDataRecords}" style="margin-right:10px;"
+												update=":relationForm:mainPanel" immediate="true" onstart="process.show();" onsuccess="process.hide();"/>
+											<p:commandButton value="#{msg['lbl.clear']}"
+												action="#{relationsBean.clearAllFields}"
+												update=":relationForm" immediate="true" process="@this"
+												disabled="#{relationsBean.booDisableClear}" />
+											<!-- <p:commandButton value="Exit" action="#{relationsBean.exit}" immediate="true"/> -->
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											rendered="#{relationsBean.boohideSecod}">
+											<p:commandButton value="#{msg['lbl.approve']}" style="margin-right:10px;"
+												action="#{relationsBean.approval}" update=":relationForm" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												action="#{relationsBean.cancel}" process="@this" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+
+
+										<p:dataTable id="dataTable"
+											value="#{relationsBean.relationsDatatableDTList}" var="d"
+											rowIndexVar="rowIndex" emptyMessage="No records Found"
+											rendered="#{relationsBean.booRenderDataTable}" rows="10"
+											paginator="true"
+											styleClass="mydatatableclass"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="5,10,15" paginatorPosition="bottom"
+											sortMode="multiple">
+
+											<p:column headerText="#{msg['lbl.sino']}" style="width:30px;">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.englishraltionshipdescription']}">
+												<h:outputText value="#{d.englishRelationsDesc}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.localrelationshipdescription']}">
+												<h:outputText value="#{d.arabicRelationsDesc}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.edit']}">
+												<p:commandButton value="" id="imgEdit" styleClass="edit"
+													action="#{relationsBean.editRecord(d)}"
+													update=":relationForm" process="@this"
+													rendered="#{d.renderEditButton}"
+													disabled="#{relationsBean.booDisableEdit}">
+													<!-- <p:graphicImage value="../images/edit.png" id="imgEdit"/>  -->
+													<!-- 	<p:tooltip  for="imgEdit" value="#{msg['lbl.edit']}"/> -->
+												</p:commandButton>
+											</p:column>
+
+
+											<p:column headerText="#{msg['lbl.activatedeactivate']}"
+												style="text-align:center !important;">
+												<p:commandLink action="#{relationsBean.checkStatusType(d)}"
+													value="#{d.dynamicLabelForActivateDeactivate}"
+													style="color:blue !important; text-decoration:underline !important;"
+													update=":relationForm" immediate="true" process="@this" />
+											</p:column>
+											<!-- 	<p:column headerText="Status">
+           	<p:commandLink value="Active" actionListener="#{relationsBean.removeRecord(d)}"  immediate="true"  ajax="false" update="dataTable"  />
+        </p:column> -->
+
+										</p:dataTable>
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											rendered="#{relationsBean.booRenderSave}" id="submitPanel">
+											<p:commandButton id="save" value="#{msg['lbl.submit']}"
+												style="margin-right:10px;"
+												action="#{relationsBean.saveDataTableRecords}"
+												immediate="true" disabled="#{relationsBean.booSubmit}"  update="csp"/>
+
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{relationsBean.exit}" process="@this" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+										<p:panel styleClass="left_col">
+											<h:outputText id="mandatory"
+												value=" #{msg['lbl.*filedsAreMandatory']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+									<p:dialog modal="true" showHeader="true" header="Please wait.." widgetVar="process"  id="process"   width="400" height="100" resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+							    	</p:dialog> 			
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

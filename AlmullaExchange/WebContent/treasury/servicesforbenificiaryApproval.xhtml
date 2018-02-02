@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script src="../js/SigWeb.js"  type="text/javascript"></script>
+	<script src="../js/digitalsignature.js"></script>
+	<script type="text/javascript">
+		var baseUri = "http://localhost:47289/SigWeb/";		
+		document.onkeydown = function(e) {
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+
+		 history.pushState(null, null, 'servicesforbenificiaryApproval.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'servicesforbenificiaryApproval.xhtml');
+		    });
+	</script>
+</h:head>
+
+<p:confirmDialog id="notAuth" widgetVar="notAuth" width="400"
+		 resizable="false"
+		style="background-color: white !important;" header="Warning Dailog"
+		styleClass="warning" showEffect="clip" hideEffect="clip"
+		closeOnEscape="true" closable="true"
+		message="#{msg['lbl.sameusernotabletoapprove']}">
+	</p:confirmDialog>
+<h:body> 
+
+
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+							<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+						</td>
+
+				<td class="rightColumn" valign="top">
+				<h:panelGroup layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form1">
+								<h1>
+									<h:outputText
+										value="#{msg['lbl.benecountryApproval']}" />
+								</h1>				
+		  				
+							<p:panel styleClass="shadow" id="mainPanel">
+								<h2>
+								<h:outputText
+											value="#{msg['lbl.benecountryApprovalList']}" />
+											
+											<p:commandLink action="#{bankBranchDetails.cancel}"
+														 process="@this">
+														<p:graphicImage value="../images/return.jpg" width="25" height="25" id="imgEdit" styleClass="icon_right" style="float:right;" />
+														<p:tooltip for="imgEdit" value="Go to Home" style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;"/>
+													</p:commandLink>
+								</h2>
+								
+								<p:panel id="beneServiceApproval" styleClass="panel_border">
+											
+						<!-- <p:dataTable 
+							value="#{benecountryservice.lstbeneCountryServiceData}"
+												var="o"
+												
+												rowIndexVar="rowIndex" editable="true" id="datatable"
+												emptyMessage="#{msg['lbl.norecordfound']}"> -->
+												
+												
+			<p:dataTable id="dataTableId" var="o"  paginatorPosition="bottom" styleClass="mydatatableclass"
+	rows="10" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  rowsPerPageTemplate="5,10,15"
+	value="#{benecountryservice.lstbeneCountryServiceData}" rowIndexVar="rowIndex" emptyMessage="#{msg['lbl.norecordfound']}"    >									
+											
+																						
+											
+											
+											<p:column headerText= "#{msg['lbl.dslNo']}" width="2px" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"  >
+											<h:outputText value="#{rowIndex+1}" />
+										</p:column>
+         <p:column headerText="#{msg['lbl.dCountry']}" sortBy="#{o.countryName}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+            <h:outputText value="#{o.countryName}"/>
+        </p:column>
+ 
+        <p:column headerText="#{msg['lbl.dCurrency']}" sortBy="#{o.currencyName}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+            <h:outputText value="#{o.currencyName}"/>
+        </p:column>
+ 
+        <p:column headerText="#{msg['lbl.dservice']}" sortBy="#{o.serviceCode}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+            <h:outputText value="#{o.serviceCode}" />
+        </p:column>
+        
+         <p:column headerText="#{msg['lbl.dremittance']}" sortBy="#{o.remitanceMode}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+            <h:outputText value="#{o.remitanceMode}" />
+        </p:column>
+ 
+        <p:column headerText="#{msg['lbl.benedeliverymode']}" sortBy="#{o.deliveryMode}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+            <h:outputText value="#{o.deliveryMode}" />
+        </p:column>
+        
+       <!--  <p:column headerText="Created By" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+			<h:outputText value="#{o.createBy}" />
+		</p:column>
+		<p:column headerText="Created Date" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+			<h:outputText value="#{o.createDate}" />
+		</p:column> -->
+	
+			
+			<p:column headerText="#{msg['lbl.approve']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<p:commandLink action="#{benecountryservice.gotoBeneficiaryServiceApproval(o)}" process="@this" >
+													<p:graphicImage value="../images/approve.jpg" width="25" height="25" id="imgEdit" />
+													<p:tooltip for="imgEdit" value="#{msg['lbl.approve']}" style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;"/>
+												</p:commandLink>
+										</p:column>	
+			
+											</p:dataTable>
+										</p:panel>
+								
+							</p:panel>
+						</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"/>
+					</h:panelGroup>
+					<h:panelGroup layout="block" class="clearfix"/>
+					</td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

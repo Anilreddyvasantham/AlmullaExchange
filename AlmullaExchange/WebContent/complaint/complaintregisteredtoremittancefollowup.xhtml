@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+</h:head>
+<p:dialog id="complete" widgetVar="complete" width="270" height="70"
+	showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background: 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.recrdSavedSuccessfully']} " />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		action="#{complaintRegisteredToRemittancesBean.exitComplaintRequestToRemittanceFollowupAction}"
+		process="@this" />
+</p:dialog>
+
+<p:confirmDialog id="emailbodyError" widgetVar="emailbodyError" 
+		height="17" resizable="false" width="500"
+		style="background-color: white !important;" header="#{msg['lbl.warningDailog']}"
+		styleClass="warning" showEffect="clip" hideEffect="clip"
+		closable="true"
+		message=" Email Body is Mandatory in All DataTable  ">
+	</p:confirmDialog>
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="complaintregisteredtoremittanceform">
+								<h1>
+									<h:outputText
+										value="#{msg['lbl.complaintregisteredtoremittancefollowupaction']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h2>
+										<h:outputText
+											value="#{msg['lbl.complaintregisteredtoremittancefollowupaction']}" />
+									</h2>
+
+
+
+									<p:panel styleClass="panel_border">
+
+										<p:panel id="firstPanel">
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.bank']} " />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="bank" value="#{complaintRegisteredToRemittancesBean.bankFullName}" readonly="true" styleClass="readonly"></p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.followupaction']} " />
+													<h:outputText style="color:red" value="*" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:message id="msgfollowupActionId"  for="followupActionId" display="text" />
+												
+													<p:selectOneMenu id="followupActionId" 
+													value="#{complaintRegisteredToRemittancesBean.followupActionId}" 
+													filter="true"
+														required="true" filterMatchMode="startsWith"
+														requiredMessage="#{msg['lbl.selectfollowupaction']}"
+														tabindex="1">
+														<f:selectItem
+															itemLabel="#{msg['lbl.selectfollowupaction']}"
+															itemValue="" />
+														 <f:selectItems value="#{complaintRegisteredToRemittancesBean.getLstActionDescs()}" 
+															var="c" itemLabel="#{c.fullDescription}--#{c.complaintAction.actionGroup}" itemValue="#{c.complaintAction.complaintActionId}" />
+														<p:ajax event="change" update="mainPanel,msgfollowupActionId" listener="#{complaintRegisteredToRemittancesBean.complaintActionDetails}" /> 
+
+														<p:ajax />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.assignedTo']} " />
+													<h:outputText style="color:red" value="*" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="assignedTo" value="#{complaintRegisteredToRemittancesBean.assignedTo}"  readonly="true" styleClass="readonly"></p:inputText>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.communicationmthd']} " />
+													<h:outputText style="color:red" value="*" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:message id="msgcommunicationMethod"  for="communicationMethod" display="text" />
+													<p:inputText id="communicationMethod" value="#{complaintRegisteredToRemittancesBean.communicationMethod}" readonly="true" styleClass="readonly">
+													<p:ajax update="communicationMethod,msgcommunicationMethod"/>
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.remarkscode']} " />
+													<h:outputText style="color:red" value="*" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:message id="msgremarksId"  for="remarksId" display="text" />
+													<p:selectOneMenu id="remarksId" value="#{complaintRegisteredToRemittancesBean.remarksId}" filter="true"
+														required="true" filterMatchMode="startsWith"
+														requiredMessage="#{msg['lbl.selectremarks']}" tabindex="2">
+														<f:selectItem itemLabel="#{msg['lbl.selectremarks']}"
+															itemValue="" />
+															<f:selectItems
+															value="#{complaintRegisteredToRemittancesBean.listComplaintRemarksDesc}" var="c"
+															itemLabel="#{c.fullDesc}"
+															itemValue="#{c.complaintRemarks.complaintRemarksId}" />
+ -->
+														<p:ajax event="change" update="msgremarksId,remarksId" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.remarks']} " />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="remarks" value="#{complaintRegisteredToRemittancesBean.remarks}"  tabindex="3"></p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="10px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										
+										<p:panel id="emailDataTable" rendered="#{complaintRegisteredToRemittancesBean.booDataTableEmailRender}">
+										
+										    <p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.emailTo']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:message id="msgemailTo"  for="emailTo" display="text" />
+													<p:inputText id="emailTo" value="#{complaintRegisteredToRemittancesBean.emailTo}" required="true" requiredMessage="Please Enter Email To">
+													   <p:ajax update="msgemailTo"/>
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:dataTable id="dataTable" styleClass="mydatatableclass"
+												value="#{complaintRegisteredToRemittancesBean.lstAllEmailData}" var="c"
+												editable="true" editMode="cell" cellpadding="0"
+												cellspacing="0" border="1" rowIndexVar="rowIndex"
+												emptyMessage="#{msg['lbl.norecordfound']}">
+
+												<p:column headerText="#{msg['lbl.sino']}" >
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.remittanc']}" >
+													<h:outputText value="#{c.emailRemittanceYear} / #{c.emailRemittanceDocNo} " />
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.emailCC']}" style="width:25% !important;">
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{c.emailCC}" />
+														</f:facet>
+														<f:facet name="input">
+														<p:message for="emailcc" display="text" id="msgemailcc"/>
+															<p:inputText id="emailcc" value="#{c.emailCC}" onclick="this.select();" type="text" >
+																<p:ajax update="msgemailcc"/>
+															</p:inputText>
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.emailBody']}" style="width:60% !important;">
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{c.emailBody}" />
+														</f:facet>
+														<f:facet name="input">
+														<p:message for="emailbody" display="text" id="msgemailbody"/>
+															<p:inputText id="emailbody" value="#{c.emailBody}" onclick="this.select();" type="text" required="true" requiredMessage="Please Enter Email Body">
+																<p:ajax update="msgemailbody"/>
+															</p:inputText>
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+
+											</p:dataTable>
+
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											id="submitpanel">
+											<p:commandButton value="#{msg['lbl.back']}" action="#{complaintRegisteredToRemittancesBean.complaintRequestToRemittancePageNavigation}"
+												style="margin-right:10px; " process="@this" tabindex="4" />
+											<p:commandButton value="#{msg['lbl.save']}" action="#{complaintRegisteredToRemittancesBean.saveComplaintFollowUp}"
+												style="margin-right:10px; " update="mainPanel" tabindex="5" />
+											<p:commandButton value="#{msg['lbl.exit']}" action="#{complaintRegisteredToRemittancesBean.complaintSummaryPageNavigation}"
+												process="@this" tabindex="6" />
+										</h:panelGroup>
+										
+											<p:panel styleClass="left_col">
+										<h:outputText id="mandatory"
+											value=" #{msg['lbl.*filedsAreMandatory']}"
+											style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										<h:panelGroup layout="block" class="clearfix" />
+										
+									</p:panel>
+									
+									<h:panelGroup layout="block" class="clearfix" />
+										
+
+									</p:panel>
+
+								
+								</p:panel>
+
+
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

@@ -1,0 +1,813 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+		history.pushState(null, null, 'GsmPlaceOrder.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'GsmPlaceOrder.xhtml');
+		});
+	</script>
+	<style type="text/css">
+.Y {
+	background-color: red;
+	color: green;
+}
+
+.nego {
+	background-color: red !important;
+}
+
+.nonnego {
+	background-color: #ffffff !important;
+}
+</style>
+</h:head>
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+
+							<h1>
+								<h:outputText value="#{msg['lbl.gsmPlaceOrder']}" />
+							</h1>
+
+
+							<h:form id="form"
+								onkeypress="if (event.keyCode == 13) { return false; }">
+								<p:panel styleClass="shadow" id="mainPanel"
+									style="background-color:#FFF !important; ">
+
+									<p:confirmDialog id="bankNot" widgetVar="bankNot"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{msg['lbl.bankNot']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{gSMPlaceOrderBean.errorMessage}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="negotiateCheck" widgetVar="negotiateCheck"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="Current rate offered and negotiate rate offered is same,Please give another rate">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{gSMPlaceOrderBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="minmaxcheck" widgetVar="minmaxcheck"
+										header="#{msg['lbl.warningDailog']}" styleClass="red"
+										showHeader="false" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closable="true"
+										message="#{msg['lbl.fundminmaxcheck']} #{gSMPlaceOrderBean.rateOfferMinRate} - #{gSMPlaceOrderBean.rateOfferMaxRate}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="customerRefNotExist"
+										widgetVar="customerRefNotExist"
+										header="#{msg['lbl.warningDailog']}" styleClass="red"
+										showHeader="false" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closable="true"
+										message="#{msg['lbl.custrRefNotExist']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="noSellRate" widgetVar="noSellRate"
+										header="#{msg['lbl.warningDailog']}" styleClass="red"
+										showHeader="false" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closable="true"
+										message="#{msg['lbl.minmaxRateCombination']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="routingBank" widgetVar="routingBank"
+										header="#{msg['lbl.warningDailog']}" styleClass="red"
+										showHeader="false" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closable="true"
+										message="#{msg['lbl.pleaseSctRoutingBank']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="checkBox" widgetVar="checkBox"
+										header="#{msg['lbl.warningDailog']}" styleClass="red"
+										showHeader="false" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closable="true"
+										message="#{msg['lbl.pleaseSctCheckBox']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="commonPollInd" widgetVar="commonPollInd"
+										header="#{msg['lbl.warningDailog']}" styleClass="red"
+										showHeader="false" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closable="true"
+										message="#{msg['lbl.plsSelectRoutingBankAndRateOfferedAndCheckBox']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="plsSelectMan" widgetVar="plsSelectMan"
+										header="#{msg['lbl.warningDailog']}" styleClass="red"
+										showHeader="false" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closable="true"
+										message="#{msg['lbl.selectRoutingBankAndCountryandRate']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="noRecords" widgetVar="noRecords"
+										header="#{msg['lbl.warningDailog']}" styleClass="red"
+										showHeader="false" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closable="true"
+										message="#{msg['lbl.noRecordFound']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="selectCurrency" widgetVar="selectCurrency"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{msg['lbl.pleaseSelectCurrency']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="rateOffred" widgetVar="rateOffred"
+										header="#{msg['lbl.warningDailog']}" styleClass="red"
+										showHeader="false" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closable="true"
+										message="#{msg['lbl.PleaseEnterRateOffered']}">
+									</p:confirmDialog>
+
+									<p:dialog id="complete" widgetVar="complete" showHeader="false"
+										resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} " />
+										<br />
+										<p:spacer width="15px" />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{gSMPlaceOrderBean.clickOnOKSave}"
+											process="@this" update="mainPanel" />
+									</p:dialog>
+
+									<p:dialog id="alreadyapprov" widgetVar="alreadyapprov"
+										width="400" height="80" showHeader="false" resizable="false"
+										style=" border:2px solid green !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel value="#{msg['lbl.thisratealreadyapprovedby']}" />
+										<br />
+										<p:spacer width="15px" />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{gSMPlaceOrderBean.clickOnOKSave}"
+											process="@this" />
+									</p:dialog>
+
+									<h3>
+										<h:outputText value="#{msg['lbl.gsmPlaceOrder']}" />
+									</h3>
+
+									<p:panel styleClass="panel_border">
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.area']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="areaId" display="text" id="msgareaId" />
+												<p:selectOneMenu id="areaId" filterMatchMode="contains"
+													filter="true" value="#{gSMPlaceOrderBean.area}">
+													<f:selectItem itemLabel="#{msg['lbl.pleSelectarea']}"
+														itemValue="" />
+													<f:selectItems value="#{gSMPlaceOrderBean.lstViewArea}"
+														var="c" itemLabel="#{c.areaDesc}" itemValue="#{c.areaNo}" />
+													<p:ajax event="change"
+														listener="#{gSMPlaceOrderBean.toClearDetails}"
+														update="msgareaId,mainPanel" onstart="process.show()"
+														onsuccess="process.hide();" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.branch']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="branchId" display="text" id="msgbranchId" />
+												<p:selectOneMenu id="branchId" filterMatchMode="contains"
+													filter="true" value="#{gSMPlaceOrderBean.countryBranchid}">
+													<f:selectItem itemLabel="#{msg['lbl.pleaseSelectBranch']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{gSMPlaceOrderBean.lstCountryBranch}" var="c"
+														itemLabel="#{c.branchId} - #{c.branchName}"
+														itemValue="#{c.countryBranchId}" />
+													<p:ajax event="change"
+														listener="#{gSMPlaceOrderBean.toClearDetails}"
+														update="msgbranchId,mainPanel" onstart="process.show()"
+														onsuccess="process.hide();" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel id="fixRatePanel">
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.fixRate']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="fixRate" display="text" id="msgFixRateId" />
+													<p:selectOneMenu id="fixRate"
+														value="#{gSMPlaceOrderBean.fixRateid}" filter="true"
+														filterMatchMode="contains">
+														<f:selectItem
+															itemLabel="#{msg['lbl.pleaseSelectFixRateId']}" />
+														<f:selectItem itemLabel="#{msg['lbl.yes']}" itemValue="Y" />
+														<f:selectItem itemLabel="#{msg['lbl.no']}" itemValue="N" />
+														<!-- gSMPlaceOrderBean.toFetchRoutingDetails -->
+														<p:ajax event="change"
+															listener="#{gSMPlaceOrderBean.toFtechRoutingCountry}"
+															update="msgFixRateId,mainPanel,routingPanel"
+															onstart="process.show()" onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel id="fixRateServicePanel" rendered="#{gSMPlaceOrderBean.fixRateid == 'Y' ? 'true' : 'false'}">
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.dservice']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="serviceId" display="text" id="msgserviceId" />
+													<p:selectOneMenu id="serviceId"
+														value="#{gSMPlaceOrderBean.serviceMasterId}" filter="true" required="true" requiredMessage="Please select Service"
+														filterMatchMode="contains">
+														<f:selectItem
+															itemLabel="#{msg['lbl.selectservicecode']}" />
+														<f:selectItems
+															value="#{gSMPlaceOrderBean.lstServiceMaster}" var="c"
+															itemLabel="#{c.serviceMaster.serviceCode} - #{c.localServiceDescription}"
+															itemValue="#{c.serviceMaster.serviceId}" />
+														<p:ajax event="change"
+															listener="#{gSMPlaceOrderBean.chkBeneBankDt}"
+															update="msgserviceId,mainPanel,routingPanel"
+															onstart="process.show()" onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel id="CurrencyPanel"
+											rendered="#{gSMPlaceOrderBean.booRenderCurrency}">
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText
+														value="#{msg['lbl.destination']} #{msg['lbl.currency']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;"
+														rendered="#{gSMPlaceOrderBean.booRenderFixRate}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="currencyId" display="text"
+														id="msgCurrencyId" />
+													<p:selectOneMenu id="currencyId" filterMatchMode="contains"
+														filter="true" value="#{gSMPlaceOrderBean.currencyid}"
+														required="#{gSMPlaceOrderBean.booRenderFixRate}"
+														requiredMessage="Please Select Currency">
+														<f:selectItem
+															itemLabel="#{msg['lbl.pleaseSelectCurrency']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{gSMPlaceOrderBean.lstCurrencyMaster}" var="c"
+															itemLabel="#{c.currencyCode} - #{c.currencyName}"
+															itemValue="#{c.currencyId}" />
+														<p:ajax event="change"
+															update="msgCurrencyId,fixRatePanel,mainPanel,country"
+															listener="#{gSMPlaceOrderBean.fetchBeneficiaryCountry}"
+															onstart="process.show()" onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.customerRef']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="customerRef" display="text"
+													id="msgcustomerRef" />
+												<p:inputText id="customerRef"
+													value="#{gSMPlaceOrderBean.customerReference}">
+													<p:ajax event="blur"
+														listener="#{gSMPlaceOrderBean.toCheckValidCustomerRef}"
+														update="msgcustomerRef,mainPanel" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText
+													value="#{msg['lbl.benificiary']} #{msg['lbl.benecountry']}" />
+												<h:outputText value="*" style="color:red !important;"
+													rendered="#{gSMPlaceOrderBean.booRenderFixRate}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgbencountryid" for="country" display="text" />
+												<p:selectOneMenu id="country"
+													value="#{gSMPlaceOrderBean.beneficiaryCountryId}"
+													filterMatchMode="contains" filter="true"
+													required="#{gSMPlaceOrderBean.booRenderFixRate}"
+													requiredMessage="Please Select Country">
+													<f:selectItem itemLabel="#{msg['lbl.selectCountry']}"
+														itemValue="" />
+													<f:selectItems value="#{gSMPlaceOrderBean.lstCountry}"
+														var="c"
+														itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+														itemValue="#{c.fsCountryMaster.countryId}" />
+													<p:ajax event="change" update="mainPanel,msgbencountryid"
+														listener="#{gSMPlaceOrderBean.populateBanks}"
+														onstart="process.show();" onsuccess="process.hide();" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.beneficaryBank']}" />
+												<h:outputText value="*" style="color:red !important;"
+													rendered="#{gSMPlaceOrderBean.beneBankMandatory}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:column
+													style="width:100%; text-align:left;padding:0px !important;"
+													rendered="#{gSMPlaceOrderBean.booRenderMultipleBank}">
+													<p:message id="msgBankId" for="bank" display="text" />
+													<p:selectOneMenu id="bank"
+														value="#{gSMPlaceOrderBean.beneficiaryBankid}"
+														filter="true" required="#{gSMPlaceOrderBean.beneBankMandatory}" filterMatchMode="contains"
+														requiredMessage="#{msg['lbl.pleaseSelectBank']}"
+														disabled="#{gSMPlaceOrderBean.booRenderBeneBank}">
+														<f:selectItem itemLabel="#{msg['lbl.selectbank']}"
+															itemValue="" />
+														<f:selectItems value="#{gSMPlaceOrderBean.lstBanks}"
+															var="c" itemLabel="#{c.populateCode} - #{c.populateName}"
+															itemValue="#{c.populateId}" />
+														<!-- <p:ajax for="bank" update="mainPanel" /> -->
+														<p:ajax event="change" update="mainPanel,msgBankId"
+														listener="#{gSMPlaceOrderBean.fetchRoutingBankForBene}"
+														onstart="process.show();" onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:column>
+												<p:column
+													style="width:100%; text-align:left;padding:0px !important;"
+													rendered="#{gSMPlaceOrderBean.booRenderSingleBank}">
+													<p:inputText
+														value="#{gSMPlaceOrderBean.beneficiaryBankName}"
+														styleClass="ui-state-disabled" readonly="true">
+														<p:ajax />
+													</p:inputText>
+												</p:column>
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix"></div>
+
+										<p:panel id="routingPanel"
+											rendered="#{gSMPlaceOrderBean.booRoutingDeatls}">
+											<h2>
+												<h:outputText value="#{msg['lbl.routingdet']}" />
+											</h2>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.routingCountry']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="countryId" display="text" id="msgcountryId" />
+													<p:selectOneMenu id="countryId" filterMatchMode="contains"
+														filter="true" value="#{gSMPlaceOrderBean.routingCountry}"
+														required="true"
+														requiredMessage="Please select Routing Country">
+														<f:selectItem
+															itemLabel="#{msg['lbl.pleaseselectcountry']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{gSMPlaceOrderBean.lstRoutingCountry}" var="c"
+															itemLabel="#{c.populateCode} - #{c.populateName}"
+															itemValue="#{c.populateId}" />
+														<p:ajax event="change"
+															listener="#{gSMPlaceOrderBean.toFetchRoutingBank}"
+															update="msgcountryId,mainPanel" onstart="process.show()"
+															onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.routingBank']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="bankId" display="text" id="msgbankId" />
+													<p:selectOneMenu id="bankId" filterMatchMode="contains"
+														filter="true" value="#{gSMPlaceOrderBean.routingBank}"
+														required="true"
+														requiredMessage="Please select Routing Country">
+														<f:selectItem
+															itemLabel="#{msg['lbl.bank.pleaseSelectBank']}"
+															itemValue="" />
+														<f:selectItems value="#{gSMPlaceOrderBean.lstRoutingBank}"
+															var="c" itemLabel="#{c.populateCode} - #{c.populateName}"
+															itemValue="#{c.populateId}" />
+														<p:ajax event="change" update="msgbankId,mainPanel"
+															onstart="process.show()" onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.rateOffered']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="rateOfferId" display="text"
+														id="msgrateOfferId" />
+													<p:inputText id="rateOfferId"
+														value="#{gSMPlaceOrderBean.rateOffered}" required="true"
+														requiredMessage="Please enter Rate Offered">
+														<p:ajax event="blur" update="msgrateOfferId" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+										</p:panel>
+										<!-- render routing panel -->
+
+										<div class="clearfix"></div>
+										<p:spacer height="10px" />
+										<div class="clearfix"></div>
+
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.search']}"
+												action="#{gSMPlaceOrderBean.search}" update="mainPanel"
+												onstart="process.show()" onsuccess="process.hide();"
+												style="margin-right:10px;" />
+											<p:commandButton value="#{msg['lbl.clear']}"
+												action="#{gSMPlaceOrderBean.pageNavigation}"
+												update="mainPanel" onstart="process.show()"
+												onsuccess="process.hide();" style="margin-right:10px;"
+												process="@this" />
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{gSMPlaceOrderBean.cancel}" update="mainPanel"
+												onstart="process.show();" onsuccess="process.hide();"
+												immediate="true" />
+											<div class="clearfix"></div>
+										</h:panelGroup>
+
+
+										<div class="clearfix"></div>
+										<p:spacer height="10px" />
+										<div class="clearfix"></div>
+										<p:panel id="dataTablePanel"
+											rendered="#{gSMPlaceOrderBean.booRenderDataTable}">
+											<p:dataTable id="dataTable" var="d"
+												value="#{gSMPlaceOrderBean.lstGsmPlaceOrderDt}"
+												styleClass="mydatatableclass"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												paginator="true" rows="5" rowsPerPageTemplate="5,10,15,20"
+												paginatorPosition="bottom" editable="true" editMode="cell"
+												rowKey="#{d.rateOfferedPk}" rowIndexVar="rowIndex"
+												emptyMessage="#{msg['lbl.noRecordFound']}">
+
+												<p:column headerText="#{msg['lbl.sino']}" style="width:3%;">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.customerName']}"
+													sortBy="#{d.customerName}" style="width:10%;">
+													<h:outputLabel value="#{d.customerName}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.currency']}"
+													sortBy="#{d.requestcurrencyName}" style="width:5%;">
+													<h:outputLabel value="#{d.requestcurrencyName}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.amount']}"
+													sortBy="#{d.amount}" style="width:3%;">
+													<h:outputLabel value="#{d.amount}"
+														style="float:left;margin-left:5px;margin-right:5px;font-weight: bold;font-size: 130%;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.beneficaryBank']}"
+													sortBy="#{d.beneficiaryBankName}" style="width:8%;">
+													<h:outputLabel value="#{d.beneficiaryBankName}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.routingCountry']}"
+													style="width:8%;">
+													<p:message id="msgmultiRoutingCountry"
+														for="droutingCountry" display="text" />
+													<p:selectOneMenu id="droutingCountry"
+														value="#{d.routingCountry}" required="true" filter="true"
+														filterMatchMode="contains"
+														requiredMessage="Please Select Routing Country"
+														disabled="#{d.booReadOnlyCheckBox}">
+														<f:selectItem
+															itemLabel="#{msg['lbl.selectroutingcountry']}"
+															itemValue="" />
+														<f:selectItems value="#{d.routingCountryvalues}" var="c"
+															itemLabel="#{c.populateCode} - #{c.populateName}"
+															itemValue="#{c.populateId}" />
+														<p:ajax event="change"
+															listener="#{gSMPlaceOrderBean.toFetchRoutingBankByroutingCountry(d)}"
+															update="msgmultiRoutingCountry,:form:mainPanel,droutingBank"
+															onstart="process.show();" onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:column>
+
+												<p:ajax event="cellEdit"
+													listener="#{gSMPlaceOrderBean.onCellEdit}"
+													update=":form:dataTable" />
+
+												<p:column headerText="#{msg['lbl.routingBank']}"
+													style="width:8%;">
+													<p:message id="msgmultiRoutingBank" for="droutingBank"
+														display="text" />
+													<p:selectOneMenu id="droutingBank"
+														value="#{d.routingBankId}" required="true" filter="true"
+														filterMatchMode="contains"
+														requiredMessage="Please Select Routing Bank"
+														disabled="#{d.booReadOnlyCheckBox}"
+														styleClass="padding:10px !important;">
+														<f:selectItem itemLabel="#{msg['lbl.selectRoutingBank']}"
+															itemValue="" />
+														<f:selectItems value="#{d.routingbankvalues}" var="c"
+															itemLabel="#{c.populateCode} - #{c.populateName}"
+															itemValue="#{c.populateId}" />
+														<p:ajax event="change"
+															listener="#{gSMPlaceOrderBean.checkMax(d)}"
+															update="msgmultiRoutingBank,:form:mainPanel"
+															onstart="process.show();" onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.exchangerate']}"
+													style="width:5%;">
+													<h:outputLabel value="#{d.actualRate}"
+														style="float:left;margin-left:5px;margin-right:5px;font-weight: bold;font-size: 130%;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.rateOffered']}" width="7%">
+													<p:message id="MsgRateOffered" for="rateOfferId"
+														display="text" />
+													<p:inputText value="#{d.rateOffered}" id="rateOfferId"
+														disabled="#{d.booReadOnlyCheckBox}">
+														<p:ajax event="blur"
+															update="MsgRateOffered,:form:mainPanel,:form:minmaxcheck"
+															listener="#{gSMPlaceOrderBean.checkMax(d)}" />
+													</p:inputText>
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.countrybranch']}"
+													style="width:7%;">
+													<h:outputText value="#{d.countryBranchCode} - #{d.countryBranchName}">
+														<f:convertDateTime pattern="dd/MM/yyyy" />
+													</h:outputText>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.valuedate']}"
+													style="width:5%;">
+													<h:outputText value="#{d.valueDate}">
+														<f:convertDateTime pattern="dd/MM/yyyy" />
+													</h:outputText>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.view']}" style="width:3%;">
+													<p:commandLink value="#{d.view}"
+														disabled="#{d.booReadOnlyCheckBox}"
+														action="#{gSMPlaceOrderBean.fetchingAllRecordsFromDB(d)}"
+														process="@this"
+														update=":form:dataTable,:form:dataTableFiveTrnx,:form:mainPanel"
+														style="font-weight: bold; font-size:12px !important; color:blue !important; text-decoration:underline !important;"
+														onstart="process.show();" onsuccess="process.hide();" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.select']}"
+													style="width:3%;">
+													<p:message id="msgCheckBoxId" for="checkBoxId"
+														display="text" />
+													<p:selectBooleanCheckbox id="checkBoxId"
+														value="#{d.selectCheckBox}" required="true"
+														requiredMessage="Please Select CheckBox">
+														<p:ajax event="change"
+															listener="#{gSMPlaceOrderBean.SelectCheckBoxList(d)}"
+															update=":form:mainPanel,:form:dataTable:msgCheckBoxId"
+															onstart="process.show();" onsuccess="process.hide();" />
+													</p:selectBooleanCheckbox>
+												</p:column>
+
+												<p:column headerText="Status" style="width:2%;">
+													<h:outputText value="New"
+														style="background-color:white !important;"
+														rendered="#{d.boonegotiate eq 'true'}" />
+													<h:outputText
+														style="background-color:green !important;padding:20px !important;"
+														rendered="#{d.boonegotiate eq 'false'}" />
+												</p:column>
+
+											</p:dataTable>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<h:outputText id="Note1"
+													value="Note : Please Select CheckBox To Enable Routing Details"
+													style="background-color: green; color: white !important; font-family: times new roman !important; font-size: 16px !important; font-weight: bold;" />
+											</p:panel>
+										</p:panel>
+										<div class="clearfix"></div>
+
+										<div class="clearfix"></div>
+										<p:spacer height="10px" />
+										<div class="clearfix"></div>
+
+										<p:panel id="dataTableFiveTrnx"
+											rendered="#{gSMPlaceOrderBean.booRenderlstFiveTrnxDataTable}">
+											<h2>
+												<h:outputText value="#{msg['lbl.lastFiveTrnxForSpeCustr']}" />
+												(
+												<h:outputText
+													value="#{gSMPlaceOrderBean.customerRefandName}"
+													style="color:red !important;" />
+												)
+											</h2>
+
+
+											<p:dataTable id="dataTablePlace" var="d"
+												value="#{gSMPlaceOrderBean.gsmPlaceOrderDt}" rowKey=""
+												rowIndexVar="rowIndex"
+												emptyMessage="#{msg['lbl.noRecordFound']}"
+												styleClass="mydatatableclass">
+
+												<p:column headerText="#{msg['lbl.sino']}"
+													style="width:30px;">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.dateOfRequest']}">
+													<h:outputText value="#{d.viewCreatedDate}">
+														<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+													</h:outputText>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.branch']}">
+													<h:outputText value="#{d.viewCountryBranchName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.country']}">
+													<h:outputText value="#{d.viewBeneCountryName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.benificaryName']}">
+													<h:outputText value="#{d.viewBeneName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.beneficaryBank']}">
+													<h:outputText value="#{d.viewBeneBankName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.gsmRemittanceType']}">
+													<h:outputText value="#{d.viewRemitName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.currency']}">
+													<h:outputText value="#{d.viewCurrencyName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.amount']}">
+													<h:outputText value="#{d.viewtrnxAmount}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.rateOffered']}">
+													<h:outputText value="#{d.rateOfferedLastTanx}" />
+												</p:column>
+
+
+											</p:dataTable>
+
+										</p:panel>
+
+
+
+										<div class="clearfix"></div>
+										<p:spacer height="10px" />
+										<div class="clearfix"></div>
+
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											rendered="#{gSMPlaceOrderBean.booRenderSaveOrExit}">
+											<p:commandButton value="#{msg['lbl.save']}"
+												style="margin-right:10px;"
+												action="#{gSMPlaceOrderBean.saveAll}" update="mainPanel"
+												process="@this" onstart="process.show()"
+												onsuccess="process.hide();" />
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{gSMPlaceOrderBean.exit}" immediate="true"
+												process="@this" update="mainPanel" onstart="process.show()"
+												onsuccess="process.hide();" />
+											<div class="clearfix"></div>
+										</h:panelGroup>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col">
+											<h:outputText id="mandatory"
+												value=" #{msg['lbl.*filedsAreMandatory']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col">
+											<h:outputText id="Note"
+												value="Note : To enble fix rate currency is mandatory"
+												style="background-color: green; color: white !important; font-family: times new roman !important; font-size: 16px !important; font-weight: bold;" />
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:outputText id="Note3"
+												value="Note : To enble beneficiary bank country is mandatory"
+												style="background-color: green; color: white !important; font-family: times new roman !important; font-size: 16px !important; font-weight: bold;" />
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:dialog modal="true" showHeader="false" widgetVar="process"
+											id="process" width="300" height="60" resizable="false"
+											draggable="false" closable="false"
+											style=" border: 2px green solid !important;background-color: #FFF !important;">
+											<div
+												style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+												<p:graphicImage value="../images/processImg.gif"
+													style="float: left !important; margin-right: 24px !important; " />
+												<p:outputLabel value="Please wait ........"
+													style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+											</div>
+										</p:dialog>
+									</p:panel>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+					</h:panelGroup></td>
+			</tr>
+		</table>
+
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

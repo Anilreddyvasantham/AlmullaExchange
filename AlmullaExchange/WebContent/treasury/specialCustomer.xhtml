@@ -1,0 +1,1210 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+
+		history.pushState(null, null, 'specialCustomer.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'specialCustomer.xhtml');
+		});
+	</script>
+	<script src="../js/script.js"></script>
+	<style>
+.buttonStyle {
+	padding: 4px 10px 4px 7px !important;
+	margin-left: 214px !important;
+	background-color: white !important;
+	border-top: 2px solid white !important;
+	border-right: 2px solid white !important;
+	border-bottom: 2px solid white !important;
+	border-left: 2px solid white !important;
+	color: #0687F5 !important;
+	font-size: 18px !important;
+	font-weight: bold !important;
+	box-shadow: 0px 1px 0px 0px rgba(80, 12, 12, 0) inset !important;
+}
+
+.buttonStyle:HOVER {
+	padding: 4px 10px 4px 7px !important;
+	border-top: 2px solid #0EE60E !important;
+	border-right: 2px solid #0EE60E !important;
+	border-bottom: 2px solid #0EE60E !important;
+	border-left: 2px solid #0EE60E !important;
+	border-radius: 4px !important;
+	background-color: white !important;
+	color: #0EE60E !important;
+	font-size: 18px !important;
+	font-weight: bold !important;
+}
+</style>
+</h:head>
+
+<h:body>
+	<!-- onload="#{specialCustomerDealRequestBean.documentSerialId}==0?proceErr.show();:proceErr.hide();" -->
+	<p:dialog id="complete" widgetVar="complete" width="400" height="80"
+		resizable="false" style="background-color: white !important;"
+		styleClass="success" header="Success" closable="false"
+		showEffect="clip" hideEffect="clip" modal="true">
+		<p:outputLabel value="#{msg['lbl.dataissuccessfullysaved']}"
+			style="text-align: center; font-size:15px !important;" />
+		<br />
+		<p:commandButton value="#{msg['lbl.ok']}"
+			actionListener="#{specialCustomerDealRequestBean.specialCustomerPageNavigation}"
+			style="margin-left: 150px !important;" />
+	</p:dialog>
+
+	<p:dialog id="onAdd" widgetVar="onAdd" width="400" height="60"
+		resizable="false" style="background-color: white !important;"
+		styleClass="success" header="Success" closable="true"
+		showEffect="clip" hideEffect="clip">
+		<p:outputLabel value="#{msg['lbl.fcAmountChangedSuccessfully']}"
+			style="text-align: center; font-size:15px !important;" />
+		<br />
+	</p:dialog>
+
+	<p:dialog id="onUpdate" widgetVar="onUpdate" width="400" height="80"
+		resizable="false" style="background-color: white !important;"
+		styleClass="success" header="Success" closable="false"
+		showEffect="clip" hideEffect="clip">
+		<p:outputLabel value="#{msg['lbl.dataSuccessfullyUpadated']}"
+			style="text-align: center; font-size:15px !important;" />
+		<br />
+		<p:commandButton value="#{msg['lbl.ok']}"
+			actionListener="#{specialCustomerDealRequestBean.specialCustomerPageNavigation}"
+			style="margin-left: 150px !important;" />
+	</p:dialog>
+
+
+
+	<p:confirmDialog id="dataNotFund" widgetVar="dataNotFund" width="400"
+		resizable="false" style="background-color: white !important;"
+		header="Warning Dailog" styleClass="warning" showEffect="clip"
+		hideEffect="clip" closeOnEscape="true" closable="true"
+		message="#{msg['lbl.addAlteastOneRecordtoDataTable']}">
+	</p:confirmDialog>
+
+
+	<p:confirmDialog id="currencyMandatory" widgetVar="currencyMandatory"
+		width="400" resizable="false"
+		style="background-color: white !important;" header="Warning Dailog"
+		styleClass="warning" showEffect="clip" hideEffect="clip"
+		closeOnEscape="true" closable="true"
+		message="Currency is mantory for this rate">
+	</p:confirmDialog>
+	<p:confirmDialog id="noBankFound" widgetVar="noBankFound" width="250"
+		resizable="false" style="background-color: white !important;"
+		header="Warning Dailog" styleClass="warning" showEffect="clip"
+		hideEffect="clip" closeOnEscape="true" closable="true"
+		message="No Banks Found">
+	</p:confirmDialog>
+	<p:confirmDialog id="noCurrency" widgetVar="noCurrency" width="250"
+		resizable="false" style="background-color: white !important;"
+		header="Warning Dailog" styleClass="warning" showEffect="clip"
+		hideEffect="clip" closeOnEscape="true" closable="true"
+		message="No Currency Found">
+	</p:confirmDialog>
+	<p:confirmDialog id="DocNoNotFound" widgetVar="DocNoNotFound"
+		width="250" resizable="false"
+		style="background-color: white !important;" header="Warning Dailog"
+		styleClass="warning" showEffect="clip" hideEffect="clip"
+		closeOnEscape="true" closable="true"
+		message="#{msg['lbl.DocumentNumberNotFounde']}">
+	</p:confirmDialog>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<f:event
+			listener="#{specialCustomerDealRequestBean.populateSearchValue}"
+			type="preRenderView" />
+		<h:form id="validateForm">
+
+
+
+			<p:dialog modal="true" showHeader="false" widgetVar="statusDialog"
+				id="statusDialog" width="300" height="60" resizable="false"
+				draggable="false" closable="false"
+				style=" border: 2px green solid !important;background-color: #FFF !important;">
+				<div
+					style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+					<p:graphicImage value="../images/processImg.gif"
+						style="float: left !important; margin-right: 24px !important; " />
+					<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+						style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+				</div>
+			</p:dialog>
+
+			<p:dialog id="idNotFound" widgetVar="idNotFound" resizable="false"
+				closable="false" showHeader="false"
+				style="background-color: white !important; border-radius: 7px !important;
+																			display: block;
+																			border: 4px solid #F00 !important;"
+				styleClass="warning" showEffect="clip" hideEffect="clip">
+				<p:outputLabel value="Warning"
+					style="font-size: 17px !important;
+																						font-weight: bold !important;
+																						color: rgba(255, 27, 0, 0.95) !important;" />
+				<p:outputLabel value="#{msg['lbl.iDNotFound']}"
+					style="font-size: 12px !important; font-weight: bold !important;" />
+				<br />
+				<p:commandLink value="#{msg['lbl.ok']}" styleClass="buttonStyle"
+					actionListener="#{specialCustomerDealRequestBean.idNotFound}"
+					process="@this" update="mainPanel"
+					onclick="PF('idNotFound').hide()" />
+			</p:dialog>
+
+			<p:dialog id="zeroDocNo" widgetVar="zeroDocNo" resizable="false"
+				closable="false" showHeader="false"
+				style="background-color: white !important; border-radius: 7px !important;
+																			display: block;
+																			border: 4px solid #F00 !important;"
+				styleClass="warning" showEffect="clip" hideEffect="clip">
+				<p:outputLabel value="Warning"
+					style="font-size: 17px !important;
+																						font-weight: bold !important;
+																						color: rgba(255, 27, 0, 0.95) !important;" />
+				<p:outputLabel value="#{msg['lbl.documentNumberNotAavailable']}"
+					style="font-size: 12px !important; font-weight: bold !important;" />
+				<br />
+				<p:commandLink value="#{msg['lbl.ok']}" styleClass="buttonStyle"
+					onclick="PF('zeroDocNo').hide()" />
+			</p:dialog>
+
+
+			<!-- 			<p:dialog id="idNotFound" widgetVar="idNotFound" 
+				 resizable="false" closable="false" showHeader="false"
+				style="background-color: white !important; border-radius: 7px !important;
+																			display: block;
+																			border: 3px solid #F00 !important;" 
+				styleClass="warning" showEffect="clip" hideEffect="clip">
+				<p:outputLabel value="Information"  style="font-size: 19px !important;
+																						font-weight: bold !important;
+																						color: rgba(255, 27, 0, 0.95) !important;"/>
+						<table>
+							<tr><td><p:outputLabel value="Remittance Value:&nbsp;" style="font-size: 17px !important;"/></td>
+								  <td><p:outputLabel value="#{personalRemittanceBean.remittanceName}" style="font-size: 17px !important; font-weight:bold !important;"/></td>
+								  <td><p:outputLabel value="&nbsp;&nbsp; Changed To:&nbsp;" style="font-size: 17px !important;"/></td>
+								  <td><p:outputLabel value="NEFT" style="font-size: 17px !important; font-weight:bold !important;"/></td>
+							</tr>
+							<tr><td><p:outputLabel value="Delivery Value:&nbsp;" style="font-size: 17px !important;"/></td>
+								  <td><p:outputLabel value=" RTGS" style="font-size: 17px !important; font-weight:bold !important;"/></td>
+								  <td><p:outputLabel value="&nbsp;&nbsp; Changed To:&nbsp;" style="font-size: 17px !important;"/></td>
+								  <td><p:outputLabel value="NEFT" style="font-size: 17px !important; font-weight:bold !important;"/></td>
+							</tr>
+						</table>																
+					<br/>
+					<br/>
+					<div style="text-align:center !important;">
+				<p:commandLink value="OK" 
+					onclick="PF('idNotFound').hide()"
+					style="color: #0687F5 !important;
+							font-size: 17px !important;
+							font-weight: bold !important;" />
+				</div>			
+			</p:dialog>
+			 -->
+			<table align="left" width="100%" style="height: 100%;">
+
+				<tr>
+					<td align="left" valign="top" style="height: 100%;"><ui:include
+							src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle"
+										src="../images/toggle_plus.png" alt=""
+										onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+								<h1>
+									<h:outputText value="#{msg['lbl.specialCustomerDealRequest']}" />
+								</h1>
+
+								<p:panel styleClass="shadow" id="mainPanel"
+									style="background-color:#FFF !important;">
+
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{specialCustomerDealRequestBean.errorMessage}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{specialCustomerDealRequestBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+									<h2>
+										<h:outputText
+											value="#{msg['lbl.specialCustomerDealRequestCreation']}" />
+									</h2>
+
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+
+									<!-- FIRST PANEL -->
+									<p:panel styleClass="panel_border"
+										style="padding-bottom:0px !important;" id="spdrfirstPanel"
+										rendered="#{specialCustomerDealRequestBean.booRenderFirstPanel}">
+
+										<!-- 
+								<p:confirmDialog id="proceErr" widgetVar="proceErr" width="400" visible="#{specialCustomerDealRequestBean.visableSet}"
+									resizable="false" style="background-color: white !important;"
+									header="Warning Dailog" styleClass="warning" showEffect="clip"
+									hideEffect="clip" closeOnEscape="true" closable="true"
+									message="#{specialCustomerDealRequestBean.errMsg}" appendToBody="true">
+								</p:confirmDialog>
+								 -->
+
+										<p:confirmDialog id="tentiveRate" widgetVar="tentiveRate"
+											width="400" resizable="false"
+											style="background-color: white !important;"
+											header="Warning Dailog" styleClass="warning"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true"
+											message="Sale Rate should be this range (#{specialCustomerDealRequestBean.fundMinRate} -  #{specialCustomerDealRequestBean.fundMaxRate})"
+											appendToBody="true">
+										</p:confirmDialog>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col"
+												style="padding-top:5px !important;">
+												<h:outputText value="#{msg['lbl.dealRequestYearOrNumber']} " />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:panelGrid style="width:100%;" id="CheckSystemOrUpdated">
+													<p:row>
+														<p:column
+															style="width:30% !important;padding:0px 15px 0px 0px !important;">
+															<p:inputText id="financeYear"
+																value="#{specialCustomerDealRequestBean.finaceYear}"
+																required="true" requiredMessage="Enter Financial Year"
+																readonly="true">
+																<p:ajax event="blur" update="msgfinanceYear" />
+																<p:message for="financeYear" display="text"
+																	id="msgfinanceYear" />
+															</p:inputText>
+														</p:column>
+														<p:column
+															style="width:58% !important;padding:0px 10px 0px 10px !important;">
+															<p:inputText id="documentSerialId"
+																value="#{specialCustomerDealRequestBean.documentSerialIdNumber}"
+																required="true"
+																requiredMessage="Enter Document Serial ID"
+																readonly="true">
+																<p:ajax event="change" update="msgdocumentSerialId" />
+																<p:message for="documentSerialId" display="text"
+																	id="msgdocumentSerialId" />
+															</p:inputText>
+														</p:column>
+
+														<p:column
+															style="width:15% !important;text-align:right !important;padding:0px 0px 0px 0px !important;">
+															<p:commandButton styleClass="edit" value=" "
+																action="#{specialCustomerDealRequestBean.updateSalesProjection}"
+																update=":validateForm:mainPanel" process="@this" />
+														</p:column>
+
+
+													</p:row>
+												</p:panelGrid>
+											</p:panel>
+										</p:panel>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.requestdate']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:panelGrid style="width:100%;">
+													<p:row>
+														<p:column
+															style="width:100%; text-align:left;padding:0px !important;">
+															<p:inputText id="currentDate"
+																value="#{specialCustomerDealRequestBean.requestDate}"
+																readonly="true">
+																<f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+															</p:inputText>
+														</p:column>
+
+													</p:row>
+												</p:panelGrid>
+											</p:panel>
+										</p:panel>
+										<div class="clearfix"></div>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.company']}" />
+											</p:panel>
+
+											<p:panel styleClass="inner_right_col">
+												<p:panelGrid style="width:100%;">
+													<p:row>
+														<p:column
+															style="width:100%; text-align:left;padding:0px !important;">
+															<p:inputText style="font-size:11px !important;"
+																value="#{specialCustomerDealRequestBean.companyListFromDB}"
+																readonly="true" />
+														</p:column>
+													</p:row>
+												</p:panelGrid>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.customerRef']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+
+												<p:panelGrid style="width:100%;">
+													<p:row>
+														<p:column
+															style="width:20%; text-align:left; padding:0px 5px 0px 0px !important;">
+															<p:inputText id="id"
+																value="#{specialCustomerDealRequestBean.id}"
+																required="true"
+																requiredMessage="#{msg['lbl.pleaseEnterIDNumber']}"
+																tabindex="1">
+																<f:validator validatorId="allowOnlyNumber" />
+																<p:ajax event="blur"
+																	listener="#{specialCustomerDealRequestBean.idOnBlur}"
+																	update="name,msgid,validPanel"
+																	onstart="process.show();" onsuccess="process.hide();" />
+																<p:message for="id" display="text" id="msgid" />
+																<p:tooltip for="id" value="ID"
+																	style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" />
+															</p:inputText>
+														</p:column>
+														<p:column
+															style="width:75%; padding:0px 5px 0px 10px !important;">
+															<p:inputText id="name"
+																value="#{specialCustomerDealRequestBean.name}"
+																readonly="true" style="font-size:12px !important;">
+																<p:tooltip for="name" value="#{msg['lbl.customerName']}"
+																	style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" />
+															</p:inputText>
+														</p:column>
+														<p:column
+															style="width:5%; padding:0px 5px 0px 10px !important;">
+															<p:commandButton id="searchButton" value=""
+																styleClass="search_icon"
+																action="#{specialCustomerDealRequestBean.searchClicked}"
+																process="@this">
+																<p:tooltip for="searchButton"
+																	value="#{msg['lbl.clickToSearch']}"
+																	style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" />
+															</p:commandButton>
+														</p:column>
+													</p:row>
+												</p:panelGrid>
+
+												<!-- <p:panelGrid style="width:100%;">
+													<p:row>
+
+														<p:column
+															style="width:25%;padding:0px 0px 0px 8px !important;">
+															<p:inputText id="id"
+																value="#{specialCustomerDealRequestBean.id}"
+																required="true"
+																requiredMessage="#{msg['lbl.pleaseEnterIDNumber']}"
+																tabindex="1">
+																<f:validator validatorId="allowOnlyNumber" />
+																<p:ajax event="blur"
+																	listener="#{specialCustomerDealRequestBean.idOnBlur}"
+																	update="name,msgid,validPanel"
+																	onstart="process.show();" onsuccess="process.hide();" />
+																<p:message for="id" display="text" id="msgid" />
+																<p:tooltip for="id" value="ID"
+																	style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" />
+															</p:inputText>
+														</p:column>
+														<p:column
+															style="width:60%;padding:0px 0px 0px 8px !important;">
+															<p:inputText id="name"
+																value="#{specialCustomerDealRequestBean.name}"
+																readonly="true" style="font-size:12px !important;">
+																<p:tooltip for="name" value="#{msg['lbl.customerName']}"
+																	style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" />
+															</p:inputText>
+														</p:column>
+														<p:column
+															style="width:15%; text-align:right !important;padding:0px 0px 0px 8px !important;">
+															<p:commandButton id="searchButton" value=""
+																styleClass="search_icon"
+																action="#{specialCustomerDealRequestBean.searchClicked}"
+																process="@this">
+																<p:tooltip for="searchButton"
+																	value="#{msg['lbl.clickToSearch']}"
+																	style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" />
+															</p:commandButton>
+														</p:column>
+													</p:row>
+												</p:panelGrid> -->
+											</p:panel>
+										</p:panel>
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.validUpto']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText
+													value="#{specialCustomerDealRequestBean.validUpTo}"
+													id="validPanel" readonly="true">
+													<f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bankcountry']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:panelGrid style="width:100%;">
+													<p:row>
+														<p:column
+															style="width:100%; text-align:left;padding:0px !important;">
+															<p:message id="msgBankCountry" for="bankCountry"
+																display="text" />
+															<p:selectOneMenu id="bankCountry"
+																value="#{specialCustomerDealRequestBean.bankCountry}"
+																filter="true" filterMatchMode="contains" required="true"
+																requiredMessage="#{msg['lbl.pleaseSelectBankCountry']}"
+																tabindex="2">
+																<f:selectItem
+																	itemLabel="#{msg['lbl.selectbankcountry']}"
+																	itemValue="" />
+																<f:selectItems
+																	value="#{specialCustomerDealRequestBean.bankCountryList}"
+																	var="c"
+																	itemLabel="#{c.bankCountryCode} - #{c.bankCountryName}"
+																	itemValue="#{c.bankCountryId}" />
+																<p:ajax event="change"
+																	listener="#{specialCustomerDealRequestBean.bankBasedOnBankCountry}"
+																	update="pnlBank,msgBankCountry,pnlCurrency,mainPanel"
+																	onstart="process.show();" onsuccess="process.hide();" />
+															</p:selectOneMenu>
+														</p:column>
+													</p:row>
+												</p:panelGrid>
+											</p:panel>
+										</p:panel>
+										<div class="clearfix"></div>
+										<p:panel styleClass="left_col" id="pnlBank">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bank']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col" id="msgBankId">
+												<p:message for="bankId" display="text" />
+												<p:selectOneMenu id="bankId"
+													value="#{specialCustomerDealRequestBean.bankId}"
+													filter="true" required="true" filterMatchMode="contains"
+													requiredMessage="#{msg['lbl.pleaseSelectBank']}"
+													tabindex="3">
+													<f:selectItem itemLabel="#{msg['lbl.selectbank']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{specialCustomerDealRequestBean.bankBasedOnCountry}"
+														var="c"
+														itemLabel=" #{c.bankMaster.bankCode} - #{c.bankMaster.bankFullName}"
+														itemValue="#{c.bankMaster.bankId}" />
+													<!-- <p:ajax event="change"  update="currencyId,msgBankId"/> -->
+													<p:ajax event="change"
+														listener="#{specialCustomerDealRequestBean.bankCurrency}"
+														update="pnlCurrency,msgBankId,mainPanel"
+														onstart="process.show();" onsuccess="process.hide();" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+
+										<p:panel styleClass="left_col" id="pnlCurrency">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currency']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:panelGrid style="width:100%;">
+													<p:row>
+														<p:column
+															style="width:100%; text-align:left;padding:0px !important;"
+															rendered="#{specialCustomerDealRequestBean.boobankCurrency}">
+															<p:inputText id="singlecurrency"
+																value="#{specialCustomerDealRequestBean.bankCurrencyName}"
+																readonly="true" />
+														</p:column>
+
+														<p:column
+															style="width:100%; text-align:left;padding:0px !important;"
+															rendered="#{specialCustomerDealRequestBean.booSelectbankCurrency}">
+
+															<p:selectOneMenu id="currencyId"
+																value="#{specialCustomerDealRequestBean.currencyId}"
+																filter="true" filterMatchMode="contains" required="true"
+																requiredMessage="#{msg['lbl.pleaseSelectCurrency']}">
+																<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}"
+																	itemValue="" />
+																<f:selectItems
+																	value="#{specialCustomerDealRequestBean.currencyOfBank}"
+																	var="c"
+																	itemLabel="#{c.fsCurrencyMaster.currencyCode} - #{c.fsCurrencyMaster.currencyName}"
+																	itemValue="#{c.fsCurrencyMaster.currencyId}" />
+																<p:ajax event="change"
+																	listener="#{specialCustomerDealRequestBean.populateAccountNumber}"
+																	update=" mainPanel" onstart="process.show();"
+																	onsuccess="process.hide();" />
+															</p:selectOneMenu>
+															<p:message for="currencyId" display="text" />
+														</p:column>
+													</p:row>
+												</p:panelGrid>
+											</p:panel>
+										</p:panel>
+										<div class="clearfix"></div>
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col" style="padding-top:3px;">
+												<h:outputText value="#{msg['lbl.foreignCurrenyAmount']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col" id="msgFcAmount1">
+												<p:message for="fcAmountId1" display="text" />
+												<p:inputText id="fcAmountId1"
+													value="#{specialCustomerDealRequestBean.fcAmount}"
+													required="true" requiredMessage="Please Enter Fc Amount"
+													maxlength="20" tabindex="4">
+													<f:validator validatorId="allowOnlyNumber" />
+													<p:ajax update="msgFcAmount1" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col" style="padding-top:3px;">
+												<h:outputText value="#{msg['lbl.tentiveSaleRate']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="tentativeId" display="text"
+													id="msgTentative" />
+												<p:inputText id="tentativeId"
+													value="#{specialCustomerDealRequestBean.tentativeSaleRate}"
+													validatorMessage="Numbers only Allowed" required="true"
+													requiredMessage="Please enter tentative sale rate"
+													tabindex="6">
+													<f:validator validatorId="allowOnlyNumber" />
+													<p:ajax event="blur"
+														listener="#{specialCustomerDealRequestBean.validateTentativeSaleRate}"
+														onstart="process.show();" onsuccess="process.hide();"
+														update="msgTentative,tentiveRate,error,nullPointerId,tentativeId" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										<div class="clearfix"></div>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col" style="padding-top:3px;">
+												<h:outputText value="#{msg['lbl.averagerate']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="avgRate"
+													value="#{specialCustomerDealRequestBean.avgRate}"
+													readonly="true">
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value=" Value Date" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="fromDate" display="text" id="msgfromDate" />
+												<p:calendar id="fromDate"
+													value="#{specialCustomerDealRequestBean.valueDate}"
+													required="true" requiredMessage="Please select  Value Date"
+													readonlyInput="true" navigator="true"
+													mindate="#{specialCustomerDealRequestBean.effetiveMinDate}"
+													pattern="dd/MM/yyyy">
+													<p:ajax event="dateSelect"
+														listener="#{specialCustomerDealRequestBean.onDateSelectForValueDate}"
+														update="msgfromDate,mainPanel" ignoreAutoUpdate="true" />
+
+												</p:calendar>
+											</p:panel>
+										</p:panel>
+										<!-- <p:panel id="valueDateOptId" styleClass="left_col" rendered="#{specialCustomerDealRequestBean.renderValueDateOption}">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.valueDateOption']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="valueOptionId" display="text"
+													id="msgValueOptionId" />
+												<p:selectOneMenu id="valueOptionId"
+													value="#{specialCustomerDealRequestBean.valueDateOption}"
+													filter="true" required="true" filterMatchMode="contains"
+													requiredMessage=" Please select value date option"
+													tabindex="5">
+													<f:selectItem itemLabel=" select " itemValue="" />
+													<f:selectItem itemLabel="CASH" itemValue="CASH" />
+													<f:selectItem itemLabel="TOM" itemValue="TOM" />
+													<f:selectItem itemLabel="SPOT" itemValue="SPOT" />
+													<p:ajax update="msgValueOptionId" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>  -->
+
+
+
+
+
+
+										<div class="clearfix"></div>
+
+
+
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.add']}"
+												style="margin-right:10px;"
+												action="#{specialCustomerDealRequestBean.addRecordsToDataTable}"
+												update="mainPanel" onstart="statusDialog.show();"
+												onsuccess="statusDialog.hide();" />
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{specialCustomerDealRequestBean.exit}"
+												process="@this" />
+										</h:panelGroup>
+
+										<p:panel id="dataTablePanelId"
+											rendered="#{specialCustomerDealRequestBean.booRenderDataTable}">
+											<p:dataTable var="c" id="approveDataTable"
+												styleClass="mydatatableclass" rows="10" paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10,15" paginatorPosition="bottom"
+												value="#{specialCustomerDealRequestBean.specialCustomerDealRequestBeanDataTable}"
+												rowIndexVar="rowIndex" editable="true" editMode="cell"
+												emptyMessage="#{msg['lbl.norecordfound']}"
+												rowStyleClass="red">
+
+												<p:column headerText="#{msg['lbl.slNo']}"
+													style="width:15px;">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.dealRequestYearOrNumber']}">
+													<h:outputText
+														value="#{c.specialCustomerDealRequestyear}  /  #{c.specialCustomerDealRequestNumber}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.customerName']}">
+													<h:outputText value="#{c.customerName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.validUpto']}">
+													<h:outputText value="#{c.requestDate}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.country']}">
+													<h:outputText value="#{c.countryNameFromDT}" />
+												</p:column>
+
+												<!-- <p:column headerText="#{msg['lbl.valueDateOption']}" rendered="#{specialCustomerDealRequestBean.renderValueDateOption}">
+													<h:outputText value="#{c.valueDateOption}" />
+												</p:column>  -->
+												<p:column headerText="#{msg['lbl.valuedate']}">
+													<h:outputText value="#{c.valueDate}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.tentiveSaleRate']}">
+													<h:outputText value="#{c.tentativeSaleRate}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.bank']}"
+													style="width:150px !important;">
+													<h:outputText value="#{c.bankNameFromDT}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.currency']}">
+													<h:outputText value="#{c.currencyNameFromDT}" />
+												</p:column>
+
+
+												<p:column style="width:100px !important;"
+													headerText="#{msg['lbl.foreignCurrenyAmount']}"
+													id="fcamountcol">
+													<p:cellEditor
+														styleClass="#{specialCustomerDealRequestBean.displayDynamicColor} ? 'red' : 'none' ">
+														<f:facet name="output">
+															<h:outputText value="#{c.foreignCurrencyAmount}"
+																style="text-align: center !important; " />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText id="fcAmountId"
+																value="#{c.foreignCurrencyAmount}"
+																style="border:none !important;padding:0px !important;text-align: center !important; box-shadow:none !important;  background-color:red; "
+																required="true" requiredMessage="Please Enter Fc Amount"
+																readonly="#{c.renderInputForFC}">
+																<p:ajax event="blur"
+																	listener="#{specialCustomerDealRequestBean.editRow(c)}"
+																	update=":validateForm:dataTablePanelId,fcamountcol"
+																	process="@this" />
+																<f:validator validatorId="allowOnlyNumber" />
+																<p:message id="msgFcAmount" for="fcAmountId"
+																	display="text" />
+															</p:inputText>
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.edit']}"
+													style="align:center;">
+													<p:commandButton id="imgEdit" styleClass="edit" value=""
+														action="#{specialCustomerDealRequestBean.updateFCAmount(c)}"
+														update="approveDataTable" process="@this">
+														<p:tooltip for="imgEdit" value="#{msg['lbl.edit']}"
+															style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" />
+													</p:commandButton>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.approve']}">
+													<p:selectBooleanCheckbox value="#{c.aprove}">
+														<p:ajax />
+													</p:selectBooleanCheckbox>
+												</p:column>
+											</p:dataTable>
+											<div class="clearfix"></div>
+
+										</p:panel>
+										<div class="clearfix"></div>
+										<h:panelGroup id="plnButton" layout="block"
+											styleClass="shadow_button"
+											rendered="#{specialCustomerDealRequestBean.renderSaveButton}">
+											<p:commandButton value="#{msg['lbl.submit']}"
+												action="#{specialCustomerDealRequestBean.saveRecords}"
+												process="@this" update="mainPanel"
+												onclick="this.disabled=true;statusDialog.show();"
+												onsuccess="statusDialog.hide();" />
+											<div class="clearfix"></div>
+										</h:panelGroup>
+										<p:panel styleClass="left_col">
+											<h:outputText id="mandatory"
+												value=" #{msg['lbl.*filedsAreMandatory']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+										<div class="clearfix"></div>
+
+									</p:panel>
+									<!-- FIRST PANEL END  -->
+
+									<!-- SECOND PANEL -->
+
+									<p:panel styleClass="panel_border"
+										style="padding-bottom:0px !important;" id="secondPanel"
+										rendered="#{specialCustomerDealRequestBean.booRenderSecondPanel}">
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col"
+												style="padding-top:5px !important;">
+												<h:outputText value="#{msg['lbl.dealRequestYearOrNumber']} " />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:panelGrid style="width:100%;">
+													<p:row>
+														<p:column
+															style="width:30% !important;padding:0px 15px 0px 0px !important;">
+															<p:inputText
+																value="#{specialCustomerDealRequestBean.finaceYearForUpdate}">
+																<p:ajax />
+															</p:inputText>
+														</p:column>
+														<p:column
+															style="width:58% !important; text-align:left;padding:0px 0px 0px 0px !important;">
+															<p:inputText id="manualDocumentSerialId"
+																value="#{specialCustomerDealRequestBean.manualDocumentSerialId}"
+																required="true"
+																requiredMessage="Enter Document Serial ID">
+																<p:ajax event="blur"
+																	listener="#{specialCustomerDealRequestBean.getDocDetails}"
+																	update="secondPanel" />
+																<p:message for="manualDocumentSerialId" display="text"
+																	id="msgManualdocumentSerialId" />
+															</p:inputText>
+														</p:column>
+													</p:row>
+												</p:panelGrid>
+											</p:panel>
+										</p:panel>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.requestdate']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:panelGrid style="width:100%;">
+													<p:row>
+														<p:column
+															style="width:100%; text-align:left;padding:0px !important;">
+															<p:inputText
+																value="#{specialCustomerDealRequestBean.requestDateForUpdate}"
+																readonly="true">
+																<f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+															</p:inputText>
+														</p:column>
+													</p:row>
+												</p:panelGrid>
+											</p:panel>
+										</p:panel>
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.company']}" />
+											</p:panel>
+
+											<p:panel styleClass="inner_right_col">
+												<p:panelGrid style="width:100%;">
+													<p:row>
+														<p:column
+															style="width:100%; text-align:left;padding:0px !important;">
+															<p:inputText style="font-size:11px !important;"
+																value="#{specialCustomerDealRequestBean.companyNameForUpdate}"
+																readonly="true" />
+														</p:column>
+													</p:row>
+												</p:panelGrid>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.customerRef']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											
+											
+											<p:panelGrid style="width:100%;">
+													<p:row>
+														<p:column
+															style="width:20%; text-align:left; padding:0px 5px 0px 0px !important;">
+															<p:inputText id="civil"
+																value="#{specialCustomerDealRequestBean.civilIdForUpdate}"
+																readonly="true" />
+															<p:tooltip for="civil" value="#{msg['lbl.civilId']}"
+																style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" />
+														</p:column>
+														<p:column
+															style="width:75%; padding:0px 5px 0px 10px !important;">
+															<p:inputText id="Customername"
+																value="#{specialCustomerDealRequestBean.nameForUpdate}"
+																readonly="true" style="font-size:12px !important;">
+																<p:tooltip for="Customername"
+																	value="#{msg['lbl.customerName']}"
+																	style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" />
+															</p:inputText>
+														</p:column>
+														<p:column
+															style="width:5%; padding:0px 5px 0px 10px !important;">
+															<p:commandButton id="searchButtonForUp" value=""
+																styleClass="search_icon"
+																action="#{specialCustomerDealRequestBean.searchClicked}"
+																process="@this" disabled="true">
+																<p:tooltip for="searchButtonForUp"
+																	value="#{msg['lbl.clickToSearch']}"
+																	style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" />
+															</p:commandButton>
+														</p:column>
+													</p:row>
+												</p:panelGrid>
+											
+												<!-- <p:panelGrid style="width:100%;">
+													<p:row>
+														<p:column
+															style="width:45%;padding:0px 3px 0px 0px !important;">
+															<p:inputText id="civil"
+																value="#{specialCustomerDealRequestBean.civilIdForUpdate}"
+																readonly="true" />
+															<p:tooltip for="civil" value="#{msg['lbl.civilId']}"
+																style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" />
+														</p:column>
+														<p:column
+															style="width:35%;padding:0px 0px 0px 8px !important;">
+															<p:inputText id="Customername"
+																value="#{specialCustomerDealRequestBean.nameForUpdate}"
+																readonly="true">
+																<p:tooltip for="Customername"
+																	value="#{msg['lbl.customerName']}"
+																	style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" />
+															</p:inputText>
+														</p:column>
+														<p:column
+															style="width:20%; text-align:right !important;padding:4px 0px 0px 8px !important;">
+															<p:commandButton id="searchButtonForUp" value=""
+																styleClass="search_icon"
+																action="#{specialCustomerDealRequestBean.searchClicked}"
+																process="@this" disabled="true">
+																<p:tooltip for="searchButtonForUp"
+																	value="#{msg['lbl.clickToSearch']}"
+																	style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" />
+															</p:commandButton>
+														</p:column>
+													</p:row>
+												</p:panelGrid> -->
+											</p:panel>
+										</p:panel>
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.validUpto']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText
+													value="#{specialCustomerDealRequestBean.validUpToForUpdate}"
+													readonly="true">
+													<f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bankcountry']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+
+											<p:panel styleClass="inner_right_col">
+												<p:panelGrid style="width:100%;">
+													<p:row>
+														<p:column
+															style="width:100%; text-align:left;padding:0px !important;">
+															<p:inputText
+																value="#{specialCustomerDealRequestBean.bankCountryForUpdate}"
+																readonly="true" />
+														</p:column>
+
+													</p:row>
+												</p:panelGrid>
+											</p:panel>
+										</p:panel>
+										<div class="clearfix"></div>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bank']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:panelGrid style="width:100%;">
+													<p:row>
+														<p:column
+															style="width:100%; text-align:left;padding:0px !important;">
+															<p:inputText
+																value="#{specialCustomerDealRequestBean.bankNameForUpdate}"
+																readonly="true" />
+														</p:column>
+													</p:row>
+												</p:panelGrid>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currency']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:panelGrid style="width:100%;">
+													<p:row>
+														<p:column
+															style="width:100%; text-align:left;padding:0px !important;">
+															<p:inputText
+																value="#{specialCustomerDealRequestBean.bankCurrencyNameForUpdate}"
+																readonly="true" />
+														</p:column>
+
+													</p:row>
+												</p:panelGrid>
+											</p:panel>
+										</p:panel>
+
+
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col" style="padding-top:3px;">
+												<h:outputText value="#{msg['lbl.foreignCurrenyAmount']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:panelGrid style="width:100%;">
+													<p:row>
+														<p:column
+															style="width:100%; text-align:left;padding:0px !important;">
+															<p:inputText id="fcAmountId2"
+																value="#{specialCustomerDealRequestBean.fcAmountForUpdate}"
+																required="true" requiredMessage="Please Enter Fc Amount">
+																<!-- Added by kani begin -->
+																<f:validator validatorId="allowOnlyNumber" />
+																<p:message id="msgFcAmount" for="fcAmountId2"
+																	display="text" />
+																<!-- Added by kani end -->
+															</p:inputText>
+														</p:column>
+													</p:row>
+												</p:panelGrid>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col"
+											rendered="#{specialCustomerDealRequestBean.renderValueDateOption}">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.valueDateOption']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText
+													value="#{specialCustomerDealRequestBean.valueDateOptionForUpdate}"
+													readonly="true" />
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col" style="padding-top:3px;">
+												<h:outputText value="#{msg['lbl.tentiveSaleRate']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText
+													value="#{specialCustomerDealRequestBean.tentativeSaleRateForUpdate}"
+													readonly="true" />
+											</p:panel>
+										</p:panel>
+
+
+
+										<div class="clearfix"></div>
+										<p:panel styleClass="left_col">
+											<h:outputText value=" #{msg['lbl.*filedsAreMandatory']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+										<div class="clearfix"></div>
+
+
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.update']}"
+												style="margin-right:10px;"
+												action="#{specialCustomerDealRequestBean.updateSpData}"
+												update="mainPanel,approveDataTable,plnButton"
+												onclick="this.disabled=true;" />
+											<!-- <p:commandButton value="#{msg['lbl.exit']}"  action="#{specialCustomerDealRequestBean.exit}" process="@this" /> -->
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												style="margin-left:10px;"
+												action="#{specialCustomerDealRequestBean.cancelUpdate}"
+												process="@this" immediate="true" />
+
+											<div class="clearfix"></div>
+										</h:panelGroup>
+										<div class="clearfix"></div>
+
+									</p:panel>
+									<!--SECOND PANEL END  -->
+
+									<div class="clearfix"></div>
+								</p:panel>
+
+							</h:panelGroup>
+
+						</h:panelGroup></td>
+				</tr>
+
+			</table>
+		</h:form>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+
+</h:body>
+</html>

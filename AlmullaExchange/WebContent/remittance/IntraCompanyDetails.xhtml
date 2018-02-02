@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</h:head>
+
+<h:body>
+
+	<f:view>
+
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+
+							<h:form id="form1">
+
+								<p:dialog modal="true" showHeader="false" widgetVar="process"
+									id="process" width="300" height="60" resizable="false"
+									draggable="false" closable="false"
+									style=" border: 2px green solid !important;background-color: #FFF !important;">
+									<div
+										style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+										<p:graphicImage value="../images/processImg.gif"
+											style="float: left !important; margin-right: 24px !important; " />
+										<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+											style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+									</div>
+								</p:dialog>
+								
+								<p:confirmDialog id="alertmsg" widgetVar="alertmsg"
+									header="Alert Message" resizable="false"
+									style="background-color: white !important;"
+									styleClass="warning" showEffect="clip" hideEffect="clip"
+									closeOnEscape="true" closable="true"
+									message="#{intraCompanyBankPaymentBean.errmsg}">
+								</p:confirmDialog>
+								
+								<p:dialog id="intraAppSave" widgetVar="intraAppSave"
+									width="400" height="80" resizable="false"
+									style="background-color: white !important;"
+									styleClass="success" header="#{msg['lbl.success']}"
+									closable="true" showEffect="clip" hideEffect="clip">
+									<p:outputLabel
+										value="Intra Application Successfully Saved"
+										style="text-align: center; font-size:15px !important;" />
+									<br />
+								</p:dialog>
+
+								<h1>
+									<h:outputText
+										value="INTRA COUNTRY - COMPANY TRANSFERS AND SETTLEMENTS" />
+								</h1>
+
+								<p:panel styleClass="shadow" id="mainPanel">
+
+									<p:panel id="panel1">
+
+										<h2>
+											<h:outputText value="Bank Payment" />
+										</h2>
+
+										<p:panel styleClass="panel_border">
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Sender Country" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="sendercountry" display="text"
+														id="msgsendercountry" />
+													<p:selectOneMenu id="sendercountry"
+														value="#{intraCompanyBankPaymentBean.senderCountryCode}"
+														filterMatchMode="startwith" required="true"
+														requiredMessage="please Select Payment Mode ">
+														<f:selectItem itemLabel="#{msg['lbl.selectmodetyp']}"
+															itemDisabled="0" />
+														<f:selectItems
+															value="#{intraCompanyBankPaymentBean.lstFetchSenderCountry}"
+															var="c" itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+															itemValue="#{c.fsCountryMaster.countryCode}" />
+														<p:ajax update="msgsendercountry" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Sender Company" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText styleClass="ui-state-disabled"
+														value="#{intraCompanyBankPaymentBean.senderCompanyName}"
+														readonly="true" />
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.pymtmode']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="paymentmode" display="text"
+														id="msgpaymentmode" />
+													<p:selectOneMenu id="paymentmode"
+														value="#{intraCompanyBankPaymentBean.paymentModeCode}"
+														filterMatchMode="startwith" required="true"
+														requiredMessage="please Select Payment Mode ">
+														<f:selectItem itemLabel="#{msg['lbl.selectmodetyp']}"
+															itemDisabled="0" />
+														<f:selectItems
+															value="#{intraCompanyBankPaymentBean.lstFetchPaymentMode}"
+															var="c" itemLabel="#{c.localPaymentName}"
+															itemValue="#{c.paymentMode.paymentCode}" />
+														<p:ajax update="msgpaymentmode" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.banks']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgcolbankid" for="colbankid" display="text" />
+													<p:selectOneMenu id="colbankid"
+														value="#{intraCompanyBankPaymentBean.bankToTransfer}"
+														filterMatchMode="contains" filter="true" required="true"
+														requiredMessage="Please Select Bank">
+														<f:selectItem itemLabel="#{msg['lbl.selectBank']}" itemValue="" />
+														<f:selectItems
+															value="#{intraCompanyBankPaymentBean.bankMasterList}" var="c"
+															itemLabel="#{c.bankShortName} - #{c.bankFullName}"
+															itemValue="#{c.chequeBankCode}" />
+														<p:ajax	update="msgcolbankid" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="10px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="#{msg['lbl.search']}"
+													action="#{intraCompanyBankPaymentBean.search}"
+													style="margin-right:10px;" update="mainPanel" />
+												<p:commandButton value="#{msg['lbl.clear']}"
+													action="#{intraCompanyBankPaymentBean.clear}" update="mainPanel"
+													immediate="true" />
+											</h:panelGroup>
+											
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="10px" />
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:dataTable id="finaldata" rowIndexVar="rowIndex"
+												styleClass="mydatatableclass"
+												value="#{intraCompanyBankPaymentBean.lstBankPaymentIntraComp}" var="c"
+												rows="5" paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10,15" paginatorPosition="bottom">
+												
+												<p:column headerText="#{msg['lbl.sNo']}" style="width:2%;">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column headerText="Doc Date"
+													sortBy="#{c.documentDate}"
+													style="width:5% !important; text-align:center !important; margin-left:10px;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{c.sendDocumentDate}" />
+												</p:column>
+												
+												<p:column headerText="Doc No"
+													sortBy="#{c.documentNo}"
+													style="width:5% !important; text-align:center !important; margin-left:10px;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{c.sendDocumentNo}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.benename']}"
+													sortBy="#{c.beneficiaryName}"
+													style="width:9% !important; text-align:center !important; margin-left:10px;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{c.beneficiaryName}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.benebank']}"
+													sortBy="#{c.beneficiaryBank}"
+													style="width:9% !important; text-align:center !important; margin-left:10px;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{c.beneBankName}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.benebranch']}"
+													sortBy="#{c.benefeciaryBranch}"
+													style="width:9% !important; text-align:center !important; margin-left:10px;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{c.beneBankBranchName}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.accountno']}"
+													style="width:7% !important; text-align:center !important; margin-left:10px;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{c.beneBankAccountNumber}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.forecurr']}"
+													style="width:3% !important; text-align:center !important; margin-left:10px;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{c.foreignCurrencyName}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.netamts']}"
+													style="width:4% !important; text-align:center !important; margin-left:10px;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{c.foreignTrnxAmount}"
+														style="float:right;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.select']}"
+													style="width:2% !important; text-align:center !important; margin-left:10px;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:selectBooleanCheckbox value="#{c.selectedRecords}">
+														<p:ajax event="change"
+															listener="#{intraCompanyBankPaymentBean.getSelectedRecordstoRemittance(c)}"
+															update=":form1:finaldata,:form1:mainPanel"
+															onstart="process.show();" onsuccess="process.hide();" />
+													</p:selectBooleanCheckbox>
+												</p:column>
+												
+											</p:dataTable>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="10px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="#{msg['lbl.save']}"
+													action="#{intraCompanyBankPaymentBean.saveAll}"
+													style="margin-right:10px;" update="mainPanel,alertmsg" />
+												<p:commandButton value="#{msg['lbl.exit']}"
+													action="#{intraCompanyBankPaymentBean.exitButton}"
+													immediate="true" />
+											</h:panelGroup>
+
+										</p:panel>
+										<div class="clearfix" />
+
+									</p:panel>
+
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

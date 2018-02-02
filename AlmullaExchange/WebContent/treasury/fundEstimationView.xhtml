@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+
+		 history.pushState(null, null, 'fundEstimationView.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'fundEstimationView.xhtml');
+		    });
+	</script>
+</h:head>
+
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<h:form id="form">
+		
+	
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;">
+					 <ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+					</td>
+
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle" src="../images/toggle_plus.png" alt="" onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+								<h1>
+									<h:outputText value="#{msg['lbl.fundEstimationView']}" />
+								</h1>
+
+								<p:panel styleClass="shadow" id="mainPanel">
+
+									<p:confirmDialog id="sqlexception" widgetVar="sqlexception"
+										header="#{msg['lbl.warningDailog']}" resizable="false"
+										width="700" style="background-color: white !important;"
+										styleClass="warning" showEffect="clip" hideEffect="clip"
+										closeOnEscape="true" closable="true"
+										message="#{fundEstimationBeanView.errorMessage}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{fundEstimationBeanView.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="noRecords" widgetVar="noRecords"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{msg['lbl.norecordfound']}">
+									</p:confirmDialog>
+									
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+									
+									<h2>
+										<h:outputText value="#{msg['lbl.fundestimation']} #{msg['lbl.viewOptionOnly']}" />
+									</h2>
+
+									<p:panel styleClass="panel_border1">
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.projectionDate']}" />
+												<h:outputText value="*" style="color:red;" />
+											</p:panel>
+										
+											<p:panel styleClass="inner_right_col">
+												<p:calendar id="projDate"
+													value="#{fundEstimationBeanView.projectionDate}" mode="popup"
+													navigator="true" pattern="dd/MM/yyyy"
+													mindate="#{fundEstimationBeanView.currentDate}">
+												<p:ajax event="dateSelect" listener="#{fundEstimationBeanView.dateChange}" 
+												update="mainPanel"/>
+												</p:calendar>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.exchangecountry']}" />
+												<h:outputText value="*" style="color:red;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText value="#{fundEstimationBeanView.countryName}"
+													readonly="true" 
+													required="true"
+													styleClass="ui-state-disabled"/>
+											</p:panel>
+										</p:panel>
+										
+										<div class="clearfix"></div>
+										<p:panel styleClass="left_col" id="pnlBankCountry">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bankcountry']}" />
+												<h:outputText value="*" style="color:red;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="bankCountry" display="text" id="msgCountry" />
+												<p:selectOneMenu id="bankCountry"
+													value="#{fundEstimationBeanView.bankCountry}" filter="true"
+													filterMatchMode="contains"
+													required="true"
+													requiredMessage="Please Select Bank Country">
+													<f:selectItem itemLabel="#{msg['lbl.selectbankcountry']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{fundEstimationBeanView.bankCountryList}" var="c"
+														itemLabel="#{c.bankCountryCode} - #{c.bankCountryName}"
+														itemValue="#{c.bankCountryId}" />
+													<p:ajax event="change"
+														listener="#{fundEstimationBeanView.populateCurrency}"
+														update="pnlCurrency" onstart="process.show();"
+														onsuccess="process.hide();" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col" id="pnlCurrency">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currency']}" /> 
+												<h:outputText value="*" style="color:red;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="currencyId" display="text" id="msgcurrencid" />
+												<p:selectOneMenu id="currencyId"
+													value="#{fundEstimationBeanView.currencyId}" filter="true"
+													filterMatchMode="contains" 
+													required="true"
+													requiredMessage="Please Select currency">
+													<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{fundEstimationBeanView.countryCurrencyList}" var="c"
+														itemLabel="#{c.currencyCode} - #{c.currencyName}" itemValue="#{c.currencyId}" />
+												<p:ajax update="msgcurrencid"/>
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										<div class="clearfix"></div>
+
+										
+											<p:panel styleClass="left_col">
+											<h:outputText value="#{msg['lbl.fieldaremandatory']}"
+												style="color:red; padding:10px !important; font-size:10px;" />
+										</p:panel>
+										
+									
+										<div class="clearfix"></div>
+										
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton id="search" value="#{msg['lbl.view']}"
+												style="margin-right:10px;"
+												action="#{fundEstimationBeanView.searchFundEstimation}" update="mainPanel"
+												onstart="process.show();" onsuccess="process.hide();" />
+											<p:commandButton value="#{msg['lbl.exit']}" style="margin-right:10px;"
+												action="#{fundEstimationBeanView.exit}"  immediate="true"  />
+											<p:commandButton value="#{msg['lbl.remitclear']}"
+												action="#{fundEstimationBeanView.clear}" immediate="true" update=":form:pnlBankCountry,mainPanel"/>
+											<div class="clearfix"></div>
+										</h:panelGroup>
+										
+										<div class="clearfix"></div>
+
+										<p:dataTable editable="true" id="fundEstiDt" rows="10"
+													 value="#{fundEstimationBeanView.fundEstimationList}"
+													 paginator="true" var="cfe" rowIndexVar="rowIndex" paginatorPosition="bottom"
+													emptyMessage="#{msg['lbl.norecordfound']}" styleClass="mydatatableclass"
+													rendered="#{fundEstimationBeanView.renderDataTable}">	
+											
+											<p:column headerText="SR#" >
+												<p:outputLabel value="#{rowIndex+1}" style="text-align:center;" />
+											</p:column>
+																	
+											<p:column headerText="#{msg['lbl.treServcie']}" sortBy="#{cfe.serviceMasterDesc}">
+												<p:outputLabel value="#{cfe.serviceMasterDesc}" style="text-align:center;" />
+											</p:column>
+											
+											<p:column headerText="#{msg['lbl.treBankName']}" sortBy="#{cfe.bankShortName}">
+												<p:outputLabel value="#{cfe.bankShortName}" style="text-align:center;" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.treForeignCurrBal']}" sortBy="#{cfe.foreignCurrencyBalance}">
+												<p:outputLabel value="#{cfe.foreignCurrencyBalanceForDisplay}" style="text-align:center;" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.treUnFondedTrnx']}" sortBy="#{cfe.unfundedTrnx}">
+												<p:outputLabel value="#{cfe.unfundedTrnxForDisplay}" style="text-align:center;" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.treOverSalesProjAmt']}" sortBy="#{cfe.salesProjAmnt}">
+												<p:outputLabel value="#{cfe.salesProjAmntForDisplay}" style="text-align:center;" />
+											</p:column>
+											
+											<p:column headerText="#{msg['lbl.cashamt']}" sortBy="#{cfe.cashAmount}">
+												<p:outputLabel value="#{cfe.cashAmount}" style="text-align:center;" />
+											</p:column>
+											
+											<p:column headerText="#{msg['lbl.tomamt']}" sortBy="#{cfe.tomAmount}">
+												<p:outputLabel value="#{cfe.tomAmount}"	style="text-align:center;" />
+											</p:column>
+											
+											<p:column headerText=" #{msg['lbl.spotamt']}" sortBy="#{cfe.spotAmount}">
+												<p:outputLabel value="#{cfe.spotAmount}" style="text-align:center;" />
+											</p:column>
+
+											<!-- <p:column headerText="#{msg['lbl.treAddSalsProjAmt']}" sortBy="#{cfe.additionalSalesProjAmnt}">
+												<p:outputLabel value="#{cfe.additionalSalesProjAmnt}" style="text-align:center;" />
+											</p:column> -->
+											
+											<p:column headerText="#{msg['lbl.treTotoaProjAmt']}" sortBy="#{cfe.totalProjectionAmountForDisplay}">
+												<p:outputLabel value="#{cfe.totalProjectionAmountForDisplay}" id="totalSalesProj" style="text-align:center;" />
+											</p:column>
+											
+											<p:column headerText="#{msg['lbl.treUsdTotoaProjAmt']}" sortBy="#{cfe.usdTotalProjectionAmountForDisplay}">
+												<p:outputLabel value="#{cfe.usdTotalProjectionAmountForDisplay}" id="usdTotalSalesProj" style="text-align:center;" />
+											</p:column>
+											
+										</p:dataTable>
+										
+
+								<div class="clearfix"></div>
+										
+									</p:panel>
+									
+								</p:panel>
+
+								<div class="clearfix"></div>
+
+							</h:panelGroup>
+							<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+						</h:panelGroup></td>
+				</tr>
+			</table>
+		</h:form>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

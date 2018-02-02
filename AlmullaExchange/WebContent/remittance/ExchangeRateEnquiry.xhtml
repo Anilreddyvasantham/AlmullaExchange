@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+		history.pushState(null, null, 'ExchangeRateEnquiry.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'ExchangeRateEnquiry.xhtml');
+	    });
+	</script>
+</h:head>
+
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="rateUpdateForm">
+								<h1>
+									<h:outputText value="#{msg['lbl.exchangeEnquiry']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h2>
+										<h:outputText value="#{msg['lbl.exchangeEnquiry']}" />
+									</h2>
+									<p:confirmDialog id="csp" widgetVar="csp" showHeader="false"
+										resizable="false" header="Warning Message"
+										styleClass="warning"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="explode" hideEffect="explode"
+										message="#{exchangeRateEnquiryBean.errorMsg}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="nullPoiterId" widgetVar="nullPoiterId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{exchangeRateEnquiryBean.errorMsg} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+
+									<p:panel styleClass="panel_border">
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currency']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgCurrency" for="currency" display="text" />
+												<p:selectOneMenu id="currency"
+													value="#{exchangeRateEnquiryBean.currencyId}" filter="true"
+													filterMatchMode="contains" required="false">
+													<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{exchangeRateEnquiryBean.currencyList}" var="c"
+														itemLabel="#{c.currencyCode} - #{c.currencyName}"
+														itemValue="#{c.currencyId}" />
+													<p:ajax update="msgCurrency" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.country']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgCountry" for="country" display="text" />
+												<p:selectOneMenu id="country"
+													value="#{exchangeRateEnquiryBean.countryId}" filter="true"
+													filterMatchMode="contains">
+													<f:selectItem itemLabel="#{msg['lbl.beleselect']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{exchangeRateEnquiryBean.countryList}" var="c"
+														itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+														itemValue="#{c.fsCountryMaster.countryId}" />
+													<p:ajax update="msgCountry" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										<h:panelGroup layout="block" class="clearfix" />
+										
+										<p:panel styleClass="left_col" id="branchPanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.branch']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgBranch" for="branch" display="text" />
+												<p:selectOneMenu id="branch" value="#{exchangeRateEnquiryBean.branchId}"
+													filter="true" filterMatchMode="contains">
+													<f:selectItem itemLabel="#{msg['lbl.selectBranch']}"
+														itemValue="" />
+													<f:selectItems value="#{exchangeRateEnquiryBean.countryBranchList}"
+														var="c" itemLabel="#{c.branchId} - #{c.branchName}"
+														itemValue="#{c.countryBranchId}" />
+													<p:ajax update="msgBranch" onstart="process.show();"
+														onsuccess="process.hide();" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:spacer height="20px" />
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.enquiry']}"
+												action="#{exchangeRateEnquiryBean.view}" update="mainPanel"
+												process="@this" style="margin-right:10px;" onstart="process.show();" onsuccess="process.hide();" />
+											<p:commandButton value="#{msg['lbl.clear']}"
+												action="#{exchangeRateEnquiryBean.clear}" update="mainPanel"
+												process="@this" style="margin-right:10px;" onstart="process.show();" onsuccess="process.hide();" />
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{exchangeRateEnquiryBean.clickOnExit}"
+												process="@this" onstart="process.show();" onsuccess="process.hide();" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:spacer height="20px" />
+
+										<p:rowExpansion>
+											<p:dataTable id="dataTableId" var="d"
+												styleClass="mydatatableclass"
+												value="#{exchangeRateEnquiryBean.ratesUpdateDataTable}"
+												sortMode="multiple" rowIndexVar="rowIndex"
+												emptyMessage="#{msg['lbl.norecordfound']}" editable="true"
+												editMode="cell" paginator="true" rows="10"
+												paginatorPosition="bottom"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="10,15,20">
+
+												<p:columnGroup type="header">
+													<p:row>
+														<p:column rowspan="3" headerText="#{msg['lbl.sNo']}"
+															width="2%" style="text-align:center !important;" />
+														<p:column rowspan="3" headerText="#{msg['lbl.currency']}"
+															width="7%" style="text-align:center !important;" />
+														<p:column rowspan="3" headerText="#{msg['lbl.country']}"
+															width="7%" style="text-align:center !important;" />
+														<p:column rowspan="3" headerText="#{msg['lbl.bank']}"
+															width="15%" style="text-align:center !important;" />
+														<p:column rowspan="3" headerText="#{msg['lbl.branch']}"
+															width="15%" style="text-align:center !important;" />
+														<p:column rowspan="3" headerText="#{msg['lbl.serviceMode']}"
+															width="4%" style="text-align:center !important;" />
+														<p:column colspan="4" headerText="#{msg['lbl.sellingRate']}"
+															style="text-align:center !important;" />
+														<p:column colspan="4"
+															headerText="#{msg['lbl.buyingRate']}"
+															style="text-align:center !important;" />
+														<!-- <p:column rowspan="3" headerText="#{msg['lbl.corporateRate']}"
+															width="5%" style="text-align:center !important;" /> -->
+													</p:row>
+													<p:row>
+														<p:column colspan="2" headerText="#{msg['lbl.min']}"
+															style="text-align:center !important;" />
+														<p:column colspan="2" headerText="#{msg['lbl.max']}"
+															style="text-align:center !important;" />
+														<p:column colspan="2" headerText="#{msg['lbl.min']}"
+															style="text-align:center !important;" />
+														<p:column colspan="2" headerText="#{msg['lbl.max']}"
+															style="text-align:center !important;" />
+													</p:row>
+													<p:row>
+														<p:column headerText="Curr"
+															style="text-align:center !important;" />
+														<p:column headerText="Prv"
+															style="text-align:center !important;" />
+														<p:column headerText="Curr"
+															style="text-align:center !important;" />
+														<p:column headerText="Prv"
+															style="text-align:center !important;" />
+														<p:column headerText="Curr"
+															style="text-align:center !important;" />
+														<p:column headerText="Prv"
+															style="text-align:center !important;" />
+														<p:column headerText="Curr"
+															style="text-align:center !important;" />
+														<p:column headerText="Prv"
+															style="text-align:center !important;" />
+													</p:row>
+												</p:columnGroup>
+
+												<p:column
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{d.currencyName}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+
+												<p:column
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{d.countryName}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+
+												<p:column
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{d.bankName}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+
+												<p:column
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{d.branchName}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+
+												<p:column
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{d.serviceName}" style="float:left;margin-left:5px;margin-right:5px;"/>
+												</p:column>
+
+												<p:column
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{d.sellingRateMin}" />
+												</p:column>
+
+												<p:column
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{d.prvSellMinRate}" />
+												</p:column>
+
+												<p:column
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{d.sellingRateMax}" />
+												</p:column>
+
+												<p:column
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{d.prvSellMaxRate}" />
+												</p:column>
+
+												<p:column
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{d.buyingRateMin}" />
+												</p:column>
+
+												<p:column
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{d.prvBuyMinRate}" />
+												</p:column>
+
+												<p:column
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{d.buyingRateMax}" />
+												</p:column>
+
+												<p:column
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{d.prvBuyMaxRate}" />
+												</p:column>
+
+												<!-- <p:column
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{d.corporateRate}" />
+												</p:column> -->
+
+											</p:dataTable>
+										</p:rowExpansion>
+
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

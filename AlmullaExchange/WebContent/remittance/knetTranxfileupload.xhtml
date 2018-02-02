@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	
+	<script type="text/javascript">
+		history.pushState(null, null, 'knetTranxfileupload.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'knetTranxfileupload.xhtml');
+		});
+	</script>
+</h:head>
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+		<h:form id="form" enctype="multipart/form-data" onkeypress="if (event.keyCode == 13) { return false; }">
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;"><ui:include
+							src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle"
+										src="../images/toggle_plus.png" alt=""
+										onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+
+								<h1>
+									<h:outputText value="Knet File Upload" />
+								</h1>
+
+								<p:panel styleClass="shadow" id="mainPanel"
+									style="background-color:#FFF !important; ">
+
+									<p:confirmDialog id="errorPage" widgetVar="errorPage"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{knetTranxFileUploadBean.errorMessage} ">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="fileNotFound" widgetVar="fileNotFound"
+										resizable="false" width="500"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="Please choose file ,before submit click">
+									</p:confirmDialog>
+
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+
+									<h2>
+										<h:outputText value="Knet File Upload" />
+									</h2>
+
+									
+									<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['lbl.fileUploadedcsv']}" />
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:fileUpload id="fileUplod" mode="advanced"
+												fileUploadListener="#{knetTranxFileUploadBean.readCSVfile}"
+												update="mainPanel" label="Choose a file"
+												sizeLimit="50485762222" allowTypes="/(\.|\/)(xls|xlsx|)$/"
+												required="true" requiredMessage="Upload a File"
+												invalidSizeMessage="The maximum file size allowed is 1 Megabyte !"
+												invalidFileMessage="You are allowed to upload only XLS/XLSX !!!"
+												oncomplete="PF('imageUpload').show()" onstart="process.show();" onsuccess="process.hide();">
+												<p:message id="messages" for="fileUplod"
+													value="File Not Selected" style="color:red;" />
+											</p:fileUpload>
+										</p:panel>
+									</p:panel>
+
+								 	 <p:dataTable id="dataTable"
+										value="#{knetTranxFileUploadBean.lstknetTranxFileUploadDatatable}"
+										var="c"
+										rowStyleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+										rowIndexVar="rowIndex" style="width:100%;" paginator="true"
+										paginatorPosition="bottom" rows="10"
+										rowsPerPageTemplate="10,15,20" editable="true"
+										paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+										styleClass="mydatatableclass">
+
+										<p:column headerText="#{msg['lbl.sNo']}"  width="2%">
+											<p:outputLabel value="#{rowIndex+1}" />
+										</p:column>
+
+										<p:column headerText="Date" width="5%">
+											<p:outputLabel value="#{c.trnxDate}" />
+										</p:column>
+
+										<p:column headerText="Card Number" width="7%">
+											<p:outputLabel value="#{c.cardNumber}" />
+										</p:column>
+
+										<p:column headerText="Merchant Track Id" width="5%">
+											<p:outputLabel value="#{c.customerReference}" />
+										</p:column>
+										
+										<p:column headerText="Customer Name">
+											<p:outputLabel value="#{c.customerName}" />
+										</p:column>
+										
+
+										<p:column headerText="Reference Id" width="7%">
+											<p:outputLabel value="#{c.referenceId}" />
+										</p:column>
+
+										<!-- <p:column headerText="Transaction Id">
+											<p:outputLabel value="#{c.transactionId}" />
+										</p:column> -->
+<!-- 
+										<p:column headerText="Order Id">
+											<p:outputLabel value="#{c.orderId}" />
+										</p:column> -->
+
+										<p:column headerText="Approval No." width="6%">
+											<p:outputLabel value="#{c.authorizationCode}" />
+										</p:column>
+
+										<p:column headerText="Amount" width="7%">
+											<p:outputLabel value="#{c.amount}" >
+												<f:convertNumber pattern="#.###"></f:convertNumber>
+											</p:outputLabel>
+										</p:column>
+										
+										<!-- <p:column headerText="Result Code">
+											<p:outputLabel value="#{c.resultCode}" style="color: green !important; font-weight: bold;"/>
+										</p:column> -->
+										
+										<p:column headerText="Status">
+											<p:outputLabel value="#{c.status}" style="color: #{c.textColor} !important; font-weight: bold;"/>
+										</p:column>
+										<p:column headerText="Error Message">
+											<p:outputLabel value="#{c.errorMessage}" style="color: red !important; font-weight: bold;"/>
+										</p:column>
+										
+										
+										
+									</p:dataTable>
+									<p:panel>
+										<p:panel styleClass="inner_left_col">
+											<h:outputLabel value="Total to be Processed : " style="color: black !important; font-weight: bold;"/>
+											<h:outputText value="#{knetTranxFileUploadBean.totalTobeProcessed}"></h:outputText>
+										</p:panel>
+										<p:panel styleClass="inner_left_col">
+											<h:outputLabel value="Total Authentiated and Processed : " style="color: green !important; font-weight: bold;"/>
+											<h:outputText value="#{knetTranxFileUploadBean.totalAuthAndProcessed}"></h:outputText>
+										</p:panel>
+										<p:panel styleClass="inner_left_col">
+											<h:outputLabel value="Total Rejected : " style="color: brown !important; font-weight: bold;"/>
+											<h:outputText value="#{knetTranxFileUploadBean.totalRejected}"></h:outputText>
+										</p:panel>
+										<p:panel styleClass="inner_left_col">
+											<h:outputLabel value="Total Tagged in Error   : " style="color: red !important; font-weight: bold;"/>
+											<h:outputText value="#{knetTranxFileUploadBean.totalTagError}" style="color: red !important; font-weight: bold;"></h:outputText>
+										</p:panel>
+									</p:panel>
+							 <h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+									<h:panelGroup layout="block" styleClass="shadow_button"
+										id="goexitId" style="color:green;">
+										
+										<p:commandButton value="#{msg['lbl.process']}"
+											action="#{knetTranxFileUploadBean.uploadKnetFile}" update="mainPanel"
+											onstart="process.show();" onsuccess="process.hide();"
+											 />
+										<p:commandButton value="#{msg['lbl.exit']}"
+											action="#{knetTranxFileUploadBean.exitFromKnetUpload}" update="mainPanel"
+											onstart="process.show();" onsuccess="process.hide();"
+											immediate="true" />
+									 <p:commandButton value="#{msg['lbl.clear']}"
+											action="#{knetTranxFileUploadBean.clearDetails}" update="mainPanel"
+											onstart="process.show();" onsuccess="process.hide();"
+											/>		
+											
+											
+									</h:panelGroup>
+								</p:panel>
+								
+								
+								
+								
+
+							</h:panelGroup>
+							<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+						</h:panelGroup></td>
+				</tr>
+			</table>
+		</h:form>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

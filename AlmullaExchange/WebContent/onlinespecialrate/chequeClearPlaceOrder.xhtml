@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+		history.pushState(null, null, 'chequeClearPlaceOrder.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'chequeClearPlaceOrder.xhtml');
+		});
+	</script>
+
+</h:head>
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+
+
+
+		<p:confirmDialog id="procedureErr" widgetVar="procedureErr"
+			resizable="false" style="background-color: white !important;"
+			header="#{msg['lbl.warningDailog']}" styleClass="warning"
+			showEffect="clip" hideEffect="clip" closeOnEscape="true"
+			closable="true"
+			message="#{msg['lbl.procedureErrorMessage']} : #{chequeClearPlaceOrderBean.procedureError}">
+		</p:confirmDialog>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h1>
+								<h:outputText value="#{msg['lbl.placeOrderChequeClearance']}" />
+							</h1>
+
+							<h:form id="form">
+
+								<p:panel styleClass="shadow" id="mainPanel"
+									style="background-color:#FFF !important; ">
+
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{chequeClearPlaceOrderBean.errorMessage}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{chequeClearPlaceOrderBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+
+									<p:dialog id="complete" widgetVar="complete" showHeader="false"
+										resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel
+											value="#{msg['lbl.recordsSuccessfullySaved']}  #{chequeClearPlaceOrderBean.errorMessage}" />
+										<br />
+										<p:spacer width="15px" />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{chequeClearPlaceOrderBean.clickOnOKSave}"
+											process="@this" />
+									</p:dialog>
+
+									<!-- <p:confirmDialog id="dataNotFund" widgetVar="dataNotFund" resizable="false" header="#{msg['lbl.warningDailog']}"
+							style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+							showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.addAlteastOneRecordtoDataTable']}">
+						</p:confirmDialog> -->
+
+									<p:confirmDialog id="noRecords" widgetVar="noRecords"
+										resizable="false" header="#{msg['lbl.warningDailog']}"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{msg['lbl.norecordfound']}">
+									</p:confirmDialog>
+
+									<!-- <p:dialog id="approve"  widgetVar="approve" width="400" height="80" resizable="false" style="background-color: white !important;"
+										styleClass="success" header="#{msg['lbl.success']}" closable="false" showEffect="clip" hideEffect="clip" modal="true">
+										<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']}"/><br/>
+          								<p:spacer width="15px" />
+										<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{chequeClearPlaceOrderBean.clickOnOKSave}" process="@this"/>          
+						</p:dialog>
+						
+						<p:dialog id="alreadyapprov" widgetVar="alreadyapprov" width="400" height="80" showHeader="false" resizable="false" style=" border:2px solid green !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+	                      			showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"  >
+						            <p:outputLabel value="#{msg['lbl.thisratealreadyapprovedby']}"/><br/>
+						            <p:spacer width="15px" />
+						            <p:commandButton value="#{msg['lbl.ok']}" actionListener="#{chequeClearPlaceOrderBean.clickOnOKSave}" process="@this"/>          
+						</p:dialog> -->
+
+									<p:dialog id="success" widgetVar="success" width="400"
+										height="80" showHeader="false" resizable="false"
+										style=" border:2px solid green !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel
+											value="successfully completed transaction and reciept send to customer  #{chequeClearPlaceOrderBean.errorMessage} " />
+										<br />
+										<p:spacer width="15px" />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{chequeClearPlaceOrderBean.pageNavigationchequeClearPlaceOrder}"
+											process="@this" />
+									</p:dialog>
+									<p:confirmDialog id="noSellRate" widgetVar="noSellRate"
+										header="#{msg['lbl.warningDailog']}" styleClass="red"
+										showHeader="false" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closable="true"
+										message="There is no sell min and max rate for this combinations">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="multiUser" widgetVar="multiUser"
+										header="#{msg['lbl.warningDailog']}" styleClass="red"
+										showHeader="false" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closable="true"
+										message="Transaction already completyed by another user">
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{chequeClearPlaceOrderBean.pageNavigationchequeClearPlaceOrder}"
+											process="@this" />
+									</p:confirmDialog>
+
+									<h3>
+										<h:outputText value="#{msg['lbl.placeOrderChequeClearance']} " />
+									</h3>
+									<div class="clearfix"></div>
+
+									<p:panel styleClass="panel_border">
+
+
+
+										<!-- <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.customerRef']}" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgcustRef" for="custRef" display="text" />
+															<p:inputText id="custRef" value="#{chequeClearPlaceOrderBean.customerRefNo}" required="true" requiredMessage="Please Enter Customer Reference Number" tabindex="1" >
+																<f:validator validatorId="allowOnlyNumber" />
+																<p:ajax event="blur" update="msgcustRef" />
+																</p:inputText>
+																
+																</p:panel>
+										</p:panel> -->
+										<!-- <p:column
+															style="width:45%;padding:0px 3px 0px 0px !important;"></p:column> -->
+										<!-- update="msgid,id,mainPanel"  listener="#{chequeClearPlaceOrderBean.idOnBlur}" onstart="process.show();" onsuccess="process.hide();" -->
+										<!-- <p:message for="id" display="text" id="msgid" />
+																<p:tooltip for="id" value="ID"
+																	style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" /> -->
+
+
+
+										<!-- <p:column
+															style="width:20%; text-align:right !important;padding:4px 0px 0px 8px !important;">
+															<p:commandButton id="searchButton" value=""
+																styleClass="search_icon"
+																action="#{chequeClearPlaceOrderBean.searchClicked}"
+																process="@this">
+																<p:tooltip for="searchButton"
+																	value="#{msg['lbl.clickToSearch']}"
+																	style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" />
+															</p:commandButton>
+														</p:column> -->
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<!-- 	<h:panelGroup layout="block" styleClass="shadow_button" >			
+										 <p:commandButton value="#{msg['lbl.view']}" style="margin-right:10px;" action="#{chequeClearPlaceOrderBean.toFetchRecordsCheque}" update="mainPanel,dataTable" onstart="process.show()" onsuccess="process.hide();" />
+										<p:commandButton value="#{msg['lbl.clear']}" action="#{chequeClearPlaceOrderBean.clearAllFields}" disabled="#{chequeClearPlaceOrderBean.booRenderClear}"  immediate="true" process="@this" update="mainPanel" onstart="process.show()" onsuccess="process.hide();" />
+									</h:panelGroup>   -->
+										<!-- rendered="#{chequeClearPlaceOrderBean.booRenderDataTable}" -->
+										<p:dataTable id="dataTable" var="d"
+											value="#{chequeClearPlaceOrderBean.lstChequeClearPlaceOrderDataTable}"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											paginator="true" rows="5" rowsPerPageTemplate="5,10,15,20"
+											paginatorPosition="bottom" rowKey="#{d.transctionAmount}"
+											rowIndexVar="rowIndex"
+											emptyMessage="#{msg['lbl.noRecordFound']}"
+											styleClass="mydatatableclass">
+
+											<p:column selectionMode="single"
+												headerText="#{msg['lbl.select']}"
+												style="width:5%;text-align:center" />
+
+											<p:ajax event="rowSelectRadio"
+												listener="#{chequeClearPlaceOrderBean.toLoadSelectValue}"
+												update=":form:dataTable,:form:mainPanel"
+												style="width:5%;text-align:center" onstart="process.show();"
+												onsuccess="process.hide()" />
+
+											<p:column headerText="#{msg['lbl.sino']}" style="width:30px;">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.customerName']}">
+												<h:outputText value="#{d.customerRefAndName}" />
+												<!-- :form:dataTablePlace,:form:dataTablePanel,:form:banksFormultiple,:form:bankForSingle -->
+												<!-- <p:commandLink value="#{d.customerRefAndName}"
+												action="#{chequeClearPlaceOrderBean.toLoadSourecOfincome(d)}" process="@this" update=":form,:form:additionalId"
+												style="font-weight: bold; font-size:12px !important; color:blue !important; text-decoration:underline !important;" onstart="process.show();" onsuccess="process.hide();" /> -->
+											</p:column>
+
+											<p:column headerText="Foreign Tranx Amount">
+												<h:outputText value="#{d.amountAndQtyName} " />
+											</p:column>
+
+											<p:column headerText="Commission Amount">
+												<h:outputText value="#{d.localCommissionAmount} " />
+											</p:column>
+
+											<p:column headerText="Remitt Amount">
+												<h:outputText value="#{d.remitLocalAmount} " />
+											</p:column>
+
+
+											<p:column headerText="#{msg['lbl.chequebank']}">
+												<h:outputText value="#{d.beneficiaryBankName} " />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.chequeReferenceNumber']}">
+												<h:outputText value="#{d.chequeReference} " />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.chequeDate']}">
+												<h:outputText value="#{d.chequeDate}">
+													<f:convertDateTime pattern="dd/MM/yyyy" />
+												</h:outputText>
+											</p:column>
+
+
+
+
+
+										</p:dataTable>
+
+										<div class="clearfix"></div>
+										<p:spacer height="15px" />
+										<div class="clearfix"></div>
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel id="additionalId"
+											rendered="#{chequeClearPlaceOrderBean.booRenderAdditionals}">
+											<h2>
+												<h:outputText value="#{msg['lbl.customerinfo']}" />
+												(
+												<h:outputText
+													value="#{chequeClearPlaceOrderBean.customerRefAndName}"
+													style="color:red !important;" />
+												)
+												<h:outputText style="margin-right: 30%" />
+												<h:outputText value="#{msg['lbl.placeOrderDocumentNumber']}" />
+												(
+												<h:outputText
+													value="#{chequeClearPlaceOrderBean.documentNumber}"
+													style="color:red !important;" />
+												)
+											</h2>
+											<!-- 	<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.pymtmode']}" /><h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="paymentmode" display="text" id="msgpaymentmode" />
+													<p:selectOneMenu id="paymentmode" value="#{chequeClearPlaceOrderBean.paymentmodeId}" filterMatchMode="contains" required="true" filter="true" requiredMessage="please Select Payment Mode ">
+														<f:selectItem itemLabel="#{msg['lbl.selectmodetyp']}" />
+														<f:selectItems value="#{chequeClearPlaceOrderBean.lstFetchAllPayMode}" var="c" itemLabel="#{c.paymentMode.paymentCode} - #{c.localPaymentName}"
+															itemValue="#{c.paymentMode.paymentModeId}" />
+														<p:ajax event="change" listener="#{chequeClearPlaceOrderBean.changeBanksForPayment}" update="msgpaymentmode,chequePanel,cardPanel,mainPanel"
+															onstart="process.show();" onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel> -->
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.amount']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="remitamountId" display="text"
+														id="msgremitamountId" />
+													<p:inputText id="remitamountId"
+														value="#{chequeClearPlaceOrderBean.remitamount}"
+														required="true" requiredMessage="Please Enter Amount">
+														<p:ajax update="msgremitamountId" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<!-- 	<p:panel id="chequePanel" rendered="#{chequeClearPlaceOrderBean.booChequePanel}">
+											<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.banks']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgcolbankid" for="colbankid" display="text" />
+														<p:selectOneMenu id="colbankid" value="#{chequeClearPlaceOrderBean.remitBankId}" filterMatchMode="contains" filter="true" required="true" requiredMessage="Please Select Bank">
+															<f:selectItem itemLabel="Select Bank" itemValue="" /> listener="#{personalRemittanceBean.populateCustomerDetails}"
+															<f:selectItem itemLabel="#{msg['lbl.selectBank']}" itemValue="" />
+															<f:selectItems value="#{chequeClearPlaceOrderBean.bankMasterList}" var="c" 
+																itemLabel="#{c.bankShortName} - #{c.bankFullName}" itemValue="#{c.chequeBankCode}" />
+															<p:ajax update="msgcolbankid" event="change"  onstart="process.show();" onsuccess="process.hide();" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+												
+												<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Check Ref Number" /><h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="checkRefNumberId" display="text" id="msgcheckRefNumberId" />
+													<p:inputText id="checkRefNumberId" value="#{chequeClearPlaceOrderBean.checkRefNo}" required="true" requiredMessage="Please Enter Amount">
+													<p:ajax update="msgcheckRefNumberId"/>
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+													<h:panelGroup layout="block" class="clearfix" />
+												<p:panel styleClass="left_col" >
+													<p:panel styleClass="inner_left_col">
+												<h:outputText value="Cheque Date" /><h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgFromTime"  for="fromTimeId" display="text" />
+												<p:panel styleClass="inner_right_col" style="width: 100% !important;" >
+                                                <p:message id="msgdocument" for="fromTimeId" display="text" />
+                                                 <p:calendar id="fromTimeId" value="#{chequeClearPlaceOrderBean.remitApproveCheckDate}" required="true" requiredMessage="Please Select From Time" pattern="dd/MM/yyyy" >
+                                                 <p:ajax event="dateSelect" update="msgdocument" /> 
+                                                </p:calendar>
+                                            </p:panel>
+                                        </p:panel>
+                                    </p:panel>
+                                    
+                                    <p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Approval Number" /><h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="remitapprovalNumber" display="text" id="msgremitapprovalNumber" />
+													<p:inputText id="remitapprovalNumber" value="#{chequeClearPlaceOrderBean.approvalNumber}" required="true" requiredMessage="Please Enter Amount">
+													<p:ajax update="msgremitapprovalNumber"/>
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											</p:panel> -->
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<!-- <p:panel id="cardPanel" rendered="#{chequeClearPlaceOrderBean.booCardPanel}">
+												
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.banks']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgcolchequebankid" for="colchequebankid" display="text" />
+														<p:selectOneMenu id="colchequebankid" value="#{chequeClearPlaceOrderBean.cardBankId}" filterMatchMode="contains" filter="true" required="true" requiredMessage="Please Select Bank">
+															<f:selectItem itemLabel="#{msg['lbl.selectBank']}" itemValue="" />
+															<f:selectItems value="#{chequeClearPlaceOrderBean.chequebankMasterList}" var="c" itemLabel="#{c.bankFullName}" itemValue="#{c.chequeBankCode}" />
+															<p:ajax update="msgcolchequebankid" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+												
+												
+												<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Card Number" /><h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="cardNumberId" display="text" id="msgcardNumberId" />
+													<p:inputText id="cardNumberId" value="#{chequeClearPlaceOrderBean.cardNumber}" required="true" requiredMessage="Please Enter Card Number">
+													<p:ajax update="msgcardNumberId"/>
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+													<h:panelGroup layout="block" class="clearfix" />
+												<p:panel styleClass="left_col" >
+													<p:panel styleClass="inner_left_col">
+												<h:outputText value="Name Of The Card" /><h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+                                                <p:message for="nameOfTheCardID" display="text" id="msgnameOfTheCardID" />
+													<p:inputText id="nameOfTheCardID" value="#{chequeClearPlaceOrderBean.nameOfTheCard}" required="true" requiredMessage="Please Enter Name Of the Card">
+													<p:ajax update="msgnameOfTheCardID"/>
+													</p:inputText>
+                                            </p:panel>
+                                        </p:panel>
+                                        
+                                        <p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Approval Number" /><h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="approvalNumberId" display="text" id="msgapprovalNumberId" />
+													<p:inputText id="approvalNumberId" value="#{chequeClearPlaceOrderBean.approvalNumberCard}" required="true" requiredMessage="Please Enter Approval Number">
+													<p:ajax update="msgapprovalNumberId"/>
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+												<h:panelGroup layout="block" class="clearfix" />
+                                    </p:panel> -->
+
+
+											<h:panelGroup layout="block" class="clearfix" />
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+
+										<!-- <h:commandLink value="REFRESH" immediate="true" style="background-color: green;
+   												 color: white !important; font-family: times new roman !important; font-size: 16px !important; font-weight: bold;"
+										action="#{chequeClearPlaceOrderBean.groupSalesManagerApprovalPageNavigation(d)}">
+										<p:ajax update="mainPanel" />
+									</h:commandLink>	 -->
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											rendered="#{chequeClearPlaceOrderBean.booRenderSaveOrExit}">
+											<p:commandButton value="#{msg['lbl.process']}"
+												style="margin-right:10px;"
+												action="#{chequeClearPlaceOrderBean.save}"
+												update="mainPanel" partialSubmit="true"
+												onstart="process.show()" onsuccess="process.hide();" />
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{chequeClearPlaceOrderBean.exit}" immediate="true"
+												process="@this" update="mainPanel" onstart="process.show()"
+												onsuccess="process.hide();" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col">
+											<h:outputText id="mandatory"
+												value=" #{msg['lbl.*filedsAreMandatory']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+
+										<p:dialog modal="true" showHeader="false" widgetVar="process"
+											id="process" width="300" height="60" resizable="false"
+											draggable="false" closable="false"
+											style=" border: 2px green solid !important;background-color: #FFF !important;">
+											<div
+												style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+												<p:graphicImage value="../images/processImg.gif"
+													style="float: left !important; margin-right: 24px !important; " />
+												<p:outputLabel value="Please wait ........"
+													style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+											</div>
+										</p:dialog>
+									</p:panel>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+					</h:panelGroup></td>
+			</tr>
+		</table>
+
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

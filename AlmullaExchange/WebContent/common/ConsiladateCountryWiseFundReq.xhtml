@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+		history.pushState(null, null, 'ConsiladateCountryWiseFundReq.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'ConsiladateCountryWiseFundReq.xhtml');
+	    });
+	</script>
+</h:head>
+		
+    	
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<h:form id="form" >
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+				<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+				</td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h1>
+								<h:outputText value="#{msg['lbl.consolidatedCountrywiseFundRequirementEnquiry']}" />
+							</h1>
+							
+							<p:panel styleClass="shadow" id="mainPanel">
+	 <p:confirmDialog id="error" widgetVar="error"  
+		resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" 
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{consiladateCountryWiseFundReqBean.errorMessage}" >
+	</p:confirmDialog>
+	<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"  
+									resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" 
+									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{consiladateCountryWiseFundReqBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}" >
+									</p:confirmDialog>
+	
+	<p:confirmDialog id="noRecord" widgetVar="noRecord" width="300" header="#{msg['lbl.warningDailog']}"
+		height="17" resizable="false"
+		style=" border:2px solid green !important; padding:0px !important;  color:solid green !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="explode" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.nodatafound']}">
+    	</p:confirmDialog>
+    	
+    	
+    	<p:confirmDialog id="ttAmount" widgetVar="ttAmount" width="300" header="#{msg['lbl.warningDailog']}"
+		height="17" resizable="false"
+		style=" border:2px solid green !important; padding:0px !important;  color:solid green !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="explode" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.ttAmountIsZero']}">
+    	</p:confirmDialog>
+	
+	<p:dialog modal="true" showHeader="false" widgetVar="process" id="process" width="300" height="60" resizable="false" draggable="false" closable="false"
+	style=" border: 2px green solid !important;background-color: #FFF !important;">
+	<div style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important; ">
+	<p:graphicImage value="../images/processImg.gif" style="float: left !important; margin-right: 24px !important; "/>
+	<p:outputLabel value="Please wait ........" style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" /></div>
+	</p:dialog>	
+	
+		<p:dialog id="ttPanel" width="50%"  overflow="auto" widgetVar="ttPanel" header="#{msg['lbl.tt']}" resizable="false" styleclass="ui-dialog-content ui-widget-content" style="height: auto; bottom:auto !important; border:3px solid #00a53e !important; font-weight:bold; background: #FFF !important;"
+	                      					showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+	                      					
+									<h:panelGrid  style="width:100%;">
+									
+										<p:dataTable value="#{consiladateCountryWiseFundReqBean.ttBankList}" id="ttBank" styleClass="mydatatableclass"
+											var="o" rowIndexVar="rowIndex" 
+											emptyMessage="#{msg['lbl.norecordfound']}"  style="width:650px;"
+											>
+											<!-- rows="10" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" 
+											rowsPerPageTemplate="5,10,15" paginatorPosition="bottom" -->
+											
+											<p:column headerText="#{msg['lbl.slNo']}" style="width:50px;">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+											
+											
+											<p:column headerText="#{msg['lbl.bank']}" >
+												<h:outputText value="#{o.ttBankName}" />
+											</p:column>
+											
+											<p:column headerText="#{msg['lbl.fcamount']}" >
+												<h:outputText value="#{o.fcAmountDisplay}" />
+											</p:column>	
+											</p:dataTable>
+											<p:spacer height="10px" />
+												<p:panelGrid style="width:100%;" id="totalPanel">
+													<p:row>
+														<p:column style="width:50%; text-align:center;">
+															<h:outputText style="font-weight:bold;"
+																value="#{msg['lbl.totalAmount']}"></h:outputText>
+														</p:column>
+														<p:column style="width:50%; ">
+															<p:inputText style="width:25%;" id="totalAmount"
+																value="#{consiladateCountryWiseFundReqBean.totalAmountDispaly}"
+																readonly="true" >
+																<p:ajax update="totalAmount,totalPanel"/>
+																</p:inputText>
+														</p:column>
+													</p:row>
+												</p:panelGrid>							
+										</h:panelGrid>
+										</p:dialog>
+	
+	
+										<h2>
+											<h:outputText value="#{msg['lbl.consolidatedCountrywiseFundRequirementEnquiry']}" />
+										</h2>
+										<p:panel styleClass="panel_border"  >
+										
+									<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['lbl.projectiondate']}"/>
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:message for="projectiondate" display="text" id="msgProjectionDate" />
+    											<p:calendar id="projectiondate" value="#{consiladateCountryWiseFundReqBean.projectionDate}" mode="popup" pattern="dd/MM/yyyy"  maxdate="#{consiladateCountryWiseFundReqBean.minDate}" navigator="true" readonlyInput="true">
+    											<p:ajax event="dateSelect"  update="msgProjectionDate" />
+    											<p:ajax/>
+    											</p:calendar>					
+										</p:panel>
+										</p:panel>
+										
+									 <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.exchangecountry']}" /><h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgExchangeCountry" for="exchangeCountry" display="text"/>
+											<p:selectOneMenu id="exchangeCountry" value="#{consiladateCountryWiseFundReqBean.exchangeCountry}" required="true" requiredMessage="Please Select Exchange Country" filter="true" filterMatchMode="contains">
+											 <f:selectItem itemLabel="#{msg['lbl.pleaseSelectExchangeCountry']}"  itemValue="" />
+                                                 <f:selectItems value="#{consiladateCountryWiseFundReqBean.lstCountryMasterDesc}" var="c"  itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}" itemValue="#{c.fsCountryMaster.countryId}"/> 
+											<p:ajax event="change" listener="#{consiladateCountryWiseFundReqBean.toFetchBankCountry}" update="msgExchangeCountry,bankCountryId,bankId,currencyId" onstart="process.show();" onsuccess="process.hide();"/>
+											</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										<h:panelGroup layout="block" class="clearfix"/> 
+										
+										 <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bankcountry']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgBankCountry" for="bankCountryId" display="text"/>
+											<p:selectOneMenu id="bankCountryId" value="#{consiladateCountryWiseFundReqBean.bankCountry}" filter="true" filterMatchMode="contains">
+											 <f:selectItem itemLabel="-- #{msg['lbl.pleaseSelectBankCountry']} --"  itemValue="" />
+                                               <f:selectItems value="#{consiladateCountryWiseFundReqBean.lstBankCountry}" var="c"  itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}" itemValue="#{c.fsCountryMaster.countryId}"/>       
+											<p:ajax event="change" listener="#{consiladateCountryWiseFundReqBean.toFetchBank}" update="msgBankCountry,bankId,currencyId" onstart="process.show();" onsuccess="process.hide();"/>
+											</p:selectOneMenu>
+											</p:panel>
+											
+										</p:panel>
+										 <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bank']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgBank" for="bankId" display="text"/>
+											<p:selectOneMenu id="bankId" value="#{consiladateCountryWiseFundReqBean.bankId}" filter="true" filterMatchMode="contains">
+											 <f:selectItem itemLabel="#{msg['lbl.bank.pleaseSelectBank']}"  itemValue="" />
+                                              <f:selectItems value="#{consiladateCountryWiseFundReqBean.lstBankMaster}" var="c"  itemLabel="#{c.bankCode} - #{c.bankFullName}" itemValue="#{c.bankId}"/> 
+											<p:ajax event="change" update="msgBank,currencyId" listener="#{consiladateCountryWiseFundReqBean.toFetchCurrency}" onstart="process.show();" onsuccess="process.hide();"/>
+											</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										<h:panelGroup layout="block" class="clearfix"/> 
+										
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currency']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message id="msgCurrency" for="currencyId" display="text"/>
+											<p:selectOneMenu id="currencyId" value="#{consiladateCountryWiseFundReqBean.currencyId}" filter="true" filterMatchMode="contains">
+											 <f:selectItem itemLabel="#{msg['lbl.plsSelectCurrency']}"  itemValue="" />
+                                             <f:selectItems value="#{consiladateCountryWiseFundReqBean.lstCurrencyMaster}" var="c"  itemLabel="#{c.fsCurrencyMaster.currencyCode} - #{c.fsCurrencyMaster.currencyName}" itemValue="#{c.fsCurrencyMaster.currencyId}"/> 
+											<p:ajax event="change" update="msgCurrency" onstart="process.show();" onsuccess="process.hide();"/>
+											</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+									<h:panelGroup layout="block" class="clearfix"/> 
+										
+										<p:panel styleClass="left_col" >
+									<h:outputText  id="mandatory" value=" #{msg['lbl.*filedsAreMandatory']}"  style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+								</p:panel>
+								
+										<h:panelGroup layout="block" class="clearfix"/>
+									<h:panelGroup layout="block" styleClass="shadow_button"  >						
+										<p:commandButton value="#{msg['lbl.enquiry']}" update="mainPanel" action="#{consiladateCountryWiseFundReqBean.consiladateFundEnquiry}" style="margin-right:10px;"  onstart="process.show();" onsuccess="process.hide();"/>
+										<p:commandButton value="#{msg['lbl.exit']}" action="#{consiladateCountryWiseFundReqBean.exit}" style="margin-right:10px;" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+										<p:commandButton value="#{msg['lbl.clear']}" action="#{consiladateCountryWiseFundReqBean.clearAll}" style="margin-right:10px;" update="mainPanel" immediate="true" process="@this" onstart="process.show();" onsuccess="process.hide();"/> 
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+									
+									
+									<h:panelGroup layoutR="block" class="clearfix"/><!-- -->
+									<p:dataTable id="dataTable" styleClass="mydatatableclass"
+										value="#{consiladateCountryWiseFundReqBean.lstConsiladateCountryWiseFundReqDT}" 
+										rows="15" paginator="true" rendered="#{consiladateCountryWiseFundReqBean.booRenderDataTable}"
+										paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+										rowsPerPageTemplate="15,20,25" var="d" rowIndexVar="rowIndex"
+										emptyMessage="#{msg['lbl.noRecordFound']}" paginatorPosition="bottom">
+												<p:columnGroup type="header">
+														<p:row>
+															<p:column rowspan="2" headerText="#{msg['lbl.sino']}" />
+															<p:column rowspan="2" headerText="#{msg['lbl.country']}" />
+															<p:column rowspan="2" headerText="#{msg['lbl.bank']}" />
+															<p:column rowspan="2" headerText="#{msg['lbl.currency']}" />
+															
+															<p:column colspan="3" headerText="#{msg['lbl.fundRequiredInBankCurrency']}" />
+															<p:column colspan="3" headerText="#{msg['lbl.dealsDoneInBankCurrency']}" />
+															<p:column colspan="3" headerText="#{msg['lbl.conEnqDifference']} " />
+															
+															
+														</p:row>
+													
+														<p:row>
+															<p:column headerText="#{msg['lbl.eft']}"/>
+															<p:column headerText="#{msg['lbl.tt']}"/>
+															<p:column headerText="#{msg['lbl.cash']}"/>
+															
+															<p:column headerText="#{msg['lbl.eft']}"/>
+															<p:column headerText="#{msg['lbl.tt']}"/>
+															<p:column headerText="#{msg['lbl.cash']}"/>
+															
+															<p:column headerText="#{msg['lbl.eft']}"/>
+															<p:column headerText="#{msg['lbl.tt']}"/>
+															<p:column headerText="#{msg['lbl.cash']}"/>
+														</p:row>
+												</p:columnGroup>
+													
+													<p:column >
+														<p:outputLabel  style="text-align:center;" value="#{rowIndex+1}" />
+														</p:column>
+														
+														<p:column >
+														<p:outputLabel  style="text-align:center;" value="#{d.bankCountryName}" />
+														</p:column>
+														
+														
+														<p:column rendered="#{d.booBank}">
+														<p:outputLabel  style="text-align:center;" value="#{d.bankName}" />
+														</p:column>
+														
+														<p:column rendered="#{d.booTT}">
+														<p:commandLink action="#{consiladateCountryWiseFundReqBean.toFetchBankTreasureDealHeader(d)}" style="text-align:center; color:blue !important; text-decoration:underline !important;" value="#{d.bankName}" 
+														update=":form:mainPanel,dataTable" immediate="true" process="@this" onclick="process.show();" oncomplete="process.hide();"/>
+														</p:column>
+														
+														<p:column >
+														<p:outputLabel  style="text-align:center;" value="#{d.currencyName}" />
+														</p:column>
+														
+														<p:column style="width:6% !important;">
+															<p:outputLabel style="text-align:center;" value="#{d.fundReqEFTDisplay}"/>
+														</p:column>
+														
+														<p:column style="width:6% !important;">
+															<p:outputLabel style="text-align:center;" value="#{d.fundReqTTDisplay}"/>
+														</p:column>
+														
+														<p:column style="width:6% !important;">
+															<p:outputLabel style="text-align:center;" value="#{d.fundReqCashDisplay}"/>
+														</p:column>
+														
+														<p:column style="width:6% !important;">
+															<p:outputLabel style="text-align:center;" value="#{d.dealsDoneEFTDisplay}"/>
+														</p:column>
+														
+														<p:column style="width:6% !important;">
+															<p:outputLabel style="text-align:center;" value="#{d.dealsDoneTTDisplay}"/>
+														</p:column>
+														
+														<p:column style="width:6% !important;">
+															<p:outputLabel style="text-align:center;" value="#{d.dealsDoneCashDisplay}"/>
+														</p:column>
+														
+														<p:column style="width:6% !important;">
+															<p:outputLabel style="text-align:center;" value="#{d.diffEFTDisplay}"/>
+														</p:column>
+														
+														<p:column style="width:6% !important;">
+															<p:outputLabel style="text-align:center;" value="#{d.diffTTDisplay}"/>
+														</p:column>
+														
+														<p:column style="width:6% !important;">
+															<p:outputLabel style="text-align:center;" value="#{d.diffCashDisplay}"/>
+														</p:column>
+												
+									    </p:dataTable>
+									</p:panel>
+									
+									</p:panel>
+							</h:panelGroup>
+							</h:panelGroup>
+							</td>
+							</tr>
+						</table>
+						<ui:include src="#{facesBean.footer}"></ui:include>
+					<h:panelGroup layout="block" class="clearfix"/>
+		</h:form>
+		</f:view>
+		</h:body>
+		</html>

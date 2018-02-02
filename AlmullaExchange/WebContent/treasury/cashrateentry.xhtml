@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+
+		history.pushState(null, null, 'cashrateentry.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'cashrateentry.xhtml');
+		});
+	</script>
+</h:head>
+<p:dialog id="complete" widgetVar="complete" width="270" height="70"
+	showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} " />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{cashRateBean.clickOnOK}" process="@this" />
+</p:dialog>
+<!-- <p:dialog id="isEmpty" widgetVar="isEmpty" width="270" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+            											<p:outputLabel value="#{msg['lbl.isNoRecrds']}"/><br/>
+            								<p:spacer width="15px" />
+            											<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{cashRateBean.clickOnOK}" process="@this"/>          
+</p:dialog> -->
+
+<p:confirmDialog id="isEmpty" widgetVar="isEmpty" resizable="false"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.isNoRecrds']}">
+</p:confirmDialog>
+
+<p:confirmDialog id="duplicaterecord" widgetVar="duplicaterecord"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="Reccord Already existed">
+	<!-- 	<p:commandButton value="#{msg['lbl.ok']}" action="#{cashRateBean.clearAllFields}"   process="@this" /> -->
+</p:confirmDialog>
+<p:dialog id="delete" widgetVar="delete" width="270" height="70"
+	showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.recrdDeletedSuccess']}" />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{cashRateBean.clickOnOK}" process="@this" />
+</p:dialog>
+<p:dialog id="maxgreater" widgetVar="maxgreater" width="260" height="70"
+	showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+
+	<p:outputLabel value="#{msg['lbl.greatertthanmin']}" />
+	<br />
+
+	<p:commandButton value="#{msg['lbl.ok']}"
+		oncomplete="maxgreater.hide()" />
+</p:dialog>
+<p:dialog id="lesserthanmax" widgetVar="lesserthanmax" width="260"
+	height="70" showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+
+	<p:outputLabel value="#{msg['lbl.lesserthanmax']}" />
+	<br />
+
+	<p:commandButton value="#{msg['lbl.ok']}"
+		oncomplete="lesserthanmax.hide()" />
+</p:dialog>
+<h:body>
+
+	<f:view>
+
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form1">
+								<!--  Remarks Dialog -->
+
+								<!-- dilaog remark -->
+								<p:dialog id="delete" widgetVar="delete" width="270" height="70"
+									showHeader="false" resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+									<p:outputLabel value="#{msg['lbl.recrdDeletedSuccess']}" />
+									<br />
+									<p:spacer width="15px" />
+									<p:commandButton value="#{msg['lbl.ok']}"
+										actionListener="#{cashRateBean.clickOnOK}" process="@this" />
+								</p:dialog>
+								<h1>
+									<h:outputText value="#{msg['lbl.cashrateentry']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{cashRateBean.errorMessage}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{cashRateBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+									<h2>
+										<h:outputText value="#{msg['lbl.cashrateentry']}" />
+									</h2>
+
+									<p:panel id="firstPanel"
+										rendered="#{cashRateBean.booInputPanel}">
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.alternatecurrency']}" />
+
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="alternateCurrencyId" display="text"
+													id="alternateCurrencyIdmsg" />
+												<p:selectOneMenu id="alternateCurrencyId" required="true"
+													value="#{cashRateBean.alternateCurrencyId}"
+													filterMatchMode="contains" filter="true"
+													requiredMessage="Please Select Alternate Currency">
+													<f:selectItem itemLabel="Select Alternate Currency"
+														itemValue="" />
+													<f:selectItems value="#{cashRateBean.listCurrency}" var="c"
+														itemLabel=" #{c.currencyCode} - #{c.quoteName}  - #{c.currencyName}"
+														itemValue="#{c.currencyId}" />
+													<p:ajax event="change"
+														update="alternateCurrencyId,alternateCurrencyIdmsg,mainPanel" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.basecurrency']}" />
+
+												<!-- <h:outputText value="*" style="color:red !important;" /> -->
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgbaseCurrencyCode" for="baseCurrencyCode"
+													display="text" />
+												<p:inputText id="baseCurrencyCode" readonly="true"
+													value="#{cashRateBean.baseCurrencyCode}" required="true"
+													requiredMessage="Please Enter Currency Name" maxlength="60">
+													<p:ajax event="blur"
+														update="baseCurrencyCode,msgbaseCurrencyCode" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.countrybranch']}" />
+												<!-- <h:outputText value="*" style="color:red !important;" /> -->
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="countryBranchId" display="text"
+													id="countryBranchIdmsg" />
+
+												<p:selectOneMenu id="countryBranchId"
+													filterMatchMode="contains" filter="true"
+													value="#{cashRateBean.countryBranchId}"
+													style="width:105px;text-align:left;">
+													<f:selectItem itemLabel="-- Select Country Branch --"
+														itemValue="" />
+													<f:selectItems value="#{cashRateBean.lstofCountryBranch}"
+														var="c" itemLabel="#{c.branchId} - #{c.branchName}"
+														itemValue="#{c.countryBranchId}" />
+													<p:ajax event="change"
+														update="countryBranchId,countryBranchIdmsg" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.minimumsellrate']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgsaleMinRate" for="saleMinRate"
+													display="text" />
+												<p:inputText id="saleMinRate"
+													value="#{cashRateBean.saleMinRate}" required="true"
+													converterMessage="Please Enter Numbers Only"
+													requiredMessage="Please Enter Minimum Sell Rate"
+													maxlength="60">
+													<f:validator
+														validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+													<p:ajax event="blur" update="saleMinRate,msgsaleMinRate"
+														listener="#{cashRateBean.checkMin}" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.maximumsellrate']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgsaleMaxRate" for="saleMaxRate"
+													display="text" />
+												<p:inputText id="saleMaxRate"
+													value="#{cashRateBean.saleMaxRate}" required="true"
+													requiredMessage="Please Enter Maximum Sell Rate"
+													converterMessage="Please Enter Numbers Only" maxlength="60">
+													<f:validator
+														validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+
+													<p:ajax event="blur" update="saleMaxRate,msgsaleMaxRate"
+														listener="#{cashRateBean.checkMax}" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.minimumbuyrate']}" />
+
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgbuyRateMin" for="buyRateMin"
+													display="text" />
+												<p:inputText id="buyRateMin"
+													value="#{cashRateBean.buyRateMin}" required="true"
+													requiredMessage="Please Enter Minimum Buy Rate"
+													converterMessage="Please Enter Numbers Only" maxlength="60">
+													<f:validator
+														validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+
+													<p:ajax event="blur" update="buyRateMin,msgbuyRateMin"
+														listener="#{cashRateBean.checkBuyMin}" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.maximumBuyrate']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgbuyRateMax" for="buyRateMax"
+													display="text" />
+												<p:inputText id="buyRateMax"
+													value="#{cashRateBean.buyRateMax}" required="true"
+													requiredMessage="Please Enter Maximum Buy Rate"
+													converterMessage="Please Enter Numbers Only" maxlength="60">
+													<f:validator
+														validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+
+													<p:ajax event="blur" update="buyRateMax,msgbuyRateMax"
+														listener="#{cashRateBean.checkBuyMax}" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix" />
+
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.add']}"
+												action="#{cashRateBean.addToDataTable}" update="mainPanel" style="margin-right:10px;"/>
+											<p:commandButton value="#{msg['lbl.view']}"
+												action="#{cashRateBean.view}" update="mainPanel"
+												process="@this" style="margin-right:10px;"/>
+											<p:commandButton value="#{msg['lbl.clear']}"
+												action="#{cashRateBean.clearAllFields}" update="mainPanel"
+												process="@this" />
+										</h:panelGroup>
+									</p:panel>
+
+									<p:panel id="secondPanel"
+										rendered="#{cashRateBean.booDataTablePanel}">
+										<p:dataTable id="dataTable"
+											value="#{cashRateBean.lstFromUser}" var="d"
+											rowIndexVar="rowIndex" emptyMessage="No records Found"
+											rows="10" paginator="true"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											paginatorPosition="bottom" rowsPerPageTemplate="15,10,5"
+											sortMode="multiple" styleClass="mydatatableclass">
+
+											<p:column headerText="#{msg['lbl.sino']}" style="width:30px;"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.basecurrencycode']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText
+													value="#{d.baseCurrencyCode} - #{d.baseCurrencyDescription} " />
+											</p:column>
+											<!-- <p:column headerText="Base Currency Decscription" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.baseCurrencyDescription} "/>
+											</p:column> -->
+											<p:column headerText="#{msg['lbl.alternatecurrencycode']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText
+													value=" #{d.altenateCurrencyCode} - #{d.altenativeCurrencyDescrption} " />
+											</p:column>
+											<!-- <p:column headerText="Alternate Currency" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.altenativeCurrencyDescrption} " />
+											</p:column> -->
+											<!-- <p:column headerText="Branch " styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+											<h:outputText value="#{d.countryBranshId} "/>
+											</p:column> -->
+											<p:column headerText="#{msg['lbl.countrybranch']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.branchDescriprion} " />
+											</p:column>
+											<p:column headerText="#{msg['lbl.minimumsellrate']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.minSellRate}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.maximumsellrate']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.maxSellRate}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.minimumbuyrate']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.minBuyRate}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.maximumBuyrate']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{d.maxBuyRate}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.edit']}">
+												<p:commandLink action="#{cashRateBean.edit(d)}"
+													update=":form1" process="@this">
+													<p:graphicImage value="../images/edit.png" id="imgEdit" />
+													<p:tooltip for="imgEdit" value="#{msg['lbl.edit']}" />
+												</p:commandLink>
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.activeordeactive']}"
+												style="text-align:center !important;">
+												<p:commandLink update=":form1"
+													action="#{cashRateBean.confirmDelete(d)}" process="@this"
+													style="color:blue !important; text-decoration:underline !important;">
+													<p:graphicImage value="../images/delete.png" id="delete" />
+													<!-- <p:tooltip for="delete" value="Action" /> -->
+												</p:commandLink>
+											</p:column>
+
+										</p:dataTable>
+
+
+										<h:panelGroup layout="block" styleClass="shadow_button">
+
+											<p:commandButton value="#{msg['lbl.submit']}"
+												action="#{cashRateBean.Save}" update="mainPanel"
+												process="@this" style="margin-right:10px;"/>
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{cashRateBean.exit}" process="@this" />
+										</h:panelGroup>
+									</p:panel>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

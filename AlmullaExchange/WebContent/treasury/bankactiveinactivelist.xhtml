@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script src="../js/SigWeb.js" type="text/javascript"></script>
+	<script src="../js/digitalsignature.js"></script>
+	<script type="text/javascript">
+		var baseUri = "http://localhost:47289/SigWeb/";
+		history.pushState(null, null, 'bankactiveinactivelist.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'bankactiveinactivelist.xhtml');
+		});
+	</script>
+</h:head>
+
+<p:confirmDialog id="countryMandatory" widgetVar="countryMandatory"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all" message="Please Select Country!">
+</p:confirmDialog>
+
+<p:confirmDialog id="noRecords" widgetVar="noRecords" resizable="false"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all" message="No Records Found!">
+</p:confirmDialog>
+
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form1">
+								<h1>
+									<h:outputText value="#{msg['lbl.bankactivedeactive']}" />
+								</h1>
+
+								<p:panel styleClass="shadow" id="mainPanel">
+
+
+									<p:confirmDialog id="warningDailogId"
+										widgetVar="warningDailogId" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{bankMaster.warningMessage}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="nullPoiterId" widgetVar="nullPoiterId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{bankMaster.warningMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+
+
+									<p:dialog id="remarks" widgetVar="remarks" width="480"
+										resizable="false" style="background-color: white !important;"
+										styleClass="info" header="#{msg['lbl.remarks']}"
+										closable="false" showEffect="clip" hideEffect="clip">
+										<p:panel>
+											<table>
+												<tr>
+													<td><h:outputText
+															value="#{msg['lbl.activatedby']}     :" /></td>
+													<td><h:outputText value="#{bankMaster.createdBy}"
+															style="color:red !important;" /></td>
+												</tr>
+												<tr>
+													<td><h:outputText
+															value="#{msg['lbl.activateddate']}     :" /></td>
+													<td><h:outputText value="#{bankMaster.createdDate}"
+															style="color:red !important;" /></td>
+												</tr>
+											</table>
+										</p:panel>
+										<p:spacer height="10px" />
+										<p:panel>
+											<h:outputText value="#{msg['lbl.pleaseenterremarks']}" />
+											<h:outputText value="*" style="color:red !important;" />
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel>
+											<h:inputTextarea id="remarksId" value="#{bankMaster.remarks}"
+												validatorMessage="Maximum 255 charectors allowed">
+												<p:ajax />
+												<f:validateLength maximum="255"></f:validateLength>
+											</h:inputTextarea>
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel style="padding-left:160px;">
+											<p:commandButton value="#{msg['lbl.ok']}"
+												actionListener="#{bankMaster.clickOnOKDeActivate}"
+												update=":form1:mainPanel" process="@this"
+												style="margin-right:10px;" onstart="process.show();"
+												onsuccess="process.hide();" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												actionListener="#{bankMaster.clearRemarks}"
+												onclick="remarks.hide()" />
+										</p:panel>
+									</p:dialog>
+
+
+
+									<p:dialog id="deactivate" widgetVar="deactivate" width="300"
+										height="70" showHeader="false" resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+
+										<p:outputLabel value="#{msg['lbl.successfullydeactivated']}" />
+										<br />
+										<p:spacer width="15px" />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{bankMaster.clickOnOKActivate}"
+											process="@this" onstart="process.show();"
+											onsuccess="process.hide();" />
+									</p:dialog>
+
+									<p:dialog id="unupprove" widgetVar="unupprove" width="400"
+										height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="Warning Dailog" closable="false"
+										showEffect="clip" hideEffect="clip">
+										<p:outputLabel value="#{msg['lbl.doyouactivaterecord']}"
+											style="text-align: center; font-size:15px !important;" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											actionListener="#{bankMaster.clickOnOKDeActivate}"
+											process="@this" onstart="process.show();"
+											onsuccess="process.hide();"
+											style="margin-left: 140px !important;" />
+										<p:commandButton value="#{msg['lbl.cancel']}"
+											onclick="unupprove.hide()" process="@this"
+											style="margin-left:10px;" onstart="process.show();"
+											onsuccess="process.hide();" />
+									</p:dialog>
+
+									<p:dialog modal="true" showHeader="true"
+										header="#{msg['lbl.pleasewait']}" widgetVar="process"
+										id="process" width="300" height="50" resizable="false"
+										draggable="false" closable="false"
+										style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+										<div style="text-align: center;">
+											<p:graphicImage value="../images/preloader.gif" />
+										</div>
+									</p:dialog>
+
+
+									<p:panel>
+										<h2>
+											<h:outputText value="#{msg['lbl.bankactivedeactivelist']}" />
+											<p:commandLink action="#{bankMaster.exit}" process="@this">
+												<p:graphicImage value="../images/return.jpg" width="25"
+													height="25" id="imgEdit" styleClass="icon_right"
+													style="float:right;" />
+												<p:tooltip for="imgEdit" value="Go to Home"
+													style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" />
+											</p:commandLink>
+										</h2>
+									</p:panel>
+
+									<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputLabel value="Country" />
+											<h:outputText value="*" style="color:red !important;" />
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:selectOneMenu id="country" value="#{bankMaster.countryId}"
+												filter="true" filterMatchMode="contains">
+												<f:selectItem itemLabel="#{msg['lbl.selectcountry']}"
+													itemValue="" />
+												<f:selectItems value="#{bankMaster.allCountryList}"
+													var="cou"
+													itemLabel="#{cou.fsCountryMaster.countryCode} - #{cou.countryName}"
+													itemValue="#{cou.fsCountryMaster.countryId}" />
+												<p:ajax event="change" update="country,bank"
+													listener="#{bankMaster.bankLists}" process="@this"
+													onstart="process.show();" onsuccess="process.hide();" />
+											</p:selectOneMenu>
+										</p:panel>
+									</p:panel>
+
+									<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputLabel value="Bank" />
+											<h:outputText value="*" style="color:red !important;" />
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:selectOneMenu id="bank" value="#{bankMaster.bankBranch}"
+												filter="true" filterMatchMode="contains">
+												<f:selectItem itemLabel="--- Select Bank ---" itemValue="" />
+												<f:selectItems value="#{bankMaster.bankBranchList}" var="b"
+													itemLabel="#{b.bankCode} - #{b.bankFullName}"
+													itemValue="#{b.bankId}" />
+												<p:ajax event="change" update="bank,dataTableId"
+													listener="#{bankMaster.fetchBankActivationList}"
+													process="@this" onstart="process.show();"
+													onsuccess="process.hide();" />
+											</p:selectOneMenu>
+										</p:panel>
+									</p:panel>
+
+									<h:panelGroup layout="block" class="clearfix" />
+
+
+									<p:panel id="bankApproval" styleClass="panel_border">
+
+										<p:dataTable id="dataTableId" var="o" sortMode="multiple"
+											styleClass="mydatatableclass"
+											filteredValue="#{bankMaster.bankFilterList}" rows="10"
+											paginator="true"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="5,10,15"
+											value="#{bankMaster.bankActivationList}"
+											rowIndexVar="rowIndex"
+											emptyMessage="#{msg['lbl.recordnotfound']}"
+											rowStyleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+											paginatorPosition="bottom">
+
+											<p:column headerText="#{msg['lbl.sino']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.bankCode']}"
+												sortBy="#{o.bankCode}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+												filterBy="#{o.bankCode}" filterMatchMode="contains">
+												<h:outputText value="#{o.bankCode}" />												
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.bankFullName']}"
+												sortBy="#{o.fullName}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+												filterBy="#{o.fullName}" filterMatchMode="contains">
+												<h:outputText value="#{o.fullName}" />												
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.bankShortName']}"
+												sortBy="#{o.shortName}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+												filterBy="#{o.shortName}" filterMatchMode="contains">
+												<h:outputText value="#{o.shortName}" />												
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.reutersBankName']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{o.reutersBankNname}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.email']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{o.email}" />
+											</p:column>
+
+											<p:column headerText="Remarks"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{o.remarks}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.status']}"
+												sortBy="#{o.isStatus}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+
+
+												<p:panel rendered="#{o.isStatus eq 'D'}">
+													<div style="text-align: center !important;">
+														<p:commandLink action="#{bankMaster.getActiveInactive(o)}"
+															process="@this" update=":form1:mainPanel">
+															<p:graphicImage value="../images/unlock.jpg" width="25"
+																height="25" id="imgLock" />
+															<p:tooltip for="imgLock" value="Lock"
+																style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" />
+														</p:commandLink>
+													</div>
+												</p:panel>
+												<p:panel rendered="#{o.isStatus eq 'Y'}">
+													<div style="text-align: center !important;">
+														<p:commandLink action="#{bankMaster.getActiveInactive(o)}"
+															process="@this" update=":form1:mainPanel">
+															<p:graphicImage value="../images/lock.jpg" width="25"
+																height="25" id="imgUnlock" />
+															<p:tooltip for="imgUnlock" value="Un Lock"
+																style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" />
+														</p:commandLink>
+													</div>
+												</p:panel>
+												<p:panel rendered="#{o.isStatus eq 'U'}">
+													<div style="text-align: center !important;">
+														<h:outputText value="Pending For Approve" />
+													</div>
+												</p:panel>
+
+											</p:column>
+										</p:dataTable>
+									</p:panel>
+
+
+
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

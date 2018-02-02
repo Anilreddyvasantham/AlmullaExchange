@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+
+
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+
+		$(function() {
+			/*
+			 * this swallows backspace keys on any non-input element.
+			 * stops backspace -> back
+			 */
+			var rx = /INPUT|SELECT|TEXTAREA/i;
+
+			$(document).bind(
+					"keydown keypress",
+					function(e) {
+						if (e.which == 8) { // 8 == backspace
+							if (!rx.test(e.target.tagName) || e.target.disabled
+									|| e.target.readOnly) {
+								e.preventDefault();
+							}
+						}
+					});
+		});
+	</script>
+
+	<script type="text/javascript">
+		//	var baseUri = makeUri();
+		history.pushState(null, null, 'bankRepushTrnx.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'bankRepushTrnx.xhtml');
+		});
+	</script>
+
+	<script type="text/javascript">
+		function onLoadCallback(data) {
+			if (data.status == "begin") {
+				processIcon.show();
+			} else {
+				processIcon.hide();
+			}
+		}
+	</script>
+
+</h:head>
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form1">
+
+								<h1>
+									<h:outputText value="#{msg['lbl.bankRepushTrnx']}" />
+								</h1>
+
+								<p:confirmDialog id="dself" widgetVar="dself" width="500"
+									showHeader="false" resizable="false" header="Warning Message"
+									styleClass="warning"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="explode" hideEffect="explode"
+									message="#{repushBean.errorMessage}">
+								</p:confirmDialog>
+
+								<p:confirmDialog id="showDailog" widgetVar="showDailog"
+									width="400" resizable="false"
+									style="background-color: white !important;"
+									header="Warning Dailog" styleClass="warning" showEffect="clip"
+									hideEffect="clip" closeOnEscape="true" closable="true"
+									message="#{repushBean.errorMessage}">
+								</p:confirmDialog>
+
+								<p:dialog id="complete" widgetVar="complete" width="400"
+									height="80" resizable="false"
+									style="background-color: white !important;"
+									styleClass="success" header="Success" closable="false"
+									showEffect="clip" hideEffect="clip" modal="true">
+									<p:outputLabel value="#{msg['lbl.dataissuccessfullysaved']}"
+										style="text-align: center; font-size:15px !important;" />
+									<br />
+									<p:commandButton value="#{msg['lbl.ok']}"
+										action="#{repushBean.searchRejectedTrnxList}" immediate="true"
+										process="@this" update="@form"
+										style="margin-left: 150px !important;" />
+								</p:dialog>
+
+
+
+								<p:panel styleClass="shadow" id="mainPanel"
+									style=" background-color:#FFF !important;">
+
+
+									<p:panel style=" background-color:#FFF !important;"
+										id="benificaryStatusPanel">
+
+										<p:dialog modal="true" showHeader="true"
+											header="Please wait.." widgetVar="processIcon"
+											id="processIcon" width="300" height="50" resizable="false"
+											draggable="false" closable="false"
+											style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+											<div style="text-align: center;">
+												<p:graphicImage value="../images/preloader.gif" />
+											</div>
+										</p:dialog>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+
+													
+									
+										
+
+										<p:panel style="padding-bottom:0px !important;"
+											styleClass="panel_border">
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.bankcountry']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgCountry" for="country" display="text" />
+													<p:selectOneMenu id="country"
+														value="#{repushBean.benifisCountryId}"
+														filterMatchMode="contains" filter="true" required="true"
+														requiredMessage="Please Select Beneficiary Bank Country">
+														<f:selectItem itemLabel="#{msg['lbl.selectCountry']}"
+															itemValue="" />
+														<f:selectItems value="#{repushBean.bankCountryList}"
+															var="c"
+															itemLabel="#{c.bankCountryCode} - #{c.bankCountryName}"
+															itemValue="#{c.bankCountryId}" />
+														<p:ajax event="change"
+															listener="#{repushBean.popbanklist}" update="mainPanel"
+															onstart="processIcon.show();"
+															onsuccess="processIcon.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.beneficiaryBank']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgBank" for="bank" display="text" />
+													<p:selectOneMenu id="bank"
+														value="#{repushBean.benifisBankCode}" style="width:150px;"
+														filterMatchMode="contains" filter="true" required="true"
+														requiredMessage="Please Select Bank" filterFunction="">
+														<f:selectItem itemLabel="#{msg['lbl.selectBank']}"
+															itemValue="" />
+														<f:selectItems value="#{repushBean.lstBankFromView}"
+															var="c" itemLabel="#{c.bankCode} - #{c.bankFullName}"
+															itemValue="#{c.bankCode}" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.transferno']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{repushBean.documentNumber}"></p:inputText>
+												</p:panel>
+											</p:panel>
+											<!-- Banking Channel product panel -->
+											<h:panelGroup layout="block" styleClass="shadow_button" style="margin-bottom:-15px !important;">
+												<p:commandButton value="#{msg['lbl.search']}"
+													style="margin-right:10px;"
+													action="#{repushBean.searchRejectedTrnxList}"
+													update=":form1:dataTable" />
+													<p:commandButton value="#{msg['lbl.clear']}"
+													style="margin-right:10px;"
+													action="#{repushBean.resetForm}"
+													update="mainPanel,:form1:dataTable" />
+											</h:panelGroup>
+							
+											
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="panel_border">
+												<h:panelGroup layout="block" class="clearfix" />
+												<p:dataTable id="dataTable" styleClass="mydatatableclass" widgetVar="dataTable" 
+													value="#{repushBean.repushBankTrnxDataTableList}" var="d"
+													rowIndexVar="rowIndex" editable="true"
+													emptyMessage="#{msg['lbl.norecordfound']}" rows="10"
+													paginator="true" 
+													rowKey="#{d.docNumber}"
+													selection="#{repushBean.repushBankTrnxDataTableSelectedList}"
+													paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+													rowsPerPageTemplate="10,15" paginatorPosition="bottom"
+													>
+													<f:facet name="header">  
+                                                                <h:commandLink>
+                                                         <h:outputText  value="EXCEL REPORT"/>
+                                                        <p:graphicImage url="../images/excel.png" width="20px"/>
+                                                        <p:dataExporter type="xls" target="dataTable" fileName="bankRejec_Details" />
+                                                    </h:commandLink>
+                                                    </f:facet>
+													
+
+													<p:column style="width:2%;" exportable="true">
+														   <f:facet name="header">
+																<h:outputText value="#{msg['lbl.sNo']}" />
+															</f:facet>
+													
+														<h:outputText value="#{rowIndex+1}" />
+													</p:column>
+
+													<p:column exportable="true"   filterMatchMode="contains"
+														style="width:10% !important;">
+														<f:facet name="header">
+																<h:outputText value="#{msg['lbl.transferno']}" />
+															</f:facet>
+														
+														<h:outputLabel value="#{d.docfyr}/#{d.docNumber}" 
+															style="font-weight: bold; font-size: 12px !important; color:blue !important;float:left;" />
+													</p:column>
+
+													<p:column  exportable="true"  
+														style="width:10%;">
+														
+														<f:facet name="header">
+																<h:outputText value="#{msg['lbl.canceldate']}" />
+															</f:facet>
+														
+														<h:outputLabel value="#{d.docDate}" 
+															style="float:left;margin-left:5px;margin-right:5px;">
+															<f:convertDateTime pattern="dd/MM/yyyy" />
+														</h:outputLabel>
+													</p:column>
+
+													<p:column  filterMatchMode="contains"
+														style="width:10%;">
+														
+														<f:facet name="header">
+																<h:outputText value="#{msg['lbl.customerId']}" />
+															</f:facet>
+														
+														<h:outputLabel value="#{d.cutomerRefernce}" 
+															style="float:left;margin-left:5px;margin-right:5px;" />
+													</p:column>
+
+													<p:column 
+														style="width:30%;">
+														
+														<f:facet name="header">
+																<h:outputText value="#{msg['lbl.custName']}" />
+															</f:facet>
+														
+														<h:outputLabel value="#{d.cutomerName}"
+															style="float:left;margin-left:5px;margin-right:5px;" />
+													</p:column>
+													<p:column 
+														style="width:30%;">
+														<f:facet name="header">
+																<h:outputText value="#{msg['lbl.benename']}" />
+															</f:facet>
+														
+														<h:outputLabel value="#{d.beneName}"
+															style="float:left;margin-left:5px;margin-right:5px;" />
+													</p:column>
+
+
+													<p:column  
+														style="width:10%;">
+														
+														<f:facet name="header">
+																<h:outputText value="#{msg['lbl.fclocalamt']}" />
+															</f:facet>
+														
+														
+														<h:outputLabel value="#{d.amountExch}"
+															style="float:right;margin-left:5px;margin-right:5px;">
+															<f:convertNumber pattern="#0.000" />
+														</h:outputLabel>
+													</p:column>
+
+													<p:column 
+														style="width:10%;">
+														
+														
+														<f:facet name="header">
+																<h:outputText value="#{msg['lbl.fcamount']}" />
+															</f:facet>
+														
+														
+														
+														<h:outputLabel value="#{d.amountTrans}"
+															style="float:right;margin-left:5px;margin-right:5px;" />
+													</p:column>
+													<p:column 
+														style="width:10%;">
+														
+														<f:facet name="header">
+																<h:outputText value="#{msg['lbl.remarks']}" />
+															</f:facet>
+														
+														<h:outputLabel value="#{d.remarks}"
+															style="float:right;margin-left:5px;margin-right:5px;" />
+													</p:column>
+
+													<p:column selectionMode="multiple" width="10%"
+														headerText="Select" style="width:5%;" />
+												</p:dataTable>
+												<p:spacer height="30" />
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panel styleClass="shadow_button"
+													style=" background-color:#FFF !important;">
+
+													<p:commandButton value="#{msg['lbl.submit']}"
+														update="mainPanel,:form1:showDailog,:form1:dataTable,:form1:complete"
+														onstart="process.show();" onsuccess="process.hide()"
+														action="#{repushBean.updateSelectedRecords}"
+														style="margin-right:10px;" />
+
+													<!--  <p:commandButton value="#{msg['lbl.clear']}"
+													onstart="process.show();" onsuccess="process.hide()"
+													action="#{highValueAmlAuthBean.gotoHighValueAmlAuthPage}"
+													immediate="true" update="mainPanel" ajax="false" style="margin-right:10px;"/> -->
+
+													<p:commandButton value="#{msg['lbl.exit']}"
+														onstart="process.show();" onsuccess="process.hide()"
+														action="#{repushBean.exit}" immediate="true"
+														update="mainPanel" ajax="false" />
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+											</p:panel>
+
+
+											<h:outputText id="mandatores"
+												value=" #{msg['lbl.*filedsAreMandatory']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+									</p:panel>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

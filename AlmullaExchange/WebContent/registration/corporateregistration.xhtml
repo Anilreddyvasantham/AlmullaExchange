@@ -1,0 +1,2159 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript">
+		history.pushState(null, null, 'corporateregistration.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'corporateregistration.xhtml');
+		});
+	</script>
+
+
+	<script type="text/javascript">
+		$(document).on("keypress", ".dropdown", function(event) {
+			if (event.keyCode == 32) {
+				$('.ui-selectonemenu-trigger', this).click();
+			}
+		});
+	</script>
+
+</h:head>
+
+
+<h:body dir="#{facesBean.direction}">
+	<p:confirmDialog header="Warning Dialog" id="datecheck"
+		widgetVar="datecheck" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true"
+		message="Expire Date Shouldnot be Same or Less of Registartion Date">
+	</p:confirmDialog>
+	<f:view locale="#{facesBean.locale}">
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<f:event listener="#{corpregisterBean.callPrerenderMethod}"
+			type="preRenderView" />
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h1>
+								<h:outputText value="#{msg['lbl.corporateregistration']}" />
+							</h1>
+
+							<h:form id="corporateregistrationfrm"
+								enctype="multipart/form-data">
+
+
+								<p:panel id="mainPanel" style="padding:10px!important;">
+
+
+									<p:dialog id="gotoCustomer" widgetVar="gotoCustomer"
+										width="500" height="300" resizable="false"
+										style="background-color: white !important;" showHeader="false"
+										styleClass="warning" closable="true" showEffect="clip"
+										hideEffect="clip">
+										<!-- <p:outputLabel value="Customer Registration" style="font-size: 20px !important; text-align:center;
+                                                  font-weight: bold;"/> -->
+										<p:outputLabel
+											value="This Customer not yet registered Do you want to register  ?"
+											style="text-align: center; font-size:18px !important; font-weight: bold;
+											 margin-top:99px !important;" />
+										<br />
+										<p:spacer height="30px" />
+										<p:commandButton value="OK"
+											actionListener="#{corpregisterBean.gotoCustomerRegistrationManualPage}"
+											onclick="processIcon.show();"
+											oncomplete="processIcon.hide();" update="mainPanel"
+											style="margin-left: 95px !important;" />
+										<p:commandButton value="CANCEL"
+											actionListener="#{corpregisterBean.clearValue}"
+											onclick="gotoCustomer.hide();" update="panelPartnerAuth"
+											style="margin-left: 95px !important;" />
+									</p:dialog>
+
+									<p:confirmDialog id="idExpired" header="#{msg['lbl.warning']}"
+										widgetVar="idExpired" width="800" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{msg['lbl.thecrnumber']}: #{corpregisterBean.crno} #{msg['lbl.alreadyscanned']}">
+										<p:commandButton value="#{msg['lbl.ok']}"
+											oncomplete="idExpired.hide()" />
+									</p:confirmDialog>
+
+									<p:dialog id="duplicateDetails" widgetVar="duplicateDetails"
+										width="500" height="40" resizable="false" showEffect="clip"
+										hideEffect="clip" modal="true"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+										<p:outputLabel value="#{msg['lbl.duplicate']}" />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											oncomplete="duplicateDetails.hide()" />
+									</p:dialog>
+									<p:dialog id="scanRecord" widgetVar="scanRecord" width="300"
+										height="100" resizable="false" showEffect="clip"
+										hideEffect="clip" modal="true"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+										<p:outputLabel value="#{msg['lbl.pleasescanrecordnotfound']}" />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											oncomplete="scanRecord.hide()" />
+									</p:dialog>
+									<p:dialog id="expDatemand" widgetVar="expDatemand" width="300"
+										height="50" resizable="false" showEffect="clip"
+										hideEffect="clip" modal="true"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+										<p:outputLabel value="#{msg['lbl.expirydateismandatory']}" />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											oncomplete="expDatemand.hide()" immediate="true" />
+									</p:dialog>
+
+									<p:dialog id="partnerIdExpired" widgetVar="partnerIdExpired"
+										width="300" height="50" resizable="false" showEffect="clip"
+										hideEffect="clip" modal="true"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+										<p:outputLabel value="#{msg['lbl.partneridalreadyexpired']}" />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											oncomplete="partnerIdExpired.hide()" immediate="true" />
+									</p:dialog>
+
+									<p:dialog header="#{msg['lbl.warning']}" id="scanwait"
+										widgetVar="scanwait" width="300" height="150"
+										resizable="false" showEffect="clip" hideEffect="clip"
+										modal="true"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+										<p:outputLabel style="margin:0px 0px 10px 0px !important;"
+											value="#{msg['lbl.youwillberedirecttoscanning']}" />
+										<h:commandLink value="#{msg['lbl.ok']}"
+											actionListener="#{corpregisterBean.addDocumentBrowser}"
+											target="_new" immediate="true"
+											style="margin:30px 0px 0px 0px!important;background-color:#00A53E;padding:5px 10px 5px 10px;"
+											onclick="scanwait.hide()" />
+									</p:dialog>
+
+
+
+
+
+									<p:dialog header="#{msg['lbl.warning']}"
+										id="scanwaitForPartner" widgetVar="scanwaitForPartner"
+										width="300" height="150" resizable="false" showEffect="clip"
+										hideEffect="clip" modal="true"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+										<p:outputLabel style="margin:0px 0px 10px 0px !important;"
+											value="#{msg['lbl.youwillberedirecttoscanning']}" />
+										<h:commandLink value="#{msg['lbl.ok']}"
+											actionListener="#{corpregisterBean.redirectToScanningBrowserForPartner}"
+											target="_new" immediate="true"
+											style="margin:30px 0px 0px 0px!important;background-color:#00A53E;padding:5px 10px 5px 10px;"
+											onclick="scanwait.hide()" />
+									</p:dialog>
+
+									<p:dialog id="modifyscan" widgetVar="modifyscan" width="400"
+										height="50" resizable="false" showEffect="clip"
+										hideEffect="clip" modal="true" header="#{msg['lbl.warning']}"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+										<p:outputLabel value="#{msg['lbl.ifyouwanttomodifyoradd']}" />
+										<div class="clearfix"></div>
+										<h:commandLink value="#{msg['lbl.yes']}"
+											actionListener="#{corpregisterBean.modifyNonOcr}"
+											target="_new" immediate="true"
+											style="margin:30px 0px 0px 0px!important;background-color:#00A53E;padding:5px 10px 5px 10px;"
+											onclick="modifyscan.hide()" />
+
+										<p:commandButton value="#{msg['lbl.no']}"
+											oncomplete="modifyscan.hide()" update="mainPanel" />
+									</p:dialog>
+
+									<p:confirmDialog id="sqlexception"
+										header="#{msg['lbl.exceptionmessage']}"
+										widgetVar="sqlexception" width="700" showHeader="false"
+										resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{msg['lbl.databaseexceptionyoucannot']} #{corpregisterBean.exceptionMessage}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="filenotfounds"
+										header="#{msg['lbl.exceptionmessage']}"
+										widgetVar="filenotfounds" width="700" showHeader="false"
+										resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{msg['lbl.filenotfoundplease']}">
+
+										<h:commandLink value="#{msg['lbl.addimage']}"
+											actionListener="#{corpregisterBean.modifyNonOcr}"
+											target="_new" immediate="true"
+											style="margin:30px 0px 0px 0px!important;background-color:#00A53E;padding:5px 10px 5px 10px;"
+											onclick="filenotfounds.hide()" />
+
+									</p:confirmDialog>
+
+									<p:confirmDialog id="saveerror" header="#{msg['lbl.warning']}"
+										widgetVar="saveerror" width="600" resizable="false"
+										showHeader="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{msg['lbl.errorwhilesavingcustomerdetails']} #{corpregisterBean.errmsg}">
+										<p:commandButton value="#{msg['lbl.exit']}"
+											actionListener="#{customerPersonalInfo.exit}" process="@this"
+											update="mainPanel" />
+
+									</p:confirmDialog>
+
+									<p:confirmDialog id="partneridexpire"
+										header="#{msg['lbl.warning']}" widgetVar="partneridexpire"
+										width="550" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{msg['lbl.thispartneridalreadyexp']} #{corpregisterBean.partnerCustExpDate}. #{msg['lbl.firstupdateindividualdeatls']}">
+
+										<p:commandButton value="OK"
+											actionListener="#{corpregisterBean.gotoCustomerRegistrationManualPage}"
+											onclick="processIcon.show();"
+											oncomplete="processIcon.hide();" update="mainPanel" />
+										<p:commandButton value="CANCEL"
+											actionListener="#{corpregisterBean.clearValue}"
+											onclick="partneridexpire.hide();" update="panelPartnerAuth" />
+
+									</p:confirmDialog>
+
+									<p:confirmDialog id="migrationexception"
+										header="#{msg['lbl.warning']}" widgetVar="migrationexception"
+										width="900" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{msg['lbl.customerhasregisteredsucessfullywithrefno']} #{corpregisterBean.updateCustomerRefNo}.#{msg['lbl.pleaserecallthisrefnoonemos']}">
+										<p:commandButton value="#{msg['lbl.ok']}"
+											oncomplete="migrationexception.hide()" update="mainPanel"
+											immediate="true" />
+									</p:confirmDialog>
+
+
+
+									<p:dialog modal="true" showHeader="true"
+										header="#{msg['lbl.pleasewait']}" widgetVar="processIcon"
+										id="processIcon" width="300" height="50" resizable="false"
+										draggable="false" closable="false"
+										style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+										<div style="text-align: center;">
+											<p:graphicImage value="../images/preloader.gif" />
+										</div>
+									</p:dialog>
+
+									<script type="text/javascript">
+										$(document)
+												.on(
+														'ready',
+														function() {
+															$(".hasDatepicker")
+																	.closest(
+																			".hasDatepicker")
+																	.removeClass(
+																			"ui-state-disabled");
+															$(".hasDatepicker")
+																	.closest(
+																			".hasDatepicker")
+																	.removeAttr(
+																			'style');
+														});
+									</script>
+									<p:panel id="subPanel" styleClass="shadow"
+										style="padding-top:20px !important;"
+										rendered="#{corpregisterBean.renderValidate}">
+
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_crnumber" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">											
+												<p:inputText id="crnumber" value="#{corpregisterBean.crno}"
+													tabindex="1" label="Cr Number">
+													<p:ajax event="blur" onstart="processIcon.show();"
+														oncomplete="processIcon.hide();"
+														listener="#{corpregisterBean.checkingOldDbData}"
+														update="mainPanel,msgCr" />
+													<p:message id="msgCr" for="crnumber" display="text" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_companyname" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="companyname" tabindex="2"
+													value="#{corpregisterBean.compName}" label="Company Name"
+													readonly="#{corpregisterBean.readOnly}"
+													onkeyup="this.value=this.value.toUpperCase()">
+													<p:ajax event="blur" update="msgCoName" />
+													<p:message id="msgCoName" for="companyname" display="text" />
+													<!-- 	<f:validator
+														validatorId="com.amg.exchange.validator.AMLValidator" /> -->
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_companynamel" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="companynamel" lang="AR" tabindex="3"
+													value="#{corpregisterBean.compNameL}"
+													label="Company Name(L)"
+													readonly="#{corpregisterBean.readOnly}">
+													<p:ajax event="blur" update="msgCoNameL" />
+													<p:message id="msgCoNameL" for="companynamel"
+														display="text" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col" style="padding-top:0px;">
+												<h:outputText id="lbl_companyaregdate" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:calendar id="companyaregdate" tabindex="4"
+													label="Company Registration Date" yearRange="c-50:c+50"
+													value="#{corpregisterBean.compRegDate}"
+													autocomplete="off" pattern="dd/MM/yyyy" navigator="true"
+													maxdate="#{corpregisterBean.dateAdderForReg}"
+													disabled="#{corpregisterBean.disableDate}"
+													readonly="#{corpregisterBean.readOnly}">
+													<p:ajax event="dateSelect"
+														listener="#{corpregisterBean.onDateSelect}"
+														update="msgRegDate,auditStatementDatePanel" />
+													<p:message id="msgRegDate" for="companyaregdate"
+														display="text" />
+												</p:calendar>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_location" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="magLocation" for="location" display="text"></p:message>
+
+												<p:inputText id="location" tabindex="-1"
+													value="#{corpregisterBean.countryName}" readonly="true"
+													styleClass="ui-state-disabled" />
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.paidupcap']} *" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="paidup" tabindex="5"
+													value="#{corpregisterBean.paidUpCapital}"
+													required="true"
+													requiredMessage="#{msg['lbl.paidupcapitalmsg']}">
+													<p:ajax event="blur" update="msgContPerson" />
+													<f:validator
+														validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+													<p:message id="msgContPerson" for="paidup" display="text" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+
+										<p:panel styleClass="left_col" id="auditStatementDatePanel">
+											<p:panel styleClass="inner_left_col" style="padding-top:0px;">
+												<h:outputText id="lbl_auditStatementDate" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:calendar id="auditStatementDate" yearRange="c-50:c+50" tabindex="6"
+													value="#{corpregisterBean.auditStatementDate}"
+													autocomplete="off" pattern="dd/MM/yyyy" navigator="true"
+													label="Audit Statement Date"
+													maxdate="#{corpregisterBean.auditMaxDate}"
+													mindate="#{corpregisterBean.auditMinDate}">
+													<p:ajax event="dateSelect" update="msgauditStatementDate" />
+													<p:message id="msgauditStatementDate"
+														for="auditStatementDate" display="text" />
+												</p:calendar>
+											</p:panel>
+										</p:panel>
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<!-- <h:outputText value="#{msg['lbl.paidupcap']} *" /> -->
+												<h:outputText id="lbl_auditGrossIncome" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="auditGrossIncome" tabindex="7"
+													value="#{corpregisterBean.auditGrossIncome}"
+													label="Audit Gross Income">
+													<p:ajax event="blur" update="msgcompanyAuditIncomeRange" />
+													<f:validator
+														validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+													<p:message id="msgcompanyAuditIncomeRange"
+														for="auditGrossIncome" display="text" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix"></div>
+
+
+
+										<!-- 	<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_amlstatus" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="amlstatus"
+													value="#{corpregisterBean.AMLStatus}" label="AML Status">
+													<p:message for="amlstatus" display="text" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_hitCount" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="hitCount" display="text"></p:message>
+												<p:inputText id="hitCount"
+													value="#{corpregisterBean.hitCount}" disabled="true"
+													label="Hit Count" />
+
+											</p:panel>
+										</p:panel>
+ -->
+
+
+
+
+										<p:panel styleClass="left_col">
+											<h:outputText value="#{msg['lbl.fieldaremandatory']}"
+												rendered="#{corpregisterBean.coValdtBtn}"
+												style="color:red; padding:10px !important; font-size:10px;" />
+										</p:panel>
+
+										<div class="clearfix"></div>
+
+									</p:panel>
+
+
+									<p:panel styleClass="shadow_button"
+										rendered="#{corpregisterBean.coValdtBtn}">
+										<p:commandButton value="#{msg['lbl.validate']}" tabindex="8"
+											actionListener="#{corpregisterBean.nextCompanyIdentity}"
+											update="mainPanel" onclick="processIcon.show();"
+											oncomplete="processIcon.hide();" />
+									</p:panel>
+
+									<div class="clearfix"></div>
+									<p:panel styleClass="shadow" id="panelPartner"
+										rendered="#{corpregisterBean.renderCoIdentityDoc}">
+										<p:dialog id="pictureForPartner" widgetVar="pictureForPartner"
+											header="#{msg['lbl.document']}" width="400" height="400"
+											resizable="false" showEffect="clip" hideEffect="clip">
+											<p:graphicImage
+												value="#{corpregisterBean.downloadFileForPartner}" />
+										</p:dialog>
+
+										<h:panelGrid columns="1" styleClass="heading2">
+											<h:outputText value="#{msg['lbl.companyidentitydoc']}" />
+										</h:panelGrid>
+
+
+
+										<div class="clearfix"></div>
+
+
+										<p:panel styleClass="left_col">
+
+											<p:panel styleClass="inner_left_col">
+
+
+												<h:outputText id="lbl_idtype_0" />
+												<h:outputText value="*" />
+
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="idtype_0" display="text" id="msgidtype" />
+												<!-- <p:selectOneMenu value="#{corpregisterBean.idtype}"  disabled="#{corpregisterBean.disableCompIdDco}"
+														id="idtype_0" style="width:175px;" label="Identity Type"  >
+														<p:ajax event="change"
+																	listener="#{corpregisterBean.changeIdtypeMethod}"
+																	update="mainPanel,msgidtype,idPanel"/>
+													</p:selectOneMenu> -->
+
+												<p:selectOneMenu id="idtype_0" tabindex="9"
+													value="#{corpregisterBean.idtype}"
+													styleClass="dropdown" filterMatchMode="contains"
+													filter="true" required="true"
+													requiredMessage="#{msg['lbl.pleaseselectidtype']}">
+
+													<f:selectItem itemLabel="#{msg['lbl.selectidtype']}" />
+													<f:selectItems
+														value="#{corpregisterBean.mapcomIdentityType.entrySet()}"
+														var="entry" itemValue="#{entry.key}"
+														itemLabel="#{entry.value}" />
+													<p:ajax update="mainPanel,msgidtype,idPanel" event="change"
+														listener="#{corpregisterBean.changeIdtypeMethod}" />
+
+												</p:selectOneMenu>
+
+
+											</p:panel>
+
+
+
+
+										</p:panel>
+
+
+
+										<p:panel styleClass="left_col"
+											rendered="#{corpregisterBean.changeCrNumber}" id="crPanel">
+
+											<p:panel styleClass="inner_left_col">
+
+
+												<h:outputText id="lbl_crnumber_0" />
+
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="crnumber_0" tabindex="-1"
+													value="#{corpregisterBean.idno}" label="Company CR Number"
+													styleClass="ui-state-disabled">
+													<p:message for="crnumber_0" display="text" />
+												</p:inputText>
+											</p:panel>
+
+
+
+										</p:panel>
+										<div class="clearfix"></div>
+
+
+										<p:panel styleClass="left_col"
+											rendered="#{corpregisterBean.changeCrNumber}" id="idPanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_dateofexpiry" />
+											</p:panel>
+
+											<p:panel styleClass="inner_right_col">
+
+												<p:calendar id="dateofexpiry" mode="popup" tabindex="10"
+													label="Company ID Expiary Date" yearRange="c-5:c+5"
+													value="#{corpregisterBean.idExpDate}"
+													pattern="dd/MM/yyyy" navigator="true" size="25"
+													mindate="#{corpregisterBean.expminDate}"
+													maxdate="#{corpregisterBean.expDateAdder}"
+													readonlyInput="true">
+													<p:message for="dateofexpiry" display="text"
+														id="msgdateofexpiry" />
+													<p:ajax event="dateSelect"
+														listener="#{corpregisterBean.comparingRegDateExpireDate}"
+														update="msgdateofexpiry,dateofexpiry" />
+												</p:calendar>
+											</p:panel>
+										</p:panel>
+
+
+
+
+										<p:dialog id="imageupload" widgetVar="imageUpload" width="250"
+											height="40" resizable="false"
+											style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true">
+											<p:outputLabel value="#{msg['lbl.imagesuccess']}" />
+										</p:dialog>
+
+										<p:panel styleClass="left_col">
+
+											<!-- <p:panel styleClass="inner_left_col"><h:outputText value="#{msg['lbl.scandocument']}*" />
+</p:panel> -->
+											<!--   <p:panel styleClass="inner_right_col"> 
+             <h:outputText  value="#{msg['lbl.uploadfile']} (.jpg/.png/.doc/.docx/.pdf/.jpeg)}"
+												rendered="#{corpregisterBean.coUploadFileVisibility}"
+												style="color:red;" />
+													<p:fileUpload id="chooseFile1" 
+														value="#{corpregisterBean.identityfile}" mode="simple"
+														dragDropSupport="false" update="messages"
+														sizeLimit="10000" fileLimit="1"
+														allowTypes="/(\.|\/)(gif|jpe?g|png)$/" /> 
+												 <p:fileUpload id="fileUplod"  fileUploadListener="#{corpregisterBean.handleFileUpload}"
+													mode="advanced" 
+													fileLimit="1" fileLimitMessage="#{msg['lbl.onefileallowed']}"
+													update="messages"
+													label="Choose a file" sizeLimit="1048576" required="true"
+														requiredMessage="#{msg['lbl.uploadfile']}"
+														invalidSizeMessage="#{msg['lbl.filemaxsize']}"
+														invalidFileMessage="#{msg['lbl.allowTypes']}"
+														oncomplete="PF('imageUpload').show()">
+														<p:message id="messages" for="fileUplod"
+															value="#{msg['lbl.fileNotSelected']}" style="color:red;" />
+										</p:fileUpload>
+										<h:outputLink style="padding-left:20px;" value="javascript:void(0)" onclick="PF('pictureForCompany').show()">
+						    							<p:graphicImage value="../images/viewer.png"  rendered="#{corpregisterBean.renderImage}"/> 
+						    						</h:outputLink>
+														
+				</p:panel>	 -->
+
+											<!-- <p:panel styleClass="inner_right_col">
+
+													<p:fileUpload id="fileUplod"
+														fileUploadListener="#{corpregisterBean.handleFileUpload}"
+														mode="advanced" fileLimit="1"
+														fileLimitMessage="#{msg['lbl.onefileallowed']}" update="messages"
+														label="Choose a file" sizeLimit="1048576" required="true"
+														requiredMessage="#{msg['lbl.uploadfile']}"
+														invalidSizeMessage="#{msg['lbl.filemaxsize']}"
+														invalidFileMessage="#{msg['lbl.allowTypes']}"
+														oncomplete="PF('imageUpload').show()">
+														<p:message id="messages" for="fileUplod"
+															value="#{msg['lbl.fileNotSelected']}" style="color:red;" />
+													</p:fileUpload>
+													<h:outputText
+														value="#{msg['lbl.uploadfile']} (.jpg/.png/.doc/.docx/.pdf/.jpeg)"
+														rendered="#{corpregisterBean.coUploadFileVisibility}"
+														style="color:red;" />
+												</p:panel> -->
+
+										</p:panel>
+										<div class="clearfix"></div>
+										<p:panel styleClass="left_col">
+											<h:outputText value="#{msg['lbl.fieldaremandatory']}"
+												style="color:red; padding:10px !important; font-size:10px;" />
+										</p:panel>
+
+
+										<p:panel style="padding:20px">
+											<!-- <h:panelGroup layout="block" styleClass="shadow_button">
+<p:commandButton value="#{msg['lbl.add']}" style="float:right;"
+rendered="#{corpregisterBean.coAMLPass}"
+												action="#{corpregisterBean.addActionComDocument}"
+												id="addTable1"  update="mainPanel">
+											</p:commandButton>
+											</h:panelGroup> -->
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<!-- <p:commandButton value="#{msg['lbl.add']}"
+														action="#{branchRegistration.addRows}" update="mainPanel"
+														id="btnGlobal">
+													</p:commandButton> -->
+
+												<!--  <p:commandButton value="#{msg['lbl.checkid']}"
+													style="margin-right:10px;"
+													action="#{corpregisterBean.checkId_localTest}"
+													update="mainPanel">
+												</p:commandButton>  -->
+
+												<p:commandButton tabindex="11"
+													value="#{msg['lbl.checkid']} / #{msg['lbl.scanid']}"
+													style="margin-right:10px;"
+													action="#{corpregisterBean.checkIdNonOcr}"
+													update="mainPanel" onclick="processIcon.show();"
+													oncomplete="processIcon.hide();">
+												</p:commandButton>
+
+												<!-- <p:commandButton value="#{msg['lbl.scanid']}" id="scanId" disabled="#{corpregisterBean.enableScan}"
+													action="#{corpregisterBean.scan}" update="mainPanel" /> -->
+												<!-- <p:commandButton value="#{msg['lbl.modify']}" id="modifyId"
+													action="#{corpregisterBean.modifyScan}"
+													update="mainPanel" process="panelPartner"
+													style="float:right; margin-left:10px; " rendered="#{corpregisterBean.renderModifyScan}" /> -->
+
+
+												<!-- <p:commandButton value="#{msg['lbl.back']}"
+														action="#{branchRegistration.backProofDetails}"
+														update="mainPanel" immediate="true"
+														style="float:right; margin-left:10px; ">
+													</p:commandButton> -->
+											</h:panelGroup>
+											<h:outputText value="#{msg['lbl.duplicateidentity']}"
+												rendered="#{corpregisterBean.coDublicateVisibility}"
+												style="color:red;" />
+											<h:outputText value="#{msg['lbl.corporateRegmandatory']}"
+												rendered="#{corpregisterBean.identityListVisibility}"
+												style="color:red;" />
+											<div class="clearfix"></div>
+										</p:panel>
+										<div class="clearfix"></div>
+									</p:panel>
+									<p:panel
+										rendered="#{corpregisterBean.enabledddCompanyDataTable}"
+										id="companyDatatable">
+
+										<div class="clearfix"></div>
+										<p:spacer height="20" />
+										<div class="clearfix"></div>
+										<p:dataTable value="#{corpregisterBean.identityList}" var="co" 
+											styleClass="mydatatableclass" widgetVar="50"
+											style="width:1220;" id="dataTable1" editable="true"
+											emptyMessage="#{msg['lbl.norecordfound']}"
+											rowIndexVar="rowIndex">
+											<!-- <p:ajax event="cellEdit"  listener="#{corpregisterBean. modifiedIdentity(co)}" /> -->
+											<p:column headerText="#{msg['lbl.slNo']}">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="#{msg['lbl.idnumber']}" />
+												</f:facet>
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{co.idno}"
+															style="text-align: left; font-size:13px;  height:20px; width: 80px;border:none !important;box-shadow:none !important; padding:0 !important;margin:0px !important;" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText value="#{co.idno}"
+															style="text-align: left; font-size:13px;  height:20px; width: 80px;border:none !important;box-shadow:none !important; padding:0 !important;margin:0px !important;" />
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="#{msg['lbl.idtype']}" />
+												</f:facet>
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{co.idtype}"
+															style="text-align: left; font-size:13px;  height:20px; width: 50px;border:none !important;box-shadow:none !important; padding:0 !important;margin:0px !important;" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText value="#{co.idtype}"
+															style="text-align: left; font-size:13px;  height:20px; width: 50px;border:none !important;box-shadow:none !important; padding:0 !important;margin:0px !important;" />
+
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="#{msg['lbl.dateofexpiry']}" />
+												</f:facet>
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{co.idExpDate}"
+															style="text-align: left; font-size:13px;  height:20px; width: 90px;border:none !important;box-shadow:none !important; padding:0 !important;margin:0px !important;" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText value="#{co.idExpDate}"
+															style="text-align: left; font-size:13px;  height:20px; width: 90px;border:none !important;box-shadow:none !important; padding:0 !important;margin:0px !important;" />
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.view']}">
+
+
+												<h:commandLink tabindex="12"
+													actionListener="#{corpregisterBean.viewScan(co)}"
+													target="_new" immediate="true"
+													style="margin:30px 0px 0px 0px!important;padding:5px 10px 5px 10px;">
+													<p:graphicImage value="../images/viewicon.jpg" width="25"
+														height="25" id="imgEdit" />
+													<p:tooltip for="imgEdit" value="#{msg['lbl.view']}" />
+												</h:commandLink>
+
+											</p:column>
+											<p:column headerText="#{msg['lbl.rescan']}">
+												<p:column headerText="#{msg['lbl.rescan']}"
+													rendered="#{co.renderReScan}">
+
+
+													<h:commandLink tabindex="13"
+														actionListener="#{corpregisterBean.reScan(co)}"
+														target="_new" immediate="true"
+														style="margin:30px 0px 0px 0px!important;padding:5px 10px 5px 10px;">
+														<p:graphicImage value="../images/scanicon.jpg" width="25"
+															height="25" id="rescanid" />
+														<p:tooltip for="rescanid" value="#{msg['lbl.rescan']}" />
+													</h:commandLink>
+
+												</p:column>
+											</p:column>
+
+											<!-- <p:commandLink value="Image" onclick="dialog.show()" style="margin-left: 10px;text-align: center;"/> -->
+											<!-- <p:column headerText="#{msg['lbl.download']}"
+										style="text-align:center; width:50px;">
+										<p:commandLink id="identitydownloadLink" title="download"
+											ajax="false" action="PrimeFaces.monitorDownload(start, stop)"
+											icon="ui-icon-arrowthichk-s">
+											<p:graphicImage value="../images/download.png" />
+											<p:fileDownload
+												value="#{corpregisterBean.downloadFile(co.imageId)}" />
+										</p:commandLink>
+									</p:column>
+
+									<p:column style="text-align:center !important; width:50px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['lbl.delete']}" />
+										</f:facet>
+										<p:commandButton value="" styleClass="delete"
+											update="dataTable1"
+											action="#{corpregisterBean.removeCompanyDocument(co)}"
+											process="@this"></p:commandButton>
+									</p:column>
+ -->
+										</p:dataTable>
+
+
+
+										<p:spacer height="20px" />
+
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											rendered="#{corpregisterBean.renderCoIdentityDoc}">
+
+											<p:commandButton value="#{msg['lbl.savenext']}" tabindex="14"
+												action="#{corpregisterBean.saveCorpRegPage}"
+												style="margin-right:10px;" update="mainPanel"
+												process="companyDatatable,subPanel"
+												onclick="processIcon.show();"
+												oncomplete="processIcon.hide();" />
+
+											<p:commandButton value="#{msg['lbl.clear']}" immediate="true" tabindex="15"
+												action="#{corpregisterBean.clearCompanyDoc}"
+												update="mainPanel">
+												<p:resetInput target="@form" />
+											</p:commandButton>
+
+										</h:panelGroup>
+
+									</p:panel>
+
+
+
+
+									<p:panel id="panelObjective" styleClass="shadow"
+										rendered="#{corpregisterBean.renderObjective}">
+										<p:focus for="natureofbusiness" />
+
+										<h:panelGrid columns="1" styleClass="heading2">
+											<h:outputText value="#{msg['lbl.Objectives']}" />
+										</h:panelGrid>
+
+
+
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_natureofbusiness" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgBus" for="natureofbusiness" display="text" />
+												<p:selectOneMenu id="natureofbusiness" styleClass="dropdown"
+													tabindex="16" filter="true" filterMatchMode="contains"
+													value="#{corpregisterBean.bussNature}"
+													label="Nature of Business">
+													<p:ajax update="msgBus" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix"></div>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_primaryobjective" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgPri" for="primaryobjective" display="text" />
+												<p:selectOneMenu value="#{corpregisterBean.primaryObjId}"
+													tabindex="17" styleClass="dropdown" filter="true"
+													filterMatchMode="contains" id="primaryobjective"
+													label="Objectives">
+													<f:selectItem itemLabel="#{msg['lbl.select']}" itemValue="" />
+													<f:selectItems
+														value="#{corpregisterBean.primaryObjective.entrySet()}"
+														var="c" itemLabel="#{c.value}" itemValue="#{c.key}" />
+													<!-- <p:ajax event="blur" update="msgPri"/> -->
+													<p:ajax event="change"
+														update="primaryobjective,secondaryobjective,msgPri"
+														process="@this"
+														listener="#{corpregisterBean.generateObjectives}" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:confirmDialog id="csp" widgetVar="csp" width="500"
+											showHeader="false" resizable="false" header="Warning Message"
+											styleClass="warning"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="explode" hideEffect="explode"
+											message="#{corpregisterBean.errmsg}">
+										</p:confirmDialog>
+
+										<div class="clearfix"></div>
+										<p:panel style="width:60% !important;">
+											<p:panel styleClass="inner_left_col"
+												style="width:24% !important">
+												<h:outputText id="lbl_secondaryobjective" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgSecod" for="secondaryobjective"
+													display="text" />
+												<p:selectManyMenu id="secondaryobjective"
+													value="#{corpregisterBean.seconObjList}" tabindex="18"
+													label="Secondary Objective"
+													style="height:270px  !important; width: 600px">
+													<f:selectItem itemLabel="#{msg['lbl.select']}" itemValue="" />
+													<f:selectItems
+														value="#{corpregisterBean.drpObjective2.entrySet()}"
+														var="c" itemLabel="#{c.value}" itemValue="#{c.key}" />
+
+													<p:ajax event="change"
+														update="primaryobjective,secondaryobjective,msgSecod,csp"
+														process="@this"
+														listener="#{corpregisterBean.generateObjectives}" />
+												</p:selectManyMenu>
+
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix"></div>
+										<p:panel styleClass="left_col">
+											<h:outputText value="#{msg['lbl.fieldaremandatory']}"
+												rendered="#{corpregisterBean.coValdtBtn}"
+												style="color:red; padding:10px !important; font-size:10px;" />
+										</p:panel>
+
+									</p:panel>
+									<div class="clearfix"></div>
+									<p:panel styleClass="left_col">
+										<h:outputText value="#{msg['lbl.fieldaremandatory']}"
+											rendered="#{corpregisterBean.renderObjective}"
+											style="color:red; padding:10px !important; font-size:10px;" />
+									</p:panel>
+
+
+									<div class="clearfix"></div>
+
+
+									<h:panelGroup layout="block" styleClass="shadow_button"
+										rendered="#{corpregisterBean.renderObjective}">
+
+										<p:commandButton value="#{msg['lbl.savenext']}" tabindex="19"
+											action="#{corpregisterBean.saveCorpRegObjectivePage}"
+											style="margin-right:10px;" update="mainPanel"
+											onstart="processIcon.show();" onsuccess="processIcon.hide();" />
+
+										<p:commandButton value="#{msg['lbl.back']}" tabindex="20" process="@this"
+											style="margin-right:10px;"
+											action="#{corpregisterBean.backFromObjective}"
+											update="mainPanel">
+											<p:resetInput target="@form" />
+										</p:commandButton>
+
+										<p:commandButton value="#{msg['lbl.clear']}" tabindex="21" process="@this"
+											action="#{corpregisterBean.clearObjetive}" update="mainPanel">
+											<p:resetInput target="@form" />
+										</p:commandButton>
+										<div class="clearfix"></div>
+									</h:panelGroup>
+									<div class="clearfix"></div>
+
+
+									<p:panel id="panel"
+										rendered="#{corpregisterBean.renderContactDetails}"
+										styleClass="shadow">
+										<p:focus for="state" />
+										<h:panelGrid columns="1" styleClass="heading2">
+											<h:outputText value="#{msg['lbl.officecontactdetails']}" />
+										</h:panelGrid>
+										<p:confirmDialog id="telCheck" widgetVar="telCheck"
+											width="500" showHeader="false" resizable="false"
+											header="Warning Message" styleClass="warning"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="explode" hideEffect="explode"
+											message="#{corpregisterBean.errmsg}">
+										</p:confirmDialog>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_state" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="state" display="text" id="statemsg" />
+												<p:selectOneMenu id="state" styleClass="dropdown" tabindex="22"
+													filter="true" filterMatchMode="contains"
+													value="#{corpregisterBean.stateId}" label="State">
+													<f:selectItem itemLabel="#{msg['lbl.select']}" itemValue="" />
+													<f:selectItems value="#{corpregisterBean.lstStates}"
+														var="c" itemLabel="#{c.stateName}"
+														itemValue="#{c.fsStateMaster.stateId}" />
+													<p:ajax update="district,city,statemsg" event="change"
+														listener="#{corpregisterBean.popDistrict}" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_district" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="district" display="text" id="msgdistrict" />
+												<p:selectOneMenu value="#{corpregisterBean.distId}" tabindex="23"
+													styleClass="dropdown" filter="true"
+													filterMatchMode="contains" id="district" label="District">
+													<f:selectItem itemLabel="#{msg['lbl.select']}" itemValue="" />
+													<f:selectItems value="#{corpregisterBean.lstDistrict}"
+														var="c" itemLabel="#{c.district}"
+														itemValue="#{c.fsDistrictMaster.districtId}" />
+													<p:ajax update="city,msgdistrict" event="change"
+														listener="#{corpregisterBean.popCity}" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_city" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="city" display="text" id="msgcity" />
+												<p:selectOneMenu id="city" styleClass="dropdown" tabindex="24"
+													filter="true" filterMatchMode="contains"
+													value="#{corpregisterBean.cityId}" label="City">
+													<f:selectItem itemLabel="#{msg['lbl.select']}" itemValue="" />
+													<f:selectItems value="#{corpregisterBean.lstcity}" var="c"
+														itemLabel="#{c.cityName}"
+														itemValue="#{c.fsCityMaster.cityId}" />
+													<p:ajax update="msgcity" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="right_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_block" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText value="#{corpregisterBean.block}" id="block" tabindex="25"
+													label="Block">
+													<p:ajax event="blur" update="msgBlock" />
+													<p:message id="msgBlock" for="block" display="text" />
+												</p:inputText>
+											</p:panel>
+
+										</p:panel>
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_street" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="street" value="#{corpregisterBean.street}" tabindex="26"
+													label="Street">
+													<p:ajax event="blur" update="msgStreet" />
+													<p:message id="msgStreet" for="street" display="text" />
+												</p:inputText>
+											</p:panel>
+
+										</p:panel>
+
+										<p:panel styleClass="right_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_buildingno" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="buildingno" tabindex="27"
+													value="#{corpregisterBean.buildingNo}" label="Flat">
+													<p:ajax update="buildMsg" event="blur" />
+													<p:message id="buildMsg" for="buildingno" display="text" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_officeno" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText value="#{corpregisterBean.flat}" id="officeno" tabindex="28"
+													label="Office No/Floor No">
+													<p:ajax event="blur" update="msgFlat" />
+													<p:message id="msgFlat" for="officeno" display="text" />
+												</p:inputText>
+											</p:panel>
+
+										</p:panel>
+
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_area" />
+												<h:outputText value=" *" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<!-- <p:inputText id="localarea" value="#{corpregisterBean.area}"
+													label="Area">
+													<p:ajax event="blur" update="msgArea" />
+													<p:message id="msgArea" for="localarea" display="text" />
+												</p:inputText> -->
+												<p:message id="empareaMsg" for="area" display="text" />
+												<p:autoComplete id="area" value="#{corpregisterBean.area}" tabindex="29"
+													validator="allowOnlyCharectors"
+													validatorMessage="Enter only charectors"
+													completeMethod="#{corpregisterBean.autoCompleteArea}"
+													maxResults="10" onchange="clearForm(this);">
+													<p:ajax update="empareaMsg" event="blur" />
+												</p:autoComplete>
+
+											</p:panel>
+										</p:panel>
+
+
+										<!-- <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_telephone" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText value="#{corpregisterBean.tel}" id="telephone" validator="#{corpregisterBean.validateTelephone}"
+													label="Telephone Number">
+													<p:ajax event="blur" update="msgTel" />
+													<p:message id="msgTel" for="telephone" display="text" />
+												</p:inputText>
+											</p:panel>
+										</p:panel> -->
+
+
+										<p:panel styleClass="right_col" id="telcontactpanel">
+											<p:panel styleClass="inner_left_col">
+
+												<p:selectBooleanCheckbox tabindex="30"
+													value="#{corpregisterBean.booCheckTelContact}">
+													<p:ajax event="change" update="telcontactpanel"
+														listener="#{corpregisterBean.enableTelNoContact}" />
+												</p:selectBooleanCheckbox>
+													 &nbsp; 
+													<h:outputText id="lbl_telephone" />
+											</p:panel>
+											<!-- <p:panel styleClass="inner_right_col">
+													<p:inputText id="telephone"
+														value="#{customerPersonalInfo.telephone}"
+														label="Telephone Number" validator="#{customerPersonalInfo.validateTelephone}">
+
+														<p:ajax update="telMsg" event="blur" />
+														<p:message id="telMsg" for="telephone" display="text" />
+													</p:inputText>
+												</p:panel> -->
+											<p:panel styleClass="inner_right_col" id="telContactSubPanel"
+												rendered="#{corpregisterBean.renContactTel}">
+												<p:panelGrid style="width:98%;">
+													<p:row>
+														<p:column
+															style="width:25% !important; padding:0px 13px 0px 0px !important;">
+															<p:inputText tabindex="-1"
+																value="#{corpregisterBean.plusSign}#{corpregisterBean.telephoneCode}"
+																readonly="true" />
+														</p:column>
+														<p:column
+															style="width:75% !important; padding:0px !important;">
+															<p:inputText id="telephone"
+																value="#{corpregisterBean.tel}" tabindex="31"
+																label="Telephone Number"
+																validator="#{corpregisterBean.validateTelephone}">
+
+																<p:ajax update="telMsg" event="blur" />
+																<p:message id="telMsg" for="telephone" display="text" />
+															</p:inputText>
+														</p:column>
+													</p:row>
+												</p:panelGrid>
+											</p:panel>
+										</p:panel>
+
+
+										<!-- 	<p:panel styleClass="left_col" id="mobPanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_mobile" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:outputLabel value="#{msg['lbl.thismobilenumberalreadyexist']}"
+														rendered="#{corpregisterBean.booMobilecheck}"
+														style="color:red;" />
+												<p:inputText id="mobile"
+													value="#{corpregisterBean.contactNumber}" validator="#{corpregisterBean.validateMobile}" 
+													label="Mobile Number">
+													<p:ajax update="mobPanel,msgContNum" event="blur" listener="#{corpregisterBean.checkMobile}"/>
+													<p:message id="msgContNum" for="mobile" display="text" />
+
+												</p:inputText>
+											</p:panel>
+										</p:panel> -->
+
+
+
+										<p:panel styleClass="right_col" id="mobcontactpanel">
+
+											<p:panel styleClass="inner_left_col">
+
+												<p:selectBooleanCheckbox
+													value="#{corpregisterBean.booCheckMobileContact}"
+													tabindex="32">
+													<p:ajax event="change" update="mobcontactpanel"
+														listener="#{corpregisterBean.enableMobileNoContact}" />
+												</p:selectBooleanCheckbox>
+													 &nbsp; 
+												<h:outputText id="lbl_mobileContact" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col" id="mobContactSub"
+												rendered="#{corpregisterBean.renContactMobile}">
+												<p:panelGrid style="width:98%;">
+													<p:row>
+														<p:column
+															style="width:25% !important; padding:0px 13px 0px 0px !important;">
+															<p:inputText tabindex="-1"
+																value="#{corpregisterBean.plusSign}#{corpregisterBean.telephoneCode}"
+																readonly="true" />
+														</p:column>
+														<p:column
+															style="width:75% !important; padding:0px !important;">
+															<p:inputText id="mobileContact"
+																value="#{corpregisterBean.contactNumber}" tabindex="33"
+																label="Mobile Contact"
+																validator="#{corpregisterBean.validateMobile}">
+																<p:ajax update="lareaMsg" event="blur" />
+																<p:message id="lareaMsg" for="mobileContact"
+																	display="text" />
+															</p:inputText>
+														</p:column>
+													</p:row>
+												</p:panelGrid>
+											</p:panel>
+
+										</p:panel>
+
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="left_col" id="emailPanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_email" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:outputLabel value="#{msg['lbl.thisemailalreadyexist']}"
+													rendered="#{corpregisterBean.booEmailCheck}"
+													style="color:red;" />
+												<p:inputText id="email" value="#{corpregisterBean.email}"
+													tabindex="34"
+													validatorMessage="#{msg['lbl.validlemailformat']}"
+													onkeyup="this.value=this.value.toLowerCase()">
+													<f:validateRegex
+														pattern="^([/^\\s+$/])||[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+													<p:ajax event="blur" update="msgEmail" />
+													<p:ajax update="emailPanel,msgEmail" event="blur"
+														listener="#{corpregisterBean.checkEmail}" process="@this" />
+													<p:message id="msgEmail" for="email" display="text" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+									</p:panel>
+
+									<div class="clearfix"></div>
+									<p:panel styleClass="left_col">
+										<h:outputText value="#{msg['lbl.fieldaremandatory']}"
+											rendered="#{corpregisterBean.renderContactDetails}"
+											style="color:red; padding:10px !important; font-size:10px;" />
+									</p:panel>
+									<div class="clearfix"></div>
+									<h:panelGroup layout="block" styleClass="shadow_button"
+										rendered="#{corpregisterBean.renderContactDetails}">
+
+										<p:commandButton value="#{msg['lbl.savenext']}" tabindex="35"
+											action="#{corpregisterBean.saveCorpRegContactPage}"
+											style="margin-right:10px;" update="mainPanel,panel"
+											onstart="processIcon.show();" onsuccess="processIcon.hide();" />
+										<p:commandButton value="#{msg['lbl.back']}" tabindex="36"
+											action="#{corpregisterBean.backFromContact}"
+											style="margin-right:10px;" process="@this" update="mainPanel">
+										</p:commandButton>
+
+										<p:commandButton value="#{msg['lbl.clear']}" tabindex="37"
+											action="#{corpregisterBean.clearContact}" process="@this"
+											style="float:right; margin-right:10px;" update="mainPanel">
+											<p:resetInput target="@form" />
+										</p:commandButton>
+										<div class="clearfix"></div>
+									</h:panelGroup>
+									<div class="clearfix"></div>
+
+
+									<!-- <p:panel styleClass="shadow"
+										rendered="#{corpregisterBean.renderTransactionalSetting}">
+										<h2>
+											<h:outputText value="#{msg['lbl.transactionladditional']}" />
+										</h2>
+										<p:focus for="article" />
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_article" value="Document Provided" />
+												<h:outputText value="#{msg['lbl.documentprovided']}" />
+												<h:outputText value=" *" style="color:black !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="article" display="text" id="articlemsg" />
+												<p:selectOneMenu id="article"
+													value="#{corpregisterBean.article}" label="Article">
+													<f:selectItem itemLabel="#{msg['lbl.select']}" itemValue="" />
+													<f:selectItems value="#{corpregisterBean.articleData}"
+														var="c"
+														itemLabel="#{c.articleMaster.articleCode}-#{c.articleeDescription}"
+														itemValue="#{c.articleMaster.articleId}" />
+													<p:ajax event="change" update="level,articlemsg"
+														listener="#{corpregisterBean.generateLevel}" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_level" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="level" display="text" id="levelmsg" />
+												<p:selectOneMenu id="level"
+													value="#{corpregisterBean.levelId}" label="Level">
+													<f:selectItem itemLabel="#{msg['lbl.select']}" itemValue="" />
+													<f:selectItems value="#{corpregisterBean.lstLevel}" var="c"
+														itemLabel="#{c.articleDetailDesc}"
+														itemValue="#{c.articleDetails.articleDetailId}" />
+													<f:selectItems value="#{corpregisterBean.lstLevel}" var="c"
+														itemLabel="#{c.articleDetailDesc}"
+														itemValue="#{c.articleDetails.articleDetailId}" />
+													<p:ajax event="change" update="incomeRange,levelmsg"
+														listener="#{corpregisterBean.generateIncomeRange}" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.turnover']} *" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="incomeRange" display="text"
+													id="incomerangemsg" />
+												<p:selectOneMenu id="incomeRange" required="true"
+													requiredMessage="#{msg['lbl.icomemsg']}"
+													value="#{corpregisterBean.incomeRange}"
+													label="Level,incomerangemsg">
+													<f:selectItem itemLabel="select" itemValue="" />
+													<f:selectItems value="#{corpregisterBean.lstIncomeRange}"
+														var="c" itemLabel="#{c.monthlyIncome}"
+														itemValue="#{c.incomeRangeId}" />
+													<p:ajax update="incomerangemsg" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_article" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="article" display="text" id="articlemsg"/>
+												<p:selectOneMenu id="article"
+													value="#{corpregisterBean.article}" label="Article"> 
+													<f:selectItem itemLabel="#{msg['lbl.select']}" itemValue="" />
+													<f:selectItems value="#{corpregisterBean.articleData}"
+														var="c" itemLabel="#{c.articleName}"
+														itemValue="#{c.articleId}" />
+													<p:ajax event="change" update="level,articlemsg"
+														listener="#{corpregisterBean.generateLevel}" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText id="lbl_level" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="level" display="text" id="levelmsg"/>
+												<p:selectOneMenu id="level"
+													value="#{corpregisterBean.levelId}" label="Level">
+													<f:selectItem itemLabel="#{msg['lbl.select']}" itemValue="" />
+													<f:selectItems value="#{corpregisterBean.lstLevel}" var="c"
+														itemLabel="#{c.articleDesc}"
+														itemValue="#{c.articleDetailId}" />
+														<p:ajax update="levelmsg"/>
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="dailyLimit" value="#{msg['lbl.dailylimit']} *" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+													<p:message id="msgdailyLimitId" for="dailyLimitId" display="text"/>
+														<p:inputText id="dailyLimitId" value="#{corpregisterBean.dailyLimit}" required="true" requiredMessage="Please Enter Daily" validatorMessage="please enter positive value for daily limit">
+															 <f:validateLongRange minimum="0" />
+															<p:ajax event="blur" update="msgdailyLimitId,dailyLimitId"/>
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="weeklyLimit" value="#{msg['lbl.weeklylimit']} *"  />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+													<p:message id="msgweeklyLimitId" for="weeklyLimitId" display="text"/>
+														<p:inputText id="weeklyLimitId" value="#{corpregisterBean.weeklyLimit}" required="true" requiredMessage="Please Enter Weekly" validator="#{corpregisterBean.comparingDailyWeekly}">
+															 <f:validateLongRange minimum="0" />
+															 <p:ajax event="blur" update="msgweeklyLimitId,weeklyLimitId" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="monthlyLimit" value="#{msg['lbl.monthlylimit']} *"/>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+													<p:message id="msgmonthlyLimitId" for="monthlyLimitId" display="text" />
+														<p:inputText id="monthlyLimitId" value="#{corpregisterBean.monthlyLimit}" required="true" requiredMessage="Please Enter Monthly Limit" validator="#{corpregisterBean.comparingWeeklyMonthly}" >
+														     <f:validateLongRange minimum="0" />
+														    <p:ajax event="blur" update="msgmonthlyLimitId,monthlyLimitId"/>
+														</p:inputText>
+													</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="quarterlyLimit" value="#{msg['lbl.quarterlylimit']} *" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+													<p:message id="msgquarterlyLimitId" for="quarterlyLimitId" display="text" />
+														<p:inputText id="quarterlyLimitId" value="#{corpregisterBean.quarterlyLimit}" required="true" requiredMessage="Please Enter Quarterly" validator="#{corpregisterBean.comparingMonthlyQuarterly}">
+															 <f:validateLongRange minimum="0" />
+															 <p:ajax event="blur"  update="msgquarterlyLimitId,quarterlyLimitId"/>
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+											
+												
+													<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="halfLimit" value="#{msg['lbl.halfyearly']} *" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col"> 
+													    <p:message id="msghalfLimitId" for="halfLimitId" display="text"/>
+														<p:inputText id="halfLimitId" value="#{corpregisterBean.halfyearly}" required="true" requiredMessage="Please Enter Half" validator="#{corpregisterBean.comparingQuarterlyHalfYearly}">
+															 <f:validateLongRange minimum="0" />
+															<p:ajax event="blur" update="msghalfLimitId,halfLimitId"/>
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												
+												
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText id="annualLimit" value="#{msg['lbl.annuallimit']} *" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+													<p:message id="msgannualLimitId" for="annualLimitId" display="text" />
+														<p:inputText id="annualLimitId" value="#{corpregisterBean.annualLimit}" required="true" requiredMessage="Please Enter Annual" validator="#{corpregisterBean.comparingHalfYearlyAnnually}">
+															 <f:validateLongRange minimum="0" />
+															<p:ajax event="blur" update="msgannualLimitId,annualLimitId"/>
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+
+										<div class="clearfix"></div>
+
+									</p:panel> -->
+
+									<!-- <p:dialog id="pictureForCompany" widgetVar="pictureForCompany"
+										header="#{msg['lbl.document']}" width="400" height="400"
+										resizable="false" showEffect="clip" hideEffect="clip">
+										<p:graphicImage
+											value="#{corpregisterBean.downloadFileForCompany}" />
+									</p:dialog>
+
+
+									<div class="clearfix"></div>
+									<div class="clearfix"></div>
+									<p:panel styleClass="left_col">
+										<h:outputText value="#{msg['lbl.fieldaremandatory']}"
+											rendered="#{corpregisterBean.renderTransactionalSetting}"
+											style="color:red; padding:10px !important; font-size:10px;" />
+									</p:panel>
+
+									<div class="clearfix"></div>
+									<h:panelGroup layout="block" styleClass="shadow_button"
+										rendered="#{corpregisterBean.renderTransactionalSetting}">
+
+										<p:commandButton value="#{msg['lbl.savenext']}"
+											style="margin-right:10px;"
+											action="#{corpregisterBean.saveCorpRegLimitAdditionalPage}"
+											update="mainPanel"
+											onstart="processIcon.show();" onsuccess="processIcon.hide();" />
+
+										<p:commandButton value="#{msg['lbl.back']}"
+											style="margin-right:10px;"
+											action="#{corpregisterBean.backFromTrnasactionSetting}"
+											update="mainPanel" immediate="true"/>
+
+										<p:commandButton value="#{msg['lbl.clear']}"
+											action="#{corpregisterBean.clearTrnasactionSetting}"
+											update="mainPanel"/>
+
+										<div class="clearfix"></div>
+
+
+									</h:panelGroup> -->
+									<div class="clearfix"></div>
+
+
+
+									<p:panel styleClass="shadow" id="panelPartnerAuth"
+										rendered="#{corpregisterBean.renderPartnerDetail}">
+
+										<p:confirmDialog id="civilCheck" widgetVar="civilCheck"
+											width="500" showHeader="false" resizable="false"
+											header="Warning Message" styleClass="warning"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="explode" hideEffect="explode"
+											message="#{corpregisterBean.errmsg}">
+										</p:confirmDialog>
+
+
+										<h:panelGrid columns="1" styleClass="heading2">
+											<h:outputText
+												value="#{msg['lbl.partnerorAuthorizedSignatories']}" />
+										</h:panelGrid>
+
+
+										<p:panel styleClass="left_col">
+
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.idnumber']} *" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message display="text" for="idnumber" id="msgidnumber" />
+												<p:inputText value="#{corpregisterBean.pidno}" id="idnumber"
+													label="Partner Id Number">
+													<p:ajax event="blur"
+														listener="#{corpregisterBean.checkRegisterIdNew}"
+														update="panelPartnerAuth,civilCheck" />
+												</p:inputText>
+											</p:panel>
+
+											<!-- 	<p:panel rendered="#{corpregisterBean.renderRegisterPartner}">
+											<p:outputLabel value="#{msg['lbl.idnotregis']}  "
+												style="color:red !important;" />
+												<p:commandLink value="  Click here to register" onclick="gotoCustomer.show();"
+												    style="font-weight: bold; font-size:16px !important; color:blue !important; text-decoration:underline !important;"
+														/>
+										</p:panel> -->
+
+										</p:panel>
+
+
+										<p:panel styleClass="right_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.name']} *" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col ">
+												<p:inputText value="#{corpregisterBean.partName}"
+													tabindex="-1" readonly="true"
+													styleClass="ui-state-disabled" />
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.namelocal']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText value="#{corpregisterBean.partNameLocal}"
+													tabindex="-1" readonly="true"
+													styleClass="ui-state-disabled" />
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="right_col">
+
+
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value=" #{msg['lbl.idexpitydate']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:calendar id="partnerDateofexpiry"
+													value="#{corpregisterBean.partnerCustExpDate}" mode="popup"
+													disabled="true" size="25"
+													mindate="#{corpregisterBean.expDateAdder}"
+													yearRange="c-50:c+50" pattern="dd/MM/yyyy" navigator="true"
+													readonlyInput="true">
+													<p:ajax event="dateSelect"
+														listener="#{corpregisterBean.partnerDateSelect}"
+														styleClass="ui-state-disabled" />
+												</p:calendar>
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<!-- <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Mobile"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText value="#{corpregisterBean.partnerContactNumber}" validator="#{corpregisterBean.validateMobile}" readonly="#{corpregisterBean.booPartnerContactNumberReadOnly}"/>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="right_col">
+
+											
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Email"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{corpregisterBean.partnerEmail}" readonly="#{corpregisterBean.boopartnerEmailReadOnly}"/>
+											</p:panel>
+										</p:panel>		 -->
+
+
+
+										<p:panel styleClass="left_col" id="mobpPanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.mobile']} *" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="mobile_1"
+													value="#{corpregisterBean.partnerContactNumber}"
+													tabindex="-1" readonly="true"
+													styleClass="ui-state-disabled">
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+
+										<p:panel styleClass="left_col" id="emailpPanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.email']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="email_1" tabindex="-1"
+													value="#{corpregisterBean.partnerEmail}" readonly="true"
+													styleClass="ui-state-disabled">
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel id="empPanel">
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.destination']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{corpregisterBean.occupation}"
+														tabindex="-1" readonly="true"
+														styleClass="ui-state-disabled" />
+												</p:panel>
+											</p:panel>
+										</p:panel>
+
+
+										<p:panel styleClass="left_col">
+
+											<p:dialog header="Dialog Box" id="imageupload2"
+												widgetVar="imageUpload2" width="250" height="40"
+												resizable="false"
+												style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+												showEffect="clip" hideEffect="clip" closeOnEscape="true"
+												closable="true">
+												<p:outputLabel value="#{msg['lbl.imagesuccess']}" />
+											</p:dialog>
+											<!-- <p:panel styleClass="inner_left_col"><h:outputText value="#{msg['lbl.scandocument']}*" />
+</p:panel> -->
+											<!-- <p:panel styleClass="inner_right_col">  <h:outputText
+												value="#{msg['lbl.uploadfile']} (.jpg/.png/.doc/.docx/.pdf/.jpeg)"
+												rendered="#{corpregisterBean.partnerUploadFileVisibility}"
+												style="color:red;" />
+												<p:fileUpload id="fileUplod1"  fileUploadListener="#{corpregisterBean.handleFileUploadForPartner}"
+													mode="advanced" 
+													fileLimit="1" fileLimitMessage="#{msg['lbl.onefileallowed']}"
+													update="messages"
+													label="Choose a file" sizeLimit="1048576" required="true"
+														requiredMessage="#{msg['lbl.uploadfile']}"
+														invalidSizeMessage="#{msg['lbl.filemaxsize']}"
+														invalidFileMessage="#{msg['lbl.allowTypes']}"
+														oncomplete="PF('imageUpload1').show()">
+														<p:message id="messages" for="fileUplod1"
+															value="#{msg['lbl.fileNotSelected']}" style="color:red;" />
+	
+														
+										</p:fileUpload>
+												
+</p:panel>	 -->
+
+											<!-- <p:panel styleClass="inner_right_col">
+
+													<p:fileUpload id="fileUplod1"
+													fileUploadListener="#{corpregisterBean.handleFileUploadForPartner}"
+														mode="advanced" fileLimit="1"
+														fileLimitMessage="#{msg['lbl.onefileallowed']}" update="messages1"
+														label="Choose a file" sizeLimit="1048576" required="true"
+														requiredMessage="#{msg['lbl.uploadfile']}"
+														invalidSizeMessage="#{msg['lbl.filemaxsize']}"
+														invalidFileMessage="#{msg['lbl.allowTypes']}"
+														oncomplete="PF('imageUpload2').show()">
+														<p:message id="messages1" for="fileUplod1"
+															value="#{msg['lbl.fileNotSelected']}" style="color:red;" />
+													</p:fileUpload>
+													<h:outputText
+														value="#{msg['lbl.uploadfile']} (.jpg/.png/.doc/.docx/.pdf/.jpeg)"
+														rendered="#{corpregisterBean.partnerUploadFileVisibility}"
+														style="color:red;" />
+												</p:panel> -->
+
+										</p:panel>
+										<div class="clearfix"></div>
+										<p:panel styleClass="left_col">
+											<h:outputText value="#{msg['lbl.fieldaremandatory']}"
+												rendered="#{corpregisterBean.renderPartnerDetail}"
+												style="color:red; padding:10px !important; font-size:10px;" />
+										</p:panel>
+										<div class="clearfix"></div>
+										<p:panel styleClass="left_col">
+											<h:outputText
+												value="Highlighted Partner is Inactive Customer"
+												rendered="#{corpregisterBean.renderPartnerDetail}"
+												style="color:red; padding:10px !important; font-size:10px;" />
+										</p:panel>
+
+
+										<div class="clearfix"></div>
+										<p:panel>
+											<!-- <h:panelGroup layout="block" styleClass="shadow_button">
+										<p:commandButton value="#{msg['lbl.add']}" action="#{corpregisterBean.addActionPartner}"
+											 process="panelPartnerAuth" update="panelPartnerAuth"/>
+											 
+											 	<p:commandButton value="#{msg['lbl.back']}"
+											action="#{corpregisterBean.backFromPartnerAuthorized}"
+											update="maniPanle" immediate="true" ajax="false" />
+											 </h:panelGroup> -->
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<!-- <p:commandButton value="#{msg['lbl.add']}"
+														action="#{branchRegistration.addRows}" update="mainPanel"
+														id="btnGlobal">
+													</p:commandButton> -->
+
+												<p:commandButton value="#{msg['lbl.add']}"
+													style="margin-right:10px;"
+													action="#{corpregisterBean.savePartner}" update="mainPanel">
+												</p:commandButton>
+
+												<!-- <p:commandButton value="#{msg['lbl.scanid']}" id="scanId1" style="margin-right:10px;" disabled="#{corpregisterBean.enablePartnerScan}"
+													action="#{corpregisterBean.scanForPartner}"/> -->
+
+												<!-- <p:commandButton value="#{msg['lbl.back']}"
+														action="#{branchRegistration.backProofDetails}"
+														update="mainPanel" immediate="true"
+														style="float:right; margin-left:10px; ">
+													</p:commandButton> -->
+												<p:commandButton value="#{msg['lbl.clear']}"
+													action="#{corpregisterBean.clearPartnerData}"
+													update="panelPartnerAuth" immediate="true"
+													style="margin-right:10px;" />
+
+												<p:commandButton value="#{msg['lbl.back']}"
+													action="#{corpregisterBean.backFromPartnerAuthorized}"
+													update="mainPanel" immediate="true" />
+
+											</h:panelGroup>
+											<!-- </h:panelGroup> -->
+
+											<h:outputText
+												rendered="#{corpregisterBean.renderPartneListAvailability}"
+												style="float:right; color:red;"
+												value="#{msg['lbl.plzAddOnePartnerDtl']}" />
+										</p:panel>
+
+
+										<p:confirmDialog id="PatnerPercentageCheck"
+											widgetVar="PatnerPercentageCheck" width="500"
+											showHeader="false" resizable="false" header="Warning Message"
+											styleClass="warning"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="explode" hideEffect="explode"
+											message="#{corpregisterBean.errmsg}">
+										</p:confirmDialog>
+
+										<div class="clearfix"></div>
+										<p:dataTable value="#{corpregisterBean.partnerList}" var="q"
+											styleClass="mydatatableclass" style="width:1220;"
+											id="datatable2" editable="true"
+											rendered="#{corpregisterBean.enabledddPartnerAuthDataTable}"
+											emptyMessage="#{msg['lbl.norecordfound']}">
+
+											<p:columnGroup type="header">
+												<p:row>
+													<!-- 	<p:column headerText="#{msg['lbl.slNo']}" >
+										<h:outputText value="#{rowIndex+1}"/>
+									</p:column>  -->
+
+													<p:column rowspan="2" headerText="#{msg['lbl.idnumber']}" />
+													<p:column rowspan="2" headerText="#{msg['lbl.name']}" />
+													<p:column rowspan="2" headerText="#{msg['lbl.namelocal']}" />
+													<p:column rowspan="2" headerText="#{msg['lbl.mobile']}" />
+													<p:column rowspan="2" headerText="#{msg['lbl.email']}" />
+													<p:column rowspan="2"
+														headerText="#{msg['lbl.destination']}" />
+													<p:column colspan="2"
+														headerText="#{msg['lbl.partnersdetails']}"
+														styleClass="table_header" />
+													<p:column colspan="3"
+														headerText="#{msg['lbl.authorizesignatory']}"
+														styleClass="table_header" />
+													<p:column rowspan="2"
+														headerText="#{msg['lbl.transactionbehalf']}"
+														style="text-align:center !important;" />
+
+													<!--  <p:column rowspan="2" headerText="#{msg['lbl.download']}" style="text-align:center !important;"/>
+                   <p:column rowspan="2"  headerText="#{msg['lbl.delete']}" style="text-align:center !important;"/> -->
+												</p:row>
+												<p:row>
+													<p:column headerText="#{msg['lbl.yesno']}" />
+													<p:column headerText="%" />
+													<p:column headerText="#{msg['lbl.yesno']}" />
+													<p:column headerText="#{msg['lbl.effectivedate']}" />
+													<p:column headerText="#{msg['lbl.validupto']}" />
+												</p:row>
+											</p:columnGroup>
+
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="#{msg['lbl.idnumber']}" />
+												</f:facet>
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{q.pidno}"
+															style="text-align: left; font-size:13px;  height:20px; width: 80px;border:none !important;box-shadow:none !important; padding:0 !important;margin:0px !important;"
+															styleClass="#{ q.highLightCustomer  == true ? 'evenrow' : 'highidno'}" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText value="#{q.pidno}"
+															style="text-align: left; font-size:13px;  height:20px; width: 80px;border:none !important;box-shadow:none !important; padding:0 !important;margin:0px !important;" />
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="#{msg['lbl.name']}" />
+												</f:facet>
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{q.partName}"
+															style="text-align: left; font-size:13px;  height:20px; width: 40px;border:none !important;box-shadow:none !important; padding:0 !important;margin:0px !important;" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText value="#{q.partName}"
+															style="text-align: left; font-size:13px;  height:20px; width: 40px;border:none !important;box-shadow:none !important; padding:0 !important;margin:0px !important;" />
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+											<p:column>
+
+												<f:facet name="header">
+													<h:outputText value="#{msg['lbl.nameLocal']}" />
+												</f:facet>
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{q.partNameLocal}"
+															style="text-align: left; font-size:13px;  height:20px; width: 40px;border:none !important;box-shadow:none !important; padding:0 !important;margin:0px !important;" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText value="#{q.partNameLocal}"
+															style="text-align: left; font-size:13px;  height:20px; width: 40px;border:none !important;box-shadow:none !important; padding:0 !important;margin:0px !important;" />
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+
+											<p:column>
+
+												<f:facet name="header">
+													<h:outputText value="#{msg['lbl.mobile']}" />
+												</f:facet>
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{q.partnerContactNumber}"
+															style="text-align: left; font-size:13px;  height:20px; width: 40px;border:none !important;box-shadow:none !important; padding:0 !important;margin:0px !important;" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText value="#{q.partnerContactNumber}"
+															style="text-align: left; font-size:13px;  height:20px; width: 40px;border:none !important;box-shadow:none !important; padding:0 !important;margin:0px !important;" />
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+
+											<p:column>
+
+												<f:facet name="header">
+													<h:outputText value="#{msg['lbl.email']}" />
+												</f:facet>
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{q.partnerEmail}"
+															style="text-align: left; font-size:13px;  height:20px; width: 40px;border:none !important;box-shadow:none !important; padding:0 !important;margin:0px !important;" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText value="#{q.partnerEmail}"
+															style="text-align: left; font-size:13px;  height:20px; width: 40px;border:none !important;box-shadow:none !important; padding:0 !important;margin:0px !important;" />
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+
+
+											<p:column>
+
+												<f:facet name="header">
+													<h:outputText value="#{msg['lbl.occupation']}" />
+												</f:facet>
+												<p:cellEditor>
+													<f:facet name="output">
+														<h:outputText value="#{q.occupation}"
+															style="text-align: left; font-size:13px;  height:20px; width: 40px;border:none !important;box-shadow:none !important; padding:0 !important;margin:0px !important;" />
+													</f:facet>
+													<f:facet name="input">
+														<p:inputText value="#{q.occupation}"
+															style="text-align: left; font-size:13px;  height:20px; width: 40px;border:none !important;box-shadow:none !important; padding:0 !important;margin:0px !important;" />
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+
+											<p:column>
+												<p:selectBooleanCheckbox value="#{q.checkedPartner}">
+													<p:ajax event="change" update="percColu"
+														listener="#{corpregisterBean.partnerCheck(q)}" />
+												</p:selectBooleanCheckbox>
+											</p:column>
+
+											<p:column
+												style="width:70px !important; padding:1px 15px 1px 1px !important;">
+												<p:panel id="percColu">
+													<p:panel rendered="#{q.notEditablePartner}">
+														<h:outputText value="#{q.patnerPercentage}" />
+													</p:panel>
+													<p:panel rendered="#{q.editablePartner}">
+														<p:inputText id="dataper" value="#{q.patnerPercentage}"
+															required="true" requiredMessage="Please Enter Percentage">
+															<p:ajax event="change" update="percColu,dataperRatemsg" />
+															<f:validator
+																validatorId="com.amg.exchange.validator.PercentageCheckValidator" />
+															<p:message id="dataperRatemsg" for="dataper"
+																display="text" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+											</p:column>
+
+											<p:column>
+												<p:selectBooleanCheckbox value="#{q.checkedAuthorized}">
+													<p:ajax event="change" update="authcolu,autCal"
+														listener="#{corpregisterBean.authorizedCheck(q)}" />
+												</p:selectBooleanCheckbox>
+											</p:column>
+
+											<p:column
+												style="width:80px !important; padding:1px 15px 1px 1px !important;">
+												<p:panel id="authcolu">
+													<p:panel rendered="#{q.notEditableAuthorized}">
+														<h:outputText value="#{q.effectiveDateString}" />
+													</p:panel>
+													<p:panel rendered="#{q.editableAuthorized}">
+														<p:calendar id="effcal" value="#{q.effectiveDate}"
+															yearRange="c-50:c+50" navigator="true"
+															pattern="dd/MM/yyyy"
+															maxdate="#{corpregisterBean.effectiveMinDate}"
+															required="true"
+															requiredMessage="#{msg['lbl.pleaseentereffectivedate']}">
+															<p:ajax event="dateSelect"
+																listener="#{corpregisterBean.popEndDate(q)}"
+																update="autCal" />
+														</p:calendar>
+													</p:panel>
+												</p:panel>
+											</p:column>
+
+											<p:column
+												style="width:80px !important; padding:1px 15px 1px 1px !important;">
+												<p:panel id="autCal">
+													<p:panel rendered="#{q.notEditableAuthorized}">
+														<h:outputText value="#{q.validUpToString}" />
+													</p:panel>
+													<p:panel rendered="#{q.editableAuthorized}" id="validcal">
+														<p:calendar id="validcals" value="#{q.validUpTo}"
+															navigator="true" required="true"
+															requiredMessage="#{msg['lbl.pleaseentervalidupto']}"
+															pattern="dd/MM/yyyy"
+															mindate="#{corpregisterBean.minDate}">
+															<p:ajax event="dateSelect" update="validcal" />
+														</p:calendar>
+													</p:panel>
+												</p:panel>
+											</p:column>
+
+											<p:column>
+												<p:selectBooleanCheckbox value="#{q.transactionBehalf}">
+													<p:ajax update="datatable2" />
+												</p:selectBooleanCheckbox>
+
+											</p:column>
+
+											<!-- 	<p:column headerText="#{msg['lbl.download']}"
+										style="text-align:center; width:50px;">
+										<p:commandLink id="partnerdownloadLink" title="download" immediate="true"
+											ajax="false" action="PrimeFaces.monitorDownload(start, stop)"
+											icon="ui-icon-arrowthichk-s">
+											<p:graphicImage value="../images/download.png" />
+											<p:fileDownload
+												value="#{corpregisterBean.downloadFile(q.imageId)}" />
+										</p:commandLink>
+									</p:column>
+									<p:column style="text-align:center !important; width:50px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['lbl.delete']}" />
+										</f:facet>
+
+										<p:commandButton styleClass="delete" value=""
+											actionListener="#{corpregisterBean.removePartnerDetails(q)}"
+											ajax="false" update="datatable2" immediate="true"></p:commandButton>
+									</p:column>
+ -->
+
+										</p:dataTable>
+										<div class="clearfix"></div>
+
+										<p:panel>
+											<h:outputText rendered="#{corpregisterBean.immediate}"
+												style="font-size:11px !important; font-weight:bold;color:red;"
+												value="Please Enter Percentage,Effective Date, Valid UpTo" />
+										</p:panel>
+
+
+										<div class="clearfix"></div>
+
+
+
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											rendered="#{corpregisterBean.enabledddPartnerAuthDataTable}">
+
+											<p:commandButton value="#{msg['lbl.submit']}"
+												action="#{corpregisterBean.saveCorpRegPartnerAuthorizedPage}"
+												immediate="true" update="mainPanel,csp"
+												onstart="processIcon.show();"
+												onsuccess="processIcon.hide();" />
+
+
+
+											<div class="clearfix"></div>
+
+
+										</h:panelGroup>
+
+									</p:panel>
+
+									<!-- <p:panel id="successPanel"
+										rendered="#{corpregisterBean.renderSuccess}">
+
+										<br />
+										<h:outputText value="#{msg['lbl.success7']}"
+											style="font-size: 30px; color:green; font-weight: bold;text-align:center !important; width:100%; display:block;" />
+										<br />
+										<p:panel style="text-align:right !important; ">
+											<a href="../registration/branchhome.xhtml"><p:graphicImage
+													url="../images/home_icon.png" style="float:right;" /></a>
+											<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+										</p:panel>
+										
+										
+										<p:panel styleClass="panel_border7">
+											<h:panelGroup layout="block" styleClass="content_level1" >	
+												<p:outputLabel value="Do you want corporate registration report  please"
+													style=" font-weight: bold; color: #037712; font-size: 12px !important; padding:10px 0px 0px 0px !important;">
+													<h:commandLink value="#{msg['lbl.clickHere']} " id="reportId" 
+														style="font-weight: bold; font-size:16px !important; color:blue !important; text-decoration:underline !important;"
+														actionListener="#{corpregisterBean.generateCorporateRegistrationReport1}"  
+														process="@this" immediate="true" />
+												</p:outputLabel>
+												
+											</h:panelGroup>
+											</p:panel>
+										
+
+									</p:panel>
+ -->
+								</p:panel>
+
+							</h:form>
+
+						</h:panelGroup>
+					</h:panelGroup></td>
+			</tr>
+		</table>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

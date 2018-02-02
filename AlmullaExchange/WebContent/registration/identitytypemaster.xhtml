@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</h:head>
+
+<h:body> 
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+							<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+						</td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+								<h:form id="form">
+								
+								<p:confirmDialog id="sqlexception" widgetVar="sqlexception" 
+		resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.dataNotSavedWhileSavingTimeExceptionOccured']}"   >
+	 </p:confirmDialog>
+								<p:dialog id="complete" widgetVar="complete" width="260" height="70"
+		showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+
+		<p:outputLabel value="#{msg['lbl.dataissuccessfullysaved']}" />
+		<br />
+
+		<p:commandButton value="#{msg['lbl.ok']}"
+			actionListener="#{identityTypeBean.okSaved}" immediate="true" update="mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+	</p:dialog>
+	
+	<p:confirmDialog id="csp" widgetVar="csp" width="500"
+										showHeader="false" resizable="false" header="Warning Message"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{identityTypeBean.errorMessage}">
+									</p:confirmDialog>
+	
+	
+       					    
+       					    <p:dialog id="norecord" widgetVar="norecord" width="260" height="70"
+		showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+
+		<p:outputLabel value="#{msg['lbl.norecordfound']}" />
+		<br />
+
+		<p:commandButton value="#{msg['lbl.ok']}" oncomplete="norecord.hide()" />
+	</p:dialog>
+	
+	  <p:dialog id="duplicate" widgetVar="duplicate" width="260" height="70"
+		showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+
+		<p:outputLabel value="#{msg['lbl.duplicateRecordsNotFound']}" />
+		<br />
+
+		<p:commandButton value="#{msg['lbl.ok']}" oncomplete="duplicate.hide()" />
+	</p:dialog>
+	
+	<p:confirmDialog id="deleterecord" widgetVar="deleterecord" width="400" styleClass="red"  showHeader="false" resizable="false" 	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" message="#{msg['lbl.recordAlreadyModifiedOrNotAbleToDelete']}">
+                      									<p:commandButton value="#{msg['lbl.ok']}" oncomplete="deleterecord.hide()" immediate="true" update=":form" />
+      </p:confirmDialog>
+      
+       <p:dialog id="deletemsg" widgetVar="deletemsg" width="260" height="70"
+		showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+
+		<p:outputLabel value="#{msg['lbl.recrdDeletedSuccess']}" />
+		<br />
+
+		<p:commandButton value="#{msg['lbl.ok']}" oncomplete="deletemsg.hide()" immediate="true" update="form" />
+	</p:dialog>
+	
+	   <p:confirmDialog id="recordavailable" widgetVar="recordavailable" width="600" height="50" resizable="false" style=" border:2px solid green !important; padding:0px !important;  color:green !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="#{msg['lbl.RecrdAlreadyAvalibleinDb']}">
+                      									
+                      									<p:spacer width="15px" />
+            											<p:commandButton value="#{msg['lbl.ok']}" oncomplete="recordavailable.hide()" process="@this"/>
+      </p:confirmDialog>
+								
+							<h1>
+								<h:outputText value="#{msg['lbl.identityTypeMaster']}" />
+							</h1>
+							<p:panel styleClass="shadow" id="mainPanel">
+							
+							<p:confirmDialog id="error" widgetVar="error"  
+resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" 
+showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{identityTypeBean.errorMessage}" >
+</p:confirmDialog>
+<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"  
+resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" 
+showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{identityTypeBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}" >
+</p:confirmDialog>
+							
+							<p:dialog id="pending" widgetVar="pending"
+										width="400" height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.warningDailog']}" closable="false"
+										showEffect="clip" hideEffect="clip">
+										<p:outputLabel
+											value="#{msg['lbl.plsApproveRecord']}"
+											 style="text-align: center; font-size:15px !important;"  />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											onclick="PF('pending').hide();" immediate="true"
+											style="margin-left: 150px !important;" />
+									</p:dialog>
+							<p:dialog id="remarks" widgetVar="remarks" width="550" height="205" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+            					<p:panel styleClass="shadow">
+            					
+            						<p:panel >
+            							<h:outputText value="#{msg['lbl.approvedDate']}" />&nbsp;<h:outputText value="#{identityTypeBean.approvedDate}" />&nbsp;&nbsp;&nbsp;
+            							<h:outputText value="#{msg['lbl.approvedBy']}" />&nbsp;<h:outputText value="#{identityTypeBean.approvedBy}" />
+									</p:panel>
+									
+									<div class="clearfix" />
+									<hr></hr>
+									<p:panel >
+										<h:outputText value="#{msg['lbl.enterremarks']}" />
+									</p:panel>
+										<p:panel >
+									
+											<h:inputTextarea value="#{identityTypeBean.remarks}"   rows="5" cols="50">
+											<p:ajax />
+											</h:inputTextarea>
+										</p:panel>
+            						<p:spacer width="15px" />
+            						<div class="clearfix" />
+            						<h:panelGroup styleClass="shadow">
+            						<div class="clearfix" />
+            							<p:commandButton value="#{msg['lbl.ok']}"  actionListener="#{identityTypeBean.clickOKApproval}"  process="@this" update=":form" onstart="process.show();" onsuccess="process.hide();" /> 
+            							<p:commandButton value="#{msg['lbl.cancel']}"  oncomplete="remarks.hide()"  update=":form" immediate="true"/>  <!-- onclick="PF('remarks').hide();" -->
+            						</h:panelGroup>
+            					</p:panel>         
+       					    </p:dialog>
+							
+							<h3>
+											<h:outputText value="#{msg['lbl.identityTypeMaster']}" />
+										</h3>
+		<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+								<p:panel styleClass="panel_border">
+								<p:panel id="first">
+									<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.applicationCountry']}" /><h:outputText value="*" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+													<p:message for="country" display="text" id="countrymsg" />
+													<p:selectOneMenu id="country"
+														value="#{identityTypeBean.countryId}"
+														required="true"
+														requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.country']}"
+														tabindex="1" filter="true" filterMatchMode="contains" >
+														<f:selectItem itemValue=""
+															itemLabel="#{msg['lbl.selectApplicationCountry']}" />
+														<f:selectItems
+															value="#{identityTypeBean.countryNameList}"
+															var="c" itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+															itemValue="#{c.fsCountryMaster.countryId}" />
+															<p:ajax update="countrymsg"/>
+														
+													</p:selectOneMenu>
+												</p:panel>
+										</p:panel>
+								
+								<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.idtype']}" /><h:outputText value="*"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+																<p:message for="idtype" display="text" id="idtypemsg"/>
+																<p:selectOneMenu id="idtype" tabindex="2" required="true" requiredMessage="Please Select ID Type"
+																	value="#{identityTypeBean.businessComponentId}"
+																	style="width:180px;" filter="true" filterMatchMode="contains" >
+																	<f:selectItem	itemLabel="#{msg['lbl.selectIdType']}" itemValue="" />
+																	
+                                                               <f:selectItems
+														value="#{identityTypeBean.idTypeList.entrySet()}"
+														var="c" itemLabel="#{c.value}" itemValue="#{c.key}" />
+																
+																<p:ajax update="idtypemsg"/>	
+																</p:selectOneMenu>
+															</p:panel>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix"/>
+										
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.validityORDays']}" /><h:outputText value="*"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+										 <p:inputText value="#{identityTypeBean.validity}" id="validity" required="true" requiredMessage="Please Enter Validity">
+										 <p:message for="validity" display="text" id="validitymsg"/>
+										 <f:validator
+															validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+										 <p:ajax update="validitymsg"/>
+										 </p:inputText> 
+											
+											</p:panel>
+										</p:panel>
+										
+									
+										
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.ocrStatus']}" /><h:outputText value="*"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											 <p:message for="ocrstatus" display="text" id="ocrstatusymsg"/>
+												<p:selectOneMenu id="ocrstatus" tabindex="2" value="#{identityTypeBean.ocrStatus}" filter="true" filterMatchMode="contains" required="true" requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.ocrStatus']}"
+																	
+																	>
+																	<f:selectItem	itemLabel="#{msg['lbl.selectOcrStat']}" itemValue="" />
+											<f:selectItem	itemLabel="#{msg['lbl.yes']}" itemValue="Y" />
+												<f:selectItem	itemLabel="#{msg['lbl.no']}" itemValue="N" />
+												<p:ajax update="ocrstatusymsg"/>
+											</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.customerType']}" /><h:outputText value="*"/>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											 <p:message for="custType" display="text" id="custTypemsg"/>
+												<p:selectOneMenu id="custType" tabindex="3" value="#{identityTypeBean.customerType}" filter="true" filterMatchMode="contains" required="true" requiredMessage="#{msg['lbl.validselectt']} #{msg['lbl.customerType']}"
+																	
+																	>
+																	<f:selectItem	itemLabel="--#{msg['lbl.select']} #{msg['lbl.customerType']} --" itemValue="" />
+											<f:selectItem	itemLabel="I - #{msg['lbl.individual']}" itemValue="I" />
+												<f:selectItem	itemLabel="C - #{msg['lbl.corporate']}" itemValue="C" />
+												<p:ajax update="custTypemsg"/>
+											</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										
+										
+										
+										
+										
+										<h:panelGroup layout="block" class="clearfix"/>
+										<h:outputText value="#{msg['lbl.*filedsAreMandatory']}" style="color:red !important; padding-left:10px !important;" />
+										<h:panelGroup layout="block" class="clearfix"/>
+										
+										<p:spacer height="10px"/>
+									<h:panelGroup layout="block" class="clearfix"/>
+
+						
+								
+									
+									<h:panelGroup layout="block" class="clearfix"/>
+									<h:panelGroup layout="block" styleClass="shadow_button">						
+										<p:commandButton value="#{msg['lbl.add']}" action="#{identityTypeBean.checkRecord}" update="mainPanel" onstart="process.show();" onsuccess="process.hide();"  />
+										<p:commandButton value="#{msg['lbl.view']}" action="#{identityTypeBean.view}" update="mainPanel" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+										 <p:commandButton value="#{msg['lbl.clear']}" action="#{identityTypeBean.clear}"  update="mainPanel"  process="@this" disabled="#{identityTypeBean.disableSubmit}" onstart="process.show();" onsuccess="process.hide();"/>
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+								
+								
+									<h:panelGroup layout="block" class="clearfix"/>
+									</p:panel>
+																		
+	<p:panel id="datatablePanel">							
+										 
+	<p:dataTable id="dataTable" value="#{identityTypeBean.identityTypeMasterList}" var="d" rowIndexVar="rowIndex"  rendered="#{identityTypeBean.booRenderDataTable}" styleClass="mydatatableclass"
+	rows="10" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  rowsPerPageTemplate="5,10,15" paginatorPosition="bottom">
+     
+      <p:column headerText="S.No" style="width:30px;">
+            <h:outputText value="#{rowIndex+1}"/>
+        </p:column>
+ 
+        <p:column headerText="#{msg['lbl.country']}">
+            <h:outputText value="#{d.countryName}"/>
+        </p:column>
+ 
+        <p:column headerText=" #{msg['lbl.idtype']}">
+            <h:outputText value="#{d.idType}" />
+        </p:column>
+                 
+       <p:column headerText="#{msg['lbl.idValidity']}">
+            <h:outputText value="#{d.validity}"/>
+        </p:column>
+         <p:column headerText="#{msg['lbl.ocrStatus']}">
+            <h:outputText value="#{d.ocrStatusName}"/>
+        </p:column>
+        
+        <p:column headerText="#{msg['lbl.customerType']}">
+            <h:outputText value="#{d.customerType} - #{d.customerTypeName}"/>
+        </p:column>
+ 
+        <p:column headerText="#{msg['lbl.edit']}">
+        <p:commandButton id="imgEdit" styleClass="edit" value="" action="#{identityTypeBean.editRecord(d)}" disabled="#{identityTypeBean.editHide}" update=":form"  process="@this" onstart="process.show();" onsuccess="process.hide();" />
+  			
+		</p:column>
+		  <p:column headerText="#{msg['lbl.active/deactive']}">
+         
+           	<p:commandLink action="#{identityTypeBean.checkStatusType(d)}" value="#{d.dynamicLabelForActivateDeactivate}" style="color:blue !important; text-decoration:underline !important;" update=":form:dataTable,:form:mainPanel"  process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+        </p:column>
+              
+    </p:dataTable>
+    </p:panel>
+							
+		
+<h:panelGroup layout="block" class="clearfix"/>
+
+<h:panelGroup layout="block" class="clearfix"/>
+										
+										<p:spacer height="10px"/>
+									<h:panelGroup layout="block" class="clearfix"/>
+
+						
+								
+									
+									<h:panelGroup layout="block" class="clearfix"/>
+									<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{identityTypeBean.booRenderDataTable}">						
+										<p:commandButton value="#{msg['lbl.submit']}" action="#{identityTypeBean.save}" update="mainPanel" immediate="true" disabled="#{identityTypeBean.disableSubmit}" onstart="process.show();" onsuccess="process.hide();"/>
+										<p:commandButton value="#{msg['lbl.exit']}" action="#{identityTypeBean.exit}" update="mainPanel" immediate="true" onstart="process.show();" onsuccess="process.hide();"/>
+										
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+								
+								
+									<h:panelGroup layout="block" class="clearfix"/>
+									
+									<h:panelGroup layout="block" class="clearfix"/>
+								</p:panel>
+								<h:panelGroup layout="block" class="clearfix"/>
+								</p:panel>
+								</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"/>
+					</h:panelGroup>
+					<h:panelGroup layout="block" class="clearfix"/>
+					</td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

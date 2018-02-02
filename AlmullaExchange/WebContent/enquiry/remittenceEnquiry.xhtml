@@ -1,0 +1,1176 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+	</script>
+</h:head>
+
+<h:body>
+
+	<f:view>
+	<f:event listener="#{remittanceEnquiryBean.populateSearchValue}"
+			type="preRenderView" />
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="enquiryForm">
+
+
+								<p:confirmDialog id="datanotfound" widgetVar="datanotfound" width="350" showHeader="false" resizable="false" header="#{msg['lbl.warningDailog']}"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip" message="#{msg['lbl.recordnotfound']}">
+								</p:confirmDialog>
+
+
+								<p:panel styleClass="panel_border" >
+							<!-- <p:focus for="transferNoTextId"/> -->
+								<h1>
+									<h:outputText value="#{msg['lbl.remitEnquiry']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="firstmainPanel">
+									
+									
+									<p:panel id="firstheaderPanel">
+									<!--  ***********************************************************-->
+
+											<p:panel styleClass="shadow" id="mainPanel">
+												<h2>
+													<h:outputText value="#{msg['lbl.remitEnquiry']}" />
+												</h2>
+												<p:panel styleClass="panel_border">
+
+
+													<p:panel style="padding:50px 100px 50px 100px !important;">
+														<fieldset style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+															<legend style="font-size: 15px; font-weight: bold; color: #037712;" align="top"></legend>
+
+															<p:panel styleClass="left_col">
+																<p:panel styleClass="inner_left_col">
+																	<h:outputText value="#{msg['lbl.documentYear']}" />
+																	<h:outputText value="*" style="color:red;font-weight:bold;" />
+																</p:panel>
+																<p:panel styleClass="inner_right_col">
+																	<p:message id="msgDocumentYear" for="document" display="text" />
+																	<p:selectOneMenu id="document" value="#{remittanceEnquiryBean.docYear}" filter="true" filterMatchMode="startsWith" required="true" requiredMessage="Please Select DocumentYear">
+																		<f:selectItem itemLabel="#{msg['lbl.selectDocumentYear']}" itemValue="" />
+																		<f:selectItems value="#{remittanceEnquiryBean.userFinancialYearList}" var="c" itemLabel="#{c.financialYear}" itemValue="#{c.financialYear}" />
+																		<p:ajax update="msgDocumentYear" />
+																	</p:selectOneMenu>
+
+																</p:panel>
+															</p:panel>
+
+															<p:panel styleClass="left_col" id="bankPanel">
+																<p:panel styleClass="inner_left_col">
+																	<h:outputText value="#{msg['lbl.documentNum']}" /><h:outputText value="*"
+																style="color:red;font-weight:bold;" />
+																</p:panel>
+																<p:panel styleClass="inner_right_col">
+																	<p:message id="msgdocNumber" for="documentNumber" display="text" />
+																	<p:inputText id="documentNumber" value="#{remittanceEnquiryBean.docNumber}" required="true"  requiredMessage="Please Select Document Number">
+																	<p:ajax update="msgdocNumber"/>
+																	</p:inputText>
+																		
+																</p:panel>
+															</p:panel>
+
+															<h:panelGroup layout="block" class="clearfix" />
+															<p:spacer height="20px" />
+															<h:panelGroup layout="block" styleClass="shadow_button">
+																<p:commandButton value="#{msg['lbl.enquiry']}" action="#{remittanceEnquiryBean.fetchData}" update="enquiryForm"  type="submit" />
+																<p:commandButton value="#{msg['lbl.clear']}" action="#{remittanceEnquiryBean.clearEnquiryBean}" update="mainPanel" process="@this" />
+																<p:commandButton value="#{msg['lbl.exit']}" action="#{remittanceEnquiryBean.clickOnExit}" process="@this" />
+															</h:panelGroup>
+														</fieldset>
+													</p:panel>
+
+												</p:panel>
+											</p:panel>
+
+											<!--  ***********************************************************-->
+									</p:panel>
+									
+									
+
+										<p:panel styleClass="panel_border" rendered="#{remittanceEnquiryBean.renderPanel}">
+											<p:panel id="headerPanel">
+
+
+
+
+												
+												<p:spacer height="10px" />
+												<h2><h:outputText value="#{msg['lbl.customerdetails']}"></h:outputText></h2>
+												<p:panel styleClass="panel_border" id="CustPanel">
+
+
+
+													<div class="clearfix"></div>
+													<p:panel styleClass="left_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.customerRef']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="Customer_Reference"
+																value="#{remittanceEnquiryBean.customerReference}"
+																readonly="true">
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+
+													<p:panel styleClass="right_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.nationality']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+
+															<p:inputText id="nationalityId"
+																value="#{remittanceEnquiryBean.nationality}"
+																readonly="true">
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+													
+													<p:panel styleClass="left_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.customerFirstName']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+
+															<p:inputText id="firstName"
+																value="#{remittanceEnquiryBean.firstName}"
+																readonly="true">
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+													
+													
+													<p:panel styleClass="right_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.customerMiddleName']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+
+															<p:inputText id="middleName"
+																value="#{remittanceEnquiryBean.middleName}"
+																readonly="true">
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+
+
+													<div class="clearfix"></div>
+													<p:panel styleClass="left_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.customerLastName']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="lastName"
+																value="#{remittanceEnquiryBean.lastName}"
+																readonly="true">
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+
+													<p:panel styleClass="right_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.gender']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+
+															<p:inputText id="gender"
+																value="#{remittanceEnquiryBean.gender}"
+																readonly="true">
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+													
+													
+													<p:panel styleClass="left_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.telephone']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="dob"
+																value="#{remittanceEnquiryBean.mobile}"
+																readonly="true">
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+												
+												
+												<p:panel styleClass="right_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.dateOfBrith']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+
+															<p:inputText id="dateob"
+																value="#{remittanceEnquiryBean.dob}"
+																readonly="true">
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+												
+
+
+													<div class="clearfix"></div>
+													
+												</p:panel>
+
+												<p:spacer height="15px" />
+												
+												<h2><h:outputText value="#{msg['lbl.beneficiaryDetails']}"></h:outputText></h2>	
+												<p:panel styleClass="panel_border" id="TPanel">
+												
+												
+												<p:panel styleClass="left_col" rendered = "false" >
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.BeneficaryName']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="benename"
+															value="#{remittanceEnquiryBean.beneficiaryName}"
+															readonly="true">
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+												<p:panel styleClass="right_col"  rendered = "false">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.beneficiaryNationality']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="beneNationality"
+														value="#{remittanceEnquiryBean.benenationality}"
+															readonly="true">
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+												
+												
+
+												<p:panel styleClass="left_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.firstName']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="benefirstname"
+															value="#{remittanceEnquiryBean.benefirstName}"
+															readonly="true">
+															 <f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+												<p:panel styleClass="right_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.secondName']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="benesecondname"
+														value="#{remittanceEnquiryBean.beneSecondName}"
+															readonly="true">
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+												
+												
+												<p:panel styleClass="left_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.thirdName']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="beneThirdName"
+														value="#{remittanceEnquiryBean.beneThirdName}"
+															readonly="true">
+															 <f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+												<p:panel styleClass="right_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.fourthName']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="beneFourthName"
+														value="#{remittanceEnquiryBean.beneFourthName}"
+															readonly="true">
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+												
+												<p:panel styleClass="left_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.aliasFirstName']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="aliasfirstname"
+														value="#{remittanceEnquiryBean.aliasFirstName}"
+															readonly="true">
+															 <f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+												<p:panel styleClass="right_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.aliasSecondName']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="aliassecondname"
+															value="#{remittanceEnquiryBean.aliasSecondName}"
+															readonly="true">
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+												
+												
+												<p:panel styleClass="left_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.aliasThirdName']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="aliasthirdname"
+															value="#{remittanceEnquiryBean.aliasThirdName}"
+															readonly="true">
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+												<p:panel styleClass="right_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.aliasFourthName']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="aliasfourthname"
+															value="#{remittanceEnquiryBean.aliasFourthName}"
+															readonly="true">
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+												
+												
+												
+												<p:panel styleClass="left_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.bankaccNO']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="beneaccountno"
+															value="#{remittanceEnquiryBean.beneficiaryAccountNumber}"
+															readonly="true">
+															 <f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+												<p:panel styleClass="right_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.beneficiaryBank']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="benebankname"
+															value="#{remittanceEnquiryBean.beneBankName}"
+															readonly="true">
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+												
+													<p:panel styleClass="left_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.bankCountry']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="benebranch"
+														value="#{remittanceEnquiryBean.beneCountry}"
+															readonly="true">
+															 <f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+												
+												
+												<p:panel styleClass="right_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.bankbranch']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="beneBankBranchName"
+														value="#{remittanceEnquiryBean.beneBankBranchName}"
+															readonly="true">
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+												
+												
+												
+													<p:panel styleClass="left_col"  rendered = "false">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.beneficaryType']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="beneType"
+															value="#{remittanceEnquiryBean.beneType}"
+															readonly="true">
+
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+												
+												
+												<p:panel styleClass="right_col"  rendered = "false">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.employmenttype']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="benebankbranch"
+															value="#{remittanceEnquiryBean.employmentType}"
+															readonly="true">
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+												
+												<div class="clearfix"></div>
+
+									</p:panel>
+									
+									<!--  <h2><h:outputText value="#{msg['lbl.remittenceDetails']}"></h:outputText></h2>	 -->
+									
+									<p:panel styleClass="panel_border" id="two"  rendered = "false">
+									
+									<p:panel styleClass="left_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.branch']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="branch"
+															value="#{remittanceEnquiryBean.branchName}"
+															readonly="true">
+
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+												
+												
+												<p:panel styleClass="right_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.bankTransferRequestDate']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="documentdate"
+															value="#{remittanceEnquiryBean.documentDate}"
+															readonly="true">
+															<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+												
+												<div class="clearfix"></div>
+												
+												
+												
+												<p:panel styleClass="left_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.bankcountry']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="bankc"
+															value="#{remittanceEnquiryBean.beneCountry}"
+															readonly="true">
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+												
+												
+												<p:panel styleClass="right_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.correspondingCountry']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="cccountry"
+															value="#{remittanceEnquiryBean.correspondingCountryName}"
+															readonly="true">
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+												
+												<div class="clearfix"></div>
+												
+												
+												<p:panel styleClass="left_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.dservice']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="service"
+															value="#{remittanceEnquiryBean.service}"
+															readonly="true">
+
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+												
+												
+												<p:panel styleClass="right_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.product']}"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="product"
+															value="#{remittanceEnquiryBean.product}"
+															readonly="true">
+														</p:inputText>
+													</p:panel>
+
+												</p:panel>
+												
+											<div class="clearfix"></div>
+									
+									
+									</p:panel>
+									
+									
+									
+									<h2><h:outputText value="#{msg['lbl.transactionDetails']}"></h:outputText></h2>	
+									
+									<p:panel styleClass="panel_border" id="one">
+
+
+													
+
+													<p:panel styleClass="left_col" id="dealYearValueID">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.transferNo']}" />
+															
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:panelGrid style="width:98%;">
+																<p:row>
+																	<p:column
+																		style="width:45% !important; padding:0px 13px 0px 0px !important;">
+																		<p:inputText id="dealYearId"
+																			value="#{remittanceEnquiryBean.dealyear}"
+																			readonly="true">
+																			<p:ajax />
+																		</p:inputText>
+																	</p:column>
+																	<p:column
+																		style="width:45% !important; padding:0px 13px 0px 0px !important;"
+																		>
+																		<p:message for="transferNoTextId" display="text"
+																			id="applicationNoId" />
+																		<p:inputText id="transferNoTextId"
+																			value="#{remittanceEnquiryBean.transferNo}" 
+																			required="true"
+																			 readonly="true">
+																			
+																		</p:inputText>
+																	</p:column>
+
+																</p:row>
+															</p:panelGrid>
+														</p:panel>
+													</p:panel>
+
+
+													<p:panel styleClass="left_col" id="ApplicationNo">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.applicationNo']}" />
+															<h:outputText value="*"
+																style="color:red;font-weight:bold;" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:panelGrid style="width:98%;">
+																<p:row>
+																	<p:column
+																		style="width:45% !important; padding:0px 13px 0px 0px !important;">
+																		<p:inputText id="appYearId"
+																			value="#{remittanceEnquiryBean.dealyear}"
+																			readonly="true">
+																			<p:ajax />
+																		</p:inputText>
+																	</p:column>
+																	<p:column
+																		style="width:45% !important; padding:0px 13px 0px 0px !important;">
+																		<p:inputText
+																			value="#{remittanceEnquiryBean.applicationNo}"
+																			readonly="true">
+
+																		</p:inputText>
+																	</p:column>
+
+
+																</p:row>
+															</p:panelGrid>
+														</p:panel>
+													</p:panel>
+
+
+
+
+													<div class="clearfix"></div>
+
+
+													<p:panel styleClass="left_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.foreignCurrency']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="Foreignc"
+																value="#{remittanceEnquiryBean.foreignCurrencyName}"
+																readonly="true">
+
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+
+													<p:panel styleClass="right_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.foreignCurrencyTransactionAmount']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+
+															<p:inputText id="localc"
+																value="#{remittanceEnquiryBean.foreignCurrencyAmount}"
+																readonly="true">
+
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+													
+														<div class="clearfix"></div>
+													
+													
+													<p:panel styleClass="left_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.localCurrency']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="Foreignamt"
+																value="#{remittanceEnquiryBean.localCurrencyName}"
+																readonly="true">
+
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+
+													<p:panel styleClass="right_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.localTransactionAmount']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+
+															<p:inputText id="localamt"
+																value="#{remittanceEnquiryBean.localTransactionAmount}"
+																readonly="true">
+
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+
+														<div class="clearfix"></div>
+
+
+
+
+													<p:panel styleClass="left_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.localChargeCurrency']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="localcurr"
+																value="#{remittanceEnquiryBean.localChargeCurrencName}"
+																readonly="true">
+
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+
+													<p:panel styleClass="right_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.localChargeAmount']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+
+															<p:inputText id="localcharamt"
+																value="#{remittanceEnquiryBean.localChargeAmount}"
+																readonly="true">
+
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+													
+														<div class="clearfix"></div>
+													
+													
+													<p:panel styleClass="left_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.localDeliveryCurrency']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="localdelicurr"
+																value="#{remittanceEnquiryBean.localDelivaryCurrencName}"
+																readonly="true">
+
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+
+													<p:panel styleClass="right_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.localDelivryAmount']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+
+															<p:inputText id="localdramt"
+																value="#{remittanceEnquiryBean.localDelivaryAmount}"
+																readonly="true">
+
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+													
+													
+													
+														<div class="clearfix"></div>
+													<p:panel styleClass="right_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.commissioncurrencyname']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+
+															<p:inputText id="localCommissionCurrencyName"
+																value="#{remittanceEnquiryBean.localCommissionCurrencyName}"
+																readonly="true">
+
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+													
+													<p:panel styleClass="right_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.commission']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+
+															<p:inputText id="localCommissionAmount"
+																value="#{remittanceEnquiryBean.localCommissionAmount}"
+																readonly="true">
+
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+													<div class="clearfix"></div>
+													<p:panel styleClass="left_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.localNetCurrency']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="localdcurr"
+																value="#{remittanceEnquiryBean.localNetCurrencName}"
+																readonly="true">
+
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+
+													<p:panel styleClass="right_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.localNetTransactionAmount']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+
+															<p:inputText id="localnetdramt"
+																value="#{remittanceEnquiryBean.localNetTransactionAmount}"
+																readonly="true">
+
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+													
+													<div class="clearfix"></div>
+													
+													<p:panel styleClass="left_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.exchangeRateApplied']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="exchange"
+																value="#{remittanceEnquiryBean.exchangeApplied}"
+																readonly="true">
+
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+													
+													<p:panel styleClass="right_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.arabicbank']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+
+															<p:inputText id="bankName"
+																value="#{remittanceEnquiryBean.bankName}"
+																readonly="true">
+
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+													
+													<div class="clearfix"></div>
+
+													<p:panel styleClass="right_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.debitAccNo']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+
+															<p:inputText id="dan"
+																value="#{remittanceEnquiryBean.debitAccountNo}"
+																readonly="true">
+
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+													
+												
+													
+													
+													
+													<p:panel styleClass="right_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.collectionMode']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+
+															<p:inputText id="collectionMode"
+																value="#{remittanceEnquiryBean.collectionMode}"
+																readonly="true">
+
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+													
+													<div class="clearfix"></div>
+													<p:panel styleClass="right_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.PaymentMode']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+
+															<p:inputText id="paymentMode"
+																value="#{remittanceEnquiryBean.paymentMode}"
+																readonly="true">
+
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+													
+														<div class="clearfix"></div>
+													
+													
+														<h2><h:outputText value="#{msg['lbl.otherDetails']}"></h:outputText></h2>
+													
+													
+													<p:panel styleClass="left_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.transactionStatus']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="ts"
+																value="#{remittanceEnquiryBean.transactionStatus}"
+																readonly="true">
+
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+
+													<p:panel styleClass="right_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.transctionUpdateDate']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+
+															<p:inputText id="tud"
+																value="#{remittanceEnquiryBean.transactionlastUpdated}"
+																readonly="true">
+																 <f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+													
+													<div class="clearfix"></div>
+													
+													
+													<p:panel styleClass="left_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.remmiterModeWise']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="rm"
+																value="#{remittanceEnquiryBean.remittenceMode}"
+																readonly="true">
+
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+													
+													
+
+													<p:panel styleClass="right_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.deliveryMode']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+
+															<p:inputText id="dm"
+																value="#{remittanceEnquiryBean.delivaryMode}"
+																readonly="true">
+
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+													
+													<div class="clearfix"></div>
+													
+													
+													<p:panel styleClass="left_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.webServiceStatus']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="wss"
+																value="#{remittanceEnquiryBean.webServiceStatus}"
+																readonly="true">
+
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+
+													<p:panel styleClass="right_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.westionUnionMicNo']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+
+															<p:inputText id="fc1"
+																value="#{remittanceEnquiryBean.westionUnion}"
+																readonly="true">
+
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+													
+													<div class="clearfix"></div>
+													
+													<p:panel styleClass="left_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.highValueTransaction']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText id="hvt"
+																value="#{remittanceEnquiryBean.hvt}"
+																readonly="true">
+
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+
+													<p:panel styleClass="right_col">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.balckListIndicator']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+
+															<p:inputText id="bli"
+																value="#{remittanceEnquiryBean.bli}"
+																readonly="true">
+
+															</p:inputText>
+														</p:panel>
+
+													</p:panel>
+													
+													<div class="clearfix"></div>
+													
+													
+												</p:panel>
+												
+											
+									
+									
+									<p:spacer height="20px"></p:spacer>
+									
+
+
+												<!--  Mandatory Field-->
+												<div class="clearfix"></div>
+												<p:panel styleClass="left_col">
+													<h:outputText id="mandatory"
+														value=" #{msg['lbl.*filedsAreMandatory']}"
+														style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+												</p:panel>
+
+												<!--  Add button Panel-->
+												<p:panel>
+													<h:panelGroup layout="block" class="clearfix" />
+													<h:panelGroup layout="block" styleClass="shadow_button">
+														<p:commandButton value="#{msg['lbl.exit']}"
+															action="#{remittanceEnquiryBean.clickOnExit}"  process="@this"
+															style="margin-right:10px; " />
+														
+													</h:panelGroup>
+
+												</p:panel>
+
+												<!--  Add button Panel ends here-->
+											</p:panel>
+										</p:panel>
+
+									</p:panel>
+							</p:panel>		
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

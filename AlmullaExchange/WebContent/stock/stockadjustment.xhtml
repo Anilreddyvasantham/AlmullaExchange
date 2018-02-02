@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link href="../css/style1.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<style>
+.ui-datatable .ui-paginator {
+	padding: 2px;
+	background-color: #FFFFFF !important;
+	border: none !important;
+}
+
+.ui-fieldset {
+	border: solid 1px #51C4CC;
+	border: solid 1px #00A53E;
+	border-radius: 3px;
+}
+
+.ui-fieldset-legend {
+	color: #ffffff;
+	font-size: 16px;
+	line-height: 15px;
+	background-color: #00A53E;
+	padding: 13px 20px !important;
+	border-bottom-right-radius: 2px;
+	border-bottom-left-radius: 2px;
+	border-top-right-radius: 2px;
+	border-top-left-radius: 2px;
+	-webkit-transition: all 0.3s ease;
+	-moz-transition: all 0.3s ease;
+	-ms-transition: all 0.3s ease;
+	-o-transition: all 0.3s ease;
+	transition: all 0.3s ease;
+}
+
+legend.ui-fieldset-legend span {
+	padding: 10px;
+}
+
+.table {
+	display: table;
+}
+
+.table-row {
+	display: table-row;
+}
+
+.table-cell {
+	display: table-cell;
+}
+</style>
+	<script type="text/javascript">
+		$(function() {
+			// Set cursor to pointer and add click function
+			$("legend").css("cursor", "pointer").click(function() {
+				var legend = $(this);
+				var value = $(this).children("span").html();
+				if (value == "[-]")
+					value = "[+]";
+				else
+					value = "[-]";
+				$(this).siblings().slideToggle(1000, function() {
+					legend.children("span").html(value);
+				});
+			});
+		});
+	</script>
+</h:head>
+
+
+<h:body dir="#{facesBean.direction}">
+
+
+	<f:view locale="#{facesBean.locale}">
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:panelGroup layout="block" class="heading1">
+								<h:outputText value="#{msg['lbl.productBranchAppli']}" />
+							</h:panelGroup>
+							<h:form id="stockadjustForm">
+
+								<p:panel id="mainPanel" styleClass="shadow"
+									style="margin: 20px 10px !important; background-color:#FFF !important;">
+
+
+	<p:confirmDialog id="selectPlusMinus" widgetVar="selectPlusMinus"
+		 resizable="false"
+		style="background-color: white !important;" header="#{msg['lbl.warningDailog']}"
+		styleClass="warning" showEffect="clip" hideEffect="clip"
+		closeOnEscape="true" closable="true"
+		message="#{msg['lbl.selectAddOrSubtract']}">
+	</p:confirmDialog>
+	
+	  <p:confirmDialog id="stockcheck" widgetVar="stockcheck"  resizable="false" 
+      style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="#{msg['lbl.noOfEqualsToCurrentQuantity']}">
+      </p:confirmDialog>
+      
+      <p:confirmDialog id="selectAmount" widgetVar="selectAmount" width="400" height="17" resizable="false" 
+      style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="#{msg['lbl.pleaseEnterAmountForTransfer']}">
+      </p:confirmDialog>
+      
+      <p:dialog modal="true" showHeader="true" header="#{msg['lbl.pleasewait']}"  widgetVar="process" id="process"   width="300" height="50" resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;">  
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+   </p:dialog>
+   
+   <p:dialog id="success" widgetVar="success" width="400" height="80"  resizable="false" 
+			style="background-color: white !important;" styleClass="success" header="#{msg['lbl.success']}" closable="false" showEffect="clip" hideEffect="clip" >
+           <p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} " style="text-align: center; font-size:16px !important;"/><br/>
+           <p:commandButton value="#{msg['lbl.ok']}" style="margin-left: 150px !important;" actionListener="#{stockAdjustmentBean.stockAdjustmentNavigation}" process="@this"/>          
+     </p:dialog>
+     
+     
+     
+     				<!-- 
+							<p:confirmDialog id="error" widgetVar="error" visible="#{stockAdjustmentBean.booVisible}" resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" update="@all"
+									message="#{stockAdjustmentBean.errorMessage}">
+									</p:confirmDialog> -->
+									<p:confirmDialog id="error" widgetVar="error"  
+				resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" 
+				showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{stockAdjustmentBean.errorMessage}" >
+			</p:confirmDialog>	
+			<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"  
+					resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" 
+					showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{stockAdjustmentBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}" >
+			</p:confirmDialog>
+									
+					<fieldset class="ui-fieldset">
+										<legend class="ui-fieldset-legend">
+											<span>[-]</span>
+
+											<h:outputText value="#{msg['lbl.productBranchAppli']}" />
+										</legend>
+										<p:panel styleClass="panel_border1">
+
+											<p:panel styleClass="left_col user_select">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.bco.location']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="location" display="text" id="msgLocation"/>
+													<p:selectOneMenu id="location" value="#{stockAdjustmentBean.countryBranchId}" filter="true" filterMatchMode="contains"  required="true" requiredMessage="#{msg['lbl.plsSelectLocation']}">
+														<f:selectItem itemLabel="#{msg['lbl.SelectLoca']}"/>
+														<f:selectItems value="#{stockAdjustmentBean.countryBranchLstForLocation}" var="c"  itemLabel="#{c.branchId} - #{c.branchName}" itemValue="#{c.countryBranchId}"/>
+														<p:ajax update=":stockadjustForm:mainPanel,error" listener="#{stockAdjustmentBean.getStaffListFromLocation}" event="change" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col branchpanel" id="panelStaff">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.staff']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="cashierid" display="text" id="msgStaffid"/>
+													<p:selectOneMenu id="cashierid" value="#{stockAdjustmentBean.staffName}" filter="true" filterMatchMode="contains"  required="true" requiredMessage="#{msg['lbl.selectStaff']}" >
+														<f:selectItem itemLabel="#{msg['lbl.seltStaff']}"/>
+														<f:selectItems value="#{stockAdjustmentBean.staffList}" var="c"  itemLabel="#{c.employeeNumber} - #{c.employeeName}" itemValue="#{c.userName}"/>
+														<p:ajax update=":stockadjustForm:mainPanel,error" listener="#{stockAdjustmentBean.getStaffCurrency}" event="change" onstart="process.show();" onsuccess="process.hide();"/> 
+													</p:selectOneMenu>
+
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+
+
+											<p:panel styleClass="left_col user_select">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.currency']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col" id="panelCurrency">
+													<p:message for="currencyid" display="text" id="msgCurrencyid"/>
+													<p:selectOneMenu id="currencyid" value="#{stockAdjustmentBean.currencyId}" filter="true" filterMatchMode="contains"  required="true" requiredMessage="#{msg['lbl.pleaseSelectCurrency']}" >
+														<f:selectItem itemLabel="#{msg['lbl.selectCurrency']}"/>
+														<f:selectItems value="#{stockAdjustmentBean.currencyList}" var="c"  itemLabel="#{c.currencyCode} - #{c.currencyDecs}" itemValue="#{c.currencyId}"/> 
+														<p:ajax update=":stockadjustForm:mainPanel" event="change" listener="#{stockAdjustmentBean.getDenominationList}" onstart="process.show();" onsuccess="process.hide();"/> 
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col branchpanel">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.balance']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="balanceId" value="#{stockAdjustmentBean.stockBalance}" readonly="true" />
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+
+
+
+											<br />
+											<p:dataTable var="o" id="denominationid" styleClass="mydatatableclass"
+												value="#{stockAdjustmentBean.lstDataForStockAdjust}"
+												rowIndexVar="rowIndex" editable="true" editMode="cell"
+												emptyMessage="#{msg['lbl.norecordfound']}">
+
+
+												<p:column style="width:30px !important;"
+													headerText="#{msg['lbl.slNo']}">
+													<h:outputText value="#{o.serial}." />
+												</p:column>
+
+												<p:column style="width:22% !important;"
+													headerText="#{msg['stock.denomination']}"
+													sortBy="#{o.item}">
+													<h:outputText value="#{o.denominationDesc}" />
+												</p:column>
+
+												<p:column style="width:22% !important;"
+													headerText="#{msg['lbl.currenctQuantity']}">
+													<h:outputText value="#{o.stock}" />
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.addOrSubtract']}" >
+													<p:selectOneMenu value="#{o.plustminus}" style="text-align: center !important;">
+														<f:selectItem itemLabel="#{msg['lbl.selct']}" itemValue="0" />
+														<f:selectItem itemLabel="#{msg['lbl.addP']}" itemValue="1" />
+														<f:selectItem itemLabel="#{msg['lbl.subtrct']}" itemValue="2" />
+														<p:ajax event="change"
+															listener="#{stockAdjustmentBean.makeEditable(o)}"
+															process="@this" onstart="process.show();" onsuccess="process.hide();" 
+															update=":stockadjustForm:denominationid,:stockadjustForm:totalPanelId" />
+													</p:selectOneMenu>
+												</p:column>
+
+												<p:column style="width:22% !important;" headerText="#{msg['lbl.fclocalpurchasenoofnotes']}">
+													<p:message for="q" display="text"  />
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{o.noOfNotes}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText id="q" value="#{o.noOfNotes}" converterMessage="#{msg['lbl.enterOnlyNumbers']}">
+																<p:ajax event="blur" onstart="process.show();" onsuccess="process.hide();" 
+																	listener="#{stockAdjustmentBean.onCellEdit(o)}"
+																	update=":stockadjustForm:denominationid,:stockadjustForm:totalPanelId"  />
+																		<f:convertNumber integerOnly="true"/>
+					 													<f:validator validatorId="allowOnlyNumber"/>
+															</p:inputText>
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+
+												<p:column style="width:22% !important;"
+													headerText="#{msg['lbl.newBal']}">
+													<h:outputText value="#{o.cashAmount}" />
+												</p:column>
+
+											</p:dataTable>
+
+											<div class="clearfix"></div>
+											<p:spacer height="10px"/>
+										
+											<p:panel styleClass="ui-state-disabled" id="totalPanelId" style="float:right;">
+													<p:panel styleClass=" inner_right_col" >
+													<h:outputText value="#{msg['lbl.totalNoOfNotes']}" />
+													<p:inputText value="#{stockAdjustmentBean.totalNoofNotes}" readonly="true" />
+													</p:panel>
+													
+													<p:panel styleClass=" inner_right_col" >
+													<h:outputText value="#{msg['lbl.totalNewBal']}" />
+													<p:inputText value="#{stockAdjustmentBean.totalNewBalance}" readonly="true" />
+												</p:panel>
+											</p:panel>	
+											<div class="clearfix"></div>
+									<p:panel styleClass="shadow_button"
+										style=" background-color:#FFF !important;">
+										<p:commandButton value="#{msg['lbl.save']}" style="margin-right:10px;" action="#{stockAdjustmentBean.save}" onstart="process.show();" onsuccess="process.hide();" update="error"/>
+										<p:commandButton value="#{msg['lbl.remitclear']}" style="margin-right:10px;" action="#{stockAdjustmentBean.clearAll}" update="mainPanel" immediate="true" />
+										<p:commandButton value="#{msg['lbl.fclocalpurchasetotalexit']}" action="#{stockAdjustmentBean.exit}" immediate="true"/>
+									</p:panel>
+
+										</p:panel>
+									</fieldset>
+									<br />
+
+									
+
+
+									<div class="clearfix"></div>
+								</p:panel>
+
+							</h:form>
+
+
+						</h:panelGroup>
+					</h:panelGroup>
+					<div class="clearfix"></div></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

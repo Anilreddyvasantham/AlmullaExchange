@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+		history.pushState(null, null, 'countrywisefundrequirementhighvalueenquiry.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'countrywisefundrequirementhighvalueenquiry.xhtml');
+	    });
+	</script>
+</h:head>
+
+<h:body>
+<p:confirmDialog id="notApproved" widgetVar="notApproved" width="370" styleClass="red" header="#{msg['lbl.warningDailog']}" resizable="false" 	
+style="background-color: white !important;" showEffect="clip" hideEffect="clip" message="#{msg['lbl.isNoRecrds']}">
+      </p:confirmDialog>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="enquiryForm">
+
+
+								<p:confirmDialog id="exchange" widgetVar="exchange" width="400"
+									height="17" resizable="false"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" message="Please select Exchange Country">
+
+								</p:confirmDialog>
+
+
+
+								<p:panel styleClass="panel_border">
+									<!-- <p:focus for="transferNoTextId"/> -->
+									<h1>
+										<h:outputText
+											value="Countrywise Fund Requirement - High Value" />
+									</h1>
+									<p:panel styleClass="shadow" id="firstmainPanel">
+
+
+										<p:confirmDialog id="datanotfound" widgetVar="datanotfound"
+											width="350" showHeader="false" resizable="false"
+											header="#{msg['lbl.warningDailog']}"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip"
+											message="#{msg['lbl.recordnotfound']}">
+										</p:confirmDialog>
+
+
+										<p:confirmDialog id="dataNotFund" widgetVar="dataNotFund"
+											width="400" height="17" resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true" message="#{msg['lbl.recordnotfoundforthis']}">
+
+										</p:confirmDialog>
+
+										<p:dialog modal="true" showHeader="true"
+											header="#{msg['lbl.bco.plswait']}" widgetVar="process"
+											id="process" width="300" height="50" resizable="false"
+											draggable="false" closable="false"
+											style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+											<div style="text-align: center;">
+												<p:graphicImage value="../images/preloader.gif" />
+											</div>
+										</p:dialog>
+
+
+
+
+										<!-- <p:dialog id="remittanceDetail" widgetVar="remittanceDetail" header="Remittance Details" width="950" height="180" showHeader="true" resizable="false"
+											style="color:#FF0000 !important; border:2px solid #F33535 !important; padding:0px !important;  font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"> -->
+
+										<p:dialog id="remittanceDetail" widgetVar="remittanceDetail"
+											width="500" modal="true" height="100" resizable="false"
+											style="background-color: white !important;" showHeader="true"
+											header="Remittance Detail" styleClass="info" closable="true"
+											showEffect="clip" hideEffect="clip">
+
+											<p:dataTable id="remittanceDatatable" rowIndexVar="rowIndex"
+												editable="true" editMode="cell"
+												emptyMessage="#{msg['lbl.norecordfound']}" var="c"
+												value="#{countrywiseFundRequirementHighvalueEnquiryBean.lstofFundRequirementAfter}"
+												styleClass="mydatatableclass">
+
+												<p:column headerText="#{msg['lbl.sino']}">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+												<p:column headerText="Remittance Year/No">
+
+													<p:commandLink
+														value="#{c.remittanceYear}/#{c.remittanceNo}"
+														action="#{countrywiseFundRequirementHighvalueEnquiryBean.populateRemittanceEnquiry(c)}"
+														style="color:blue !important; text-decoration:underline !important;"
+														immediate="true" />
+													<!-- <h:outputText value="#{c.remittanceYear}/#{c.remittanceNo}" /> -->
+												</p:column>
+
+												<p:column headerText="FC Amount">
+													<h:outputText value="#{c.fcAmount}" />
+												</p:column>
+
+
+											</p:dataTable>
+											<!-- <p:panel>
+										<p:commandButton value="#{msg['lbl.add']}"
+											action="#{beneficiarySerivcesExceptionBean.save(c)}"
+											process="@this" update=":mainform:modeNotSelect"
+											style="margin-right:10px; " />
+										<p:commandButton value="#{msg['lbl.cancel']}"
+											action="#{beneficiarySerivcesExceptionBean.dialogCancel}"
+											process="@this" update=":mainform:modeNotSelect"
+											style="margin-right:10px; " />
+										
+									</p:panel> -->
+										</p:dialog>
+
+
+										<p:panel id="firstheaderPanel">
+											<!--  ***********************************************************-->
+
+											<p:panel styleClass="shadow" id="mainPanel">
+			
+												
+												<h2>
+													<h:outputText
+														value="Countrywise Fund Requirement - High Value" />
+												</h2>
+												
+												<p:confirmDialog id="error" widgetVar="error"  
+				resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" 
+				showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{countrywiseFundRequirementHighvalueEnquiryBean.errorMessage}" >
+			</p:confirmDialog>	
+			<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"  
+					resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" 
+					showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{countrywiseFundRequirementHighvalueEnquiryBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}" >
+			</p:confirmDialog>
+												<p:panel styleClass="panel_border">
+
+
+													<p:panel style="padding:50px 100px 50px 100px !important;">
+
+														<p:panel styleClass="left_col">
+															<p:panel styleClass="inner_left_col">
+																<h:outputText value="#{msg['lbl.exchangecountry']}" />
+																<h:outputText value="*" style="color:red !important;" />
+															</p:panel>
+															<p:panel styleClass="inner_right_col">
+																<p:message for="applicationCountryId" display="text"
+																	id="msgapplicationCountryId" />
+																<p:selectOneMenu id="applicationCountryId"
+																	value="#{countrywiseFundRequirementHighvalueEnquiryBean.applicationCountryId}"
+																	filter="true" filterMatchMode="contains"
+																	required="true"
+																	requiredMessage="Please Select to Country">
+																	<f:selectItem
+																		itemLabel=" -- Select Exchange Country -- "
+																		itemValue="" />
+																	<f:selectItems
+																		value="#{countrywiseFundRequirementHighvalueEnquiryBean.lstofbussinesscountry}"
+																		var="c" itemLabel="#{c.countryName}"
+																		itemValue="#{c.fsCountryMaster.countryId}" />
+																	<p:ajax
+																		update="msgapplicationCountryId,applicationCountryId" />
+																</p:selectOneMenu>
+															</p:panel>
+														</p:panel>
+
+
+
+														<p:panel styleClass="left_col">
+															<p:panel styleClass="inner_left_col">
+																<h:outputText value="#{msg['lbl.requestdate']}" />
+															</p:panel>
+															<p:panel styleClass="inner_right_col">
+																<p:message for="requestDate" display="text"
+																	id="msgrequestDate" />
+																	<p:calendar id="requestDate" value="#{countrywiseFundRequirementHighvalueEnquiryBean.requestDate}" mode="popup"  pattern="dd/MM/yyyy" navigator="true" readonlyInput="true" required="true" requiredMessage="Enter Request Date" >
+        													 <p:ajax event="dateSelect" update="mainPanel" onstart="process.show();" onsuccess="process.hide();" /> 
+    											</p:calendar>
+    											
+    											
+																<!-- <p:calendar id="requestDate" widgetVar="calendarWidget"
+																	value="#{countrywiseFundRequirementHighvalueEnquiryBean.requestDate}"
+																	pattern="dd/MM/yyyy" navigator="true">
+																	<p:ajax event="dateSelect"
+																		listener="#{countrywiseFundRequirementHighvalueEnquiryBean.onSelectDateSelect}"
+																		update="requestDate,msgrequestDate" />
+																</p:calendar> -->
+
+															</p:panel>
+														</p:panel>
+
+
+
+														<h:panelGroup layout="block" class="clearfix" />
+
+														<p:panel styleClass="left_col">
+															<p:panel styleClass="inner_left_col">
+																<h:outputText value="#{msg['lbl.bankcountry']}" />
+																<!-- <h:outputText value="*" style="color:red !important;" /> -->
+															</p:panel>
+															<p:panel styleClass="inner_right_col">
+																<p:message for="bankCountryId" display="text"
+																	id="msgbankCountryId" />
+																<p:selectOneMenu id="bankCountryId" filter="true"
+																	value="#{countrywiseFundRequirementHighvalueEnquiryBean.bankCountryId}"
+																	filterMatchMode="contains">
+																	<f:selectItem
+																		itemLabel="#{msg['lbl.selectbankcountry']}"
+																		itemValue="" />
+																	<f:selectItems
+																		value="#{countrywiseFundRequirementHighvalueEnquiryBean.bankCountryList}"
+																		var="c"
+																		itemLabel="#{c.bankCountryCode} - #{c.bankCountryName} "
+																		itemValue="#{c.bankCountryId}" />
+																	<p:ajax event="change" update="msgbankCountryId" />
+																</p:selectOneMenu>
+															</p:panel>
+														</p:panel>
+
+														<p:panel styleClass="left_col">
+															<p:panel styleClass="inner_left_col">
+																<h:outputText value="#{msg['lbl.option']}" />
+																<!-- <h:outputText value="*" style="color:red !important;" /> -->
+															</p:panel>
+															<p:panel styleClass="inner_right_col">
+																<p:message for="optionId" display="text"
+																	id="msgoptionId" />
+																<p:selectOneMenu id="optionId" value="#{countrywiseFundRequirementHighvalueEnquiryBean.option}" filter="true"
+																	filterMatchMode="contains">
+																	<f:selectItem itemLabel=" -- Select Option --"
+																		itemValue="" />
+																	<f:selectItem itemLabel="Pending" itemValue="P" />
+																	<f:selectItem itemLabel="All" itemValue="A" />
+
+																	<p:ajax update="msgoptionId,optionId" />
+																</p:selectOneMenu>
+															</p:panel>
+														</p:panel>
+
+														<h:panelGroup layout="block" class="clearfix" />
+														<p:spacer height="20px" />
+														<h:panelGroup layout="block" styleClass="shadow_button">
+															<p:commandButton value="#{msg['lbl.enquiry']}"
+																action="#{countrywiseFundRequirementHighvalueEnquiryBean.viewCountrywiseFundRequirement}"
+																update="enquiryForm" process="@this"
+																onstart="process.show();" onsuccess="process.hide();" />
+															<p:commandButton value="#{msg['lbl.clear']}"
+																action="#{countrywiseFundRequirementHighvalueEnquiryBean.clear}"
+																update="mainPanel" process="@this"
+																onstart="process.show();" onsuccess="process.hide();" />
+															<p:commandButton value="#{msg['lbl.exit']}"
+																action="#{countrywiseFundRequirementHighvalueEnquiryBean.clickOnExit}"
+																process="@this" />
+														</h:panelGroup>
+													</p:panel>
+
+												</p:panel>
+											</p:panel>
+
+										</p:panel>
+
+
+										<p:panel id="dataPanel"
+											rendered="#{countrywiseFundRequirementHighvalueEnquiryBean.booRenderDatatablePanel}">
+											<p:dataTable id="dataTable" styleClass="mydatatableclass"
+												rows="10" paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10,15" var="d" rowIndexVar="rowIndex"
+												value="#{countrywiseFundRequirementHighvalueEnquiryBean.lstofFundRequirement}"
+												emptyMessage="#{msg['lbl.noRecordFound']}"
+												paginatorPosition="bottom">
+
+												<p:column headerText="#{msg['lbl.sino']}"
+													style="width:30px;">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.country']}">
+													<h:outputText value="#{d.countryName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.benebank']}">
+													<h:outputText value="#{d.bankName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.currencyname']}">
+													<h:outputText value="#{d.currencyName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.highvalueref']}">
+													<h:outputText />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.foreigncurrencyamount']}">
+													<h:outputText value="#{d.foreignCurrencyAmount}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.country']}">
+													<h:outputText />
+												</p:column>
+
+												<!-- <p:column headerText="Country">
+													<h:outputText value="#{d.countryName}" />
+												</p:column>
+
+												<p:column headerText="Bene Bank">
+													<h:outputText value="#{d.bankName}"/>
+												</p:column>
+
+												<p:column headerText="Currency">
+													<h:outputText value="#{d.currencyName}"/>
+												</p:column>
+
+												<p:column headerText="High Value Ref">
+													<h:outputText />
+												</p:column>
+
+												<p:column headerText="Value in Bank Currency">
+													<h:outputText value="#{d.foreignCurrencyAmount}" />
+												</p:column>
+
+												<p:column headerText="Deal Bank">
+													<h:outputText />
+												</p:column> -->
+												<p:column headerText="#{msg['lbl.dealreference']}">
+
+													<p:commandLink
+														value="#{d.dealFinanceYear}/#{d.dealApplicationNumber}"
+														style="color:blue !important; text-decoration:underline !important;"
+														action="#{countrywiseFundRequirementHighvalueEnquiryBean.getDealDetails(d)}"
+														update=":enquiryForm:mainPanel,:enquiryForm:dataTable"
+														immediate="true" onstart="process.show();"
+														onsuccess="process.hide();" />
+
+
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.buyrate']}">
+													<h:outputText value="#{d.buyRate}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.remitDetails']}">
+													<p:commandLink value="View"
+														action="#{countrywiseFundRequirementHighvalueEnquiryBean.getRemittanceDetails(d)}"
+														update=":enquiryForm:mainPanel,:enquiryForm:dataTable,:enquiryForm:remittanceDetail"
+														style="color:blue !important; text-decoration:underline !important;"
+														immediate="true" onstart="process.show();"
+														onsuccess="process.hide();" />
+
+												</p:column>
+												<p:column headerText="#{msg['lbl.sellrate']}">
+													<h:outputText value="#{d.sellRate}" />
+												</p:column>
+
+											</p:dataTable>
+										</p:panel>
+
+									</p:panel>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

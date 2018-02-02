@@ -1,0 +1,766 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<style type="text/css">
+    .animated .ui-progressbar-value { 
+        background-image: url("./images/preloader.gif"); 
+    }
+    </style>
+    <script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+	
+		 history.pushState(null, null, 'SwiftMasterMaintenance.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'SwiftMasterMaintenance.xhtml');
+		    });
+</script>
+</h:head>
+
+									<p:confirmDialog id="pleaseselect"
+										widgetVar="pleaseselect" width="400" 
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning" showEffect="clip"
+										hideEffect="clip" closeOnEscape="true" closable="true"
+										message="Please Select Swift Bank ,Country, Location and Branch">
+</p:confirmDialog>
+<p:confirmDialog id="dataNotFund" widgetVar="dataNotFund" width="400"
+	height="17" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.addAlteastOneRecordtoDataTable']}">
+</p:confirmDialog>
+
+<!-- <p:confirmDialog id="alredyexistedrec" widgetVar="alredyexistedrec" width="400"
+	height="17" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	  message="For This Combination Record Already Existed">
+	
+</p:confirmDialog> -->
+
+<p:dialog id="alredyexistedrec" widgetVar="alredyexistedrec" width="270" height="70"
+	showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="For This Combination Record Already Existed" />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{swiftMasterMaintenanceBean.clearExisting}"
+	  onclick="PF('alredyexistedrec').hide();"   update="swiftMaster" />
+</p:dialog>
+<p:dialog id="complete" widgetVar="complete" width="270" height="70"
+	showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} " />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{swiftMasterMaintenanceBean.clickOnOKSave}"
+		process="@this" />
+</p:dialog>
+<p:confirmDialog id="exist" widgetVar="exist" width="400" height="17"
+	resizable="false"
+	style=" border:2px solid green !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.recordnotfound']}">
+</p:confirmDialog>
+<!-- <p:dialog id="username" widgetVar="username" width="270" height="70"
+	showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="Same Created User Not Eligible To Approve " />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{ swiftMasterMaintenanceBean.cancel}" process="@this" />
+</p:dialog> -->
+<p:dialog id="approve" widgetVar="approve" width="270" height="70"
+	showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.approvedsuccessfully']} " />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{swiftMasterMaintenanceBean.clickOnOk}"
+		process="@this" />
+</p:dialog>
+<p:confirmDialog id="dataexist" widgetVar="dataexist" width="400"
+	height="17" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.thisrecordalreadyexisted']}">
+</p:confirmDialog>
+<p:confirmDialog id="couldnot" widgetVar="couldnot" width="400"
+	height="17" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="This Record is Pending For Approval">
+</p:confirmDialog>
+ <p:dialog id="permanentDelete" widgetVar="permanentDelete" width="300" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+                                                          showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"  >
+                                                          <p:outputLabel  value="#{msg['lbl.doyouwanttodeleterecordperminently']}"/>
+                                                          <p:spacer height="10px"/>
+                                                          <p:panel>
+ 					        <p:commandButton value="#{msg['lbl.ok']}" style="margin-right:10px; "  actionListener="#{swiftMasterMaintenanceBean.confirmPermanentDelete}" process="@this" oncomplete="PF('permanentDelete').hide();" update=":swiftMaster" /> 
+                            <p:commandButton value="#{msg['lbl.cancel']}"  onclick="PF('permanentDelete').hide();" immediate="true"/> 
+								</p:panel>                        
+                            </p:dialog>	
+                            <p:dialog id="activateRecord" widgetVar="activateRecord" width="300" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+                                                          showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"  >
+                                                          <p:outputLabel  value="#{msg['lbl.doyouactivaterecord']}"/>
+                                                          <p:spacer height="10px"/>
+                                                          <p:panel>
+ 					        <p:commandButton value="#{msg['lbl.ok']}" style="margin-right:10px; "  actionListener="#{swiftMasterMaintenanceBean.activateRecord}" process="@this" oncomplete="PF('activateRecord').hide();"  update=":swiftMaster"/> 
+                                        <p:commandButton value="#{msg['lbl.cancel']}"  onclick="PF('activateRecord').hide();" immediate="true"/> 
+								</p:panel>                        
+                            </p:dialog>
+<p:dialog id="alreadyapprov" widgetVar="alreadyapprov" width="310" height="70" showHeader="false" resizable="false" style=" border:2px solid green !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"  >
+            											<p:outputLabel value="#{msg['lbl.thisrecordalreadyapprovedby']}"/><br/>
+            								<p:spacer width="15px" />
+            											<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{swiftMasterMaintenanceBean.clickOKButton}" process="@this"/>          
+</p:dialog>		
+      
+<h:body>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="swiftMaster">
+								<p:dialog id="remarks" widgetVar="remarks" width="550"
+									height="205" showHeader="false" resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+									<p:panel styleClass="shadow">
+										<p:panel>
+											<h:outputText value="#{msg['lbl.activateddate']}: "/>
+											<h:outputText
+												value="#{swiftMasterMaintenanceBean.approvedDate}"  style="color:black" />&nbsp;&nbsp;&nbsp;
+                                        <h:outputText
+												value="#{msg['lbl.activatedby']}: "   />
+											<h:outputText
+												value="#{swiftMasterMaintenanceBean.approvedBy}"  style="color:black" />
+										</p:panel>
+										<div class="clearfix" />
+										<hr></hr>
+										<p:panel>
+											<h:outputText value="#{msg['lbl.pleaseenterremarks']}*" />
+										</p:panel>
+										<p:panel>
+											<h:inputTextarea
+												value="#{swiftMasterMaintenanceBean.remarks}" rows="5"
+												cols="50" >
+												<p:ajax />
+											</h:inputTextarea>
+										</p:panel>
+										<p:spacer width="15px" />
+										<div class="clearfix" />
+										<h:panelGroup styleClass="shadow">
+											<div class="clearfix" />
+											<p:commandButton value="#{msg['lbl.ok']}"
+												actionListener="#{swiftMasterMaintenanceBean.remarkSelectedRecord}"
+												process="@this" oncomplete="PF('remarks').hide();"
+												update="mainPanel" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												  actionListener="#{swiftMasterMaintenanceBean.cancelRemarks}" process="@this"/>
+										</h:panelGroup>
+									</p:panel>
+								</p:dialog>
+								<!-- dilaog remar onclick="PF('remarks').hide();" -->
+
+								<h1>
+									<h:outputText value="#{msg['lbl.swiftmaster']} " />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+													
+								<p:confirmDialog id="exception" widgetVar="exception"  
+								resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+								showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{swiftMasterMaintenanceBean.errorMessage}" >
+								</p:confirmDialog>
+									<h3>
+										<h:outputText value="#{msg['lbl.swiftmaster']} " />
+
+									</h3>
+									<p:panel styleClass="panel_border">
+										<p:confirmDialog id="csp" widgetVar="csp"   showHeader="false" resizable="false" header="Warning Message" styleClass="warning"
+														style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="explode" hideEffect="explode" message="#{swiftMasterMaintenanceBean.errorMessage}">
+							  	    </p:confirmDialog>
+							  	    <p:confirmDialog id="nullPoiterId"
+                                                                     widgetVar="nullPoiterId" resizable="false"
+                                                                     style="background-color: white !important;"
+                                                                     header="#{msg['lbl.warningDailog']}" styleClass="warning"
+                                                                     showEffect="clip" hideEffect="clip" closeOnEscape="true"
+                                                                     closable="true"
+                                                                     message="#{swiftMasterMaintenanceBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.swiftbank']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col"
+												rendered="#{swiftMasterMaintenanceBean.booSwiftBank}">
+												<p:message for="bank" display="text" id="msgbank" />
+												<!-- <p:selectOneMenu id="bank"
+													value="#{swiftMasterMaintenanceBean.bankId}"
+													filterMatchMode="contains" filter="true"
+													label="SWIFT Bank" required="true"
+													requiredMessage="Please Select SWIFTBank" tabindex="1">
+
+													<f:selectItem itemLabel="#{msg['lbl.selectBank']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{swiftMasterMaintenanceBean.bankListFromDB}"
+														var="c" itemLabel="#{c.bankCode} - #{c.bankFullName}"
+														itemValue="#{c.bankId}" />
+													<p:ajax update="msgbank,swiftcountryid" onstart="process.show();" onsuccess="process.hide();" listener="#{swiftMasterMaintenanceBean.populateCountryList}"/>
+												</p:selectOneMenu> -->
+												
+												<p:autoComplete value="#{swiftMasterMaintenanceBean.swiftBank}" completeMethod="#{swiftMasterMaintenanceBean.autoCompleteBankCode}" id="bank"  required="true" maxlength="10" requiredMessage="Please Enter Bank ID" onkeyup="this.value=this.value.toUpperCase()" tabindex="1">
+													<p:ajax event="itemSelect" update="mainPanel,:swiftMaster:,msgbank,bicid" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+													  <p:ajax event="change" listener="#{swiftMasterMaintenanceBean.fetchSwiftInfo}" update="msgbank,bicid" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+													<p:ajax event="blur" listener="#{swiftMasterMaintenanceBean.fetchSwiftInfo}" update="msgbank,bicid" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+								
+												</p:autoComplete>
+											</p:panel>
+											<p:panel styleClass="inner_right_col"
+												rendered="#{swiftMasterMaintenanceBean.booSwiftBankInput}">
+												<p:inputText value="#{swiftMasterMaintenanceBean.swiftBank}"
+													readonly="true" />
+											</p:panel>
+										</p:panel>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.swiftcountry']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col"
+												rendered="#{swiftMasterMaintenanceBean.booSwiftCountry}">
+												<p:message for="swiftcountryid" display="text" id="swiftcountryidmsg"/>
+												<p:selectOneMenu id="swiftcountryid"
+													value="#{swiftMasterMaintenanceBean.swiftCountryCode}"
+													filter="true" filterMatchMode="contains" 
+													 tabindex="2">
+													<f:selectItem itemLabel="#{msg['lbl.selectswiftcountry']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{swiftMasterMaintenanceBean.allCountryList}"
+														var="c" itemLabel="#{c.countryCode} - #{c.countryFullName}"
+														itemValue="#{c.countryCode}" />
+													 <p:ajax event="change"	listener="#{swiftMasterMaintenanceBean.fetchSwiftInfo}"									
+														update="swiftcountryidmsg,bicid" onstart="process.show();" onsuccess="process.hide();"  />
+												</p:selectOneMenu>
+											</p:panel>
+											<p:panel styleClass="inner_right_col"
+												rendered="#{swiftMasterMaintenanceBean.booSwiftCountryInput}">
+												<p:inputText
+													value="#{swiftMasterMaintenanceBean.swiftCountryName}"
+													readonly="true" />
+											</p:panel>
+										</p:panel>
+										
+
+										<!-- <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.location']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="locid" display="text" />
+												<p:inputText id="locid"
+													value="#{swiftMasterMaintenanceBean.swiftLocation}"
+													readonly="#{swiftMasterMaintenanceBean.booApprove}"
+													required="true" requiredMessage="Please Enter Location" tabindex="4">
+
+													<p:ajax event="blur"  
+														listener="#{relationsBean.hideSubmitButton}" />
+												</p:inputText>
+											</p:panel>
+										</p:panel> -->
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.location']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="locid" display="text" id="locidmsg"/>
+												<!-- <p:inputText id="locid"
+													value="#{swiftMasterMaintenanceBean.swiftLocation}"
+													readonly="#{swiftMasterMaintenanceBean.booApprove}"
+													required="true" requiredMessage="Please Enter Location" tabindex="4">
+
+													<p:ajax event="blur"  
+														listener="#{relationsBean.hideSubmitButton}" />
+												</p:inputText> -->
+												
+												<p:autoComplete value="#{swiftMasterMaintenanceBean.swiftLocation}" completeMethod="#{swiftMasterMaintenanceBean.autoCompleteLocation}" id="locid"  required="true" maxlength="10" requiredMessage="Please Enter Location" onkeyup="this.value=this.value.toUpperCase()" tabindex="3">
+												<p:ajax event="itemSelect" listener="#{swiftMasterMaintenanceBean.fetchSwiftInfo}" update="locidmsg,bicid" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+													  <p:ajax event="change" listener="#{swiftMasterMaintenanceBean.fetchSwiftInfo}" update="locidmsg,bicid" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+														<p:ajax event="blur" listener="#{swiftMasterMaintenanceBean.fetchSwiftInfo}" update="locidmsg,bicid" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+													
+									
+												</p:autoComplete>
+											</p:panel>
+											
+										</p:panel>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.branch']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col"
+												rendered="#{swiftMasterMaintenanceBean.booSwiftBranch}">
+												<p:message for="branch" display="text" id="branchmsg"/>
+												 <!-- <p:selectOneMenu id="branch"
+													value="#{swiftMasterMaintenanceBean.branchId}"
+													filterMatchMode="contains" filter="true"
+													label="SWIFT BankBranch" required="true"
+													requiredMessage="Please Select Branch" tabindex="3">
+
+													<f:selectItem itemLabel="#{msg['lbl.selectBankBranch']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{swiftMasterMaintenanceBean.branchList}" var="c"
+														itemLabel="#{c.branchCode} - #{c.branchFullName}"
+														itemValue="#{c.bankBranchId}" />
+													<p:ajax update="msgbank,mainPanel" event="change"
+														listener="#{swiftMasterMaintenanceBean.populateAllSwiftFields}" onstart="process.show();" onsuccess="process.hide();"/>
+												 
+												</p:selectOneMenu>  -->
+												
+												 <p:autoComplete value="#{swiftMasterMaintenanceBean.branchName}" completeMethod="#{swiftMasterMaintenanceBean.autoCompleteBranch}" id="branch"  required="true" maxlength="4" requiredMessage="Please Enter Swift Branch" onkeyup="this.value=this.value.toUpperCase()" tabindex="4">
+													<p:ajax event="itemSelect" listener="#{swiftMasterMaintenanceBean.fetchSwiftInfo}" update="branchmsg,bicid" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+													<p:ajax event="change" listener="#{swiftMasterMaintenanceBean.fetchSwiftInfo}" update="branchmsg,bicid" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+													<p:ajax event="blur" listener="#{swiftMasterMaintenanceBean.fetchSwiftInfo}" update="branchmsg,bicid" process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+								
+												</p:autoComplete> 
+											</p:panel>
+											<!-- <p:panel styleClass="inner_right_col"
+												rendered="#{swiftMasterMaintenanceBean.booSwiftBranchInput}">
+												 <p:inputText
+													value="#{swiftMasterMaintenanceBean.branchName}"
+													readonly="true" />
+													
+													<p:autoComplete value="#{swiftMasterMaintenanceBean.branchName}" completeMethod="#{swiftMasterMaintenanceBean.autoCompleteBranch}" id="branchname"  required="true" maxlength="10" requiredMessage="Please Enter Swift Branch" onkeyup="this.value=this.value.toUpperCase()" >
+													<p:ajax/>
+												</p:autoComplete>
+											</p:panel> -->
+										</p:panel>
+
+
+										<!-- <p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Branch" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:inputText value="#{swiftMasterMaintenanceBean.branchCode}">
+												<p:ajax/>
+												</p:inputText>
+												</p:panel>
+											</p:panel>
+											 -->
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bankName']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="bankname" display="text" id="bname" />
+												<p:inputText id="bankname"
+													value="#{swiftMasterMaintenanceBean.bankName}"
+													readonly="#{swiftMasterMaintenanceBean.booApprove}"
+													required="true" requiredMessage="Please Enter BankName" tabindex="5">
+													<p:ajax listener="#{relationsBean.hideSubmitButton}" update="bname"/>  
+														 
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.cityname']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="cityid" display="text" id="citymsgid"/>
+												<p:inputText value="#{swiftMasterMaintenanceBean.cityName}"
+													id="cityid" required="true"  
+													readonly="#{swiftMasterMaintenanceBean.booApprove}"
+													requiredMessage="Please Enter City Name" tabindex="6">
+													<p:ajax update="citymsgid"/>
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.region']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="regionid" display="text" id="regid" />
+												<p:inputText id="regionid"
+													value="#{swiftMasterMaintenanceBean.region}"
+													required="true"
+													readonly="#{swiftMasterMaintenanceBean.booApprove}"
+													requiredMessage="Please Enter Region"  maxlength="16" tabindex="7">
+													<p:ajax update="regid" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.address1']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="firstaddrid" display="text" id="firstid" />
+												<p:inputText id="firstaddrid"
+													value="#{swiftMasterMaintenanceBean.firstAddress}"
+													readonly="#{swiftMasterMaintenanceBean.booApprove}" maxlength="100"
+													required="true"
+													requiredMessage="Please Enter First Address" tabindex="8" >
+													<p:ajax update="firstid"/>
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.address2']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText
+													value="#{swiftMasterMaintenanceBean.secondAddress}" maxlength="100"
+													readonly="#{swiftMasterMaintenanceBean.booApprove}" tabindex="9">
+													<p:ajax />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.address3']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText
+													value="#{swiftMasterMaintenanceBean.thirdAddress}" maxlength="100"
+													readonly="#{swiftMasterMaintenanceBean.booApprove}" tabindex="10">
+													<p:ajax />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.swiftbic']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="bicid" display="text" id="bicnum" />
+												<p:inputText id="bicid"
+													value="#{swiftMasterMaintenanceBean.swiftBIC}"
+													required="true" requiredMessage="Please Enter SwiftBIC"
+													readonly="true" maxlength="11" tabindex="11">
+													<p:ajax />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.chipsuid']}" />
+											<!-- 	<h:outputText value="*" style="color:red !important;" /> -->
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="chipsid" display="text" id="chipsmsg" />
+												<p:inputText id="chipsid"
+													value="#{swiftMasterMaintenanceBean.chipsUID}"
+													required="false" requiredMessage="Please Enter chipsUID"
+													readonly="#{swiftMasterMaintenanceBean.booApprove}" maxlength="6" tabindex="12">
+													<p:ajax update="chipsmsg" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.acronymid']}" />
+											<!-- 	<h:outputText value="*" style="color:red !important;" /> -->
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="acronymid" display="text" id="acronym" />
+												<p:inputText id="acronymid"
+													value="#{swiftMasterMaintenanceBean.acronymID}"
+													required="false" requiredMessage="Please Enter AcronymID"
+													readonly="#{swiftMasterMaintenanceBean.booApprove}" maxlength="7" tabindex="13">
+													<p:ajax update="acronym"/>
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<!-- 		<h:panelGroup layout="block" class="clearfix" /> -->
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.fedwireid']}" />
+												<!-- <h:outputText value="*" style="color:red !important;" /> -->
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="fedid" display="text" id="fedwireid" />
+												<p:inputText id="fedid"
+													value="#{swiftMasterMaintenanceBean.fedwireID}"
+													required="false" requiredMessage="Please Enter FedwireID"
+													readonly="#{swiftMasterMaintenanceBean.booApprove}" maxlength="9" tabindex="14">
+													<p:ajax update="fedwireid"/>
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.abanumber']}" />
+												<!-- <h:outputText value="*" style="color:red !important;" /> -->
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="abaid" display="text" id="bname1" />
+												<p:inputText id="abaid"
+													value="#{swiftMasterMaintenanceBean.abaNumber}"
+													required="false" requiredMessage="Please Enter ABA Number"
+													readonly="#{swiftMasterMaintenanceBean.booApprove}" maxlength="4" tabindex="15">
+													<p:ajax update="bname1"/>
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										<!-- 			<h:panelGroup layout="block" class="clearfix" /> -->
+
+
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="shadow_button"
+											rendered="#{swiftMasterMaintenanceBean.booSavePanel}">
+											<p:commandButton value="#{msg['lbl.add']}"
+												action="#{swiftMasterMaintenanceBean.addFieldsToDataTable}"
+												update="mainPanel,swiftMaster"  onstart="process.show();" onsuccess="process.hide();"/>
+											<p:commandButton value="#{msg['lbl.view']}"
+												action="#{swiftMasterMaintenanceBean.view}"
+												update="mainPanel,swiftMaster" process="@this"
+												immdiate="true" onstart="process.show();" onsuccess="process.hide();"/>
+											<p:commandButton value="#{msg['lbl.clear']}"
+												action="#{swiftMasterMaintenanceBean.clearFields}"
+												update="mainPanel" process="@this" immdiate="true"  disabled="#{swiftMasterMaintenanceBean.disableClear}"/>
+										</p:panel>
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											rendered="#{swiftMasterMaintenanceBean.booApprovePanel}">
+											<p:commandButton value="#{msg['lbl.approve']}"
+												action="#{swiftMasterMaintenanceBean.swiftApprove}"
+												update="mainPanel" process="@this" onstart="process.show();" onsuccess="process.hide();" />
+											
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												action="#{swiftMasterMaintenanceBean.cancel}"
+												update="mainPanel" process="@this" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel
+											rendered="#{swiftMasterMaintenanceBean.renderDataTablePanel}"
+											id="dataTableId">
+											<p:dataTable id="dataTable"
+												value="#{swiftMasterMaintenanceBean.swiftMasterDataTableList}"
+												var="c"
+												rowStyleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+												rowIndexVar="rowIndex" style="width:100%;" paginator="true"
+												paginatorPosition="bottom"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="15,10,5" styleClass="mydatatableclass">
+
+												<p:column headerText="#{msg['lbl.sNo']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:outputLabel value="#{rowIndex+1}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.swiftbank']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:outputLabel value="#{c.swiftBankName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.swiftcountry']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:outputLabel value="#{c.swiftCountryCode}" />
+												</p:column>
+
+
+												<p:column headerText="#{msg['lbl.location']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:outputLabel value="#{c.swiftLocation}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.branch']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:outputLabel value="#{c.swiftBranchCode}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.bankName']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:outputLabel value="#{c.bankName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.cityname']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:outputLabel value="#{c.cityName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.region']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:outputLabel value="#{c.region}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.address1']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:outputLabel value="#{c.firstAddress}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.swiftbic']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:outputLabel value="#{c.swiftBIC}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.chipsuid']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:outputLabel value="#{c.chipsUID}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.acronymid']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:outputLabel value="#{c.acronymID}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.fedwireid']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:outputLabel value="#{c.fedwireID}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.abanumber']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:outputLabel value="#{c.abaNumber}" />
+												</p:column>
+
+
+
+												<p:column headerText="#{msg['lbl.edit']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:commandButton id="imgEdit" styleClass="edit"
+														action="#{swiftMasterMaintenanceBean.editRecord(c)}"
+														value="" update=":swiftMaster" process="@this"
+														  disabled="#{swiftMasterMaintenanceBean.disableEdit}"/>
+													<!-- 	<p:commandButton id="imgEdit" styleClass="edit"  action="#{relationsBean.checkStatusType(c)}" value="" update=":swiftMaster" process="@this" rendered="#{c.renderEditButton}" />  -->
+
+												</p:column>
+												<p:column headerText="#{msg['lbl.activatedeactivate']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<!-- 													<p:commandButton value="" styleClass="delete"  action="#{swiftMasterMaintenanceBean.removeRecord(c)}"   update=":swiftMaster" process="@this" /> -->
+													<p:commandLink
+														action="#{swiftMasterMaintenanceBean.checkStatusType(c)}"
+														value="#{c.dynamicLabelForActivateDeactivate}"
+														style="color:blue !important; text-decoration:underline !important;"
+														update=":swiftMaster" process="@this" />
+												</p:column>
+
+											</p:dataTable>
+
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel
+											rendered="#{swiftMasterMaintenanceBean.renderSaveExitButtonPanel}"
+											id="saveExitButtonId" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.submit']}"
+												style="margin-right:10px; "
+												action="#{swiftMasterMaintenanceBean.saveOrUpdateSwift}"
+												immediate="true" process="@this" update="csp"
+												disabled="#{swiftMasterMaintenanceBean.booDisableSubmit}" onstart="process.show();" onsuccess="process.hide();"/>
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{swiftMasterMaintenanceBean.goHome}"
+												process="@this" />
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col">
+											<h:outputText id="mandatory"
+												value=" #{msg['lbl.*filedsAreMandatory']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+
+
+
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+										<p:dialog modal="true" showHeader="false" widgetVar="process"
+												id="process" width="300" height="60" resizable="false"
+												draggable="false" closable="false"
+												style=" border: 3px green solid !important;background-color: #FFF !important;">
+												<div
+													style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+													<p:graphicImage value="../images/processImg.gif"
+														style="float: left !important; margin-right: 24px !important; " />
+													<p:outputLabel value="Please wait ........"
+														style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+												</div>
+												</p:dialog>
+																
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

@@ -1,0 +1,609 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</h:head>
+
+<h:body>
+
+	<p:confirmDialog id="emailcheckverify" widgetVar="emailcheckverify"
+		width="600" header="Warning DialogBox" height="17" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="Please Verify The Email To Send Token Key">
+	</p:confirmDialog>
+	<p:confirmDialog id="tokenverify" widgetVar="tokenverify"
+		width="600" header="Warning DialogBox" height="17" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="Enter Token IS Wrong!!!">
+	</p:confirmDialog>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+						<ui:include src="../common/onlinecustoimermenu.xhtml"></ui:include>  
+							<!-- <ui:include src="#{facesBean.fxdeal_menu}"></ui:include> -->
+						</td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+								<h:form id="standInstn">
+							<h1>
+								<h:outputText value="STANDING INSTRUCTION" />
+							</h1>
+							
+							<p:panel styleClass="shadow" id="mainPanel">
+							
+<!-- first Panel - All Beneficiary Details  -->
+							
+							<p:panel id="beneficiarydetailsId" style=" background-color:#FFF !important;" rendered="#{standingInstructionBean.booRenderAllBeneDetails}">
+							
+							<h2>
+										<h:outputText value="BENEFICIARY DETAILS" />
+							</h2>
+								
+								<p:spacer height="10px" />
+											
+											<p:dataTable id="dataTable" value="#{standingInstructionBean.customerBeneficaryDTList}" var="d" rowIndexVar="rowIndex" emptyMessage="#{msg['lbl.norecordfound']}">
+											
+												<p:column headerText="#{msg['lbl.sNo']}" style="width:30px;">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.benificaryName']}" sortBy="#{d.benificaryName}">
+													<p:panel >
+												        <p:commandLink  value="#{d.benificaryName}" action="#{standingInstructionBean.selectedBeneficiaryDetails(d)}"  update=":standInstn:mainPanel" style="color:blue !important; text-decoration:underline !important;" process="@this"/>
+												   </p:panel>
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.beneficiaryCountry']}" sortBy="#{d.benificaryCountryName}">
+													<h:outputText value="#{d.benificaryCountryName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.bankOrService']}" sortBy="#{d.bankName}">
+													<h:outputText value="#{d.bankName} / #{d.serviceName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.branchOrLocation']}" sortBy="#{d.branchName}">
+													<h:outputText value="#{d.branchName}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.accountNumber']}" sortBy="#{d.accountNo}">
+													<h:outputText value="#{d.accountNo}" />
+												</p:column>
+
+											</p:dataTable>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="10px" />
+							<h:panelGroup layout="block" class="clearfix"/>
+								
+										<h2>
+											<h:outputText value="ENTER TRANSACTION DETAILS BELOW" />
+										</h2>
+		
+<p:spacer height="10px" />
+								<!-- <p:panel style="padding-left:400px;"> -->
+									<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="Selected Beneficiary" />
+											<h:outputText value="*" style="color:red !important;" />
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:inputText value="#{standingInstructionBean.customerBeneName}" readonly="true"/>
+										</p:panel>
+									</p:panel>
+
+									<h:panelGroup layout="block" class="clearfix"/>
+									
+									<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText
+																value="Enter Amount To Be Sent" />
+															<h:outputText value="*" style="color:red !important;" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:panelGrid style="width:100%;">
+																<p:row>
+																	<p:column style="width:40% !important;padding:0px 3px 0px 0px !important;">
+																		<p:message id="msgcurrencyCodeid" for="currencyCodeid" display="text" />
+																		<p:selectOneMenu id="currencyCodeid" value="#{standingInstructionBean.selCurrencyCode}" filterMatchMode="startsWith" filter="true" required="true" requiredMessage="Please Select Currency Code">
+																		  <f:selectItem itemLabel="#{msg['lbl.selectcode']}" itemValue="" />
+																		  <f:selectItems value="#{standingInstructionBean.currencyMasterList}" var="c" itemLabel="#{c.quoteName}" itemValue="#{c.currencyId}"/>
+																		  <p:ajax update="msgcurrencyCodeid" />
+																		</p:selectOneMenu>
+																	</p:column>
+																	<p:column
+																		style="width:70% !important;padding:0px 0px 0px 0px !important;">
+																		<p:message id="msgamountid" for="amountid" display="text" />
+																		<p:inputText id="amountid" value="#{standingInstructionBean.sendingAmount}"
+																			required="true" maxlength="10"
+																			requiredMessage="Please Enter Amount">
+																			<p:ajax update="msgamountid"/>
+																		</p:inputText>
+																	</p:column>
+																</p:row>
+															</p:panelGrid>
+														</p:panel>
+													</p:panel>
+													
+													<!-- </p:panel> -->
+										<p:spacer height="10px"/>
+									<h:panelGroup layout="block" class="clearfix" />
+
+									<h:panelGroup layout="block" class="clearfix"/>
+								<h:panelGroup layout="block" class="clearfix"/>
+								<p:spacer height="10px"/>
+								<h:panelGroup layout="block" class="clearfix"/>
+															<h:panelGroup layout="block" styleClass="shadow_button">
+															<p:commandButton value="Next" style="margin-right:10px;" actionListener="#{standingInstructionBean.selectedBeneficiaryDetails}" process="@this" update="mainPanel"/>	
+													<p:commandButton value="Clear" style="margin-right:10px;" actionListener="#{standingInstructionBean.clearAllBeneficiaryDetails}" process="@this" update="beneficiarydetailsId"/>	
+													<p:commandButton value="Exit"/>										
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+								<h:panelGroup layout="block" class="clearfix"/>
+								</p:panel>
+								
+<!-- first Panel - All Beneficiary Details  -->
+
+<!-- Second Panel - Beneficiary Details and Additional Bank Details -->
+								
+								<p:panel id="beneficiaryadditionalId" style=" background-color:#FFF !important;" rendered="#{standingInstructionBean.booRenderBeneDtAdditionalDetails}">
+										<h2>
+											<h:outputText value="BENEFICIARY DETAILS" />
+										</h2>
+										
+										<p:spacer height="10px" />
+										
+										<!-- <p:panel style="padding-left:400px;"> -->
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Beneficiary Name" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:outputLabel value="#{standingInstructionBean.customerBeneName}"/>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Account Number" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:outputLabel value="#{standingInstructionBean.customerAccNum}" />
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Currency" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:outputLabel value="#{standingInstructionBean.customerCurrencyName}"/>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Country" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:outputLabel value="#{standingInstructionBean.customerCountryName}"	/>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Bank" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:outputLabel value="#{standingInstructionBean.customerBankName}"/>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Branch" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:outputLabel value="#{standingInstructionBean.customerBranchName}"/>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="SInstrn Created For" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:outputLabel value="#{standingInstructionBean.customerSInstrnCreatedFor}"/>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+										<!-- </p:panel> -->
+										<p:spacer height="10px" />
+										<h2>
+											<h:outputText value="ENTER ADDITIONAL DETAILS BELOW" />
+										</h2>
+										<p:spacer height="10px" />
+																		
+											<p:panel styleClass="panel_border" style="padding-bottom:0px !important; " >
+												<p:panel style="padding:0px 50px 0px 0px;">
+										        	<p:dataList value="#{standingInstructionBean.listAdditionalBankDataTable}" var="c" id="additionaldatalist">
+												<p:panel styleClass="left_col" style="align-items: center;">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{c.additionalDesc}"  style="font-size:10px; font-weight:bold;"/>
+													<h:outputText value="#{c.mandatory}"  style="color:red !important;"/>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+												<p:panel rendered="#{c.renderInputText}">
+													<p:inputText id="varName" value="#{c.variableName}" maxlength="#{c.maxLenght}" validatorMessage="Please Enter Minimum Length #{c.minLenght}" required="#{c.required}" requiredMessage="Please Enter #{c.additionalDesc}">
+													
+													<f:validateLength minimum="#{standingInstructionBean.minLenght}" />
+												
+										         <p:message display="text" for="varName"/>
+													</p:inputText>
+													</p:panel>
+													<p:panel rendered="#{c.renderSelect}">
+														<p:selectOneMenu id="dynamiccombo"  filterMatchMode="startwith" value="#{c.variableName}" >
+														<f:selectItem itemLabel="-- #{msg['lbl.select']} #{c.additionalDesc} --"  />
+														<f:selectItems value="#{c.additionalBankRuleData}" var="d" itemLabel="#{d.additionalDescription}" itemValue="#{d.additionalBankRuleDataId}" />
+													
+													</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+												</p:panel>	
+												<h:panelGroup layout="block" class="clearfix" />
+											</p:dataList>
+											</p:panel> 
+											</p:panel>
+											
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:spacer height="10px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="Submit Additional Details" style="margin-right:10px;" actionListener="#{standingInstructionBean.frequencyDetails}" process="@this" update="mainPanel" />
+											<!-- <p:commandButton value="Clear" style="margin-right:10px;" actionListener="#{standingInstructionBean.clearAllBeneficiaryDetails}" process="@this" update="beneficiarydetailsId" /> -->
+											<p:commandButton value="Back" actionListener="#{standingInstructionBean.standingInstrnNavigation}" process="@this" update="mainPanel"/>
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+										<h:panelGroup layout="block" class="clearfix" />
+										
+										</p:panel>		
+										
+<!-- Second Panel - Beneficiary Details and Additional Bank Details -->		
+
+<!-- Third Panel - Beneficiary Details and Standing Instruction SetUp For Fund Transfer -->				
+
+                                        <p:panel id="beneficiarySInstn" style=" background-color:#FFF !important;" rendered="#{standingInstructionBean.booRenderBeneDtStandInstn}">
+										<h2>
+											<h:outputText value="BENEFICIARY DETAILS" />
+										</h2>
+										
+										<p:spacer height="10px" />
+										
+										<!-- <p:panel style="padding-left:400px;"> -->
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Beneficiary Name" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:outputLabel value="#{standingInstructionBean.customerBeneName}"/>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Account Number" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:outputLabel value="#{standingInstructionBean.customerAccNum}" />
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Currency" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:outputLabel value="#{standingInstructionBean.customerCurrencyName}"/>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Country" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:outputLabel value="#{standingInstructionBean.customerCountryName}"	/>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Bank" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:outputLabel value="#{standingInstructionBean.customerBankName}"/>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Branch" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:outputLabel value="#{standingInstructionBean.customerBranchName}"/>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="SInstrn Created For" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:outputLabel value="#{standingInstructionBean.customerSInstrnCreatedFor}"/>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+										<!-- </p:panel> -->
+										<p:spacer height="10px" />
+										<h2>
+											<h:outputText value="STANDING INSTRUCTION SETUP FOR THIS FUND TRANSFER" />
+										</h2>
+										<p:spacer height="10px" />
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Frequency" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgfrequencyid" for="frequencyid" display="text" />
+												<p:selectOneMenu id="frequencyid" value="#{standingInstructionBean.sIFrequencyId}" filterMatchMode="startsWith" filter="true" required="true" requiredMessage="Please Select Currency Code">
+													<f:selectItem itemLabel="-- Select Frequency --" itemValue="" />
+													<f:selectItems value="#{standingInstructionBean.lstFrequencyDetails}" var="c" itemLabel="#{c.frequencyDescription}" itemValue="#{c.onlineRateAlertId}" />
+													<p:ajax event="change" update="msgfrequencyid,repeatnotimes" listener="#{standingInstructionBean.calculationRepeatTimes}"/>
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix"/>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Start Date" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="calid" display="text" id="msgcalid"/>
+													<p:calendar id="calid" value="#{standingInstructionBean.sIStartdate}" mode="popup" mindate="#{standingInstructionBean.effectiveMinDate}" pattern="dd/MM/yyyy" required="true" requiredMessage="Please Enter Start Date" >
+        													<p:ajax event="dateSelect" listener="#{standingInstructionBean.onDateSelect}" update="msgcalid"/>
+    												</p:calendar>
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix"/>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Repeat Number of Times" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="repeatnotimes" value="#{standingInstructionBean.sIRepeatNOOFTimes}" readonly="true" />
+											</p:panel>
+										</p:panel>
+											
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="10px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" style="border-bottom:1px solid #eaeaea !important;">
+											<h:outputText value="Please confirm if the below email address is valid. You will receive a link to complete the SI creation." style=" color:red !important;" />
+										</h:panelGroup>
+										<p:spacer height="3px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:message display="text" id="msgcheckemail" for="checkemail"/>
+										<p:selectBooleanCheckbox styleClass="checkdis" id="checkemail" value="#{standingInstructionBean.emailCheckbox}" required="true" requiredMessage="Please verify the Checkbox">
+										<p:ajax update="msgcheckemail"/>
+										</p:selectBooleanCheckbox>
+										<p:commandLink value="emailadress@gmail.com" style="padding-left:10px !important;" />
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+
+										<p:spacer height="10px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="Submit Standing instruction" style="margin-right:10px;" actionListener="#{standingInstructionBean.saveStandingInstruction}"	process="@this" update="mainPanel" />
+											<!-- <p:commandButton value="Clear" style="margin-right:10px;" actionListener="#{standingInstructionBean.clearAllBeneficiaryDetails}" process="@this" update="beneficiarydetailsId" /> -->
+											<p:commandButton value="Back" actionListener="#{standingInstructionBean.frequencyDetails}" process="@this" update="mainPanel"/>
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+										<h:panelGroup layout="block" class="clearfix" />
+										
+										</p:panel>
+
+
+<!-- Third Panel - Beneficiary Details and Standing Instruction SetUp For Fund Transfer -->	
+
+<!-- Fourth Panel - Token Verification  -->
+
+									<p:panel id="tokenVerificationId" style=" background-color:#FFF !important;" rendered="#{standingInstructionBean.booRenderTokenVerification}">
+									
+									<h2>
+										<h:outputText value="TOKEN VERIFICATION"/>
+									</h2>
+									
+									<p:panel style="padding-left:400px;">
+									
+									<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Enter Confirmation Token From EMail" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:inputText id="tokenid" value="#{standingInstructionBean.tokenEntered}">
+												   <p:ajax/>
+												</p:inputText>
+												
+											</p:panel>
+									</p:panel>
+
+									</p:panel>
+									
+									<p:spacer height="10px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="Confirm Standing Instruction" style="margin-right:10px;" actionListener="#{standingInstructionBean.verifyTokenEntered}"	process="@this" update="mainPanel" />
+											<!-- <p:commandButton value="Clear" style="margin-right:10px;" actionListener="#{standingInstructionBean.clearAllBeneficiaryDetails}" process="@this" update="beneficiarydetailsId" /> -->
+											<p:commandButton value="Back" actionListener="#{standingInstructionBean.beneficiaryTokenVerification}" process="@this" update="mainPanel"/>
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+									<h:panelGroup layout="block" class="clearfix" />
+											
+									<h:panelGroup layout="block" class="clearfix" />
+									
+									</p:panel>
+
+<!-- Forth Panel - Token Verification  -->		
+
+	
+<!-- Fifth Panel - Success Page  -->
+
+									<p:panel id="successPageId" style=" background-color:#FFF !important;" rendered="#{standingInstructionBean.booRenderSuccessPage}">
+									
+									<h2>Standing Instruction</h2>
+									
+									<p:spacer height="10px" />
+											
+											<p:dataTable id="standInstnDataTable" value="#{standingInstructionBean.lstStndingInstrnDetails}" var="d" rowIndexVar="rowIndex" emptyMessage="#{msg['lbl.norecordfound']}" rendered="#{standingInstructionBean.booRenderStandingInstrnByDate}">
+											
+												<p:column headerText="#{msg['lbl.sNo']}" style="width:30px;">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column headerText="Name">
+													<p:panel >
+												        <h:outputText value="#{d.beneficiaryUserName}" />
+												   </p:panel>
+												</p:column>
+												
+												<p:column headerText="Bank Name">
+													<h:outputText value="#{d.beneficiaryBankName}" />
+												</p:column>
+
+												<p:column headerText="Branch Name">
+													<h:outputText value="#{d.beneficiaryBankBranchName} , #{d.beneficiaryCityName}" />
+												</p:column>
+
+												<p:column headerText="Amount">
+													<h:outputText value="#{d.standingAmount} [#{d.beneficiaryCurrenyShort}]" />
+												</p:column>
+
+												<p:column headerText="Due Date">
+													<h:outputText value="#{d.beneficiaryDueDate}">
+													</h:outputText>
+												</p:column>
+
+											</p:dataTable>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="10px" />
+									
+									<fieldset
+												style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+												<legend
+													style="font-size: 18px; font-weight: bold; color: #037712;"
+													align="top">&nbsp;#{msg['lbl.success']}&nbsp;</legend>
+
+												<p:outputLabel value="Standing Instruction Successfully Created"
+													style="font-size: 20px !important; font-weight: bold; color: #037712; padding:20px 100px 20px 260px !important;" />
+												<p:panel styleClass=""
+													style="padding:20px 130px 30px 450px !important;">
+													<p:commandButton value="#{msg['lbl.ok']}"
+														actionListener="#{standingInstructionBean.standingInstrnNavigation}"
+														process="@this" immediate="true"
+														style="width:50px ; height:35px;  text-align:center !important; float: center;" />
+												</p:panel>
+												
+									</fieldset>
+
+									</p:panel>
+
+<!-- Fifth Panel - Success Page  -->			
+										
+									</p:panel>
+								</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"/>
+					</h:panelGroup>
+					<h:panelGroup layout="block" class="clearfix"/>
+					</td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

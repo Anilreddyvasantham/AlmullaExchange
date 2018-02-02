@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+		history.pushState(null, null, 'PipsMasterEnquiry.xhtml');
+	    window.addEventListener('popstate', function(event) {
+	    history.pushState(null, null, 'PipsMasterEnquiry.xhtml');
+	    });
+	</script>
+</h:head>
+
+<h:body> 
+
+
+
+   
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<h:form id="pipsMaster">
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+							<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+						</td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+								
+							<h1>
+								<h:outputText value="#{msg['lbl.pipsMasterenquiry']}" />
+							</h1>
+							<p:panel styleClass="shadow" id="mainPanel">
+							<h3>
+											<h:outputText value="#{msg['lbl.pipsMasterenquiry']}" />
+							</h3>
+							 <p:confirmDialog id="csp" widgetVar="csp"   showHeader="false" resizable="false" header="Warning Message" styleClass="warning"
+														style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="explode" hideEffect="explode" message="#{pipsMasterEnquiryBean.errorMsg}">
+	  						 </p:confirmDialog>
+							
+						    <p:confirmDialog id="nullPoiterId"
+                                                                     widgetVar="nullPoiterId" resizable="false"
+                                                                     style="background-color: white !important;"
+                                                                     header="#{msg['lbl.warningDailog']}" styleClass="warning"
+                                                                     showEffect="clip" hideEffect="clip" closeOnEscape="true"
+                                                                     closable="true"
+                                                                     message="#{pipsMasterEnquiryBean.errorMsg} - #{msg['lbl.nullPonterExcepetion']}">
+						     </p:confirmDialog>		
+										
+		
+								<p:panel styleClass="panel_border">
+								
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.country']}" /><!-- <h:outputText value="*" style="color:red !important;" /> -->
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												  <p:message id="msgCountry"  for="country" display="text" />
+													<p:selectOneMenu id="country" value="#{pipsMasterEnquiryBean.countryId}" filter="true" filterMatchMode="contains" required="false"  requiredMessage="Please Select Country"  >
+													<f:selectItem itemLabel="#{msg['lbl.selectCountry']}" itemValue="" />
+													<f:selectItems value="#{pipsMasterEnquiryBean.countryList}" var="c"  itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}" itemValue="#{c.fsCountryMaster.countryId}"/> 
+													<p:ajax  update="msgCountry,mainPanel" event="change" listener="#{pipsMasterEnquiryBean.checkPipsCombination}"/>
+												</p:selectOneMenu>
+											</p:panel>
+									 
+										
+										
+											</p:panel>
+										
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currency']}" /><!-- <h:outputText value="*" style="color:red !important;" /> -->
+											</p:panel>
+											
+											
+											<p:panel styleClass="inner_right_col">
+												 <p:message id="msgCurrency"  for="currency" display="text" />
+													<p:selectOneMenu id="currency" value="#{pipsMasterEnquiryBean.currencyId}" filter="true" filterMatchMode="contains" required="false"  requiredMessage="Please Select Currency"  >
+													<f:selectItem itemLabel="#{msg['lbl.selectCurrency']}" itemValue="" />
+													 <f:selectItems value="#{pipsMasterEnquiryBean.lstBeneCountryService}" var="c"  itemLabel="#{c.currencyId.currencyCode} - #{c.currencyId.currencyName}" itemValue="#{c.currencyId.currencyId}"/> 
+													<!-- <p:ajax  update="msgCurrency,mainPanel" event="change" listener="#{pipsMasterEnquiryBean.populatePipsCombination}"/> -->
+												</p:selectOneMenu>
+											</p:panel>
+							 
+										
+										
+											</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bank']}" /><!-- <h:outputText value="*" style="color:red !important;" /> -->
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												    <p:message id="msgBank"  for="bank" display="text" />
+													<p:selectOneMenu id="bank" value="#{pipsMasterEnquiryBean.bankId}" filter="true" filterMatchMode="contains"  required="false" requiredMessage="Please select bank">
+													<f:selectItem itemLabel="#{msg['lbl.selectBank']}" itemValue="" />
+													 <f:selectItems value="#{pipsMasterEnquiryBean.bankList}" var="c"  itemLabel="#{c.bankCode} - #{c.bankFullName}" itemValue="#{c.bankId}"/> 
+													 <p:ajax  update="msgBank" />
+													<!-- <p:ajax  update="msgBank,mainPanel" event="change" listener="#{pipsMasterEnquiryBean.populatePipsCombination}" /> -->
+												</p:selectOneMenu>
+											</p:panel>
+										 
+										
+										
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Pips Type" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col" >
+												<p:message id="msgPipsType" for="pipsTypeId" display="text" />
+												<p:selectOneMenu id="pipsTypeId" value="#{pipsMasterBean.pipsTypeCode}"
+													filter="true" filterMatchMode="contains" >
+													<f:selectItem itemLabel="-- Please Select Pips Type --"
+														itemValue="" />
+													<f:selectItems value="#{pipsMasterBean.lstPipsIndView}" var="c"
+														itemLabel="#{c.pipsTypeCode} - #{c.fullDesc}"
+														itemValue="#{c.pipsTypeCode}" />
+													<!-- 	 -->
+													<p:ajax update="msgPipsType" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+												</p:panel>										
+											</p:panel>
+											
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.service']}" /><!-- <h:outputText value="*" style="color:red !important;" /> -->
+											</p:panel>
+											<p:panel styleClass="inner_right_col" >
+												 <p:message id="msgService"  for="service" display="text" />
+													<p:selectOneMenu id="service" value="#{pipsMasterEnquiryBean.serviceId}" filter="true" filterMatchMode="contains"  >
+													<f:selectItem itemLabel="#{msg['lbl.selectService']}" itemValue="" />
+													<f:selectItems value="#{pipsMasterEnquiryBean.serviceMasters}" var="c"  itemLabel="#{c.serviceMaster.serviceCode} - #{c.localServiceDescription}" itemValue="#{c.serviceMaster.serviceId}"/> 
+													<!-- <p:ajax  update="msgService,mainPanel" event="change" listener="#{pipsMasterEnquiryBean.checkPipsCombination}"/> -->
+												</p:selectOneMenu>
+											</p:panel>
+									 
+										
+										
+											</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.branch']}" /><!-- <h:outputText value="*" style="color:red !important;" /> -->
+											</p:panel>
+											<p:panel styleClass="inner_right_col" >
+												  <p:message id="msgBranch"  for="branch" display="text" />
+													
+													<p:selectOneMenu id="branch" value="#{pipsMasterEnquiryBean.branchId}" filter="true" filterMatchMode="contains"  >
+													<f:selectItem itemLabel="#{msg['lbl.selectBranch']}" itemValue="" />
+												 <f:selectItems value="#{pipsMasterEnquiryBean.countryBranchList}" var="c"  itemLabel="#{c.branchId} - #{c.branchName}" itemValue="#{c.countryBranchId}"/> 
+													<!-- <p:ajax  event="blur"/>
+													<p:ajax  update="msgBranch,mainPanel"  event="change"  listener="#{pipsMasterEnquiryBean.checkPipsCombination}" process="@this" /> -->
+												</p:selectOneMenu>
+											</p:panel>
+									 
+										
+										
+											</p:panel>
+										
+										
+									<h:panelGroup layout="block" class="clearfix"/>
+									<h:panelGroup layout="block" styleClass="shadow_button" >						
+										<p:commandButton value="#{msg['lbl.enquiry']}" style="margin-right:10px;" action="#{pipsMasterEnquiryBean.populatePipsCombination}" update="mainPanel"/>
+										<p:commandButton value="#{msg['lbl.clear']}" action="#{pipsMasterEnquiryBean.clearAll}" update="mainPanel" process="@this" />
+										<p:commandButton value="#{msg['lbl.exit']}" action="#{pipsMasterEnquiryBean.exit}" update="mainPanel" process="@this" />
+										<h:panelGroup layout="block" class="clearfix"/>
+									</h:panelGroup>
+									
+									<h:panelGroup layout="block" class="clearfix"/>
+										<p:spacer height="20px"/>
+								
+									<h:panelGroup layout="block" class="clearfix"/>
+
+						<p:dataTable id="dataTableId" var="d"  rendered="#{pipsMasterEnquiryBean.booRenderDataTable}"
+	paginatorPosition="bottom"
+									rows="10" paginator="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  rowsPerPageTemplate="5,10,15"
+	value="#{pipsMasterEnquiryBean.pipsAllList}" rowIndexVar="rowIndex" emptyMessage="No records Found" styleClass="mydatatableclass" >
+     
+      	 <p:column headerText="#{msg['lbl.sino']}" style="width:30px;" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+            <h:outputText value="#{rowIndex+1}"/>
+        </p:column>
+ 
+         <p:column headerText="#{msg['lbl.bank']}" sortBy="#{d.bankName}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+            <h:outputText value="#{d.bankName}"/>
+        </p:column>
+        
+  		<p:column headerText="#{msg['lbl.country']}" sortBy="#{d.countryName}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+            <h:outputText value="#{d.countryName}"/>
+     	</p:column>
+      <p:column headerText="#{msg['lbl.currency']}" sortBy="#{d.currencyName}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+            <h:outputText value="#{d.currencyName}"/>
+     	</p:column>
+        <p:column headerText="#{msg['lbl.service']}" sortBy="#{d.serviceName}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+            <h:outputText value="#{d.serviceName}" />
+        </p:column>
+        
+         <p:column headerText="#{msg['lbl.branch']}" sortBy="#{d.branchName}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+            <h:outputText value="#{d.branchName}"/>
+        </p:column>
+ 
+        <p:column headerText="#{msg['lbl.fromAmount']}" sortBy="#{d.fromAmount}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+            <h:outputText value="#{d.fromAmount}"/>
+        </p:column>
+        
+         <p:column headerText="#{msg['lbl.toAmount']}" sortBy="#{d.toAmount}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+            <h:outputText value="#{d.toAmount}"/>
+        </p:column>
+
+		<p:column headerText="Pips Type">
+			<h:outputText value="#{d.pipsTypeFullName}" />
+		</p:column>
+
+											<p:column headerText="#{msg['lbl.pips']}" sortBy="#{d.pips}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+            <h:outputText value="#{d.pips}"/>
+        </p:column>
+         <p:column headerText="#{msg['lbl.createdby']}" sortBy="#{d.createdBy}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+            <h:outputText value="#{d.createdBy}"/>
+        </p:column>
+         <p:column headerText="#{msg['lbl.createddate']}" sortBy="#{d.createdDate}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+            <h:outputText value="#{d.createdDate}"/>
+           
+        </p:column>
+         <p:column headerText="#{msg['lbl.enqStatus']}" sortBy="#{d.isActive}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+            <h:outputText value="#{d.isActive}"/>
+           
+        </p:column>
+ 
+ 
+
+
+								</p:dataTable> 
+								
+
+<h:panelGroup layout="block" class="clearfix"/>
+
+			</p:panel>
+			</p:panel>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"/>
+					</h:panelGroup>
+					<h:panelGroup layout="block" class="clearfix"/>
+					</td>
+			</tr>
+		</table>
+		</h:form>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

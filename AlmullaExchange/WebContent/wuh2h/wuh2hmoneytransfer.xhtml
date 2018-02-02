@@ -1,0 +1,1894 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	
+	<script type="text/javascript">
+		var baseUri = makeUri();
+		history.pushState(null, null, 'wuh2hmoneytransfer.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'wuh2hmoneytransfer.xhtml');
+		});
+
+		$(document).ready(function() {
+			$(window).scroll(function() {
+				if ($(this).scrollTop() > 100) {
+					$('#goTop').stop().animate({
+						bottom : '30px'
+					}, 300);
+				} else {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				}
+			});
+			$('#goTop').click(function() {
+				$('html, body').stop().animate({
+					scrollTop : 0
+				}, 500, function() {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				});
+			});
+		});
+	</script>
+	<style>
+.centeralign {
+	margin-left: auto;
+	margin-right: auto;
+	width: 6em
+}
+
+.ui-datatable .ui-state-highlight {
+	background-color: red;
+}
+</style>
+</h:head>
+
+<h:body>
+
+	<p:confirmDialog id="roundValueErr" widgetVar="roundValueErr"
+		height="20" resizable="false" width="500"
+		style="background-color: white !important;"
+		header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.roundProcedureReturningNull']}">
+	</p:confirmDialog>
+
+	<p:dialog id="cleardenominationexceed"
+		widgetVar="cleardenominationexceed" modal="true" width="350"
+		height="100" resizable="false"
+		style="background-color: white !important;" styleClass="warning"
+		header="#{msg['lbl.warningDailog']}" closable="false"
+		showEffect="clip" hideEffect="clip">
+		<p:outputLabel
+			value="#{msg['lbl.pleaseEnsureDenominationAmountShouldTallyWithCollectedAmount']}" />
+		<br />
+		<h:panelGroup style="display:block; text-align:center">
+			<p:commandButton value="#{msg['lbl.ok']}"
+				actionListener="#{wuh2h.clearDataTableClearDenomination}"
+				onclick="PF('cleardenominationexceed').hide();" process="@this" />
+		</h:panelGroup>
+	</p:dialog>
+	
+	<p:dialog id="clearrefunddenominationexceed"
+		widgetVar="clearrefunddenominationexceed" modal="true" width="350"
+		height="100" resizable="false"
+		style="background-color: white !important;" styleClass="warning"
+		header="#{msg['lbl.warningDailog']}" closable="false"
+		showEffect="clip" hideEffect="clip">
+		<p:outputLabel
+			value="#{msg['lbl.totalRefundAmountReceivedExcedThanRefundAmount']}" />
+		<br />
+		<h:panelGroup style="display:block; text-align:center">
+			<p:commandButton value="#{msg['lbl.ok']}"
+				actionListener="#{wuh2h.clearDataTableClearDenomination}"
+				onclick="PF('cleardenominationexceed').hide();" process="@this" />
+		</h:panelGroup>
+	</p:dialog>
+
+	<p:confirmDialog id="amountmatch" widgetVar="amountmatch" height="20"
+		resizable="false" style="background-color: white !important;"
+		header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true"
+		message="#{msg['lbl.netamountnotmatchingtototalamount']}">
+	</p:confirmDialog>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+
+							<h:form id="form1"
+								onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'text') return false;}">
+
+								<h1>
+									<h:outputText value="Western Union H2H Money Transfer" />
+								</h1>
+								<p:panel id="mainPanel" styleClass="shadow"
+									style="margin: 20px 10px !important; background-color:#FFF !important;"
+									rendered="#{wuh2h.mainPanelRender}">
+
+								
+									<!-- wu delete -->
+									<p:confirmDialog id="deleteBeneAcc" widgetVar="deleteBeneAcc"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{wuh2h.exceptionMessage}">
+										<br />
+
+										<p:commandButton value="#{msg['lbl.yes']}" update="form1"
+											oncomplete="deleteBeneAcc.hide()" process="@this"
+											onstart="process.show();" onsuccess="process.hide();"
+											action="#{wuh2h.deleteBeneficiaryAccount}" />
+										<p:commandButton value="#{msg['lbl.no']}"
+											oncomplete="deleteBeneAcc.hide()" process="@this" />
+
+									</p:confirmDialog>
+
+									<p:confirmDialog id="csp" widgetVar="csp" width="500"
+										showHeader="false" resizable="false" header="Warning Message"
+										styleClass="warning"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="explode" hideEffect="explode"
+										message="#{wuh2h.errmsg}">
+									</p:confirmDialog>
+									
+									<p:confirmDialog id="sqlexception" widgetVar="sqlexception"
+									header="#{msg['lbl.remitApplicationExceptionMessage']}"
+									resizable="false" style="background-color: white !important;"
+									styleClass="warning" showEffect="clip" hideEffect="clip"
+									closeOnEscape="true" closable="true"
+									message="#{msg['lbl.procedureErrorMessage']} : #{wuh2hbean.exceptionMessage}">
+								</p:confirmDialog>
+
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+
+									<p:confirmDialog id="procedureErr" widgetVar="procedureErr"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{msg['lbl.procedureErrorMessage']} : #{wuh2h.procedureError}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="denominationexceed"
+										widgetVar="denominationexceed" height="20" resizable="false"
+										width="550" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{msg['lbl.pleaseEnsureDenominationAmountShouldTallyWithCollectedAmount']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="idNumbernotenter"
+										widgetVar="idNumbernotenter" height="20" resizable="false"
+										width="300" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="Please enter the ID NUMBER">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="refunddenominationexceed"
+										widgetVar="refunddenominationexceed" height="20"
+										resizable="false" width="500"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{msg['lbl.totalRefundAmountReceivedExcedThanRefundAmount']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="stockNotAvailable"
+										widgetVar="stockNotAvailable" height="20" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{msg['lbl.stockNotAvailable']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="wuwarning" widgetVar="wuwarning"
+										height="20" resizable="false" width="500"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{msg['lbl.wuwarning']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="requiredmtcno" widgetVar="requiredmtcno"
+										height="20" resizable="false" width="500"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{msg['lbl.requiredmtc']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="invalidmtcno" widgetVar="invalidmtcno"
+										height="20" resizable="false" width="500"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{msg['lbl.invalidmtc']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="invalidpurposecode"
+										widgetVar="invalidpurposecode" height="20" resizable="false"
+										width="500" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{msg['lbl.invalidpurposecode']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="appnotconnected"
+										widgetVar="appnotconnected" height="20" resizable="false"
+										width="500" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{wuh2h.procedureError}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="nomapid" widgetVar="nomapid" height="20"
+										resizable="false" width="500"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{msg['lbl.relmapnot']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="amountgreater" widgetVar="amountgreater"
+										height="20" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{msg['lbl.amountisgraterthannetamount']} : #{msg['lbl.knetAllowExtraForTheNetAmountTOPay']} : #{wuh2h.errcolCashExistsLimit}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="finalerrormsg" widgetVar="finalerrormsg"
+										height="20" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="false"
+										message="#{msg['lbl.errorMessage']} : #{wuh2h.errmsg} ">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="netamountgreater"
+										widgetVar="netamountgreater" height="20" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{msg['lbl.totalCashReceivedShouldBeEqualToToalCash']} ">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="denominationerror"
+										widgetVar="denominationerror" height="20" resizable="false"
+										width="350" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{msg['lbl.denominationDetailsNotAvailable']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="expiredCustomer"
+										widgetVar="expiredCustomer" height="20" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{wuh2h.exceptionMessage} #{wuh2h.customerExpireDateMsg}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="notactive" widgetVar="notactive"
+										height="20" resizable="false" width="350"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{msg['lbl.customerIdIsInORActiveStatus']}">
+									</p:confirmDialog>
+
+									<p:dialog id="activatecustomer" widgetVar="activatecustomer"
+										showHeader="false" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+
+										<p:outputLabel value="#{msg['lbl.customerIdstatus']}" />
+										<br />
+
+										<p:commandButton value="#{msg['lbl.yes']}"
+											oncomplete="idNotFound.hide()" process="@this"
+											action="#{wuh2h.redirectToCustomerFirstPage}" />
+										<p:commandButton value="#{msg['lbl.no']}"
+											oncomplete="idNotFound.hide()" process="@this" />
+									</p:dialog>
+
+									<p:confirmDialog id="refundamounterror"
+										widgetVar="refundamounterror" height="20" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{msg['lbl.refundAmountAndTotalRefundAmountNotMatching']}">
+									</p:confirmDialog>
+
+									<p:dialog id="dldInserCard" widgetVar="dldInserCard"
+										width="200" showHeader="false" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:outputLabel value="#{msg['lbl.insertsmartcard']}" />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											oncomplete="dldInserCard.hide()" process="@this" />
+									</p:dialog>
+
+									<p:confirmDialog id="exception" header="#{msg['lbl.warning']}"
+										widgetVar="exception" width="600" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{wuh2h.procedureError}">
+										<p:commandButton value="#{msg['lbl.ok']}"
+											onclick="exception.hide()" process="@this" update="mainPanel" />
+									</p:confirmDialog>
+
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{wuh2h.errorMessage}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{wuh2h.errorMessage} - #{msg['lbl.nullPonterExcepetion']}">
+									</p:confirmDialog>
+
+
+									<p:dialog id="customerregproceed"
+										widgetVar="customerregproceed" showHeader="false"
+										resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+
+										<p:outputLabel
+											value="This Customer Partially Registered Do You want to Continue Registration" />
+										<br />
+
+										<p:commandButton value="#{msg['lbl.yes']}"
+											oncomplete="customerregproceed.hide()" process="@this"
+											action="#{wuh2h.redirectToCustomerPage}" />
+										<p:commandButton value="#{msg['lbl.no']}"
+											oncomplete="customerregproceed.hide()" process="@this" />
+									</p:dialog>
+
+									<p:dialog id="idNotFound" widgetVar="idNotFound"
+										showHeader="false" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+
+										<p:outputLabel value="#{msg['lbl.custnotregistereddoyou']}" />
+										<br />
+
+										<p:commandButton value="#{msg['lbl.yes']}"
+											oncomplete="idNotFound.hide()" process="@this"
+											action="#{wuh2h.redirectToCustomerFirstPage}" />
+										<p:commandButton value="#{msg['lbl.no']}"
+											oncomplete="idNotFound.hide()" process="@this" />
+									</p:dialog>
+									
+									<p:confirmDialog id="dobcheck" header="#{msg['lbl.warning']}"
+										widgetVar="dobcheck" width="700" resizable="false"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{msg['lbl.theidnumber']} #{wuh2h.idNumber} #{msg['lbl.dateofbirthis']} #{wuh2h.birthdate} #{msg['lbl.lessthanyears']}">
+										<p:commandButton value="#{msg['lbl.ok']}"
+											oncomplete="dobcheck.hide()" update="mainPanel"
+											immediate="true" />
+									</p:confirmDialog>
+
+									<p:dialog id="beneCurrencyPanel" width="50%" overflow="auto"
+										widgetVar="beneCurrencyPanel"
+										header="Beneficiary Bank Country - Currency" resizable="false"
+										styleclass="ui-dialog-content ui-widget-content"
+										style="height: auto; bottom:auto !important; border:3px solid #00a53e !important; font-weight:bold; background: #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText
+													value="#{msg['lbl.benebank']} - #{msg['lbl.country']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgCountry" for="country" display="text" />
+												<p:selectOneMenu id="country"
+													value="#{wuh2h.benifisCountryId}"
+													filterMatchMode="contains" filter="true" required="true"
+													requiredMessage="Please Select Beneficiary Country">
+													<f:selectItem itemLabel="#{msg['lbl.selectCountry']}"
+														itemValue="" />
+													<f:selectItems value="#{wuh2h.lstCountry}" var="c"
+														itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+														itemValue="#{c.fsCountryMaster.countryId}" />
+													<p:ajax update="country,msgCountry,currency,currencypanel" />
+													<f:ajax event="valueChange"
+														listener="#{wuh2h.benServiceCurrencyListDetails}"
+														update=":form1:beneCurrencyPanel,:form1:currencypanel,:form1:country"
+														onstart="processIcon.show();"
+														onsuccess="processIcon.hide();" process=":form1" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col" id="currencypanel">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currency']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgCurrency" for="currency" display="text" />
+												<p:selectOneMenu id="currency"
+													value="#{wuh2h.benifisCurrencyId}"
+													filterMatchMode="contains" filter="true" required="true"
+													requiredMessage="Please Select Currency">
+													<f:selectItem itemLabel="#{msg['lbl.benecurruncyselect']}"
+														itemValue="" />
+													<f:selectItems value="#{wuh2h.beneServiceCurrencyList}"
+														var="c" itemLabel="#{c.currencyCode} - #{c.currencyName}"
+														itemValue="#{c.currencyId}" />
+													<p:ajax update="msgCurrency,currency" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											style="">
+											<p:commandButton value="#{msg['lbl.save']}"
+												oncomplete="beneCurrencyPanel.hide()"
+												update=":form1:csp,:form1:dataTable,:form1:beneCurrencyPanel"
+												action="#{wuh2h.differentCurrencyData}"
+												onstart="process.show();" onsuccess="process.hide();" />
+											<div class="clearfix"></div>
+										</h:panelGroup>
+
+									</p:dialog>
+
+									<p:panel style="padding:50px 100px 50px 100px !important;"
+										rendered="#{wuh2h.booRenderBenificaryFirstPanel}">
+										<fieldset
+											style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+											<legend
+												style="font-size: 15px; font-weight: bold; color: #037712;"
+												align="top">&nbsp;Western Union H2H&nbsp;</legend>
+											<!-- Dialog Boxes -->
+
+											<p:confirmDialog id="customValidationExcep"
+												widgetVar="customValidationExcep"
+												header="#{msg['lbl.customValidationExceptionMessage']}"
+												resizable="false" width="700"
+												style="background-color: white !important;"
+												styleClass="warning" showEffect="clip" hideEffect="clip"
+												closeOnEscape="true" closable="true"
+												message="#{wuh2h.exceptionMessage}">
+											</p:confirmDialog>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+												</p:panel>
+												<p:panel style="margin-left:30px;">
+													<p:message for="cardId" display="text" id="msgCard" />
+													<h:selectOneRadio id="cardId"
+														value="#{wuh2h.selectCardType}" required="true"
+														requiredMessage="Please Select Any One Option">
+														
+														<f:selectItem itemLabel="&nbsp;&nbsp; #{msg['lbl.ordinarycard']} &nbsp;&nbsp;"
+															itemValue="2" />
+															
+														<f:selectItem itemLabel="&nbsp;&nbsp; #{msg['lbl.smartCardNew']} &nbsp;&nbsp;"
+															itemValue="1" />
+														
+														<p:ajax event="change"
+															listener="#{wuh2h.showCardTypePanel}" update="mainPanel"
+															process="@this" onstart="process.show();"
+															onsuccess="process.hide();" />
+													</h:selectOneRadio>
+												</p:panel>
+												<div class="clearfix"></div>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel rendered="#{wuh2h.booRenderOldSmartCardPanel}"
+												id="oldSmartCardpanel">
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.idType']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="cardtype" display="text" id="msgcardtype" />
+														<p:selectOneMenu id="cardtype"
+															value="#{wuh2h.selectCard}" required="true"
+															requiredMessage="Please Select Any One Option">
+															<f:selectItem itemLabel="#{msg['lbl.selectidtype']}" />
+															<f:selectItems
+																value="#{wuh2h.mapcomIdentityType.entrySet()}"
+																var="entry" itemValue="#{entry.key}"
+																itemLabel="#{entry.value}" />
+															<p:ajax event="change" update="cardtype,mainPanel" />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+
+												<!-- <p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.idNumber']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="idNo" id="msgIdNo" display="text" />
+														<p:inputText id="idNo" value="#{wuh2h.idNumber}"
+															required="true" requiredMessage="Please Enter ID Number"
+															maxlength="12">
+															<p:ajax update="msgIdNo" />
+														</p:inputText>
+													</p:panel>
+												</p:panel> -->
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.idNumber']}" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:panelGrid style="width:100%;">
+															<p:row>
+																<p:column style="width:95%; padding:0px !important;">
+																	<p:message for="idNo" id="msgIdNo" display="text" />
+																	<p:inputText id="idNo" value="#{wuh2h.idNumber}"
+																		required="true"
+																		requiredMessage="Please Enter ID Number"
+																		maxlength="12">
+																		<p:ajax update="msgIdNo" />
+																	</p:inputText>
+																</p:column>
+																<!-- <p:column
+																	style="width:20%; text-align:right !important;padding:4px 0px 0px 8px !important;">
+																	<p:commandButton id="customerSearchButton" value=""
+																		styleClass="search_icon"
+																		action="#{wuh2h.searchClicked}"
+																		process="@this">
+																		<p:tooltip for="customerSearchButton"
+																			value="#{msg['lbl.clickToSearch']}" />
+																	</p:commandButton>
+																</p:column> -->
+															</p:row>
+														</p:panelGrid>
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+											</p:panel>
+
+											<h:panelGroup class="clearfix" />
+											<p:spacer height="20px" />
+
+											<p:panel styleClass="shadow_button" id="goexitId"
+												style=" background-color:#FFF !important;">
+												<p:commandButton value="#{msg['lbl.go']}"
+													action="#{wuh2h.goFromOldSmartCardpanel}"
+													update="mainPanel" onstart="process.show();"
+													onsuccess="process.hide();" process="@this"
+													style="margin-right:10px;" />
+												<p:commandButton value="#{msg['lbl.exit']}"
+													action="#{bankBranchDetails.cancel}" update="mainPanel"
+													onstart="process.show();" onsuccess="process.hide();"
+													immediate="true" />
+											</p:panel>
+											<h:panelGroup class="clearfix" />
+										</fieldset>
+									</p:panel>
+
+									<!--   Customer details Panel-->
+									<p:panel id="beneficiarySearchId" styleClass="shadow"
+										style=" background-color:#FFF !important;"
+										rendered="#{wuh2h.booRenderBenificarySearchPanel}">
+										<!-- <h2>
+											<h:outputText value="#{msg['lbl.benificarySearch']}" />
+										</h2> -->
+										<p:panel styleClass="panel_border"
+											style="padding-bottom:0px !important;">
+											<p:panel style="padding:0px 00px 0px 00px !important;">
+												<fieldset
+													style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+													<legend
+														style="font-size: 15px; font-weight: bold; color: #037712;"
+														align="top">&nbsp;#{msg['lbl.customerInfo']}&nbsp;</legend>
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputLabel value="#{msg['lbl.customerrefno']}"
+																style="color:#05000a;" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText value="#{wuh2h.customerrefno}"
+																styleClass="ui-state-disabled" readonly="true">
+																<p:ajax />
+															</p:inputText>
+														</p:panel>
+														<div class="clearfix"></div>
+													</p:panel>
+													<!-- Start by subramanian 29/01/2015 -->
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputLabel value="#{msg['lbl.idNumber']}"
+																style="color:#05000a;" />
+														</p:panel>
+
+														<p:panel styleClass="inner_right_col">
+															<p:inputText value="#{wuh2h.idNumber}"
+																styleClass="ui-state-disabled" readonly="true">
+																<p:ajax />
+															</p:inputText>
+														</p:panel>
+														<div class="clearfix"></div>
+													</p:panel>
+													<!-- End by subramanian 29/01/2015 -->
+													<h:panelGroup layout="block" class="clearfix" />
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputLabel value="#{msg['lbl.customerName']}"
+																style="color:#05000a;" />
+															<h:outputText />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText styleClass="ui-state-disabled"
+																value="#{wuh2h.customerFullName}" readonly="true"
+																style="font-size:11px !important;">
+															</p:inputText>
+														</p:panel>
+														<div class="clearfix"></div>
+													</p:panel>
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputLabel value="#{msg['lbl.CustomerLocalName']}"
+																style="color:#05000a;" />
+															<h:outputText />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText styleClass="ui-state-disabled"
+																value="#{wuh2h.customerLocalFullName}" readonly="true"
+																style="font-size:11px !important;">
+															</p:inputText>
+														</p:panel>
+														<div class="clearfix"></div>
+													</p:panel>
+													<h:panelGroup layout="block" class="clearfix" />
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputLabel value="#{msg['lbl.nationality']}"
+																style="color:#05000a;" />
+															<h:outputText />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText styleClass="ui-state-disabled"
+																value="#{wuh2h.nationalityName}" readonly="true"
+																style="font-size:11px !important;">
+															</p:inputText>
+														</p:panel>
+														<div class="clearfix"></div>
+													</p:panel>
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputLabel value="Expiry Date" style="color:#05000a;" />
+															<h:outputText />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText styleClass="ui-state-disabled"
+																value="#{wuh2h.customerExpDate}" readonly="true"
+																style="font-size:11px !important;">
+																<f:convertDateTime pattern="dd/MM/yyyy" />
+															</p:inputText>
+														</p:panel>
+														<div class="clearfix"></div>
+													</p:panel>
+
+													<h:panelGroup layout="block" class="clearfix" />
+
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+														</p:panel>
+														<p:panel style="margin-left:30px;">
+															<p:message for="txnId" display="text" id="msgtxn" />
+															<h:selectOneRadio id="txnId" value="#{wuh2h.txnType}"
+																required="true"
+																requiredMessage="Please Select Any One Option">
+																<f:selectItem itemLabel="#{msg['lbl.wusend']}"
+																	itemValue="1" />
+																<f:selectItem itemLabel="#{msg['lbl.wureceive']}"
+																	itemValue="2" />
+
+																<p:ajax event="change"
+																	listener="#{wuh2h.changeTxnType}"
+																	update="txnId,mainPanel,source,purpose,requiredMsg" process="@this"
+																	onstart="process.show();" onsuccess="process.hide();" />
+
+															</h:selectOneRadio>
+														</p:panel>
+														<div class="clearfix"></div>
+													</p:panel>
+
+													 <p:panel styleClass="left_col"
+														rendered="#{wuh2h.booMtcEnable}">
+														<p:panel styleClass="inner_left_col">
+															<h:outputLabel value="#{msg['lbl.mtcno']}"
+																style="color:#05000a;" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+
+															<p:panelGrid style="width:100%;">
+																<p:row>
+																	<p:column
+																		style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																		<p:inputText id="mtcYear" value="#{wuh2h.mtcYear}">
+																			<p:ajax />
+																		</p:inputText>
+																	</p:column>
+																	<p:column
+																		style="width:70%; padding:0px 5px 0px 10px !important;">
+																		<p:inputText id="mtcNo" value="#{wuh2h.mtcNo}">
+																			<p:ajax />
+																		</p:inputText>
+																	</p:column>
+																</p:row>
+															</p:panelGrid>
+														</p:panel>
+													</p:panel>
+													<h:panelGroup layout="block" class="clearfix" />
+
+													<p:panel styleClass="left_col" id="source"
+														rendered="#{wuh2h.booSourceEnable}">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.sourceOfFund']}*"
+																style="color:#05000a;"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message for="sourceofincome" display="text" />
+															<p:selectOneMenu id="sourceofincome"
+																value="#{wuh2h.sourceOfIncome}" required="true"
+																requiredMessage="#{msg['lbl.choosesource']}"
+																filter="true" filterMatchMode="contains">
+																<f:selectItem
+																	itemLabel="#{msg['lbl.selectsourceoffunds']}"
+																	itemValue="" />
+																<f:selectItems value="#{wuh2h.sourceOfIncomeList}"
+																	var="s"
+																	itemLabel="#{s.sourceOfIncomeId.sourceCode} - #{s.sourceOfIncomeFullDesc}"
+																	itemValue="#{s.sourceOfIncomeId.sourceCode}" />
+																<p:ajax update="msgpurposeoftransaction"></p:ajax>
+															</p:selectOneMenu>
+														</p:panel>
+													</p:panel>
+
+													<p:panel styleClass="left_col" id="purpose"
+														rendered="#{wuh2h.booPurposeEnable}">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.purpose']}*"
+																style="color:#05000a;"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message for="purposeoftransaction" display="text"
+																id="msgpurposeoftransaction" />
+															<p:selectOneMenu id="purposeoftransaction"
+																value="#{wuh2h.purposeOfTransactions}" required="true"
+																requiredMessage="#{msg['lbl.choosepurpose']}"
+																filter="true" filterMatchMode="contains">
+																<f:selectItem itemLabel="#{msg['lbl.selectpurpose']} "
+																	itemValue="" />
+																<f:selectItems
+																	value="#{wuh2h.purposeOfTransactionsList}" var="p"
+																	itemValue="#{p.purposeShortDesc}"
+																	itemLabel="#{p.purposeShortDesc} - #{p.purposeFullDesc}"></f:selectItems>
+																<p:ajax update="msgpurposeoftransaction"></p:ajax>
+															</p:selectOneMenu>
+														</p:panel>
+													</p:panel> 
+												</fieldset>
+											</p:panel>
+											
+											<!-- <div class="clearfix"></div>
+											<p:panel>
+											<fieldset
+													style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+													<legend
+														style="font-size: 15px; font-weight: bold; color: #037712;"
+														align="top">&nbsp;WU Transaction Type&nbsp;</legend>
+											<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+														</p:panel>
+														<p:panel style="margin-left:30px;">
+															<p:message for="txnId" display="text" id="msgtxn" />
+															<h:selectOneRadio id="txnId" value="#{wuh2h.txnType}"
+																required="true"
+																requiredMessage="Please Select Any One Option">
+																<f:selectItem itemLabel="#{msg['lbl.wusend']}"
+																	itemValue="1" />
+																<f:selectItem itemLabel="#{msg['lbl.wureceive']}"
+																	itemValue="2" />
+
+																<p:ajax event="change"
+																	listener="#{wuh2h.changeTxnType}"
+																	update="txnId,mainPanel,requiredMsg" process="@this"
+																	onstart="process.show();" onsuccess="process.hide();" />
+
+															</h:selectOneRadio>
+														</p:panel>
+														<div class="clearfix"></div>
+													</p:panel>
+												</fieldset>
+											</p:panel>	
+ -->
+										<p:outputLabel value="#{wuh2h.errorMessage}" rendered="#{not empty wuh2h.errorMessage}" id="requiredMsg" style="color:red !important; text-align:center;"/>
+											<h:panelGroup layout="block" styleClass="shadow_button">
+
+												<p:commandButton value="#{msg['lbl.back']}"
+													action="#{wuh2h.clearHideAll}" update="mainPanel"
+													immediate="true" onstart="process.show();"
+													onsuccess="process.hide();" style="margin-right:10px;"
+													process="@this" />
+											
+												<h:panelGroup layout="block" class="clearfix" />
+											</h:panelGroup>
+											<div class="clearfix"></div>
+
+										</p:panel>
+									</p:panel>
+									<!--  Customer Beneficiary List below -->
+
+									<p:panel id="beneficiaryListId" styleClass="shadow"
+										style=" background-color:#FFF !important;margin-top:-5px!important"
+										rendered="#{wuh2h.booRenderBeniListPanel}">
+										<!-- <p:panel>
+											<p:commandLink value="Create New Beneficiary"
+												action="#{wuh2h.gotToNewBenificaryCreation}"
+												style="color:blue !important; text-decoration:underline !important;"
+												onstart="process.show();" onsuccess="process.hide();"
+												process="@this" />
+										</p:panel> -->
+										<div class="clearfix" />
+										<p:spacer height="2px" />
+										<!--  Added by Rabil on 10/04/2016 -->
+										<p:panel style="padding:0px 00px 0px 00px !important;">
+											<fieldset
+												style="border: 1.5px solid #64b381 !important; padding: 10px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+												<legend
+													style="font-size: 15px; font-weight: bold; color: #037712;"
+													align="top">&nbsp;#{msg['lbl.customerInfo']}&nbsp;</legend>
+												<p:panel styleClass="left_col"
+													style="margin-top:-5px!important">
+													<p:panel styleClass="inner_left_col">
+														<h:outputLabel value="#{msg['lbl.customerrefno']}"
+															style="color:#05000a;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{wuh2h.customerrefno}"
+															styleClass="ui-state-disabled" readonly="true">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+													<div class="clearfix"></div>
+												</p:panel>
+												<!-- Start by subramanian 29/01/2015 -->
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputLabel value="#{msg['lbl.idNumber']}"
+															style="color:#05000a;" />
+													</p:panel>
+
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{wuh2h.idNumber}"
+															styleClass="ui-state-disabled" readonly="true">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+													<div class="clearfix"></div>
+												</p:panel>
+												<!-- End by subramanian 29/01/2015 -->
+												<h:panelGroup layout="block" class="clearfix" />
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputLabel value="#{msg['lbl.customerName']}"
+															style="color:#05000a;" />
+														<h:outputText />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText styleClass="ui-state-disabled"
+															value="#{wuh2h.customerFullName}" readonly="true"
+															style="font-size:11px !important;">
+														</p:inputText>
+													</p:panel>
+													<div class="clearfix"></div>
+												</p:panel>
+
+												<p:panel styleClass="left_col"
+													style="margin-button:-10px!important">
+													<p:panel styleClass="inner_left_col">
+														<h:outputLabel value="#{msg['lbl.CustomerLocalName']}"
+															style="color:#05000a;" />
+														<h:outputText />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText styleClass="ui-state-disabled"
+															value="#{wuh2h.customerLocalFullName}" readonly="true"
+															style="font-size:11px !important;">
+														</p:inputText>
+													</p:panel>
+													<div class="clearfix"></div>
+												</p:panel>
+											</fieldset>
+										</p:panel>
+									</p:panel>
+										<!--  End by Rabil  -->
+										
+										<p:panel id="benelistdattable" rendered="#{wuh2h.enableBeneListData}">
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value=" #{msg['lbl.benecountryremit']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:selectOneMenu id="bencountryid"
+													value="#{wuh2h.beneficiaryCountryId}" filter="true"
+													filterMatchMode="contains">
+													<f:selectItem itemLabel="#{msg['lbl.beleselect']}"
+														itemValue="" />
+													<f:selectItems value="#{wuh2h.allBeneCountryList}" var="c"
+														itemLabel="#{c.populateCode} - #{c.populateName}"
+														itemValue="#{c.populateId}" />
+													<p:ajax event="change"
+														listener="#{wuh2h.populateCustomerDetailsFromBeneRelation(c)}"
+														process="@this" update=":form1:dataTable,mainPanel"
+														onstart="process.show();" onsuccess="process.hide()" />
+												</p:selectOneMenu>
+											</p:panel>
+											<div class="clearfix"></div>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col"></p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:commandButton id="wucardlookup"
+														value="   WU Card Lookup   " onstart="process.show();"
+														onsuccess="process.hide()" action="#{wuh2h.wucardLookup}"
+														rendered="#{wuh2h.booDenoEnable}" process="@this" update="cardlookuppanel,mainPanel" />
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+											<p:panel>
+											<p:commandLink value="Create New Beneficiary"
+												action="#{wuh2h.gotToNewBenificaryCreation}"
+												style="color:blue !important; text-decoration:underline !important;"
+												onstart="process.show();" onsuccess="process.hide();"
+												process="@this" />
+										</p:panel>
+
+										<p:spacer height="25px" />
+
+										<p:dataTable id="dataTable" widgetVar="dataTable"
+											styleClass="mydatatableclass"
+											value="#{wuh2h.coustomerBeneficaryDTList}" var="d"
+											rowIndexVar="rowIndex" rowKey="#{d.benificaryName}"
+											emptyMessage="#{msg['lbl.norecordfound']}" rows="5"
+											paginator="true"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="5,10,15" paginatorPosition="bottom">
+											<f:facet name="header">
+										            #{msg['lbl.benedet']}
+										    </f:facet>
+
+											<p:column selectionMode="single" headerText="Select"
+												style="width:5%;text-align:center" />
+
+											<p:ajax event="rowSelectRadio"
+												listener="#{wuh2h.onRowSelect}"
+												update=":form1:dataTable,:form1"
+												style="width:5%;text-align:center" onstart="process.show();"
+												onsuccess="process.hide()" />
+
+											<p:column headerText="#{msg['lbl.sNo']}" style="width:5%;"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.benificaryName']}"
+												filterBy="#{d.benificaryName}" filterValue="contains"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+												style="width:30%;">
+												<p:outputLabel value="#{d.benificaryName}"
+													style="float:left;margin-left:7px;" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.relation']}"
+												filterBy="#{d.relationShipName}" filterValue="contains"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+												style="width:10%;">
+												<p:outputLabel value="#{d.relationShipName}"
+													style="float:left;margin-left:7px;" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.bankcountry']}"
+												filterBy="#{d.countryName}" filterValue="contains"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+												style="width:15%;">
+												<p:outputLabel value="#{d.countryName}"
+													style="float:left;margin-left:7px;" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.currency']}"
+												filterBy="#{d.currencyName}" filterValue="contains"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+												style="width:15%;">
+												<p:outputLabel value="#{d.currencyName}"
+													style="float:left;margin-left:7px;" />
+											</p:column>
+											<!-- OLD 
+											<p:column headerText="#{msg['lbl.differentcurrency']}"
+												style="width:10%;">
+												<p:commandButton value="" id="imgEdit1" styleClass="edit1"
+													onstart="process.show();" onsuccess="process.hide()"
+													action="#{wuh2h.differentCurrencyDetails(d)}"
+													update=":form1" process="@this"></p:commandButton>
+											</p:column>
+											-->
+											
+											<!--  NEW for bene edit-->
+											
+											<p:column headerText="#{msg['lbl.differentcurrency']}"
+												style="width:10%;">
+												<p:commandButton value="" id="imgEdit1" styleClass="edit1"
+													onstart="process.show();" onsuccess="process.hide()"
+													action="#{wuh2h.differentCurrencyDetails(d)}"
+													update=":form1" process="@this"></p:commandButton>
+											</p:column>
+											
+											
+											<p:column headerText="#{msg['lbl.edit']}" style="width:3%;">
+													<p:commandButton value="" id="imgEdit" styleClass="edit"
+														onstart="process.show();" onsuccess="process.hide()"
+														action="#{wuh2h.editWUBenificary(d)}"
+														update=":form1" process="@this">
+													</p:commandButton>
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.delete']}"
+													style="width:2% !important; text-align:center !important; margin-left:10px;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:commandButton value="" styleClass="delete"
+														onstart="process.show();" onsuccess="process.hide()"
+														actionListener="#{wuh2h.deleteBeneRelationIsActive(d)}"
+														process="@this"
+														update=":form1:dataTable,:form1:"
+														immediate="true" />
+												</p:column>
+										</p:dataTable>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="10px" />
+
+									
+									
+
+									<h:panelGroup layout="block" class="clearfix" />
+
+									<p:panel id="wusendbuttonid" styleClass="shadow"
+										style=" background-color:#FFF !important;"
+										>
+
+										<h:panelGroup layout="block" styleClass="shadow_button">
+
+											<p:commandButton value="#{msg['lbl.back']}"
+												onstart="process.show();" onsuccess="process.hide()"
+												action="#{wuh2h.backFromBeneList}" process="@this"
+												update="mainPanel" rendered="#{wuh2h.txnType eq '1'}"
+												style="margin-right:10px;" />
+											<!-- <p:commandButton id="sendButton"
+												value="#{msg['lbl.wusendtxn']}" onstart="process.show();"
+												onsuccess="process.hide()"
+												action="#{wuh2h.checkingBeneAccountDetails}"
+												disabled="#{wuh2h.isWUSend}"
+												rendered="#{wuh2h.txnType eq '1'}"
+												update="appnotconnected,exception,error" process="@this"
+												style="margin-right:10px;" /> -->
+
+											<p:commandButton value="clear"
+												onclick="dataTable.unselectAllRows()" update=":form1"
+												style="margin-right:10px;" />
+
+											<!-- <p:commandButton id="denoButtonSend"
+												value="#{msg['lbl.next']}" onstart="process.show();"
+												onsuccess="process.hide()" action="#{wuh2h.wucardLookup}"
+												rendered="#{wuh2h.booDenoEnable}"
+												update="cardlookuppanel,mainPanel" process="@this" /> -->
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+										</h:panelGroup>
+
+									</p:panel>
+									
+									</p:panel>
+
+									<!-- Payment Panel  -->
+									<p:panel id="paymentpanelid"
+										rendered="#{wuh2h.booRenderPaymentDetails}">
+										<fieldset
+											style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+											<legend
+												style="font-size: 15px; font-weight: bold; color: #037712;"
+												align="top">&nbsp;#{msg['lbl.collection']}&nbsp;</legend>
+											<p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Currency" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="collectioncurrency"
+															styleClass="ui-state-disabled"
+															value="#{wuh2h.colCurrency}" readonly="true"
+															required="true">
+															<p:ajax />
+														</p:inputText>
+
+													</p:panel>
+												</p:panel>
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Net Amount" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="netamountid"
+															styleClass="ui-state-disabled"
+															value="#{wuh2h.calNetAmountPaid}" readonly="true"
+															required="true">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+											</p:panel>
+										</fieldset>
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="10px" />
+										<fieldset
+											style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+											<legend
+												style="font-size: 15px; font-weight: bold; color: #037712;"
+												align="top">&nbsp;#{msg['lbl.pmtdet']}&nbsp;</legend>
+											<p:panel>
+
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.pymtmode']}" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="paymentmode" display="text"
+															id="msgpaymentmode" />
+														<p:inputText id="paymentmode"
+															styleClass="ui-state-disabled"
+															value="#{wuh2h.colpaymentmodeName}" readonly="true"
+															required="true">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<!-- <p:panel>
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.amount']}" />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:message for="cashid" display="text" id="msgcashid" />
+															<p:inputText id="cashid" value="#{wuh2h.cashAmount}"
+																required="true" requiredMessage="Please Enter Amount"
+																converterMessage="Please Enter Numbers ">
+																<f:validator
+																	validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+																<p:ajax event="blur"
+																	listener="#{wuh2h.checkcashcollection}"
+																	update="cashid,msgcashid,amountgreater"
+																	onstart="process.show();" onsuccess="process.hide();" />
+															</p:inputText>
+
+														</p:panel>
+													</p:panel>
+												</p:panel> -->
+
+											</p:panel>
+										</fieldset>
+
+
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.next']}"
+												onstart="process.show();" onsuccess="process.hide()"
+												action="#{wuh2h.nextpaneltoPaymentDetails}"
+												update="mainPanel,paymentmode,cashid" process="@this" />
+
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+
+									</p:panel>
+
+									<!--  Denomination -->
+
+									<p:panel id="denomid"
+										rendered="#{wuh2h.booRendercashdenomination}">
+
+										<p:panel styleClass="full_col">
+											<p:panelGrid style="width:100%;">
+												<p:row>
+													<p:column
+														style="width:16%; padding:0px 5px 0px 10px !important;">
+														<h:outputText value="#{msg['lbl.totalAmount']}" />
+													</p:column>
+
+													<p:column
+														style="width:16%; padding:0px 5px 0px 10px !important;">
+														<p:inputText value="#{wuh2h.toalUsedAmount}"
+															styleClass="ui-state-disabled" readonly="true" />
+													</p:column>
+
+													<p:column
+														style="width:16%; padding:0px 5px 0px 10px !important;">
+														<h:outputText value="Amount to Refund" />
+													</p:column>
+
+													<p:column
+														style="width:16%; padding:0px 5px 0px 10px !important;">
+														<p:inputText styleClass="ui-state-disabled"
+															value="#{wuh2h.totalrefundAmount}" readonly="true" />
+													</p:column>
+
+												</p:row>
+											</p:panelGrid>
+
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel>
+											<div class="clearfix" />
+											<!-- <fieldset
+											style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;"> -->
+											<h2
+												style="font-size: 15px; font-weight: bold; color: #037712;"
+												align="top">&nbsp;
+												#{msg['lbl.remtdenominationdetails']} &nbsp;</h2>
+
+											<p:panel styleClass="panel_border" id="denominationid">
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<h3>#{wuh2h.denominationchecking}</h3>
+
+												<table cellpadding="0" cellspacing="0" border="0"
+													width="100%" class="mytable">
+													<tr>
+														<th>#{msg['lbl.fclocalpurchaseserialno']}</th>
+														<th>#{msg['lbl.fclocalpurchasedenominationname']}</th>
+														<th>#{msg['lbl.fclocalpurchasenoofnotes']}</th>
+														<th>#{msg['lbl.fclocalpurchasecashamount']}</th>
+													</tr>
+
+													<ui:repeat value="#{wuh2h.lstData}" var="ooo"
+														id="uirepeat">
+
+														<tr>
+															<td style="width: 15% ! important;"><h:outputText
+																	value="#{ooo.serial}." /></td>
+															<td style="width: 15% ! important;"><h:outputText
+																	value="#{ooo.denominationDesc}" /></td>
+
+															<td style="width: 15% ! important;"><p:message
+																	for="q" display="text"
+																	style="text-shadow:none !important;" id="msg" /> <p:inputText
+																	style="text-align:center;" id="q" value="#{ooo.qty}">
+
+																	<p:ajax event="change" onstart="process.show();"
+																		onsuccess="process.hide()" onerror="alert('error')"
+																		listener="#{wuh2h.onCellEdit(ooo)}"
+																		update=":form1:denominationid,price,q,:form1:denomid" />
+																	<f:validator
+																		validatorId="com.amg.exchange.validator.FcQValidator" />
+																</p:inputText></td>
+															<td style="width: 15% ! important;"><h:outputText
+																	value="#{ooo.price==0?'':ooo.price}" id="price" /></td>
+														</tr>
+													</ui:repeat>
+
+
+												</table>
+
+												<p:spacer height="20px" />
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panelGrid style="width:80%;margin-left:100px;">
+													<p:row>
+
+														<p:column style="width:20% !important ;">
+															<h:outputText value="#{msg['lbl.toatalcash']}" />
+														</p:column>
+														<p:column style="width:20% !important ;">
+															<p:inputText id="totalcashrecid"
+																styleClass="ui-state-disabled"
+																value="#{wuh2h.cashAmount}" readonly="true">
+																<p:ajax />
+															</p:inputText>
+														</p:column>
+
+														<p:column style="width:20% !important ;">
+															<h:outputText value="#{msg['lbl.totalcahrcvd']}" />
+														</p:column>
+														<p:column style="width:20% !important ;">
+															<p:inputText id="totalcashid"
+																styleClass="ui-state-disabled"
+																value="#{wuh2h.denomtotalCash}" readonly="true">
+																<p:ajax />
+															</p:inputText>
+														</p:column>
+
+													</p:row>
+												</p:panelGrid>
+
+											</p:panel>
+										</p:panel>
+										<!-- </fieldset> -->
+									</p:panel>
+
+
+
+									<!--  Refund denomination -->
+									<p:panel rendered="#{wuh2h.boorefundPaymentDetails}">
+										<h2
+											style="font-size: 15px; font-weight: bold; color: #037712;"
+											align="top">&nbsp; #{msg['lbl.refundDenomination']}
+											&nbsp;</h2>
+
+										<p:panel styleClass="panel_border" id="refunddenomId">
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h3>#{wuh2h.denominationchecking}</h3>
+
+											<table cellpadding="0" cellspacing="0" border="0"
+												width="100%" class="mytable">
+												<tr>
+													<th>#{msg['lbl.fclocalpurchaseserialno']}</th>
+													<th>#{msg['lbl.fclocalpurchasedenominationname']}</th>
+													<th>#{msg['lbl.fclocalpurchasecurrentstock']}</th>
+													<th>#{msg['lbl.fclocalpurchasenoofnotes']}</th>
+													<th>#{msg['lbl.fclocalpurchasecashamount']}</th>
+
+												</tr>
+												<ui:repeat value="#{wuh2h.lstRefundData}" var="o">
+
+													<tr>
+														<td style="width: 15% ! important;"><h:outputText
+																value="#{o.serial}." /></td>
+														<td style="width: 15% ! important;"><h:outputText
+																value="#{o.denominationDesc}" /></td>
+
+														<td style="width: 15% ! important;"><h:outputText
+																value="#{o.stock}" /></td>
+														<td style="width: 15% ! important;"><p:message
+																for="q1" display="text" /> <p:inputText id="q1"
+																style="text-align:center;" value="#{o.qty}">
+																<p:ajax event="change" onstart="process.show();"
+																	onsuccess="process.hide();"
+																	listener="#{wuh2h.onRefundCellEdit(o)}"
+																	update=":form1:mainPanel,refundprice,q1" />
+																<!-- <f:validator
+																			validatorId="com.amg.exchange.validator.FcQValidator" /> -->
+
+															</p:inputText></td>
+
+														<td style="width: 15% ! important;"><h:outputText
+																value="#{o.price}" id="refundprice" /></td>
+													</tr>
+												</ui:repeat>
+
+
+											</table>
+
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+										</p:panel>
+
+										<p:panel id="refundDetailsId">
+
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panelGrid style="width:80%;margin-left:100px;">
+												<p:row>
+
+													<p:column style="width:20% !important ;">
+														<h:outputText value="Refund Amount" />
+													</p:column>
+													<p:column style="width:20% !important ;">
+														<p:inputText id="refundamountid"
+															styleClass="ui-state-disabled"
+															value="#{wuh2h.refundAmount}" readonly="true">
+															<p:ajax />
+														</p:inputText>
+													</p:column>
+
+													<p:column style="width:20% !important ;">
+														<h:outputText value="#{msg['lbl.totrefund']}" />
+													</p:column>
+													<p:column style="width:20% !important ;">
+														<p:inputText id="collectrefundid"
+															styleClass="ui-state-disabled"
+															value="#{wuh2h.collectedRefundAmount}" readonly="true">
+															<p:ajax />
+														</p:inputText>
+													</p:column>
+
+												</p:row>
+											</p:panelGrid>
+
+										</p:panel>
+
+									</p:panel>
+
+
+									<p:panel id="saveallpanel" rendered="#{wuh2h.booSaveAll}">
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h:panelGroup layout="block" styleClass="shadow_button">
+
+											<p:commandButton value="#{msg['lbl.back']}"
+												action="#{wuh2h.backFromFinal}" update="mainPanel"
+												process="@this" style="margin-right:10px; "
+												onstart="process.show();" onsuccess="process.hide();" />
+											<p:commandButton value="#{wuh2h.nextOrSaveButton}"
+												action="#{wuh2h.saveAll}" process="@this"
+												update=":form1,finalerrormsg,exception,error"
+												style="margin-right:10px; " onstart="process.show();"
+												onsuccess="process.hide();" />
+										</h:panelGroup>
+									</p:panel>
+									
+									
+									
+									
+									
+									<!-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& new -->
+									
+									<p:panel id="receiverinfopanel"
+										rendered="#{wuh2h.enableSendReceiverInfo}">
+
+										<fieldset
+											style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+											<legend
+												style="font-size: 15px; font-weight: bold; color: #037712;"
+												align="top">&nbsp;Receiver Info&nbsp;</legend>
+										<p:panel>
+
+										<div class="clearfix"></div>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="First Name" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<h:outputText value="#{wuh2h.receiverFirstName}" style="color:blue;"/>
+											</p:panel>
+										</p:panel>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Last Name" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<h:outputText value="#{wuh2h.receiverLastName}" style="color:blue;"/>
+											</p:panel>
+										</p:panel>
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Country" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<h:outputText value="#{wuh2h.receiverCountry}" style="color:blue;"/>
+											</p:panel>
+										</p:panel>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Currency" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<h:outputText value="#{wuh2h.receiverCurrency}" style="color:blue;"/>
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix"></div>
+									</p:panel>	
+									</fieldset>
+									</p:panel>
+									
+
+									<p:panel id="cardlookuppanel"
+										rendered="#{wuh2h.enableSendTransferInfo}">
+
+										<fieldset
+											style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+											<legend
+												style="font-size: 15px; font-weight: bold; color: #037712;"
+												align="top">&nbsp;Money Transfer Info&nbsp;</legend>
+											<p:panel>
+
+										<div class="clearfix"></div>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.currency']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgpayoutCurrency" for="payoutcurrency" display="text" />
+													<p:selectOneMenu id="payoutcurrency"
+														value="#{wuh2h.currencyId}" filter="true"
+														required="true" filterMatchMode="contains"
+														requiredMessage="Please select Currency">
+														<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}"
+															itemValue="" />
+														<f:selectItems value="#{wuh2h.currencyList}"
+															var="c"
+															itemLabel="#{c.currencyId} - #{c.currencyName}"
+															itemValue="#{c.currencyId}" />
+													</p:selectOneMenu>
+										</p:panel>
+										</p:panel>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Promotion Code" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="promotioncode" display="text"
+													id="promotioncodemsg" />
+												<p:inputText id="promotioncode"
+													value="#{wuh2h.promotionCode}" required="true">
+													<p:ajax />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Send Amount" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="sendamount" display="text"
+													id="sendamountmsg" />
+												<p:inputText id="sendamount" value="#{wuh2h.cashAmount}"
+													required="true">
+													
+													<f:validator
+																	validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+																<p:ajax event="blur"
+																	listener="#{wuh2h.checkcashcollection}"
+																	update="sendamount,sendamountmsg,amountgreater"
+																	onstart="process.show();" onsuccess="process.hide();" />
+																	
+																	<p:ajax />
+													
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Receive Amount" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="receiveamount" display="text"
+													id="receiveamountmsg" />
+												<p:inputText id="receiveamount"
+													value="#{wuh2h.receiveAmount}" required="true">
+													<p:ajax />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix"></div>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:commandButton value="Fee Enquiry"
+												onstart="process.show();" onsuccess="process.hide()"
+												action="#{wuh2h.wuFeeEnquiry}" process="@this" update="mainPanel" />
+											</p:panel>
+										</p:panel>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												
+											</p:panel>
+										</p:panel>
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Transfer Fee" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="transferfee" display="text"
+													id="transferfeemsg" />
+												<p:inputText id="transferfee" value="#{wuh2h.transferFee}"
+													required="true">
+													<p:ajax />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Total Amount" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="totalamount" display="text"
+													id="totalamountmsg" />
+												<p:inputText id="totalamount" value="#{wuh2h.totalAmount}"
+													required="true">
+													<p:ajax />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+										
+										
+										<div class="clearfix"></div>
+										
+										
+
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.back']}"
+												onstart="process.show();" onsuccess="process.hide()"
+												action="#{wuh2h.backSendMoneyTransfer}" process="@this" update="mainPanel" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												onstart="process.show();" onsuccess="process.hide()"
+												action="#{wuh2h.exitWU}" process="@this" update="mainPanel" />
+											<p:commandButton value="#{msg['lbl.next']}"
+												onstart="process.show();" onsuccess="process.hide()"
+												action="#{wuh2h.nextSendMoneyConfirmation}" process="@this" update="mainPanel" />
+										</h:panelGroup>
+									</p:panel>
+									
+									</fieldset>
+									</p:panel>
+
+									<h:panelGroup layout="block" class="clearfix" />
+									<p:panel id="sendconformationpanel"
+										rendered="#{wuh2h.enableSendMoneyConfirm}">
+
+										<fieldset
+											style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+											<legend
+												style="font-size: 15px; font-weight: bold; color: #037712;"
+												align="top">&nbsp;Send Money Confirmation&nbsp;</legend>
+											<p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Payout Country" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<h:outputText value="test" />
+											</p:panel>
+										</p:panel>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Receive Amount" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<h:outputText value="test" />
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix"></div>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Exchange Rate" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<h:outputText value="test" />
+											</p:panel>
+										</p:panel>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Total Amount" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<h:outputText value="test" />
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix"></div>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Send Amount" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<h:outputText value="test" />
+											</p:panel>
+										</p:panel>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Delivery Services" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<h:outputText value="test" />
+											</p:panel>
+										</p:panel>
+										<div class="clearfix"></div>
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Transfer Fee" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<h:outputText value="test" />
+											</p:panel>
+										</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Promotion Code" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<h:outputText value="test" />
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="#{msg['lbl.back']}"
+													onstart="process.show();" onsuccess="process.hide()"
+													action="#{wuh2h.backSendMoneyConfirmation}" process="@this" update="mainPanel" />
+												<p:commandButton value="#{msg['lbl.cancel']}"
+													onstart="process.show();" onsuccess="process.hide()"
+													action="#{wuh2h.exitWU}" process="@this" update="mainPanel" />
+												<p:commandButton value=" Pay "
+													onstart="process.show();" onsuccess="process.hide()"
+													action="#{wuh2h.nextpaneltoPaymentDetails}" process="@this"
+													update="mainPanel,denomid,error,procedureErr,sqlexception" />
+											</h:panelGroup>
+
+											<div class="clearfix"></div>
+										
+									</p:panel>
+									
+									</fieldset>
+									</p:panel>
+
+
+									<h:panelGroup layout="block" class="clearfix" />
+									<p:panel id="sendtxnstaus" rendered="#{wuh2h.enableSendMoneyTxnStatus}">
+
+										<fieldset
+											style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+											<legend
+												style="font-size: 15px; font-weight: bold; color: #037712;"
+												align="top">&nbsp;Transaction Status&nbsp;</legend>
+											<p:panel>
+											
+											
+											
+											</p:panel>
+											</fieldset>
+
+									</p:panel>
+
+
+									<!-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& new end-->
+									
+									
+									
+									<h:panelGroup layout="block" class="clearfix" />
+
+									<!--  Save All Panel -->
+									<p:panel id="savesuccesspanel1"
+										rendered="#{wuh2h.booSaveDenomRender}"
+										style="padding:20px 100px 60px 100px !important;">
+										<fieldset
+											style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+											<legend
+												style="font-size: 18px; font-weight: bold; color: #037712;"
+												align="top">&nbsp;#{msg['lbl.success']}&nbsp;</legend>
+											<p:outputLabel value="#{msg['lbl.dataissuccessfullysaved']}"
+												style="font-size: 20px !important; font-weight: bold; color: #00a53e !important; text-align:center !important;" />
+
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton value="Exit" onstart="process.show();"
+													onsuccess="process.hide()" action="#{wuh2h.exitWU}"
+													process="@this" update="mainPanel" />
+											</h:panelGroup>
+										</fieldset>
+									</p:panel>
+
+
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+		<a id="goTop" />
+	</f:view>
+
+</h:body>
+</html>

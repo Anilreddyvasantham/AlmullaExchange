@@ -1,0 +1,811 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link href="css/style1.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<style>
+.ui-datatable .ui-paginator {
+	padding: 2px;
+	background-color: #FFFFFF !important;
+	border: none !important;
+}
+
+.ui-fieldset {
+	border: solid 1px #51C4CC;
+	background-color: rgba(81, 196, 204, 0.03);
+	border-radius: 3px;
+}
+
+.ui-fieldset-legend {
+	color: #ffffff;
+	font-size: 16px;
+	line-height: 15px;
+	background-color: #51C4CC;
+	padding: 13px 20px !important;
+	border-bottom-right-radius: 2px;
+	border-bottom-left-radius: 2px;
+	border-top-right-radius: 2px;
+	border-top-left-radius: 2px;
+	-webkit-transition: all 0.3s ease;
+	-moz-transition: all 0.3s ease;
+	-ms-transition: all 0.3s ease;
+	-o-transition: all 0.3s ease;
+	transition: all 0.3s ease;
+}
+
+legend.ui-fieldset-legend span {
+	padding: 10px;
+}
+
+.table {
+	display: table;
+}
+
+.table-row {
+	display: table-row;
+}
+
+.table-cell {
+	display: table-cell;
+}
+
+.mydatatableclass table  tfoot tr td:nth-child(1),.mydatatableclass table  tfoot tr td:nth-child(3)
+	{
+	background-color: #cec !important;
+	color: #000 !important;
+	font-weight: bold !important;
+}
+
+.mydatatableclass table  tfoot tr td:nth-child(2),.mydatatableclass table  tfoot tr td:nth-child(4)
+	{
+	text-align: left !important;
+}
+</style>
+	<script type="text/javascript">
+		$(function() {
+			// Set cursor to pointer and add click function
+			$("legend").css("cursor", "pointer").click(function() {
+				var legend = $(this);
+				var value = $(this).children("span").html();
+				if (value == "[-]")
+					value = "[+]";
+				else
+					value = "[-]";
+				$(this).siblings().slideToggle(1000, function() {
+					legend.children("span").html(value);
+				});
+			});
+		});
+	</script>
+	<script>
+		document.onkeydown = function(e) {
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+
+		history.pushState(null, null, 'miscellaneouspaymentrquest.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'miscellaneouspaymentrquest.xhtml');
+		});
+	</script>
+</h:head>
+<p:confirmDialog id="transactionno" widgetVar="transactionno"
+	width="400" resizable="false"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.entertransferyear']} ">
+</p:confirmDialog>
+<p:confirmDialog id="norecords" widgetVar="norecords" width="400"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.norecordfound']}">
+</p:confirmDialog>
+<p:confirmDialog id="pleaseentercust" widgetVar="pleaseentercust"
+	width="400" resizable="false"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true"
+	message="Please Enter TransferYear/No or Customer Reference">
+</p:confirmDialog>
+<p:confirmDialog id="pleaseselectrecorpay1"
+	widgetVar="pleaseselectrecorpay1" width="400" resizable="false"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="Please Select Receipt Or Payment">
+</p:confirmDialog>
+<p:confirmDialog id="pleaseenteryear" widgetVar="pleaseenteryear"
+	width="400" resizable="false"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="Please Enter Transfer reference">
+</p:confirmDialog>
+<p:confirmDialog id="norecfound" widgetVar="norecfound" width="400"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.norecordfound']}">
+</p:confirmDialog>
+
+<p:confirmDialog id="commisionchecknotavailable"
+	widgetVar="commisionchecknotavailable" resizable="false"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.commisionnotavailable']}">
+</p:confirmDialog>
+<p:confirmDialog id="chargescheck" widgetVar="chargescheck" width="400"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true"
+	message="#{msg['lbl.chargeamountdoesnotexceedremittancechargeamt']}:#{misReceiptPayment.deliveryChargeForDisplay}">
+</p:confirmDialog>
+<p:confirmDialog id="chargeschecknotavailable"
+	widgetVar="chargeschecknotavailable" resizable="false"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.chargesamountnotavailable']}">
+</p:confirmDialog>
+<p:confirmDialog id="pleasetransfernoselect"
+	widgetVar="pleasetransfernoselect" width="400" resizable="false"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.pleaseselecttransfernoandyear']}">
+</p:confirmDialog>
+
+
+<p:confirmDialog id="pleaseenteranyamount"
+	widgetVar="pleaseenteranyamount" width="400" resizable="false"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="Net Amount must be greater than Zero">
+</p:confirmDialog>
+
+<p:confirmDialog id="customerdoesnotexist"
+	widgetVar="customerdoesnotexist" width="400" resizable="false"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.customerreferencedoesnotexist']}">
+</p:confirmDialog>
+<p:confirmDialog id="transfernodoesnotexist"
+	widgetVar="transfernodoesnotexist" width="400" resizable="false"
+	style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.tranfernodoesnotexisted']}">
+</p:confirmDialog>
+<p:dialog id="complete" widgetVar="complete" width="450" height="80"
+	resizable="false" style="background-color: white !important;"
+	styleClass="success" header="#{msg['lbl.confirmation']}" closable="false"
+	showEffect="clip" hideEffect="clip" modal="true">
+	<p:outputLabel value="#{msg['lbl.doyouwantdeleterec']} "
+		style="text-align: center; font-size:15px !important;" />
+	<br />
+	<p:commandButton value="#{msg['lbl.yes']}"
+		actionListener="#{misReceiptPayment.afterDeleteCall}" onstart="process.show();"	onsuccess="process.hide();"
+		process="@this" style="margin-left: 150px !important;" />
+	<p:commandButton value="#{msg['lbl.no']}"
+		oncomplete="complete.hide()"
+		process="@this"  />
+</p:dialog>
+
+
+
+
+<h:body dir="#{facesBean.direction}">
+
+
+	<f:view locale="#{facesBean.locale}">
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:panelGroup layout="block" class="heading1">
+								<h:outputText value="#{msg['lbl.miscreceipt']}" />
+							</h:panelGroup>
+							<h:form id="inputForm">
+								<p:dialog modal="true" showHeader="false" widgetVar="process"
+									id="process" width="300" height="60" resizable="false"
+									draggable="false" closable="false"
+									style=" border: 2px green solid !important;background-color: #FFF !important;">
+									<div
+										style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+										<p:graphicImage value="../images/processImg.gif"
+											style="float: left !important; margin-right: 24px !important; " />
+										<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+											style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+									</div>
+								</p:dialog>
+
+								<p:panel id="mainPanel" styleClass="shadow"
+									style="margin: 20px 10px !important; background-color:#FFF !important;">
+
+									<p:dialog id="commisioncheck" widgetVar="commisioncheck"
+										resizable="false" width="600"  height="40"
+										style="background-color: white !important;" 
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="false" 
+										closable="true" modal="true">
+										
+											<h:outputText
+												value="#{msg['lbl.commisiondoesnotexceedremittancecommisionamt']}" />
+											<br />
+											<h:outputText
+												value="Please enter less than are equals to #{misReceiptPayment.commisionAmountForDisplay}" />
+										
+									</p:dialog>
+									
+									<p:dialog id="commisioncheckSave" widgetVar="commisioncheckSave"
+										resizable="false" 
+										style="background-color: white !important;" 
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="false" 
+										closable="false" modal="true">
+										<p:panel>
+											<h:outputText
+												value="Commission is greater than remittance amount" />
+											</p:panel>
+											<p:spacer height="10px" />
+										<p:panel style="padding-left:100px;">
+											<p:commandButton value="#{msg['lbl.ok']}" style="margin-right:10px;"
+												actionListener="#{misReceiptPayment.acceptButtonSave}"
+												process="@this" oncomplete="PF('commisioncheckSave').hide();"  onstart="process.show();"
+															onsuccess="process.hide();" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												onclick="PF('commisioncheckSave').hide();" immediate="true" />
+										</p:panel>
+										
+									</p:dialog>
+									
+									<p:confirmDialog id="csp" widgetVar="csp"
+										showHeader="false" resizable="false" header="Warning Message"
+										style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip"
+										message="#{misReceiptPayment.errorMessage}">
+									</p:confirmDialog>
+									
+									<p:confirmDialog id="chargescheck" widgetVar="chargescheck"
+										width="400" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{msg['lbl.chargeamountdoesnotexceedremittancechargeamt']}:#{misReceiptPayment.deliveryChargeForDisplay}">
+									</p:confirmDialog>
+									<p:confirmDialog id="proceErr" widgetVar="proceErr" resizable="false"
+										visible="#{misReceiptPayment.booProcedureDialog}"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{misReceiptPayment.errMsg}">
+									</p:confirmDialog>
+									<fieldset class="ui-fieldset">
+										<legend class="ui-fieldset-legend">
+											<span>[-]</span>
+
+											<h:outputText value="#{msg['lbl.miscreceipt']}" />
+										</legend>
+										<p:panel styleClass="panel_border1">
+											<p:confirmDialog id="errormsg" widgetVar="errormsg"
+												resizable="false"
+												style=" border:2px solid red  !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+												showEffect="clip" hideEffect="clip" closeOnEscape="true"
+												closable="true" message="#{misReceiptPayment.errorMessage}"
+												header="#{msg['lbl.warningDailog']}">
+											</p:confirmDialog>
+
+											<p:panel styleClass="left_col user_select">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.recpay']}*" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="paymentRec" display="text" id="trnsmsg1" />
+													<p:selectOneMenu id="paymentRec" panelStyle="width: 88px;"
+														value="#{misReceiptPayment.receiptpayment}"
+														required="true"
+														requiredMessage="Please select Receipt/Payment">
+														<f:selectItem itemLabel="#{msg['lbl.select']}"
+															itemValue="" />
+
+														<f:selectItem itemLabel="P - PAYMENT" itemValue="9" />
+
+														<f:selectItem itemLabel="R - RECEIVE" itemValue="2" />
+
+														<p:ajax event="change"
+															listener="#{misReceiptPayment.checkRecord}"
+															update="inputForm,trnsmsg1" onstart="process.show();"
+															onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.docno']}" />
+													<h:outputText value="*" style="color:red;font-weight:bold;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+															<p:column
+																style="width:35% !important; padding:0px 10px 0px 0px !important;">
+																<p:inputText id="financeYear1"
+																	styleClass="ui-state-disabled"
+																	value="#{misReceiptPayment.documentYear}"
+																	required="true" requiredMessage="Enter Financial Year"
+																	readonly="true">
+																	<p:ajax event="blur" update="msgfinanceYear"
+																		onstart="process.show();" onsuccess="process.hide();" />
+																	<p:message for="financeYear1" display="text"
+																		id="msgfinanceYear" />
+																</p:inputText>
+															</p:column>
+															<p:column
+																style="width:50% !important; padding:0px !important;"
+																rendered="#{misReceiptPayment.booRenderDoc}">
+																<p:inputText styleClass="ui-state-disabled"
+																	id="documentSerialId"
+																	value="#{misReceiptPayment.documentNo}" required="true"
+																	requiredMessage="Enter Document Serial ID"
+																	readonly="#{misReceiptPayment.documentNumberReadOnly}">
+																	<p:ajax event="blur"
+																		update="msgdocumentSerialId,msgdocumentSerialId"
+																		onstart="process.show();" onsuccess="process.hide();" />
+																	<p:message for="documentSerialId" display="text"
+																		id="msgdocumentSerialId" />
+																</p:inputText>
+															</p:column>
+															<p:column
+																style="width:50% !important; padding:0px !important;"
+																rendered="#{misReceiptPayment.renderDocumentNumList}">
+																<p:message for="editableDocumentSerialId" display="text"
+																	id="msgeditableDocumentSerialId" />
+
+																<!-- <p:selectOneMenu id="editableDocumentSerialId"
+												value="#{misReceiptPayment.editableDocumentRef}" filter="true"
+												filterMatchMode="contains" required="true"
+												requiredMessage="Please Select Document Number" >
+												<f:selectItem itemLabel="#{msg['lbl.select']}"
+													itemValue="" />
+												<f:selectItems
+													value="#{misReceiptPayment.listOfReceiptPayment}" var="c"
+													itemLabel="#{c.documentNo}" itemValue="#{c.documentNo}"/>
+													<p:ajax event="change"  listener="#{misReceiptPayment.editTransaction}" onstart="process.show();" update="inputForm" onsuccess="process.hide();"/>
+											</p:selectOneMenu> -->
+																<p:inputText id="editableDocumentSerialId"
+																	value="#{misReceiptPayment.editableDocumentRef}"
+																	required="true"
+																	requiredMessage="Please select document">
+																	<p:ajax event="blur"
+																		listener="#{misReceiptPayment.editTransaction}"
+																		onstart="process.show();" update="inputForm"
+																		onsuccess="process.hide();" />
+																</p:inputText>
+															</p:column>
+															<p:column
+																style="width:15% !important;text-align:right !important;padding:0px 0px 0px 0px !important;"
+																rendered="#{misReceiptPayment.booRenderEditButton}">
+																<p:commandButton styleClass="edit" value=" "
+																	action="#{misReceiptPayment.editClicked}"
+																	update="inputForm" onstart="process.show()"
+																	onsuccess="process.hide();" immediate="true" />
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel>
+
+
+
+
+
+
+
+											<!-- 	<p:panel styleClass="left_col user_select">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.docno']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:98%;">
+														<p:row>
+															<p:column
+																style="width:50% !important; padding:0px 13px 0px 0px !important;">
+																<p:inputText id="financeYear"
+																	value="#{misReceiptPayment.documentYear}"
+																	readonly="true">
+
+
+																</p:inputText>
+															</p:column>
+															<p:column
+																style="width:50% !important; padding:0px !important;"
+																 >
+																<p:inputText id="documentSerialId"
+																	value="#{misReceiptPayment.documentNo}"
+																	readonly="#{misReceiptPayment.booDocumentNo}">
+																</p:inputText>
+															</p:column>
+															
+										 														 
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+											</p:panel> -->
+
+											<p:panel styleClass="left_col branchpanel">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.date']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+
+													<p:inputText value="#{misReceiptPayment.documentDate}"
+														readonly="true">
+														<p:ajax />
+
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+
+
+
+											<p:panel styleClass="left_col user_select">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.transferref']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col" id="tranfernolistid">
+													<p:panel styleClass="inner_right_col">
+														<p:panelGrid style="width:100%;">
+															<p:row>
+
+																<p:column
+																	style="width:40%; text-align:left; padding:0px 5px 0px 0px !important;">
+																	<!-- <p:inputText style="width: 75px !important;"
+																		value="#{misReceiptPayment.transferRefYear}"
+																		maxlength="4" id="transyear"
+																		validator="#{misReceiptPayment.validateFinYear}"
+																		readonly="#{misReceiptPayment.readOnlyTransferNo}">
+																		<p:message for="transyear" display="text"
+																			id="transyearmsg" />
+																		<p:ajax update="transyearmsg" event="blur" />
+																		<f:validator validatorId="allowOnlyNumber" />
+																	</p:inputText> -->
+																	<p:inputText style="width: 75px !important;"
+																		value="#{misReceiptPayment.transferRefYear}"
+																		maxlength="4" id="transyear"
+																		readonly="#{misReceiptPayment.readOnlyTransferNo}">
+																		<p:message for="transyear" display="text"
+																			id="transyearmsg" />
+																		<p:ajax update="transyearmsg" event="blur" />
+																		<f:validator validatorId="allowOnlyNumber" />
+																	</p:inputText>
+																</p:column>
+
+																<p:column
+																	style="width:60%; padding:0px 5px 0px 10px !important;">
+
+																	<p:inputText value="#{misReceiptPayment.transferNo}"
+																		style="width: 114px !important;" id="trfno"
+																		maxlength="12"
+																		readonly="#{misReceiptPayment.readOnlyTransferNo}">
+																		<p:message for="trfno" display="text" id="trfnomsg" />
+																		<p:ajax
+																			update="trfnomsg,trndate,custname,tel,currencyId,custref,rateadj,deli,netamt,commision,charges,othetadj,remarks,inputForm,csp"
+																			event="blur"
+																			listener="#{misReceiptPayment.checkTransferNo}"
+																			onstart="process.show();" onsuccess="process.hide();" />
+																		<f:validator validatorId="allowOnlyNumber" />
+																	</p:inputText>
+																</p:column>
+															</p:row>
+														</p:panelGrid>
+
+													</p:panel>
+
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col user_select">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.customerName']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:110%;">
+														<p:row>
+
+															<p:column
+																style="width:20%; text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText value="#{misReceiptPayment.customerRef}"
+																	id="custref" readonly="#{misReceiptPayment.booCustRef}" style="font-size:12px !important;">
+																	<p:ajax event="change"
+																		listener="#{misReceiptPayment.detailasBasedOnCustomerRef}"
+																		update="custname,trndate,tel,currencyId,transyear,tranfernolistid,trfno,inputForm"
+																		onstart="process.show();" onsuccess="process.hide();" />
+																</p:inputText>
+
+															</p:column>
+															<p:column
+																style="width:90%; padding:0px 5px 0px 10px !important;">
+																<p:inputText value="#{misReceiptPayment.customerName}"
+																	readonly="true" id="custname" style="font-size:12px !important;">
+																	<p:ajax />
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+
+												</p:panel>
+											</p:panel>
+
+
+
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col branchpanel">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.transdate']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+
+													<p:inputText id="trndate"
+														value="#{misReceiptPayment.transactionDate}"
+														readonly="true">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+
+
+
+											<p:panel styleClass="left_col branchpanel">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.telno']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{misReceiptPayment.telephone}"
+														readonly="true" id="tel">
+														<p:ajax />
+													</p:inputText>
+
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+											<br />
+
+
+
+											<p:panel styleClass="left_col user_select">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.currency']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col" style="width:100%;">
+
+													<p:message id="currencyIdmsg" for="currencyId"
+														display="text" />
+													<p:selectOneMenu id="currencyId"
+														disabled="#{misReceiptPayment.disableCurrency}"
+														value="#{misReceiptPayment.currencyId}" filter="true"
+														filterMatchMode="startsWith" required="true"
+														requiredMessage="#{msg['lbl.pleaseSelectCurrency']}"
+														tabindex="7">
+														<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}"
+															itemValue="" />
+														<f:selectItems value="#{misReceiptPayment.currencyList}"
+															var="c" itemLabel="#{c.currencyCode} - #{c.currencyName}"
+															itemValue="#{c.currencyId}" />
+														<p:ajax update="currencyIdmsg" />
+
+													</p:selectOneMenu>
+
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col user_select">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.commission']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="commision" display="text" id="commisionmsg" />
+													<p:inputText value="#{misReceiptPayment.commision}"
+														id="commision"
+														readonly="#{misReceiptPayment.booCommisionReadOnly}">
+														<f:validator validatorId="allowOnlyNumber" />
+														<p:ajax event="blur"
+															update="commisionmsg,netamt,commisioncheck,mainPanel"
+															listener="#{misReceiptPayment.commisionCheck}"
+															onstart="process.show();" onsuccess="process.hide();" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+											<p:panel styleClass="left_col user_select">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.charges']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{misReceiptPayment.charges}"
+														id="charges"
+														readonly="#{misReceiptPayment.booChargesReadOnly}">
+														<f:validator validatorId="allowOnlyNumber" />
+														<p:ajax event="keyup"
+															listener="#{misReceiptPayment.localChargeCheck}"
+															update="inputForm" onstart="process.show();"
+															onsuccess="process.hide();" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col user_select">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.deliverycharges']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="deli" display="text" id="delimsg" />
+													<p:inputText value="#{misReceiptPayment.deliveryCharge}"
+														id="deli"
+														readonly="#{misReceiptPayment.booDelveryChargesReadOnly}">
+														<f:validator validatorId="allowOnlyNumber" />
+														<p:ajax update="delimsg,netamt,deli" event="keyup"
+															listener="#{misReceiptPayment.calculateNetAmount}"
+															onstart="process.show();" onsuccess="process.hide();" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+											<p:panel styleClass="left_col user_select">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.rateadjust']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{misReceiptPayment.rateAdj}"
+														id="rateadj">
+														<f:validator validatorId="allowOnlyNumber" />
+														<p:ajax update="rateadjMsg,netamt" event="keyup"
+															listener="#{misReceiptPayment.calculateNetAmount}"
+															onstart="process.show();" onsuccess="process.hide();" />
+														<p:message id="rateadjMsg" for="rateadj" display="text" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col user_select">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.otheradjust']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="othetadj" display="text" id="othetadjmsg" />
+													<p:inputText value="#{misReceiptPayment.otherAdj}"
+														id="othetadj">
+														<p:ajax listener="#{misReceiptPayment.calculateNetAmount}"
+															update="netamt,othetadjmsg" event="keyup"
+															onstart="process.show();" onsuccess="process.hide();" />
+														<f:validator validatorId="allowOnlyNumber" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<div class="clearfix"></div>
+											<p:panel styleClass="left_col user_select">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.cancelnetamt']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{misReceiptPayment.netAmount}"
+														id="netamt" readonly="true">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col user_select">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.compl.remarks']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputTextarea cols="5" rows="5"
+														value="#{misReceiptPayment.remarks}" id="remarks">
+														<p:ajax />
+													</p:inputTextarea>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<!-- 	<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.pymtmode']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="paymentmode" display="text"
+														id="msgpaymentmode" />
+													<p:selectOneMenu id="paymentmode"
+														value="#{misReceiptPayment.colpaymentmodeId}"
+														filterMatchMode="startwith" required="true"
+														requiredMessage="please Select Payment Mode ">
+														<f:selectItem itemLabel="#{msg['lbl.selectmodetyp']}" />
+														<f:selectItems value="#{misReceiptPayment.lstFetchAllPayMode}" var="c" itemLabel="#{c.localPaymentName}" itemValue="#{c.paymentMode.paymentModeId}" />
+														<p:ajax event="change"    />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel> -->
+											<div class="clearfix"></div>
+											<p:panel styleClass="shadow_button"
+												style=" background-color:#FFF !important;">
+												<p:commandButton action="#{misReceiptPayment.acceptButton}"
+													value="#{msg['lbl.save']}" style="margin-right:10px;"
+													update="inputForm,mainPanel"
+													disabled="#{misReceiptPayment.saveButton}"
+													partialSubmit="true" onstart="process.show();"
+													onsuccess="process.hide();" />
+<!-- rendered="#{misReceiptPayment.booRenderUpdate}" -->
+												<p:commandButton value="#{msg['lbl.delete']}"
+													style="margin-right:10px;" rendered="#{misReceiptPayment.deleteButtonShow}"
+													action="#{misReceiptPayment.deleteRecord}"
+													
+													partialSubmit="true" update="inputForm,mainPanel" process="@this"
+													tabindex="17" onstart="process.show()"
+													onsuccess="process.hide();" />
+													
+												<p:commandButton value="#{msg['lbl.clear']}"
+													style="margin-right:10px;"
+													action="#{misReceiptPayment.clearAll}" update="inputForm"
+													immediate="true" process="@this" onstart="process.show();"
+													onsuccess="process.hide();" />
+
+												<p:commandButton value="#{msg['lbl.exit']}"
+													action="#{misReceiptPayment.exitButton}" update="inputForm"
+													immediate="true" onstart="process.show();"
+													onsuccess="process.hide();" />
+											</p:panel>
+										</p:panel>
+									</fieldset>
+									<br />
+
+
+
+
+									<div class="clearfix"></div>
+								</p:panel>
+
+							</h:form>
+
+
+						</h:panelGroup>
+					</h:panelGroup>
+					<div class="clearfix"></div></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script>
+		 	
+		 history.pushState(null, null, 'userfinancialyearmaster.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'userfinancialyearmaster.xhtml');
+		    });
+	</script>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</h:head>
+
+<p:confirmDialog id="dataexist" widgetVar="dataexist" width="400"
+	header="#{msg['lbl.warningDailog']}" height="17" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.thisrecordalreadyexisted']}">
+</p:confirmDialog>
+<p:confirmDialog id="datatable" widgetVar="datatable" width="400"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.recrdAlreadyAddedToDt']}">
+</p:confirmDialog>
+
+<p:confirmDialog id="exist" widgetVar="exist" width="400" height="17"
+	header="#{msg['lbl.warningDailog']}" resizable="false"
+	style=" border:2px solid green !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.recordnotfound']}">
+</p:confirmDialog>
+
+<h:body>
+	<p:dialog id="completed" widgetVar="completed" width="500" height="80"
+		resizable="false" style="background-color: white !important;"
+		styleClass="success" header="#{msg['lbl.success']}" closable="false"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" modal="true">
+		<p:outputLabel value="#{msg['lbl.dataissuccessfullysaved']} "
+			style="text-align: center; font-size:16px !important;" />
+		<br />
+		<p:commandButton value="#{msg['lbl.ok']}"
+			action="#{userFinancialYearBean.userFinancialYearPageNavigation}"
+			style="margin-left: 200px !important;" />
+		<p:spacer height="10px" />
+	</p:dialog>
+
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form1">
+
+
+								<p:confirmDialog id="error" widgetVar="error" width="600"
+									showHeader="true" resizable="false"
+									header="#{msg['lbl.warningDailog']}"
+									styleClass="ui-confirmdialog-yes"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:green; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip"
+									message="#{userFinancialYearBean.errorMessage}">
+								</p:confirmDialog>
+
+
+
+
+
+
+								<h1>
+									<h:outputText value="#{msg['lbl.userfinancialyear']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+
+									<h2>
+										<h:outputText value="#{msg['lbl.userfinancialyear']}" />
+									</h2>
+
+									<p:panel id="financialyearPanel">
+
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.finacialyear']}" />
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message id="msgfinancialyearId" for="financialyearId"
+													display="text" />
+
+												<p:autoComplete id="financialyearId"
+													value="#{userFinancialYearBean.financialYear}"
+													required="true"
+													requiredMessage="Please Select Positive Numbers"
+													completeMethod="#{userFinancialYearBean.autoCompleteData}"
+													validatorMessage="Zero value Not Allowed here " var="obj"
+													itemLabel="#{obj}" itemValue="#{obj}"
+													onchange="clearForm(this);" maxlength="40"
+													validator="#{userFinancialYearBean.checkRelationcodeisNumber}">
+													<p:ajax event="itemSelect"
+														listener="#{userFinancialYearBean.callProcedure}"
+														update="financialyearPanel,financialyearId,msgfinancialyearId,fullDesc,fromDate,todate,error" />
+													<p:ajax event="change"
+														listener="#{userFinancialYearBean.callProcedure}"
+														update="msgfinancialyearId,financialyearId,fullDesc,fromDate,todate,error" />
+												</p:autoComplete>
+
+
+												<!-- 	<p:inputText id="financialyearId" value="#{userFinancialYearBean.financialYear}" maxlength="4" required="true"  tabindex="1" validatorMessage="Please Enter Positive Numbers" requiredMessage="Zero value Not Allowed here ">
+													<f:validator validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+													
+													<p:ajax														
+														event="change" listener="#{userFinancialYearBean.callProcedure}" update="msgfinancialyearId,financialyearId,fullDesc,fromDate,todate,error"
+														/>
+													</p:inputText> -->
+
+											</p:panel>
+										</p:panel>
+
+									</p:panel>
+									<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['lbl.fullDesc']}" />
+											<!-- <h:outputText value="*" style="color:red !important;" /> -->
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:message for="fullDesc" display="text" id="msgfullDesc" />
+
+											<p:inputText id="fullDesc"
+												value="#{userFinancialYearBean.fullDesc}" readonly="true" />
+
+										</p:panel>
+									</p:panel>
+									<div class="clearfix" />
+									<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['lbl.financialyearbegin']}" />
+											<h:outputText value="*" style="color:red !important;" />
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:message for="fromDate" display="text" id="msgfromDate" />
+											<p:calendar id="fromDate"
+												value="#{userFinancialYearBean.financialYearBegin}"
+												pattern="dd/MM/yyyy" readonlyInput="true" required="true"
+												requiredMessage="Enter Financial Year Begin" />
+
+
+											<!-- <p:inputText id="fromDate" value="#{userFinancialYearBean.financialYearBegin}" readonly="true"/>	 -->
+										</p:panel>
+									</p:panel>
+
+									<p:panel styleClass="left_col">
+										<p:panel styleClass="inner_left_col">
+											<h:outputText value="#{msg['lbl.financialyearend']}" />
+											<h:outputText value="*" style="color:red !important;" />
+										</p:panel>
+										<p:panel styleClass="inner_right_col">
+											<p:message for="todate" display="text" id="msgtodate" />
+											<p:calendar id="todate"
+												value="#{userFinancialYearBean.financialYearEnd}"
+												pattern="dd/MM/yyyy" readonlyInput="true" required="true"
+												requiredMessage="Enter Financial Year End" />
+
+										</p:panel>
+									</p:panel>
+
+
+
+									<h:panelGroup layout="block" class="clearfix" />
+									<h:panelGroup layout="block" styleClass="shadow_button">
+										<p:commandButton value="#{msg['lbl.add']}"
+											action="#{userFinancialYearBean.addRecordDataTable}"
+											update="form1" tabindex="2" />
+
+										<p:commandButton value="#{msg['lbl.clear']}"
+											action="#{userFinancialYearBean.clearAll}" immediate="true"
+											update="form1" process="@this" tabindex="3" />
+
+									</h:panelGroup>
+
+									<p:panel id="secondPanel"
+										rendered="#{userFinancialYearBean.booRenderDataTable}">
+
+										<p:dataTable var="c" rows="10" paginator="true"
+											value="#{userFinancialYearBean.lstFromDb}"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="5,10,15" editable="true" id="datatable"
+											emptyMessage="#{msg['lbl.norecordfound']}"
+											rowIndexVar="rowIndex" paginatorPosition="bottom"
+											styleClass="mydatatableclass">
+
+
+											<p:column headerText="#{msg['lbl.sino']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.finacialyear']}"
+												sortBy="#{c.financialYear}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.financialYear}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.financialyearbegin']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.financialYearBegin}">
+													<f:convertDateTime pattern="dd/MM/yyyy" />
+												</h:outputText>
+											</p:column>
+											<p:column headerText="#{msg['lbl.financialyearend']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+
+												<h:outputText value="#{c.financialYearEnd}">
+													<f:convertDateTime pattern="dd/MM/yyyy" />
+												</h:outputText>
+
+											</p:column>
+											<p:column headerText="#{msg['lbl.fullDesc']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value=" #{c.fullDesc}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.createdby']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value=" #{c.createdBy}" />
+											</p:column>
+
+
+										</p:dataTable>
+
+
+										<h:panelGroup layout="block" styleClass="shadow_button">
+
+											<p:commandButton value="#{msg['lbl.submit']}"
+												action="#{userFinancialYearBean.save}" immediate="true"
+												tabindex="4" process="@this" update="error" />
+
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{userFinancialYearBean.exit}" immediate="true"
+												tabindex="5" />
+
+										</h:panelGroup>
+
+									</p:panel>
+
+
+									<p:dialog modal="true" showHeader="true" header="Please wait.."
+										widgetVar="process" id="process" width="400" height="100"
+										resizable="false" draggable="false" closable="false"
+										style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+										<div style="text-align: center;">
+											<p:graphicImage value="../images/preloader.gif" />
+										</div>
+									</p:dialog>
+								</p:panel>
+
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

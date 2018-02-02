@@ -1,0 +1,568 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script type = "text/javascript" >
+    history.pushState(null, null, 'pagename');
+    window.addEventListener('popstate', function(event) {
+    history.pushState(null, null, 'pagename');
+    });
+    </script>
+</h:head>
+
+<h:body>
+
+	<f:view>
+
+		<p:dialog id="complete" widgetVar="complete" width="270" height="70"
+			showHeader="false" resizable="false"
+			style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+			showEffect="clip" hideEffect="clip" closeOnEscape="true"
+			closable="true" modal="true">
+			<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} " />
+			<br />
+			<p:spacer width="15px" />
+			<p:commandButton value="#{msg['lbl.ok']}"
+				actionListener="#{additionalBankMapping.additionalBankRulePageNavigationFour}"
+				process="@this" />
+		</p:dialog>
+		<p:confirmDialog id="noRecords" widgetVar="noRecords" width="200" height="17" resizable="false" style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true"  message="#{msg['lbl.recordnotfound']}" >
+                      									
+ 					  </p:confirmDialog>
+ 					  
+ 					  <p:confirmDialog id="notApproved" widgetVar="notApproved" width="400" styleClass="red"  showHeader="false" resizable="false" 	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" message="#{msg['lbl.approvedbyanother']}">
+                      									<p:spacer height="30px"/>
+                      									<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{additionalBankMapping.cancelFromApproval}" process="@this" />
+      </p:confirmDialog>
+
+		<p:dialog id="approved" widgetVar="approved" width="270" height="70"
+			showHeader="false" resizable="false"
+			style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+			showEffect="clip" hideEffect="clip" closeOnEscape="true"
+			closable="true" modal="true">
+			<p:outputLabel value="#{msg['lbl.approvedsuccessfully']} " />
+			<br />
+			<p:spacer width="15px" />
+			<p:commandButton value="#{msg['lbl.ok']}"
+				actionListener="#{additionalBankMapping.clickOnOKGotoAmiecPanel}"
+				process="@this" />
+		</p:dialog>
+
+		<p:dialog id="existflexfield" widgetVar="existflexfield" width="270"
+			height="70" showHeader="false" resizable="false"
+			style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+			showEffect="clip" hideEffect="clip" closeOnEscape="true"
+			closable="true" modal="true">
+			<p:outputLabel value="#{msg['lbl.recordwithflexifieldalredyavailable']}" />
+			<br />
+			<p:spacer width="15px" />
+			<p:commandButton value="#{msg['lbl.ok']}"
+				actionListener="#{additionalBankMapping.clickOnOKFinalSave}"
+				process="@this" />
+		</p:dialog>
+
+		<p:dialog id="succ" widgetVar="succ" width="270" height="100"
+			showHeader="false" resizable="false"
+			style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+			showEffect="clip" hideEffect="clip" closeOnEscape="true"
+			closable="true" modal="true">
+			<p:outputLabel value="#{msg['lbl.recordexists']}" />
+			<br />
+			<p:spacer width="15px" />
+			<p:commandButton value="#{msg['lbl.yes']}"
+				actionListener="#{additionalBankMapping.updateRecordAmiec}"
+				process="@this" />
+			<p:commandButton value="#{msg['lbl.no']}"
+				actionListener="#{additionalBankMapping.exitDialogAmiec}"
+				process="@this" />
+		</p:dialog>
+
+		<p:confirmDialog id="datatable" widgetVar="datatable" width="350"
+			height="17" resizable="false"
+			style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+			showEffect="clip" hideEffect="clip" closeOnEscape="true"
+			closable="true" message="#{msg['lbl.recordexists']}">
+		</p:confirmDialog>
+		<p:confirmDialog id="existInDB" widgetVar="existInDB" width="350"
+			height="17" resizable="false"
+			style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+			showEffect="clip" hideEffect="clip" closeOnEscape="true"
+			closable="true" message="#{msg['lbl.thisrecordalreadyexistedindb']}">
+		</p:confirmDialog>
+		<p:confirmDialog id="nodata" widgetVar="nodata" width="200"
+			height="17" resizable="false"
+			style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+			showEffect="clip" hideEffect="clip" closeOnEscape="true"
+			closable="true" message="#{msg['lbl.recordnotfound']} ">
+		</p:confirmDialog>
+
+		<p:confirmDialog id="coutryCheck" widgetVar="coutryCheck" width="300"
+			height="17" resizable="false"
+			style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+			showEffect="clip" hideEffect="clip" closeOnEscape="true"
+			closable="true" message="#{msg['lbl.pleaseselectcountryforview']}">
+		</p:confirmDialog>
+
+
+
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form1">
+
+
+								
+
+								<h1>
+									<h:outputText value="#{msg['lbl.amiecandbankmappinghdr']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+								
+																	<p:dialog id="remarks" widgetVar="remarks" width="480" height="230" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+                                                          showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"  >
+                             		<p:panel>
+                             		<table>
+                             		<tr>
+                             		<td> <h:outputText value="#{msg['lbl.activateddate']}    :" /></td>
+                             		<td><h:outputText value="#{additionalBankMapping.approvDate}" style="color:red !important;"/> </td>
+                             		</tr>
+                             		<tr>
+                             		<td> <h:outputText value="#{msg['lbl.activatedby']}    :" /> </td>
+                             		<td>	<h:outputText  value="#{additionalBankMapping.approveBy}"  style="color:red !important;"/> </td>
+                             		</tr>
+                             		</table>
+                             		</p:panel>
+                             		<p:spacer height="10px"/>
+                             		<p:panel>
+                             		<h:outputText value="#{msg['lbl.pleaseenterremarks']}*" /><h:outputText value="*" style="color:red !important;" />
+                             		</p:panel>
+                             		<p:spacer height="5px"/>
+                             		<p:panel>
+                             		<h:inputTextarea id="remarksId" value="#{additionalBankMapping.remarks}" required="true" validatorMessage="Maximum 255 charectors allowed">
+                                            <p:ajax/>
+                                            <f:validateLength maximum="255"></f:validateLength>
+                                     </h:inputTextarea>
+                                    </p:panel>
+                                    <p:spacer height="5px"/>
+                                   	<p:panel style="padding-left:160px;">
+                                         <p:commandButton value="#{msg['lbl.ok']}" style="margin-right:10px; "  actionListener="#{additionalBankMapping.remarkSelected}" process="@this" /> 
+                                        <p:commandButton value="#{msg['lbl.cancel']}"  actionListener="#{additionalBankMapping.clearRemarksBankMap}" process="@this"  update=":form1:mainPanel"/> 
+                             </p:panel>
+                               </p:dialog>
+                               
+						 <p:confirmDialog id="remarksEmpty" widgetVar="remarksEmpty" width="400" height="17" resizable="false" style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+					showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.remarksnotempty']}" >
+				</p:confirmDialog>	
+									<h2>
+										<h:outputText value="#{msg['lbl.amiecandbankmappinghdr']}" />
+									</h2>
+
+	 <p:dialog id="activateRecord" widgetVar="activateRecord" width="300" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+                                                          showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"  >
+                                                          <p:outputLabel  value="#{msg['lbl.doyouactivaterecord']}"/>
+                                                          <p:spacer height="10px"/>
+                                                          <p:panel>
+ 					        <p:commandButton value="#{msg['lbl.ok']}" style="margin-right:10px; "  actionListener="#{additionalBankMapping.activateRecord}" process="@this" oncomplete="PF('activateRecord').hide();"  update="mainPanel"/> 
+                                        <p:commandButton value="#{msg['lbl.cancel']}"  onclick="PF('activateRecord').hide();" immediate="true"/> 
+								</p:panel>                        
+                            </p:dialog>
+		 <p:dialog id="permanentDelete" widgetVar="permanentDelete" width="300" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+                                                          showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"  >
+                                                          <p:outputLabel  value="#{msg['lbl.doyouwanttodeleterecordperminently']}"/>
+                                                          <p:spacer height="10px"/>
+                                                          <p:panel>
+ 					        <p:commandButton value="#{msg['lbl.ok']}" style="margin-right:10px; "  actionListener="#{additionalBankMapping.confirmPermanentDelete}" process="@this" oncomplete="PF('permanentDelete').hide();"  update="mainPanel"/> 
+                                        <p:commandButton value="#{msg['lbl.cancel']}"  onclick="PF('permanentDelete').hide();" immediate="true"/> 
+								</p:panel>                        
+                            </p:dialog>
+
+									<p:panel styleClass="panel_border" id="addPanel">
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.country']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col"
+													rendered="#{additionalBankMapping.renderCountryId}">
+													<p:message for="nationality" display="text" />
+													<p:selectOneMenu value="#{additionalBankMapping.countryId}"
+														filter="true" filterMatchMode="startsWith"
+														id="nationality" label="nationality" required="true"
+														requiredMessage="Please Select Country "
+														style="width:185px;text-align:left;">
+														<f:selectItem itemLabel="#{msg['lbl.selectcountry']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{additionalBankMapping.countryList}" var="c"
+															itemLabel="#{c.countryName}"
+															itemValue="#{c.fsCountryMaster.countryId}" />
+														<p:ajax event="change"
+															listener="#{additionalBankMapping.popFlex}"
+															update="flexfield,bankId,bankcodeId,amiecode,mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+
+													</p:selectOneMenu>
+												</p:panel>
+
+												<p:panel styleClass="inner_right_col"
+													rendered="#{additionalBankMapping.renderCountryIdForApprove}">
+													<p:inputText value="#{additionalBankMapping.countryName}"
+														readonly="true" />
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col" id="pnlBank">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.bank']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col"
+													rendered="#{additionalBankMapping.renderBankId}">
+													<p:message for="bankId" display="text" />
+													<p:selectOneMenu id="bankId"
+														value="#{additionalBankMapping.bankId}" filter="true"
+														filterMatchMode="startsWith" required="true"
+														requiredMessage="Please Select Bank">
+														<f:selectItem itemLabel="#{msg['lbl.selectbank']}"
+															itemValue="" />
+														<f:selectItems value="#{additionalBankMapping.lisbanks}"
+															var="c" itemLabel="#{c.bankCode} - #{c.bankFullName}"
+															itemValue="#{c.bankId}" />
+														<p:ajax event="change"
+															listener="#{additionalBankMapping.popBankCode}"
+															update="bankcodeId" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+												</p:panel>
+												<p:panel styleClass="inner_right_col"
+													rendered="#{additionalBankMapping.renderBankIdForApprove}">
+													<p:inputText value="#{additionalBankMapping.bankName}"
+														readonly="true" />
+												</p:panel>
+											</p:panel>
+
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.flexField']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col"
+													rendered="#{additionalBankMapping.renderFlexField}">
+													<p:message for="flexfield" display="text" />
+													<p:selectOneMenu id="flexfield"
+														value="#{additionalBankMapping.flexField}" filter="true"
+														filterMatchMode="startsWith" label="flexfield"
+														style="width:185px;text-align:left;" required="true"
+														requiredMessage="Please Select Flex Field">
+														<f:selectItem itemLabel="#{msg['lbl.selectFlex']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{additionalBankMapping.additionalBankRuleMaps}"
+															var="c" itemLabel="#{c.flexField}-#{c.fieldName}"
+															itemValue="#{c.flexField}" />
+														<p:ajax />
+														<!-- <p:ajax update="mainPanel" event="change"  listener="#{additionalBankMapping.getFieldNameByFlexField}"/> -->
+														<p:ajax update="amiecode,bankcodeId,fieldName"
+															event="change"
+															listener="#{additionalBankMapping.getFieldNameByFlexField}" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+												</p:panel>
+												<p:panel styleClass="inner_right_col"
+													rendered="#{additionalBankMapping.renderFlexFieldForApprove}">
+													<p:inputText value="#{additionalBankMapping.flexField}"
+														readonly="true" />
+												</p:panel>
+
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.fieldname']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+
+													<p:inputText value="#{additionalBankMapping.fieldName}"
+														id="fieldName" required="true"
+														requiredMessage="Field Name is Required" readonly="true" styleClass="ui-state-disabled">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.alMullaCode']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col"
+													rendered="#{additionalBankMapping.renderAlmullaCode}">
+													<p:message for="amiecode" display="text" />
+													<p:selectOneMenu id="amiecode"
+														value="#{additionalBankMapping.amiecCode}" filter="true"
+														filterMatchMode="startsWith" required="true"
+														requiredMessage="Please Select Al Mulla Code">
+														<f:selectItem itemLabel="#{msg['lbl.selectAmlcode']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{additionalBankMapping.listAmecode}" var="c"
+															itemLabel="#{c.amiecCode}" itemValue="#{c.amiecCode}" />
+
+														<p:ajax update="amiecDescriptionId" event="change"
+															listener="#{additionalBankMapping.getAmiecDescriptionByCode}" onstart="process.show();" onsuccess="process.hide();" />
+													</p:selectOneMenu>
+												</p:panel>
+												<p:panel styleClass="inner_right_col"
+													rendered="#{additionalBankMapping.renderAlmullaCodeForApprove}">
+													<p:inputText value="#{additionalBankMapping.amiecCode}"
+														readonly="true" />
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.alMullaDescription']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+
+													<p:inputText
+														value="#{additionalBankMapping.amiecDescription}"
+														id="amiecDescriptionId" required="true"
+														requiredMessage="#{msg['lbl.alMullaDescription']}"
+														readonly="true" styleClass="ui-state-disabled">
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.bankCode']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col"
+													rendered="#{additionalBankMapping.renderBankCode}">
+													<p:message for="bankcodeId" display="text" />
+													<p:selectOneMenu id="bankcodeId"
+														value="#{additionalBankMapping.bankCode}" filter="true"
+														filterMatchMode="startsWith" required="true"
+														requiredMessage="Please Select Bank Code">
+														<f:selectItem itemLabel="#{msg['lbl.selectBankcode']}"
+															itemValue="" />
+														<f:selectItems
+															value="#{additionalBankMapping.listBankcode}" var="c"
+															itemLabel="#{c.additionalData}"
+															itemValue="#{c.additionalData}" />
+														<p:ajax update="bankdecription" event="change"
+															listener="#{additionalBankMapping.getBankDescriptionByCode}" onstart="process.show();" onsuccess="process.hide();"/>
+													</p:selectOneMenu>
+												</p:panel>
+												<p:panel styleClass="inner_right_col"
+													rendered="#{additionalBankMapping.renderBankCodeForApprove}">
+													<p:inputText value="#{additionalBankMapping.bankCode}"
+														readonly="true" />
+												</p:panel>
+
+											</p:panel>
+
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.bankDesc']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+
+													<p:inputText
+														value="#{additionalBankMapping.bankDescription}"
+														id="bankdecription" required="true" readonly="true" styleClass="ui-state-disabled" />
+
+												</p:panel>
+											</p:panel>
+
+
+										
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col">
+											<h:outputText id="mandatory"
+												value=" #{msg['lbl.*filedsAreMandatory']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											rendered="#{additionalBankMapping.renderAddViewButtonPanel}">
+											<p:commandButton value="#{msg['lbl.add']}"
+												action="#{additionalBankMapping.addAdditionalBankFinalTable}"
+												update="mainPanel" style="margin-right:10px; " process="addPanel">
+											</p:commandButton>
+
+											<p:commandButton value="#{msg['lbl.view']}"
+												action="#{additionalBankMapping.view}"
+												update=":form1:mainPanel" immediate="true"
+												style="margin-right:10px;" onstart="process.show();" onsuccess="process.hide();">
+											</p:commandButton>
+											<p:commandButton value="#{msg['lbl.remitclear']}" disabled="#{additionalBankMapping.disableClearButton}"
+												action="#{additionalBankMapping.clearFinal}"
+												update=":form1:mainPanel" process="@this">
+											</p:commandButton>
+										</h:panelGroup>
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											rendered="#{additionalBankMapping.renderApproveCancelButtonPanel}">
+											<p:commandButton value="#{msg['lbl.approve']}"
+												action="#{additionalBankMapping.approveRecords}"
+												update=":form1:mainPanel" style="margin-right:10px; "
+												immediate="true">
+											</p:commandButton>
+
+											<p:commandButton
+												value="#{msg['lbl.fclocalpurchasetotalcancel']}"
+												action="#{additionalBankMapping.cancelFromApproval}"
+												update="mainPanel" ajax="false" immediate="true">
+											</p:commandButton>
+										</h:panelGroup>
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:spacer height="10px" />
+										<h:panelGroup layout="block" class="clearfix" />
+
+</p:panel>
+											<p:dataTable
+												value="#{additionalBankMapping.additionalBankRuleDataListFinal}"
+												var="o"
+												rendered="#{additionalBankMapping.dataTableRendered}"
+												rowIndexVar="rowIndex" editable="true" id="datatable"
+												emptyMessage="#{msg['lbl.norecordfound']}" rows="10"
+												paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="5,10,15" paginatorPosition="bottom">
+
+												<p:column headerText="#{msg['lbl.sino']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.country']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.countryName}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.flexField']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.flexField}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.flexfildname']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.flexField}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.alMullaCode']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.amiecCode}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.alMullaDescription']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.amiecDescription}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.bankCode']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.bankCode}" />
+												</p:column>
+												<p:column headerText="#{msg['lbl.bankDesc']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputText value="#{o.bankDescription}" />
+												</p:column>
+
+
+												<p:column headerText="#{msg['lbl.edit']}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:commandButton id="imgEdit" styleClass="edit" value=""
+														action="#{additionalBankMapping.editFinalRecord(o)}"
+														update=":form1" process="@this" immediate="true"
+														disabled="#{additionalBankMapping.disableEditAMICMapping}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.active/deactive']}"
+													style="text-align:center !important;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:commandLink
+														action="#{additionalBankMapping.checkStatusType(o)}"
+														value="#{o.dataActive}"
+														style="color:blue !important; text-decoration:underline !important;"
+														update=":form1" immediate="true" process="@this" />
+												</p:column>
+
+											</p:dataTable>
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+
+										<h:panelGroup layout="block">
+											<p:panel id="saveAdditionalBankRuleFinal"
+												rendered="#{additionalBankMapping.savePanelRender}">
+												<h:panelGroup layout="block" styleClass="shadow_button">
+													<p:commandButton value="#{msg['lbl.submit']}"
+														action="#{additionalBankMapping.saveAdditionalBankRuleFinal}"
+														immediate="true" style="margin-right:10px;"
+														disabled="#{additionalBankMapping.disableSubmit}" onstart="process.show();" onsuccess="process.hide();"/>
+													<p:commandButton value="#{msg['lbl.exit']}"
+														action="#{additionalBankMapping.clickOnOKFinalSaveExit}"
+														immediate="true" />
+													<div class="clearfix"></div>
+												</h:panelGroup>
+											</p:panel>
+										</h:panelGroup>
+
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+									<p:dialog modal="true" showHeader="true" header="Please wait.." widgetVar="process"  id="process"   width="400" height="100" resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+							    	</p:dialog> 		
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

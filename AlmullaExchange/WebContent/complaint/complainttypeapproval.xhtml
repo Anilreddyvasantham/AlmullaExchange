@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+
+		 history.pushState(null, null, 'complainttypeapproval.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'complainttypeapproval.xhtml');
+		    });
+	</script>
+</h:head>
+
+
+<p:confirmDialog id="notValidUser" widgetVar="notValidUser" width="370" styleClass="red"  showHeader="false" resizable="false" 	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" message="#{msg['lbl.sameUserNotApproved']}">
+      </p:confirmDialog>
+
+<p:dialog id="complete" widgetVar="complete" width="270" height="70"
+	showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background: 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.approvedsuccessfully']} " />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}" action="#{complaintType.complaintTypeApprovalNavigation}" process="@this" />
+</p:dialog>
+
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<!-- <f:event listener="#{complaintType.approveViewComplaintTypeMethod}" type="preRenderView"/> -->
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form">
+								<h1>
+									<h:outputText value="#{msg['lbl.complainttypeapproval']}" />
+								</h1>
+								
+								<p:panel styleClass="shadow" id="mainPanel">
+								<p:commandLink action="#{complaintType.exit}" process="@this">
+										<p:graphicImage value="../images/return.jpg" width="25"
+											height="25" id="imgEdit" styleClass="icon_right"
+											style="float:right;" />
+										<p:tooltip for="imgEdit" value="Go to Home" />
+									</p:commandLink>
+									<h2>
+										<h:outputText value="#{msg['lbl.complainttypeapproval']}" />
+									</h2>
+									
+									<p:panel styleClass="panel_border">
+
+										<p:panel id="firstPanel"
+											rendered="#{complaintType.booComplaintTypeDetail}">
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.complainttypecode']} " />
+													
+												</p:panel>
+												<p:panel styleClass="inner_right_col" >
+													<p:message for="complaintCode" display="text"
+														id="complaintcodeemsg" />
+													<p:inputText id="complaintCode" readonly="true" styleClass="ui-state-disabled"
+														value="#{complaintType.complaintCode}" required="true"
+														requiredMessage="Please enter Complaint Code"
+														maxlength="10" tabindex="3">
+
+														<p:ajax event="change"
+															update="complaintCode,complaintcodeemsg" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.sendbulk']}" />
+													
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="sendBulk" display="text" id="sendbulkmsg" />
+													<p:selectOneMenu id="sendBulk" disabled="true" styleClass="ui-state-disabled"
+														value="#{complaintType.sendBulk}" filter="true"
+														required="true" filterMatchMode="startsWith"
+														requiredMessage="#{msg['lbl.selectsendbulk']}"
+														tabindex="2">
+														<f:selectItem itemLabel="#{msg['lbl.selectsendbulk']}"
+															itemValue="" />
+															<f:selectItem itemLabel="#{msg['lbl.yes']}"
+															itemValue="Y" />
+														<f:selectItem itemLabel="#{msg['lbl.no']}"
+															itemValue="Y" />
+														<p:ajax event="change" update="sendBulk,sendbulkmsg" />
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<!-- <h3>
+											<h:outputText value="Income Range" />
+										</h3> -->
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.fulldescription']}" />
+													
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="fullEngComplaintTypeDesc" display="text"
+														id="fullengcomplainttypedescmsg" />
+													<p:inputText id="fullEngComplaintTypeDesc" readonly="true" styleClass="ui-state-disabled"
+														value="#{complaintType.fullEngComplaintTypeDesc}"
+														>
+
+														
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.shortdescription']}" />
+													
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="shortEngComplaintTypeDesc" display="text"
+														id="shortengcomplainttypedescmsg" />
+													<p:inputText id="shortEngComplaintTypeDesc" readonly="true" styleClass="ui-state-disabled"
+														value="#{complaintType.shortEngComplaintTypeDesc}"
+														>
+
+														
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<h:panelGroup layout="block" class="clearfix" />
+										
+											<h:panelGroup layout="block" class="clearfix" />
+												<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.localfulldescription']}" />
+													
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="fullLocalComplaintTypeDesc" display="text"
+														id="fulllocalcomplainttypedescmsg" />
+													<p:inputText id="fullLocalComplaintTypeDesc" readonly="true" styleClass="ui-state-disabled"
+														value="#{complaintType.fullLocalComplaintTypeDesc}" 
+														>
+
+
+
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.localshortdescription']}" />
+													
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="shortLocalComplaintTypeDesc" display="text"
+														id="shortlocalcomplainttypedescmsg" />
+													<p:inputText id="shortLocalComplaintTypeDesc" readonly="true" styleClass="ui-state-disabled"
+														value="#{complaintType.shortLocalComplaintTypeDesc}"
+														>
+
+
+
+														<p:ajax event="change"
+															update="shortLocalComplaintTypeDesc,shortlocalcomplainttypedescmsg" />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.osdays']}" />
+													
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="osDays" display="text"
+														id="osdaysmsg" />
+													<p:inputText id="osDays"  readonly="true" styleClass="ui-state-disabled"
+														value="#{complaintType.osDays}"
+														>
+
+
+
+														<p:ajax event="change"
+															update="osDays,osdaysmsg" />
+															
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:spacer height="10px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" styleClass="shadow_button"
+												id="submitpanel">
+												<p:commandButton value="#{msg['lbl.approve']}" action="#{complaintType.approveComplaintTypeMethod}"
+													style="margin-right:10px; " process="@this" tabindex="10" />
+												<p:commandButton value="#{msg['lbl.exit']}" action="#{complaintType.complaintTypeApprovalNavigation}" immediate="true"
+													tabindex="11" />
+											</h:panelGroup>
+
+										</p:panel>
+
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel id="secondPanel"
+											rendered="#{complaintType.booComplaintTypeDataTable}">
+											<p:spacer height="20px" />
+											<p:panel>
+												<p:dataTable id="dataTable" var="c" rows="10" value="#{complaintType.lstComplaintTypeDataTables}" styleClass="mydatatableclass"
+													paginator="true"
+													paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+													rowsPerPageTemplate="5,10,15" rowIndexVar="rowIndex"
+													emptyMessage="#{msg['lbl.norecordfound']}"
+													paginatorPosition="bottom">
+
+													<p:column headerText="#{msg['lbl.sino']}"
+														style="width:50px;">
+														<h:outputText value="#{rowIndex+1}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.complainttypecode']} ">
+														<h:outputText value="#{c.complaintCode}" />
+													</p:column>
+<p:column headerText="#{msg['lbl.sendbulk']}" >
+														<h:outputText value="#{c.sendBulkName}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.osdays']}" >
+														<h:outputText value="#{c.osDays}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.fulldescription']}">
+														<h:outputText value="#{c.fullEngComplaintTypeDesc}" />
+													</p:column>
+													
+													<p:column headerText="#{msg['lbl.shortdescription']}">
+														<h:outputText value="#{c.shortEngComplaintTypeDesc}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.localfulldescription']}">
+														<h:outputText value="#{c.fullLocalComplaintTypeDesc}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.localshortdescription']}">
+														<h:outputText value="#{c.shortLocalComplaintTypeDesc}" />
+													</p:column>
+													<p:column headerText="#{msg['lbl.approve']}"
+											styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<p:commandLink  update=":form" action="#{complaintType.editComplaintTypeForApproveMethod(c)}"
+														 process="@this" tabindex="8">
+															<p:graphicImage value="../images/approve.jpg" width="25"
+													height="25"  style="float:center;" id="approve" />
+															<p:tooltip for="approve" value="Approve" />
+														</p:commandLink>
+													</p:column>
+													
+													
+												</p:dataTable>
+											</p:panel>
+
+											
+										</p:panel>
+
+										
+
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

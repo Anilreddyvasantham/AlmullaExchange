@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</h:head>
+
+<h:body> 
+<p:dialog id="complete" widgetVar="complete" width="260" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+            											
+            											<p:outputLabel value="#{msg['lbl.dataissuccessfullysaved']}"/><br/>
+            								
+            											<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{routingSetUpDetailsBean.routingSetupNavigation}" />          
+        </p:dialog>
+        
+        <p:confirmDialog id="deleted" widgetVar="deleted" width="400" height="17" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important;padding:0px !important; font-weight:bold; background:url('../images/tick-green.png') 230px 48px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true" message="Successfully Record Deleted">
+        </p:confirmDialog>
+        
+        <p:confirmDialog id="noremittance" widgetVar="noremittance" width="400" height="17" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important;padding:0px !important; font-weight:bold; background:url('../images/tick-green.png') 230px 48px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true" message="No remittance Found">
+        </p:confirmDialog>
+        
+        <p:confirmDialog id="nodelivery" widgetVar="nodelivery" width="400" height="17" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important;padding:0px !important; font-weight:bold; background:url('../images/tick-green.png') 230px 48px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true" message="No Delivery Found">
+        </p:confirmDialog>
+        
+        <p:confirmDialog id="detailsexists" widgetVar="detailsexists" width="600" header="Warning DialogBox"
+		height="17" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="Routing SetUp Already Exists">
+    </p:confirmDialog>
+    
+     <p:confirmDialog id="nobranch" widgetVar="nobranch" width="600" header="Warning DialogBox"
+		height="17" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="No Branches Found">
+    </p:confirmDialog>
+    
+     <p:confirmDialog id="nobranchselect" widgetVar="nobranchselect" width="600" header="Warning DialogBox"
+		height="17" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="Please Select Atleast one Branch">
+    </p:confirmDialog>
+    
+     <p:confirmDialog id="nobank" widgetVar="nobank" width="600" header="Warning DialogBox"
+		height="17" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="Please Select Routing Country and Routing Bank First">
+    </p:confirmDialog>
+    
+    <p:confirmDialog id="noagentdetails" widgetVar="noagentdetails" width="600" header="Warning DialogBox"
+		height="17" resizable="false"
+		style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="No Agent List Found For Service Provider Bank">
+    </p:confirmDialog>
+    
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+							<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+						</td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+								<h:form id="routingsetupform">
+
+								<p:dialog id="checkpanel" width="auto !important"  overflow="auto" widgetVar="details" header="Bank Branch Applicability For Specific" resizable="false" styleclass="ui-dialog-content ui-widget-content" style="height: auto; bottom:auto !important; border:3px solid #00a53e !important; font-weight:bold; background: #FFF !important;"
+                      					showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+                      					
+                      				<h:panelGrid id="details">
+
+									<p:dataTable value="#{routingSetUpDetailsBean.bankbranchlist}" id="checkDataTable"
+										var="c" rowIndexVar="rowIndex" editable="true" editMode="cell"
+										emptyMessage="#{msg['lbl.norecordfound']}" >
+										
+										
+										<p:column headerText="#{msg['lbl.slNo']}" style="width:50px;">
+											<h:outputText value="#{rowIndex+1}" />
+										</p:column>
+
+										<p:column headerText="Branch Code">
+											<p:outputLabel value="#{c.bankbranchCode}" />
+										</p:column>
+
+										<p:column headerText="Branch Full Name">
+											<p:outputLabel value="#{c.branchFullName}" />
+										</p:column>
+
+										<p:column headerText="Select">
+											<p:selectBooleanCheckbox value="#{c.selectRecord}" id="cheid">
+												<p:ajax event="change" listener="#{routingSetUpDetailsBean.addingBranchestoDataTable(c)}" />
+											</p:selectBooleanCheckbox>
+										</p:column>
+
+									</p:dataTable>
+
+									<h:panelGroup layout="block" styleClass="shadow_button">
+										<p:commandButton id="detailsaddid" value="ADD"	oncomplete="details.hide()" />
+										<div class="clearfix"></div>
+									</h:panelGroup>
+									
+									</h:panelGrid>
+
+								</p:dialog>
+								
+								<p:dialog id="datatabledetails" width="auto !important"  overflow="auto" widgetVar="datatabledetails" header="Bank Branch Applicability For DataTable" resizable="false" styleclass="ui-dialog-content ui-widget-content" style="height: auto; bottom:auto !important; border:3px solid #00a53e !important; font-weight:bold; background: #FFF !important;"
+                      					showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true">
+
+									<p:dataTable value="#{routingSetUpDetailsBean.popupinDataTable}"
+										var="c" rowIndexVar="rowIndex" editable="true" editMode="cell"
+										emptyMessage="#{msg['lbl.norecordfound']}">
+										<p:column headerText="S.No" style="width:50px;">
+											<h:outputText value="#{rowIndex+1}" />
+										</p:column>
+
+										<p:column headerText="Branch Code">
+											<p:outputLabel value="#{c.bankbranchCode}" />
+										</p:column>
+
+										<p:column headerText="Branch Full Name">
+											<p:outputLabel value="#{c.branchFullName}" />
+										</p:column>
+
+									</p:dataTable>
+
+									<h:panelGroup layout="block" styleClass="shadow_button">
+										<p:commandButton id="detailsokid" value="OK"
+											oncomplete="datatabledetails.hide()" />
+										<div class="clearfix"></div>
+									</h:panelGroup>
+
+								</p:dialog>
+
+
+								<h1>
+								<h:outputText value="#{msg['lbl.routingsetup']}" />
+							</h1>
+							<p:panel styleClass="shadow" id="mainPanel">
+							<h3>
+											<h:outputText value="#{msg['lbl.routingsetup']}" />
+										</h3>
+		
+								<p:panel styleClass="panel_border">
+								
+									<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.country']}" /><h:outputText value="*" style="color:Red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message for="countryid" display="text" id="msgcountryid"/>
+												<p:selectOneMenu id="countryid" value="#{routingSetUpDetailsBean.countryId}" filter="true" filterMatchMode="startsWith"  required="true" requiredMessage="Please Select Country" label="Country">
+													<f:selectItem itemLabel="#{msg['lbl.selectcountry']}" itemValue="" />
+													<f:selectItems value="#{routingSetUpDetailsBean.bankCountryList}" var="c"  itemLabel="#{c.countryName}" itemValue="#{c.countryMasterId}"/>
+													<p:ajax event="change" listener="#{routingSetUpDetailsBean.searchingRecordsinDataBase}" update="mainPanel,msgcountryid,details,checkDataTable"/>
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+								
+								<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currency']}" /><h:outputText value="*" style="color:Red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message for="currencyid" display="text" id="msgcurrencyid"/>
+											<p:selectOneMenu id="currencyid" value="#{routingSetUpDetailsBean.routingcurrencyId}" filter="true" filterMatchMode="startsWith" required="true"
+												requiredMessage="Please Select Currency" label="Currency">
+												<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}" itemValue="" />
+												<f:selectItems value="#{routingSetUpDetailsBean.currencyListFromDB}" var="c" itemLabel="#{c.currencyName}" itemValue="#{c.currencyId}" />
+												<p:ajax event="change" listener="#{routingSetUpDetailsBean.searchingRecordsinDataBase}" update="mainPanel,msgcurrencyid,details,checkDataTable"/>
+											</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										
+										<h:panelGroup layout="block" class="clearfix"/>
+										
+											<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.service']}" /><h:outputText value="*" style="color:Red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message for="serviceid" display="text" id="msgserviceid"/>
+											<p:selectOneMenu id="serviceid" value="#{routingSetUpDetailsBean.routingServiceId}" filter="true" filterMatchMode="startsWith" required="true"
+												requiredMessage="Please Select Service" label="Service">
+												<f:selectItem itemLabel="#{msg['lbl.selectservicecode']}" itemValue="" />
+												<f:selectItems value="#{routingSetUpDetailsBean.serviceCodeFromDB}" var="c" itemLabel="#{c.localServiceDescription}" itemValue="#{c.serviceMaster.serviceId}" />
+												<p:ajax event="change" listener="#{routingSetUpDetailsBean.servicecodedeclaration}" update="mainPanel,msgserviceid,remittanceid,deliveryid,details,checkDataTable"/>
+											</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.remittanc']}" /><h:outputText value="*" style="color:Red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+										    <p:message for="remittanceid" display="text" id="msgremittanceid"/>
+											<p:selectOneMenu id="remittanceid" value="#{routingSetUpDetailsBean.routingRemittanceId}" filter="true" filterMatchMode="startsWith" required="true"
+												requiredMessage="Please Select Remittance" label="Remittance">
+												<f:selectItem itemLabel="#{msg['lbl.selectremittancemode']}" itemValue="" />
+												<f:selectItems value="#{routingSetUpDetailsBean.servicedatafromdb}" var="c" itemLabel="#{c.remittanceDescription}" itemValue="#{c.remittanceModeMaster.remittanceModeId}" />
+												<p:ajax event="change" listener="#{routingSetUpDetailsBean.searchingRecordsinDataBase}" update="mainPanel,msgremittanceid,details,checkDataTable"/>
+											</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.delivery']}" /><h:outputText value="*" style="color:Red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message for="deliveryid" display="text" id="msgdeliveryid"/>
+											<p:selectOneMenu id="deliveryid" value="#{routingSetUpDetailsBean.routingDeliveryId}" filter="true" filterMatchMode="startsWith" required="true"
+												requiredMessage="Please Select Delivery" label="Delivery">
+												<f:selectItem itemLabel="#{msg['lbl.selectdeliverymode']}" itemValue="" />
+												<f:selectItems value="#{routingSetUpDetailsBean.deliverydataBasedonService}" var="c" itemLabel="#{c.englishDeliveryName}" itemValue="#{c.deliveryMode.deliveryModeId}" />
+												<p:ajax event="change" listener="#{routingSetUpDetailsBean.searchingRecordsinDataBase}" update="mainPanel,msgdeliveryid,details,checkDataTable"/>
+											</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										<h:panelGroup rendered="#{routingSetUpDetailsBean.booRenderAdd}">
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.routingCountry']}" /><h:outputText value="*" style="color:Red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message for="routingcountryid" display="text" id="msgroutingcountryid"/>
+												<p:selectOneMenu id="routingcountryid" value="#{routingSetUpDetailsBean.routingCountryId}" filter="true" filterMatchMode="startsWith"  required="true" requiredMessage="Please Select Routing Country" label="Routing Country">
+													<f:selectItem itemLabel="#{msg['lbl.selectroutingcountry']}" itemValue="" />
+													<f:selectItems value="#{routingSetUpDetailsBean.bankCountryList}" var="c"  itemLabel="#{c.countryName}" itemValue="#{c.countryMasterId}"/>
+													<p:ajax event="change" listener="#{routingSetUpDetailsBean.getBankAccordingToBankIndicator}" update="routingbankid,msgroutingcountryid,details,checkDataTable"/>
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.routingBank']}" /><h:outputText value="*" style="color:Red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message for="routingbankid" display="text" id="msgroutingbankid"/>
+												<p:selectOneMenu id="routingbankid" value="#{routingSetUpDetailsBean.routingbankId}" filter="true" filterMatchMode="startsWith"  required="true" requiredMessage="Please Select Routing Bank" label="Routing Bank">
+													<f:selectItem itemLabel="#{msg['lbl.selectroutingbank']}" itemValue="" />
+													<f:selectItems value="#{routingSetUpDetailsBean.bankAppList}" var="c"  itemLabel="#{c.bankMaster.bankFullName}" itemValue="#{c.bankMaster.bankId}"/>
+													<p:ajax event="change" listener="#{routingSetUpDetailsBean.displayAgentBasedonServiceProvider}" update="mainPanel"/>
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col" rendered="#{routingSetUpDetailsBean.booRenderAgentCol}" id="agentcolid">
+											<p:panel styleClass="inner_left_col" rendered="#{routingSetUpDetailsBean.booRenderAgentCol}">
+												<h:outputText value="#{msg['lbl.agent']}" /><h:outputText value="*" style="color:Red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col" rendered="#{routingSetUpDetailsBean.booRenderAgentCol}">
+											<p:message for="agentid" display="text" id="msgroutingagentid"/>
+												<p:selectOneMenu id="agentid" value="#{routingSetUpDetailsBean.routingagent}" filter="true" filterMatchMode="startsWith"  required="true" requiredMessage="Please Select Routing Agent" label="Routing Agent">
+													<f:selectItem itemLabel="#{msg['lbl.selectroutingbank']}" itemValue="" />
+													<f:selectItems value="#{routingSetUpDetailsBean.agentdetailsList}" var="c"  itemLabel="#{c.bankMaster.bankFullName}" itemValue="#{c.bankMaster.bankId}"/>
+													<p:ajax update="msgroutingagentid"/>
+													<p:ajax event="change" listener="#{routingSetUpDetailsBean.clearbranchApplicabilty}" update="msgroutingagentid,branchapplicabilityid,routingstatusid,details,checkDataTable"/>
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.branchApplicability']}" /><h:outputText value="*" style="color:Red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message for="branchapplicabilityid" display="text" id="msgbranchapplicabilityid"/>
+												<p:selectOneMenu id="branchapplicabilityid" value="#{routingSetUpDetailsBean.branchApplicability}" filter="true" filterMatchMode="startsWith"  required="true" requiredMessage="Please Select Branch Applicability" label="Branch Applicability">
+													<f:selectItem itemLabel="#{msg['lbl.selectbranchapplicability']}" itemValue="" />
+													<f:selectItem itemValue="ALL" itemLabel="ALL" />
+													<f:selectItem itemValue="SPECIFIC" itemLabel="SPECIFIC" />
+													<p:ajax event="change" listener="#{routingSetUpDetailsBean.specificCheckinginDataBase}" update="msgbranchapplicabilityid,:routingsetupform:checkDataTable,checkpanel,:routingsetupform:checkDataTable:cheid" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+											<!-- Start by subramanian for label name change  -->
+												<h:outputText value="#{msg['lbl.routingStatus']}" /><h:outputText value="*" style="color:Red !important;" />
+												<!-- End by subramanian for label name change  -->
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+											<p:message for="routingstatusid" display="text" id="msgroutingstatusid"/>
+												<p:selectOneMenu id="routingstatusid" value="#{routingSetUpDetailsBean.routingStatus}" filter="true" filterMatchMode="startsWith"  required="true" requiredMessage="Please Select Routing Status" label="Routing Status">
+													<f:selectItem itemLabel="#{msg['lbl.selectroutingstatus']}" itemValue="" />
+													<f:selectItem itemValue="ACTIVE" itemLabel="ACTIVE" />
+													<f:selectItem itemValue="IN-ACTIVE" itemLabel="IN-ACTIVE" />
+													<p:ajax update="msgroutingstatusid,details,checkDataTable" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										</h:panelGroup>
+										<h:panelGroup layout="block" class="clearfix"/>
+										<!-- <h:outputText value="* Are Mandatory Fields" style="color:red !important; padding-left:10px !important;" /> -->
+										<h:panelGroup layout="block" class="clearfix"/>
+										
+										<p:spacer height="10px"/>
+									    <h:panelGroup layout="block" class="clearfix"/>
+									
+									<!-- <h:panelGroup layout="block" styleClass="shadow_button" rendered="#{routingSetUpDetailsBean.booRenderSelect}">										
+										<p:commandButton value="#{msg['lbl.search']}" style="margin-right:10px;" action="#{routingSetUpDetailsBean.searchingRecordsinDataBase}" update="mainPanel"/>
+										<p:commandButton value="#{msg['lbl.exit']}" action="#{routingSetUpDetailsBean.exit}" process="@this"/>
+										rendered="#{routingSetUpDetailsBean.booRenderAdd}"
+									</h:panelGroup> -->
+									
+									<h:panelGroup layout="block" styleClass="shadow_button">										
+										<p:commandButton value="#{msg['lbl.add']}" style="margin-right:10px;" action="#{routingSetUpDetailsBean.getAllDetailsToList}" update="mainPanel,details,checkDataTable"/>
+										
+									</h:panelGroup>
+									
+									<p:spacer height="10px"/>
+									    <h:panelGroup layout="block" class="clearfix"/>
+
+										<p:dataTable var="c" id="setuptableid" value="#{routingSetUpDetailsBean.routingSetUpDetailsTable}" rowIndexVar="rowIndex"  editable="true" editMode="cell"  emptyMessage="#{msg['lbl.norecordfound']}" rendered="#{routingSetUpDetailsBean.booRenderDataTable}">
+
+											<p:column headerText="#{msg['lbl.sino']}" style="width:50px;">
+														<h:outputText value="#{rowIndex+1}"/>
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.country']}">
+												<h:outputText value="#{c.countryName}"/>
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.currency']}">
+												<h:outputText value="#{c.routingcurrencyName}"/>
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.serviceMode']}">
+												<h:outputText value="#{c.routingServiceCode}"/>
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.remitMode']}">
+												<h:outputText value="#{c.routingRemittanceMode}"/>
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.deliveryMode']}">
+												<h:outputText value="#{c.routingDeliveryMode}"/>
+											</p:column>
+											
+											<p:column headerText="#{msg['lbl.RountingCountry']}">
+												<h:outputText value="#{c.routingcountryName}"/>
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.routingBank']}">
+												<h:outputText value="#{c.routingbankName}"/>
+											</p:column>
+
+											<!-- <p:column headerText="Branch Applicability">
+												<h:outputText value="#{c.branchApplicability}"/>
+											</p:column> -->
+											
+											<p:column headerText="#{msg['lbl.branchApplicability']}">
+													<p:commandLink id="branchappid" action="#{routingSetUpDetailsBean.detailsBranchData(c)}" update=":routingsetupform:datatabledetails" immediate="true">
+														<h:outputText value="#{c.branchApplicability} " style="text-align:center; width:50px;text-decoration:underline !important;color:blue !important;"/>
+													</p:commandLink>
+													
+											</p:column>
+											
+											<!-- <p:column headerText="Bank Branch Id">
+												<h:outputText value="#{c.bankbranchId}"/>
+											</p:column> -->
+											
+											<p:column headerText="#{msg['lbl.routingStatus']} ">
+												<h:outputText value="#{c.routingStatus}"/>
+											</p:column>
+
+											<!-- <p:column
+												style="width:15% !important; text-align:center !important; margin-left:10px;">
+												<f:facet name="header">
+													<h:outputText value="#{msg['lbl.delete']}" />
+												</f:facet>
+												<p:commandButton value="" styleClass="delete" actionListener="#{routingSetUpDetailsBean.removeStandardInstrn(c)}" process="@this" update="setuptableid"></p:commandButton>
+											</p:column> -->
+											
+										</p:dataTable>
+
+										
+										<h:panelGroup layout="block" class="clearfix"/>
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button" rendered="#{routingSetUpDetailsBean.booRenderDataTable}" >
+									    <p:commandButton id="save"  value="#{msg['lbl.save']}" style="margin-right:10px;" action="#{routingSetUpDetailsBean.saveAllDataToDataBase}" update="mainPanel,details,checkDataTable" immediate="true"/>
+										<p:commandButton value="#{msg['lbl.exit']}" action="#{routingSetUpDetailsBean.exit}" process="@this"/>
+									</h:panelGroup>
+									<h:panelGroup layout="block" class="clearfix"/>
+									
+									<h:panelGroup layout="block" class="clearfix"/>
+								 <p:panel styleClass="left_col" >
+									<h:outputText  id="mandatory" value=" #{msg['lbl.*filedsAreMandatory']}"  style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+								</p:panel>
+								</p:panel>
+								<h:panelGroup layout="block" class="clearfix"/>
+								</p:panel>
+								</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"/>
+					</h:panelGroup>
+					<h:panelGroup layout="block" class="clearfix"/>
+					</td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

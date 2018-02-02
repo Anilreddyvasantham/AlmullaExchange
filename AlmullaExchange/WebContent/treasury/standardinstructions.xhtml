@@ -1,0 +1,609 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+
+		 history.pushState(null, null, 'standardinstructions.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'standardinstructions.xhtml');
+		    });
+	</script>
+</h:head>
+
+<h:body>
+	
+	<p:dialog id="complete" widgetVar="complete" width="400" height="70"  resizable="false" 
+	style="background-color: white !important;" styleClass="success" header="#{msg['lbl.success']}" closable="false"
+	showEffect="clip" hideEffect="clip" >
+           <p:outputLabel value="#{msg['lbl.dataissuccessfullysaved']}" style="text-align: center; font-size:16px !important;"/><br/>
+          <p:commandButton value="#{msg['lbl.ok']}" actionListener="#{standardInstructionsBean.showDetails}" process="@this" style="margin-left: 150px !important;"/>  
+          <p:spacer height="10px"/>      
+     </p:dialog>
+     
+     
+     
+     
+     
+
+<p:confirmDialog id="dlgNegNotAllowed" widgetVar="dlgNegNotAllowed" width="400" height="20"  
+		resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.emptyfieldnotallowed']}">
+	</p:confirmDialog>
+	<p:confirmDialog id="recordExist" widgetVar="recordExist"  height="20"  
+		resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="Record already exist in DB for these combinatons">
+	</p:confirmDialog>
+	
+	<p:confirmDialog id="dataNotFund" widgetVar="dataNotFund" width="400" height="20"  
+		resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.addAlteastOneRecordtoDataTable']}">
+	</p:confirmDialog>
+	<p:confirmDialog id="spaceNotAlloed" widgetVar="spaceNotAlloed" width="400" height="20"  
+		resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="Spaces Are Not Allowed">
+	</p:confirmDialog>
+		<p:confirmDialog id="idNotFound" widgetVar="idNotFound" width="400" height="20"  
+		resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.pleasesearchandadd']}">
+	</p:confirmDialog>
+	
+		<p:confirmDialog id="deleted" widgetVar="deleted" width="400" height="20"  
+		resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.successfullyRecrdDeleted']}">
+	</p:confirmDialog>
+	
+	<p:confirmDialog id="instrnNum" widgetVar="instrnNum" width="400" height="20"  
+		resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.instructionNoAlrdyExist']}">
+	</p:confirmDialog>
+	
+	<p:confirmDialog id="searching" widgetVar="searching" width="600" height="20"  
+		resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.enterCompanyOrBankOrCurrency']}">
+	</p:confirmDialog>
+	
+	<p:confirmDialog id="sameNotAllowed" widgetVar="sameNotAllowed" width="600" height="20"  
+		resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{msg['lbl.sameInstructionNotalloed']}">
+	</p:confirmDialog>
+    
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<h:form id="mainform">
+
+
+ 
+	
+		<p:dialog id="activateRecord" widgetVar="activateRecord" width="310"
+		height="90" showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+		<p:outputLabel value="#{msg['lbl.doyouactivaterecord']}" />
+		<p:spacer height="10px" />
+		<p:panel>
+			<p:commandButton value="#{msg['lbl.ok']}" style="margin-right:10px; "
+				actionListener="#{standardInstructionsBean.activateRecord}"
+				process="@this" oncomplete="PF('activateRecord').hide();"
+				update=":mainform" />
+			<p:commandButton value="#{msg['lbl.cancel']}"
+				onclick="PF('activateRecord').hide();" immediate="true" />
+		</p:panel>
+	</p:dialog>
+	<p:dialog id="pending" widgetVar="pending"
+										width="400" height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.warningDailog']}" closable="false"
+										showEffect="clip" hideEffect="clip">
+										<p:outputLabel
+											value="#{msg['lbl.plsApproveRecord']}"
+											 style="text-align: center; font-size:15px !important;"  />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											onclick="PF('pending').hide();" immediate="true"
+											style="margin-left: 150px !important;" />
+									</p:dialog>
+     
+			<p:growl id="messages" showDetail="true" />
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;">
+							<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+							
+							</td>
+
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle"
+										src="../images/toggle_plus.png" alt=""
+										onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+								<h1>
+									<h:outputText value="#{msg['lbl.standardpaymentinstructions']}" />
+								</h1>
+
+<p:dialog id="permanentDelete" widgetVar="permanentDelete" width="310"
+		height="90" showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+		<p:outputLabel value="#{msg['lbl.doyouwanttodeleterecordperminently']}" />
+		<p:spacer height="10px" />
+		<p:panel>
+			<p:commandButton value="#{msg['lbl.ok']}" style="margin-right:10px; "
+				actionListener="#{standardInstructionsBean.confirmPermanentDelete}"
+				process="@this" oncomplete="PF('permanentDelete').hide();"
+				update=":mainform" />
+			<p:commandButton value="#{msg['lbl.cancel']}"
+				onclick="PF('permanentDelete').hide();" immediate="true" />
+		</p:panel>
+	</p:dialog>
+	
+	
+		<p:dialog id="editdialog" widgetVar="editdialog"     resizable="false"  width="500" 
+	style="background-color: white !important;" styleClass="success" header="#{msg['lbl.edit']}" closable="false"
+	showEffect="clip" hideEffect="clip"  >
+	<!-- <h:outputText value="Do tou want to edit Instruction" /> -->
+	<p:panel>
+	<h:outputText value=" Instruction Description" style="margin-left: 100px !important;font-size:18pt;" /> : <h:outputText value="#{standardInstructionsBean.instructionDescForDisplay}"/>
+	<h:outputText value="*" style="color:red !important;" />
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel >
+											<p:message for="remarksId2" display="text"
+													id="msgstandardId1" />
+											<h:inputText id="remarksId2"  onkeyup="this.value=this.value.toUpperCase()"
+												value="#{standardInstructionsBean.instructionDesc}" style="margin-left: 100px !important;width: 290px; height: 32px;font-size:8pt;color:#000000;background-color: white !important;"  > 
+											 
+												<p:ajax update="msgstandardId1,remarksId2,mainPanel"/><!-- dataTable,:mainform:mainPanel -->
+											</h:inputText>
+										</p:panel>
+	<h:panelGroup layout="block" styleClass="shadow_button">
+   <p:commandButton value="#{msg['lbl.ok']}"    actionListener="#{standardInstructionsBean.modifiInstructionDescrition}" update="msgstandardId1,remarksId2,mainPanel,savetoDB,dataTable"   style="margin-left: 5px !important;"/>  
+   <p:commandButton value="#{msg['lbl.cancel']}"     actionListener="#{standardInstructionsBean.cancelChange}" update="remarksId2,mainPanel" oncomplete="PF('editdialog').hide();"   style="margin-right: 5px !important;"/>  
+ </h:panelGroup>
+   <p:spacer height="10px"/>      
+   </p:dialog>
+	
+								<p:panel styleClass="shadow" id="mainPanel" style="background-color:#FFF !important;">
+								
+
+      							<p:confirmDialog id="csp" widgetVar="csp"   showHeader="false" resizable="false" header="Warning Message" styleClass="warning"
+														style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;" showEffect="explode" hideEffect="explode" message="#{standardInstructionsBean.errorMsg}">
+	  						    </p:confirmDialog>
+							
+						        <p:confirmDialog id="nullPoiterId"
+                                                                     widgetVar="nullPoiterId" resizable="false"
+                                                                     style="background-color: white !important;"
+                                                                     header="#{msg['lbl.warningDailog']}" styleClass="warning"
+                                                                     showEffect="clip" hideEffect="clip" closeOnEscape="true"
+                                                                     closable="true"
+                                                                     message="#{standardInstructionsBean.errorMsg} - #{msg['lbl.nullPonterExcepetion']}">
+						       </p:confirmDialog>		
+								<p:dialog id="saveerror" widgetVar="saveerror" width="600" height="110"  resizable="false" 
+								style="background-color: white !important;" styleClass="warning" header="Error" closable="false"
+								showEffect="clip" hideEffect="clip" >
+           						<p:outputLabel value="Error While Saving Standard Payment Instruction:#{standardInstructionsBean.errorMsg}" style="text-align: center; font-size:16px !important;"/><br/>
+            						<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{standardInstructionsBean.showDetails}" process="@this" update="mainPanel" style="margin-left: 150px !important;"/>        
+ 								</p:dialog>
+ 
+								
+								
+								<p:confirmDialog id="modificationNeed" widgetVar="modificationNeed"
+									width="400" height="17" resizable="false"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true"
+									message="#{msg['lbl.modificationReq']}">
+								</p:confirmDialog>
+								
+								<p:confirmDialog id="descritionRequired" widgetVar="descritionRequired"
+									width="400" height="17" resizable="false"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true"
+									message="#{msg['lbl.instuDescReq']}">
+								</p:confirmDialog>		
+								
+									<p:confirmDialog id="remarksEmpty" widgetVar="remarksEmpty"
+									width="450" height="17" resizable="false"
+									style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true"
+									message="#{msg['lbl.remarksnotempty']}">
+								</p:confirmDialog>
+								
+							<p:dialog id="remarks" widgetVar="remarks" width="480"
+										height="280" showHeader="false" resizable="false"
+										style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" modal="true">
+										<p:panel>
+											<table>
+												<tr>
+													<td><h:outputText value="#{msg['lbl.activateddate']}     :" /></td>
+													<td><h:outputText
+															value="#{standardInstructionsBean.activateDate}"
+															style="color:red !important;" /></td>
+												</tr>
+												<tr>
+													<td><h:outputText value="#{msg['lbl.activatedby']}     :" /></td>
+													<td><h:outputText
+															value="#{standardInstructionsBean.activateBy}"
+															style="color:red !important;" /></td>
+												</tr>
+											</table>
+										</p:panel>
+										<p:spacer height="10px" />
+										<p:panel>
+											<h:outputText value="#{msg['lbl.pleaseenterremarks']}" />
+											<h:outputText value="*" style="color:red !important;" />
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel>
+											<h:inputTextarea id="remarksId"
+												value="#{standardInstructionsBean.remarks}">
+												<p:ajax />
+											</h:inputTextarea>
+										</p:panel>
+										<p:spacer height="5px" />
+										<p:panel style="padding-left:160px;">
+											<p:commandButton value="#{msg['lbl.ok']}"
+												actionListener="#{standardInstructionsBean.remarkSelectedRecord}"
+												immediate="true" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												actionListener="#{standardInstructionsBean.cancel}"
+												process="@this" update="mainPanel" immediate="true" />
+											<!--   onclick="PF('remarks').hide();" style="margin-left:10px;" -->
+										</p:panel>
+									</p:dialog>
+								
+									<h2>
+										<h:outputText value="#{msg['lbl.standardpaymentinstructions']}" />
+									</h2>
+									<p:panel styleClass="panel_border">
+
+										<p:panel styleClass="left_col" id="pnlCompany">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.company']}" />
+												<h:outputText value="*" style="color:red;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col"> 
+												<p:message for="company" display="text" />
+												<p:selectOneMenu id="company"
+													value="#{standardInstructionsBean.companyId}"
+													filterMatchMode="contains" filter="true" label="Company"
+													required="true" requiredMessage="Please Select Company">
+													<f:selectItem itemLabel="#{msg['lbl.selectcompany']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{standardInstructionsBean.companyListFromDB}"
+														var="c" itemLabel="#{c.fsCompanyMaster.companyCode} - #{c.companyName}"
+														itemValue="#{c.fsCompanyMaster.companyId}" />
+													<p:ajax for="company" event="change"
+														listener="#{standardInstructionsBean.companyChange}"
+														update="pnlBank,mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+
+										<p:panel styleClass="left_col" id="pnlBank">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bank']}" />
+												<h:outputText value="*" style="color:red;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="bankId" display="text" />
+												<p:selectOneMenu id="bankId"
+													value="#{standardInstructionsBean.bankId}" filter="true"
+													filterMatchMode="contains" required="true"
+													requiredMessage="Please Select Bank" label="Bank">
+													<f:selectItem itemLabel="#{msg['lbl.selectbank']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{standardInstructionsBean.bankApplicablity}" var="c"
+														itemLabel="#{c.bankMaster.bankCode} - #{c.bankMaster.bankFullName}" itemValue="#{c.bankMaster.bankId}" /> 
+													<p:ajax for="bankId" event="change"
+														listener="#{standardInstructionsBean.bankChange}"
+														update="pnlCurrency,mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col" id="pnlCurrency">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.currency']}" />
+												<h:outputText value="*" style="color:red;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="currencyId" display="text" />
+												<p:selectOneMenu id="currencyId"
+													value="#{standardInstructionsBean.currencyId}"
+													filter="true" filterMatchMode="contains" required="true"
+													requiredMessage="Please Select Currency" label="Currency">
+													<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{standardInstructionsBean.lstofcurrency}"
+														var="c" itemLabel="#{c.fsCurrencyMaster.currencyCode} - #{c.fsCurrencyMaster.currencyName}"
+														itemValue="#{c.fsCurrencyMaster.currencyId}" />
+									<!-- 				<p:ajax for="currencyId" event="change"
+														listener="#{standardInstructionsBean.datatableclear}"
+														update="standardId,savetoDB,addid,acceptid,mainPanel" onstart="process.show();" onsuccess="process.hide();"/> -->
+														<p:ajax for="accountNumber" event="change"
+														listener="#{standardInstructionsBean.currencyChange}"
+														update="accountDetId,mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										
+									<p:panel styleClass="left_col" id="accountDetId">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.accountnumber']}" />
+												<h:outputText value="*" style="color:red;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="accountNumber" display="text" />
+													<p:selectOneMenu id="accountNumber"
+													value="#{standardInstructionsBean.bankAccountDetailsId}"  required="true"
+													requiredMessage="Please Select Account Number" >
+													<f:selectItem itemLabel="-- select --" itemValue="" />
+													<f:selectItems value="#{standardInstructionsBean.bankAccountDetailList}" var="c" itemLabel="#{c.bankAcctNo}" itemValue="#{c.bankAcctDetId}"/>
+													
+													<p:ajax for="accountNumber" event="change"
+														listener="#{standardInstructionsBean.accountNumberChange}"
+														update="instructionId,mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+													 </p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										<p:panel styleClass="left_col" id="instructionId">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.instructiontype']}" />
+												<h:outputText value="*" style="color:red;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="instructionType" display="text" />
+												<p:selectOneMenu id="instructionType"
+													value="#{standardInstructionsBean.instructionType}"  required="true"
+													requiredMessage="Please Select Instruction Type" >
+													<f:selectItem itemLabel="-- select --" itemValue="" />
+													<f:selectItem itemLabel="PURCHASE" itemValue="PD" />
+													<f:selectItem itemLabel="SALE" itemValue="SD" />
+													<p:ajax for="instructionType" event="change"
+														listener="#{standardInstructionsBean.instructionTypeChange}"
+														update="pnlstandard,mainPanel" onstart="process.show();" onsuccess="process.hide();"/> 
+														
+													</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										
+										<!-- <p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.instructionrefnumber']}" />
+												<h:outputText value="*" style="color:red;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+
+												<p:panelGrid id="CheckSystemOrUpdated">
+													<p:row>
+
+														<p:column
+															style="width:95%; text-align:left;padding-left:0px;"
+															rendered="#{standardInstructionsBean.booSystemGenInstrnNum}">
+															<p:message for="countersel" display="text"
+																id="msgcountersel" />
+															<p:selectOneMenu id="countersel"
+																value="#{standardInstructionsBean.instructionRefNumber}"
+																filter="true" filterMatchMode="contains"
+																required="true"
+																requiredMessage="Please Select Standard Instruction Number"
+																label="Standard Instruction Number">
+																<f:selectItem itemLabel="#{msg['lbl.select']}"
+																	itemValue="" />
+																<f:selectItems
+																	value="#{standardInstructionsBean.pstandardInstrn}"
+																	var="c" itemLabel="#{c.standardInsructionNumber} - #{c.instructionDescription}"
+																	itemValue="#{c.standardInsructionNumber}" />
+																<p:ajax for="countersel" event="change"
+																	listener="#{standardInstructionsBean.standardInstrunctionDescription}"
+																	update="standardId,savetoDB,msgcountersel,addid,acceptid,mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+															</p:selectOneMenu>
+
+														</p:column>
+
+														<p:column
+															style="width:95%; text-align:left;padding-left:0px;"
+															rendered="#{standardInstructionsBean.booUpdateInstrnNum}">
+															<p:message for="counter" display="text" id="msgcounter" />
+															<p:inputText id="counter"
+																value="#{standardInstructionsBean.instructionRefNumber}"
+																required="true"
+																requiredMessage="Please Enter Standard Instruction Number"
+																label="Standard Instruction Number" converterMessage="Please Enter Positive Numbers Only" validatorMessage="Please Enter Positive Numbers Only">
+																<p:ajax for="counter" event="blur"
+																	listener="#{standardInstructionsBean.standardInstrunctionDescription}"
+																	update="counter,standardId,savetoDB,msgcounter,addid,mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+																	<f:validator validatorId="allowOnlyNumber" />
+															</p:inputText>
+														</p:column>
+
+														<p:column style="width:5%;"
+															rendered="#{standardInstructionsBean.editButton}">
+															<p:commandButton value=" " styleClass="edit"
+																action="#{standardInstructionsBean.updateInstructionNumber}"
+																update="CheckSystemOrUpdated,standardId,addid,mainPanel"
+																process="@this" onstart="process.show();" onsuccess="process.hide();"/>
+														</p:column>
+
+													</p:row>
+												</p:panelGrid>
+
+											</p:panel>
+										</p:panel> -->
+
+
+										<p:panel styleClass="left_col" id="pnlstandard">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.standardinstruction']}" />
+												<h:outputText value="*" style="color:red;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="standardId" display="text"
+													id="msgstandardId" />
+												<p:inputText id="standardId"
+													value="#{standardInstructionsBean.instrndesc}" readonly="#{standardInstructionsBean.readOnlyInstrucDesc}"
+													required="true"
+													requiredMessage="Please Enter Standard Instruction Description"
+													label="Standard Instruction Description">
+													<p:ajax update="msgstandardId" />
+												</p:inputText>
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix"></div>
+										<!-- START NAG CODE 30/01/2015-->
+										
+										<div class="clearfix"></div>
+										<!-- END NAG CODE 30/01/2015-->
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton id="addid" value="#{msg['lbl.add']}"
+												style="margin-right:10px;"
+												action="#{standardInstructionsBean.addDataTableForInstruction}"
+												update="savetoDB,mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{fundEstimationBean.exit}" process="@this" />
+											<div class="clearfix"></div>
+										</h:panelGroup>
+
+										<div class="clearfix"></div>
+										<p:spacer height="10px" />
+										<div class="clearfix"></div>
+										<p:panel id="savetoDB"
+											rendered="#{standardInstructionsBean.booDataTableRender}">
+
+											<p:dataTable id="dataTable" styleClass="mydatatableclass"
+												value="#{standardInstructionsBean.displayData}" var="c"
+												editable="true" editMode="cell" cellpadding="0"
+												cellspacing="0" border="1" rowIndexVar="rowIndex"
+												emptyMessage="#{msg['lbl.norecordfound']}">
+
+												<p:column headerText="#{msg['lbl.instructionslineno']}" >
+													<h:outputText value="#{c.lineNumber}" />
+												</p:column>
+												
+											
+
+												<p:column headerText="#{msg['lbl.instructions']}"
+													style="width:70% !important;" >
+													<p:cellEditor >
+														<f:facet name="output">
+															<h:outputText value="#{c.lineDescription}" />
+														</f:facet>
+														<f:facet name="input">
+														<p:message for="linedesc" display="text" />
+															<p:inputText id="linedesc" value="#{c.lineDescription}" onclick="this.select();" 
+																type="text" required="true" readonly="#{c.readOnlyDescription}"
+																requiredMessage="Please Enter Data or Delete Field">
+													  <p:ajax update="dataTable"/>
+															</p:inputText>
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+												
+												<p:column headerText="#{msg['lbl.edit']}" >
+												<p:commandButton id="imgEdit" styleClass="edit" value=""  action="#{standardInstructionsBean.editDataTable(c)}" rendered="#{c.editRender}"  process="@this" update=":mainform:dataTable,:mainform:mainPanel,:mainform:editdialog"  />
+												</p:column>
+												
+												
+												 
+												
+
+												<p:column headerText="#{msg['lbl.activatedeactivate']}"
+													style="width:15% !important; ">
+													<!-- <p:commandButton value="" styleClass="delete" rendered="#{c.renderDeleteButton}"
+														actionListener="#{standardInstructionsBean.removeStandardInstrn(c)}"
+														process="@this" update="dataTable,:mainform:mainPanel" immediate="true" onstart="process.show();" onsuccess="process.hide();">
+													</p:commandButton> -->
+												<!-- 	<p:commandButton value="" styleClass="delete" 
+														actionListener="#{standardInstructionsBean.removeStandardInstrn(c)}"
+														process="@this" update="dataTable,:mainform:mainPanel" immediate="true" onstart="process.show();" onsuccess="process.hide();">
+													</p:commandButton>
+													 -->
+													<p:commandLink
+													action="#{standardInstructionsBean.removeStandardInstrn(c)}"
+													value="#{c.dynamicLabelForActivateDeactivate}"
+													style="color:blue !important; text-decoration:underline !important;"
+													update="dataTable,:mainform:mainPanel"
+													immediate="true" process="@this" />
+												</p:column>
+											</p:dataTable>
+											<div class="clearfix"></div>
+											<h:panelGroup layout="block"
+												style="width:100%; text-align:right; padding-top:10px !important;">
+											<p:spacer height="40px"/>
+												<p:commandLink id="addmorefield" style=" font-size: 15px !important;"
+													value="#{msg['lbl.addmorefield']}" styleClass="link1"
+													action="#{standardInstructionsBean.addEmptyRow}" immediate="true"
+													update="dataTable,:mainform:mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+											</h:panelGroup>
+
+										</p:panel>
+
+										<h:panelGroup id="acceptid" layout="block"
+											styleClass="shadow_button"
+											rendered="#{standardInstructionsBean.booDataTableRender}">
+
+											<p:commandButton style="margin-right:10px;" immediate="true" value="#{msg['lbl.accept']}" id="buttonsPanel" action="#{standardInstructionsBean.save}" update="mainPanel" onstart="process.show();" onsuccess="process.hide();"/>
+											<p:commandButton value="#{msg['lbl.clear']}" id="clearid" action="#{standardInstructionsBean.clearCache}" update="mainPanel" />
+
+										</h:panelGroup>
+
+											<p:panel styleClass="left_col">
+											<h:outputText value="#{msg['lbl.fieldaremandatory']}"
+												style="color:red; padding:10px !important; font-size:12px;" />
+										</p:panel>
+									</p:panel>
+									<div class="clearfix"></div>
+						<div class="clearfix"></div>
+								<p:dialog modal="true" showHeader="true" header="Please wait.."  widgetVar="process"  id="process"   width="300" height="50" resizable="false"
+								        draggable="false" closable="false" style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">  
+								        <div style="text-align:center;">
+								        <p:graphicImage value="../images/preloader.gif" />
+								        </div>
+							    	</p:dialog>
+								</p:panel>
+								<div class="clearfix"></div>
+							</h:panelGroup>
+							<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+						</h:panelGroup></td>
+				</tr>
+			</table>
+		</h:form>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+
+</h:body>
+</html>

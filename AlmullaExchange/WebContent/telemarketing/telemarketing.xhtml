@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<script type="text/javascript" language="javascript">
+		document.onkeydown = function(e) {
+
+			//Enter button pressed 
+			if (e.keyCode === 13) {
+				return false;
+			}
+		};
+	</script>
+	<script>
+		history.pushState(null, null, 'telemarketing.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'telemarketing.xhtml');
+		});
+		$(function() {
+			$('input[type="checkbox"]').bind('click', function() {
+				$('input[type="checkbox"]').not(this).prop("checked", false);
+			});
+		});
+	</script>
+
+	<style>
+.table-no-select-all .ui-chkbox-all {
+	display: none !important;
+}
+</style>
+
+</h:head>
+
+<p:confirmDialog id="successMsg" widgetVar="successMsg" width="700"
+	height="20" resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="Information is successfully saved!">
+</p:confirmDialog>
+
+<p:confirmDialog id="staffToAllocate" widgetVar="staffToAllocate"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all"
+	message="Please Select Staff To Allocate!">
+</p:confirmDialog>
+
+<p:confirmDialog id="staffFilter" widgetVar="staffFilter"
+	resizable="false" style="background-color: white !important;"
+	header="#{msg['lbl.warningDailog']}" styleClass="warning"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" update="@all" message="Please Select Staff Filter!">
+</p:confirmDialog>
+
+<p:dialog id="saveSelected" widgetVar="saveSelected" width="300"
+	height="70" showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" modal="true">
+	<p:outputLabel value="Information is successfully saved!" />
+	<p:spacer height="10px" />
+	<p:panel>
+		<p:commandButton value="#{msg['lbl.ok']}" style="margin-right:10px; "
+			actionListener="#{telemarketingBean.okSelectedInSave}"
+			process="@this" oncomplete="PF('saveSelected').hide();"
+			update=":teleMarkForm" />
+	</p:panel>
+</p:dialog>
+
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="teleMarkForm">
+								<h1>
+									<h:outputText value="#{msg['lbl.telemarketing']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h3>
+										<h:outputText value="#{msg['lbl.telemarkCusList']}"
+											rendered="#{telemarketingBean.branchShow}" />
+										<h:outputText value="#{msg['lbl.staffAllocation']}"
+											rendered="#{telemarketingBean.allcationShow}" />
+									</h3>
+
+									<p:dialog modal="true" showHeader="true"
+										header="#{msg['lbl.pleasewait']}" widgetVar="process"
+										id="process" width="300" height="50" resizable="false"
+										draggable="false" closable="false"
+										style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+										<div style="text-align: center;">
+											<p:graphicImage value="../images/preloader.gif" />
+										</div>
+									</p:dialog>
+
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" update="@all"
+										message="#{telemarketingBean.errorMessage}">
+									</p:confirmDialog>
+
+									<p:panel styleClass="panel_border">
+
+										<p:panel rendered="#{telemarketingBean.branchShow}">
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.branch']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message for="locbranch" display="text" id="msglocbranch" />
+													<p:inputText id="locbranch" readonly="true"
+														value="#{sessionScope.branchCode} - #{sessionScope.location}">
+														<p:ajax />
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="Nationality" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgnationaliity" for="nationaliity"
+														display="text" />
+													<p:selectOneMenu id="nationaliity" styleClass="dropdown"
+														value="#{telemarketingBean.nationalitypopId}"
+														filter="true" filterMatchMode="contains">
+														<f:selectItem
+															itemLabel="-- Please Select Nationality --"
+															itemValue="" />
+														<f:selectItems
+															value="#{telemarketingBean.lstNationalityPopulate}"
+															var="c" itemLabel="#{c.code} - #{c.name}"
+															itemValue="#{c.id}" />
+														<p:ajax update="msgnationaliity" />
+														<p:ajax event="change"
+															update="msgnationaliity,mainPanel"
+															listener="#{telemarketingBean.selectedNationality}"
+															onstart="process.show();" onsuccess="process.hide();"></p:ajax>
+													</p:selectOneMenu>
+
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="20px" />
+
+											<p:dataTable id="dataTableId" var="c"
+												styleClass="mydatatableclass" widgetVar="dataTableId"
+												value="#{telemarketingBean.telemarketingBranchWiseTable}"
+												rowIndexVar="rowIndex"
+												emptyMessage="#{msg['lbl.norecordfound']}" rows="10"
+												paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="10,20,30" paginatorPosition="bottom">
+												
+												<p:column headerText="#{msg['lbl.sNo']}" style="width:2%;">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.customerRef']}"
+													style="width:3%;" sortBy="#{c.customerRefNum}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{c.customerRefNum}" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.custName']}"
+													style="width:15%;" sortBy="#{c.customerName}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{c.customerName}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="Mobile Number" style="width:5%;" sortBy="#{c.mobileNum}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{c.mobileNum}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.nationality']}"
+													style="width:5%;" sortBy="#{c.nationalityName}"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{c.nationalityName}"
+														style="float:left;margin-left:5px;margin-right:5px;" />
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.lastTransDt']}"
+													sortBy="#{c.lastTransDate}" style="width:4%;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<h:outputLabel value="#{c.lastTransDate}"
+														style="float:left;margin-left:5px;margin-right:5px;">
+														<f:convertDateTime pattern="dd/MM/yyyy" />
+													</h:outputLabel>
+												</p:column>
+
+												<p:column headerText="#{msg['lbl.select']}"
+													style="width:2% !important; text-align:center !important; margin-left:10px;"
+													styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+													<p:selectBooleanCheckbox value="#{c.selectedRecords}">
+														<p:ajax event="change"
+															listener="#{telemarketingBean.onRowSelect(c)}"
+															update=":teleMarkForm:mainPanel"
+															onstart="process.show();" onsuccess="process.hide();" />
+													</p:selectBooleanCheckbox>
+												</p:column>
+
+											</p:dataTable>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="10px" />
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" styleClass="shadow_button"
+												id="nextPanel">
+												<p:commandButton id="next" value="#{msg['lbl.next']}"
+													style="margin-right:10px;" update=":teleMarkForm:mainPanel"
+													action="#{telemarketingBean.nextToStaffAllocation}"
+													immediate="true" onstart="process.show();"
+													onsuccess="process.hide();" />
+												<p:commandButton value="#{msg['lbl.exit']}"
+													update=":teleMarkForm:mainPanel"
+													action="#{telemarketingBean.exit}" process="@this"
+													onstart="process.show();" onsuccess="process.hide();" />
+												<h:panelGroup layout="block" class="clearfix" />
+											</h:panelGroup>
+
+										</p:panel>
+
+										<!-- <p:spacer height="10px" /> -->
+										<p:panel id="allocationPanel"
+											rendered="#{telemarketingBean.allcationShow}">
+
+											<!-- <p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.custName']}"
+														style="color:#05000a;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText tabindex="-1"
+														value="#{telemarketingBean.alloCustomerName}"
+														styleClass="ui-state-disabled" readonly="true">
+													</p:inputText>
+												</p:panel>
+												<div class="clearfix"></div>
+											</p:panel> -->
+
+											<!-- <p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.nationality']}"
+														style="color:#05000a;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText tabindex="-1"
+														value="#{telemarketingBean.alloNationality}"
+														styleClass="ui-state-disabled" readonly="true">
+													</p:inputText>
+												</p:panel>
+												<div class="clearfix"></div>
+											</p:panel> -->
+
+											<!-- <p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.lastTransDt']}"
+														style="color:#05000a;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText tabindex="-1"
+														value="#{telemarketingBean.alloLastTransactionDate}"
+														styleClass="ui-state-disabled" readonly="true">
+														<f:convertDateTime pattern="dd/MM/yyyy" />
+													</p:inputText>
+												</p:panel>
+												<div class="clearfix"></div>
+											</p:panel> -->
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="Number of Selection"
+														style="color:#05000a;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText tabindex="-1"
+														value="#{telemarketingBean.noofCustomerSelected}"
+														styleClass="ui-state-disabled" readonly="true">
+													</p:inputText>
+												</p:panel>
+												<div class="clearfix"></div>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputLabel value="#{msg['lbl.staffFilter']}"
+														style="color:#05000a;" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:selectOneMenu id="staffFilter"
+														value="#{telemarketingBean.staffFilter}" filter="true"
+														filterMatchMode="contains">
+														<f:selectItem itemLabel="---Select Staff---" itemValue="0" />
+														<f:selectItem itemLabel="Same Nationality" itemValue="1" />
+														<f:selectItem itemLabel="Different Nationality"
+															itemValue="2" />
+														<p:ajax event="change"
+															update="staffFilter,staff,mainPanel"
+															listener="#{telemarketingBean.staffFilterSelected}"
+															onstart="process.show();" onsuccess="process.hide();"></p:ajax>
+													</p:selectOneMenu>
+												</p:panel>
+												<div class="clearfix"></div>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel style="margin:2% 0% 2% 35%">
+												<p:dataTable id="tableId" var="table" style="width:50%"
+													styleClass="mydatatableclass" widgetVar="tableId" rows="5"
+													paginator="true"
+													paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+													rowsPerPageTemplate="5,10,20,30"
+													value="#{telemarketingBean.telemarketingDataTable}"
+													emptyMessage="#{msg['lbl.noRecordFound']}"
+													paginatorPosition="bottom">
+
+													<p:column headerText="Staff Assigned" style="width:25%">
+														<h:outputLabel value="#{table.displayEmployeeName}"
+															style="margin-left:5px;margin-right:5px;" />
+													</p:column>
+
+													<p:column headerText="Number Of Customers"
+														style="width:25%">
+														<h:outputLabel value="#{table.cusCount}"
+															style="margin-left:5px;margin-right:5px;" />
+													</p:column>
+												</p:dataTable>
+											</p:panel>
+										</p:panel>
+										<p:spacer height="30px"></p:spacer>
+										<p:panel styleClass="left_col"
+											rendered="#{telemarketingBean.allcationShow}">
+											<p:panel styleClass="inner_left_col"
+												rendered="#{telemarketingBean.staffDisplay}">
+												<b><h:outputText
+														value="#{msg['lbl.staffToAllocate']} &nbsp; :" /></b>
+												<h:outputText value="*" style="color:red !important;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col"
+												rendered="#{telemarketingBean.staffDisplay}">
+												<p:selectOneMenu id="staff"
+													value="#{telemarketingBean.selectedStaff}" filter="true"
+													filterMatchMode="contains">
+													<f:selectItem itemLabel="---Select Staff---" itemValue="" />
+													<f:selectItems value="#{telemarketingBean.getEmployeeList}"
+														var="e" itemLabel="#{e.name} - (#{e.code})"
+														itemValue="#{e.id}" />
+													<p:ajax event="change" update="staff" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											id="submitPanel"
+											rendered="#{telemarketingBean.allcationShow}">
+											<p:commandButton id="save" value="#{msg['lbl.bco.save']}"
+												style="margin-right:10px;" update=":teleMarkForm:mainPanel"
+												action="#{telemarketingBean.saveTelemartEmployee}"
+												immediate="true" onstart="process.show();"
+												onsuccess="process.hide();" />
+											<p:commandButton id="back" value="#{msg['lbl.back']}"
+												style="margin-right:10px;" update=":teleMarkForm:mainPanel"
+												action="#{telemarketingBean.backSelected}" immediate="true"
+												onstart="process.show();" onsuccess="process.hide();" />
+											<p:commandButton value="#{msg['lbl.exit']}"
+												update=":teleMarkForm:mainPanel"
+												action="#{telemarketingBean.exit}" process="@this"
+												onstart="process.show();" onsuccess="process.hide();" />
+											<h:panelGroup layout="block" class="clearfix" />
+										</h:panelGroup>
+
+										<p:spacer height="20px" />
+
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

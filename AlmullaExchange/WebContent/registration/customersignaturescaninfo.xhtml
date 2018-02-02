@@ -1,0 +1,1136 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link href="../css/new_style.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script src="../js/SigWeb.js" type="text/javascript"></script>
+	<script src="../js/digitalsignature.js"></script>
+	<script type="text/javascript">
+		var baseUri = makeUri();
+		history.pushState(null, null, 'customersignaturescaninfo.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'customersignaturescaninfo.xhtml');
+		});
+	</script>
+
+
+	<style type="text/css">
+.ui-dialog.dialogsuccess .ui-widget-content {
+	border: 3px solid #00a53e !important;
+	font-weight: bold;
+	padding: 0px 0px 0px 30px !important;
+}
+
+.ui-dialog.dialogsuccess .ui-widget-content label {
+	margin-right: 0px !important;
+}
+
+label {
+	margin-right: 26px !important;
+}
+</style>
+
+	<script type="text/javascript">
+		$(document).on("keypress", ".dropdown", function(event) {
+			if (event.keyCode == 32) {
+				$('.ui-selectonemenu-trigger', this).click();
+			}
+		});
+	</script>
+
+
+</h:head>
+
+<h:body>
+
+	<f:view>
+
+
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;">
+					<!-- <ui:include
+						src="../common/common_menu.xhtml"></ui:include> --> <ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include>
+				</td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+
+
+						<h:panelGroup layout="block" class="main_div3"
+							style="background-color: #cec !important;">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+
+							<h:panelGroup layout="block" class="heading3">
+								<h:outputText value="#{msg['lbl.customerreg']}" />
+							</h:panelGroup>
+
+							<h:panelGroup layout="block" class="table_bg">
+								<h:form id="form1" enctype="multipart/form-data"
+									style="padding:0!important; background:none !important;"
+									onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'text') return false;}">
+
+
+
+									<p:panel id="mainPanel"
+										style="border: 0px; padding:0px!important; background:none !important; background-color:#cec !important;">
+
+										<p:dialog modal="true" showHeader="true"
+											header="#{msg['lbl.pleasewait']}" widgetVar="process"
+											id="process" width="300" height="50" resizable="false"
+											draggable="false" closable="false"
+											style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+											<div style="text-align: center;">
+												<p:graphicImage value="../images/preloader.gif" />
+											</div>
+										</p:dialog>
+
+										<p:confirmDialog id="passwordcheck" widgetVar="passwordcheck"
+											height="20" resizable="false" width="350"
+											style="background-color: white !important;"
+											header="#{msg['lbl.warningDailog']}" styleClass="warning"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true"
+											message="#{msg['lbl.sorrypassworddeosnotmatch']}">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="authorizedByEmpty"
+											widgetVar="authorizedByEmpty" header="Alert Message"
+											resizable="false" style="background-color: white !important;"
+											styleClass="warning" showEffect="clip" hideEffect="clip"
+											closeOnEscape="true" closable="true"
+											message="#{msg['lbl.authorizedByEmpty']}">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="otpAuthorize" widgetVar="otpAuthorize"
+											header="Alert Message" resizable="false"
+											style="background-color: white !important;"
+											styleClass="warning" showEffect="clip" hideEffect="clip"
+											closeOnEscape="true" closable="true"
+											message="#{msg['lbl.otpAuthorize']}">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="authorizedPasswordEmpty"
+											widgetVar="authorizedPasswordEmpty" header="Alert Message"
+											resizable="false" style="background-color: white !important;"
+											styleClass="warning" showEffect="clip" hideEffect="clip"
+											closeOnEscape="true" closable="true"
+											message="#{msg['lbl.authorizedPasswordEmpty']}">
+										</p:confirmDialog>
+
+										<p:dialog id="showimage" header="Images" widgetVar="showimage"
+											modal="true" styleClass="image" closable="false"
+											draggable="false" resizable="true" width="700" height="500"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+											<h:graphicImage
+												url="data:image/gif;base64,#{customerPersonalInfo.viewImage}"
+												id="imageid" width="100%" height="80%" />
+											<div class="clearfix"></div>
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton id="confirm" value="#{msg['lbl.exit']}"
+													action="#{customerPersonalInfo.exitImage}"
+													oncomplete="showimage.hide()" process="@this" />
+											</h:panelGroup>
+										</p:dialog>
+
+
+										<p:dialog id="showpdf" header="PDF" widgetVar="showpdf"
+											modal="true" styleClass="image" closable="false"
+											draggable="false" resizable="true" width="700" height="500"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+											<p:media value="#{customerPersonalInfo.custpdfImage}"
+												id="pdfid" width="100%" height="80%" player="pdf">
+												<f:param name="id" value="#{customerPersonalInfo.idFile}" />
+											</p:media>
+											<div class="clearfix"></div>
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<p:commandButton id="confirmpdf" value="#{msg['lbl.ok']}"
+													oncomplete="showpdf.hide()" immediate="true" />
+											</h:panelGroup>
+										</p:dialog>
+
+										<p:dialog header="#{msg['lbl.warning']}" id="scanwait"
+											widgetVar="scanwait" width="300" height="150"
+											resizable="false" showEffect="clip" hideEffect="clip"
+											modal="true"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+											<p:outputLabel style="margin:0px 0px 10px 0px !important;"
+												value="#{msg['lbl.youwillberedirecttoscanning']}" />
+											<h:commandLink value="#{msg['lbl.ok']}"
+												actionListener="#{customerPersonalInfo.redirectToScanningBrowser}"
+												target="_new"
+												style="margin:30px 0px 0px 0px!important;background-color:#00A53E;padding:5px 10px 5px 10px;"
+												onclick="scanwait.hide()" />
+										</p:dialog>
+
+										<p:dialog header="#{msg['lbl.warning']}" id="scanwithnewcard"
+											widgetVar="scanwithnewcard" width="300" height="150"
+											resizable="false" showEffect="clip" hideEffect="clip"
+											modal="true"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+											<p:outputLabel style="margin:0px 0px 10px 0px !important;"
+												value="#{msg['lbl.scanwithnewcard']}" />
+											<h:commandLink value="#{msg['lbl.addimage']}"
+												actionListener="#{customerPersonalInfo.redirectToScanningBrowser}"
+												target="_new"
+												style="margin:30px 0px 0px 0px!important;background-color:#00A53E;padding:5px 10px 5px 10px;"
+												onclick="scanwithnewcard.hide()" />
+										</p:dialog>
+
+										<p:dialog header="#{msg['lbl.warning']}"
+											id="scanwithnewcardmanual" widgetVar="scanwithnewcardmanual"
+											width="300" height="150" resizable="false" showEffect="clip"
+											hideEffect="clip" modal="true"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+											<p:outputLabel style="margin:0px 0px 10px 0px !important;"
+												value="#{msg['lbl.scanwithnewcardmanual']}" />
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<h:commandLink value="#{msg['lbl.yes']}"
+													actionListener="#{customerPersonalInfo.redirectToScanningBrowser}"
+													target="_new"
+													style="margin:0px 10px 0px 0px!important;background-color: #006E2A; padding:4px 9px 5px 10px; color:#FFFFFF !important;"
+													onclick="scanwithnewcardmanual.hide()" />
+												<p:commandButton value="#{msg['lbl.no']}"
+													style="margin:0px !important;"
+													oncomplete="scanwithnewcardmanual.hide()" update="idproofs"
+													process="@this" />
+											</h:panelGroup>
+
+										</p:dialog>
+
+										<p:dialog header="#{msg['lbl.warning']}"
+											id="scanwithnewcardmanualsave"
+											widgetVar="scanwithnewcardmanualsave" width="300"
+											height="150" resizable="false" showEffect="clip"
+											hideEffect="clip" modal="true"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+											<p:outputLabel style="margin:0px 0px 10px 0px !important;"
+												value="#{msg['lbl.scanwithnewcardmanual']}" />
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<h:commandLink value="#{msg['lbl.yes']}"
+													actionListener="#{customerPersonalInfo.redirectToScanningBrowser}"
+													target="_new"
+													style="margin:0px 10px 0px 0px!important;background-color: #006E2A; padding:4px 9px 5px 10px; color:#FFFFFF !important;"
+													onclick="scanwithnewcardmanualsave.hide()" />
+												<p:commandButton value="#{msg['lbl.no']}"
+													style="margin:0px !important;"
+													onclick="scanwithnewcardmanualsave.hide()" update="form1"
+													actionListener="#{customerPersonalInfo.saveProofNo}"
+													process="@this" />
+											</h:panelGroup>
+
+										</p:dialog>
+
+										<p:dialog id="scanRecord" widgetVar="scanRecord" width="300"
+											height="100" resizable="false" showEffect="clip"
+											hideEffect="clip" modal="true"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+											<p:outputLabel value="#{msg['lbl.pleasescanrecordnotfound']}" />
+											<p:commandButton value="#{msg['lbl.ok']}"
+												oncomplete="scanRecord.hide()" />
+										</p:dialog>
+
+										<p:dialog header="#{msg['lbl.warning']}" id="adddocument"
+											widgetVar="adddocument" width="300" height="150"
+											resizable="false" showEffect="clip" hideEffect="clip"
+											modal="true"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+											<p:outputLabel style="margin:0px 0px 10px 0px !important;"
+												value="#{msg['lbl.youwillberedirecttoscanning']}" />
+											<h:commandLink value="#{msg['lbl.ok']}"
+												actionListener="#{customerPersonalInfo.addDocumentBrowser}"
+												target="_new" immediate="true"
+												style="margin:30px 0px 0px 0px!important;background-color:#00A53E;padding:5px 10px 5px 10px;"
+												onclick="adddocument.hide()" />
+										</p:dialog>
+
+										<p:dialog header="#{msg['lbl.warning']}" id="idExpirednocr"
+											widgetVar="idExpirednocr" width="200" height="150"
+											resizable="false" showEffect="clip" hideEffect="clip"
+											modal="true"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+											<p:outputLabel style="margin:0px 0px 10px 0px !important;"
+												value="#{msg['lbl.noimageisscanned']}" />
+											<h:commandLink value="#{msg['lbl.addimage']}"
+												actionListener="#{customerPersonalInfo.addDocumentBrowser}"
+												target="_new" immediate="true"
+												style="margin:30px 0px 0px 0px!important;background-color:#00A53E;padding:5px 10px 5px 10px;"
+												onclick="idExpirednocr.hide()" />
+										</p:dialog>
+
+										<p:dialog id="modifyscan" widgetVar="modifyscan" width="400"
+											height="50" resizable="false" showEffect="clip"
+											hideEffect="clip" modal="true" header="#{msg['lbl.warning']}"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+											<p:outputLabel value="#{msg['lbl.ifyouwanttomodifyoradd']}" />
+											<div class="clearfix"></div>
+											<h:commandLink value="#{msg['lbl.yes']}"
+												actionListener="#{customerPersonalInfo.modifyNonOcr}"
+												target="_new"
+												style="margin:30px 0px 0px 0px!important;background-color:#00A53E;padding:5px 10px 5px 10px;"
+												onclick="modifyscan.hide()" />
+
+											<p:commandButton value="#{msg['lbl.no']}"
+												oncomplete="modifyscan.hide()" update="mainPanel" />
+										</p:dialog>
+
+										<p:dialog id="dobchangemsg" widgetVar="dobchangemsg"
+											width="500" height="50" resizable="false" showEffect="clip"
+											hideEffect="clip" modal="true"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+											<p:outputLabel value="#{msg['lbl.dobchangemsg']}" />
+											<p:commandButton value="#{msg['lbl.ok']}"
+												oncomplete="dobchangemsg.hide()" ajax="false"
+												immediate="true" />
+										</p:dialog>
+
+										<p:confirmDialog header="#{msg['lbl.warning']}"
+											id="idtypecheck" widgetVar="idtypecheck" width="380"
+											height="30" resizable="false"
+											style=" font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true"
+											message="#{msg['lbl.initialstageselectionidtypeandidtype']}">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="idExpireddatatable"
+											header="Warning Message" widgetVar="idExpireddatatable"
+											width="800" resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip"
+											message="This ID number: #{customerPersonalInfo.idNumber} already expired. Please do the SCANNING with new document">
+											<p:commandButton value="#{msg['lbl.ok']}"
+												oncomplete="idExpireddatatable.hide()" />
+										</p:confirmDialog>
+
+										<p:dialog header="#{msg['lbl.warning']}" id="idExpired"
+											widgetVar="idExpired" width="200" height="150"
+											resizable="false" showEffect="clip" hideEffect="clip"
+											modal="true"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+											<p:outputLabel style="margin:0px 0px 10px 0px !important;"
+												value="#{msg['lbl.theidnumber']}: #{customerPersonalInfo.idNumber} #{msg['lbl.alreadyscanned']}" />
+											<h:commandLink value="#{msg['lbl.addimage']}"
+												actionListener="#{customerPersonalInfo.redirectToScanningBrowser}"
+												target="_new" immediate="true"
+												style="margin:30px 0px 0px 0px!important;background-color:#00A53E;padding:5px 10px 5px 10px;"
+												onclick="idExpirednocr.hide()" />
+										</p:dialog>
+
+										<p:dialog header="#{msg['lbl.warning']}" id="rescanagain"
+											widgetVar="rescanagain" width="300" height="150"
+											resizable="false" showEffect="clip" hideEffect="clip"
+											modal="true"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+											<p:outputLabel style="margin:0px 0px 10px 0px !important;"
+												value="#{msg['lbl.rescanmsgfailure']}" />
+											<h:commandLink value="#{msg['lbl.rescan']}"
+												actionListener="#{customerPersonalInfo.redirectToScanningBrowser}"
+												target="_new" immediate="true"
+												style="margin:30px 0px 0px 0px!important;background-color:#00A53E;padding:5px 10px 5px 10px;"
+												onclick="rescanagain.hide()" />
+										</p:dialog>
+
+										<p:confirmDialog id="signatureMandatory"
+											widgetVar="signatureMandatory" resizable="false"
+											width="300px" style="background-color: white !important;"
+											header="#{msg['lbl.warningDailog']}" styleClass="warning"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true" message="#{msg['lbl.signaturemadatory']}">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="failToUpdate" widgetVar="failToUpdate"
+											resizable="false" width="300px"
+											style="background-color: white !important;"
+											header="#{msg['lbl.warningDailog']}" styleClass="warning"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true" message="Fail to update OTP details">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="otpNotMatch" widgetVar="otpNotMatch"
+											resizable="false" width="300px"
+											style="background-color: white !important;"
+											header="#{msg['lbl.warningDailog']}" styleClass="warning"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true" message="#{msg['lbl.otpNotMatch']}">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="otpNoEmpty" widgetVar="otpNoEmpty"
+											resizable="false" width="300px"
+											style="background-color: white !important;"
+											header="#{msg['lbl.warningDailog']}" styleClass="warning"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true" message="Please enter OTP number">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="maxLimit" widgetVar="maxLimit"
+											resizable="false" width="350px"
+											style="background-color: white !important;"
+											header="#{msg['lbl.warningDailog']}" styleClass="warning"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true"
+											message="You exceeded OTP request max attempt">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="timeInterval" widgetVar="timeInterval"
+											resizable="false" style="background-color: white !important;"
+											header="#{msg['lbl.warningDailog']}" styleClass="warning"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true"
+											message="Please wait for one minute for generating next OTP">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="alreadyVerified"
+											widgetVar="alreadyVerified" resizable="false"
+											style="background-color: white !important;"
+											header="#{msg['lbl.warningDailog']}" styleClass="warning"
+											showEffect="clip" hideEffect="clip" closeOnEscape="true"
+											closable="true" message="OTP already verified">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="alertmsg" widgetVar="alertmsg"
+											header="Alert Message" resizable="false"
+											style="background-color: white !important;"
+											styleClass="warning" showEffect="clip" hideEffect="clip"
+											closeOnEscape="true" closable="true"
+											message="#{customerPersonalInfo.exceptionMessage}">
+										</p:confirmDialog>
+
+										<p:dialog id="saveerror" header="#{msg['lbl.warning']}"
+											widgetVar="saveerror" width="350" resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip">
+											<p:outputLabel
+												value="#{msg['lbl.errorwhilesavingcustomerdetails']} #{customerPersonalInfo.errorMsg}" />
+											<p:commandButton value="#{msg['lbl.exit']}"
+												actionListener="#{customerPersonalInfo.exit}"
+												process="@this" update="mainPanel" />
+										</p:dialog>
+
+										<p:confirmDialog id="filenotfounds" header="Exception Message"
+											widgetVar="filenotfounds" width="700" showHeader="false"
+											resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip"
+											message="#{msg['lbl.scannotavailablemsg']}">
+
+											<h:commandLink value="#{msg['lbl.addimage']}"
+												actionListener="#{customerPersonalInfo.modifyNonOcr}"
+												target="_new"
+												style="margin:30px 0px 0px 0px!important;background-color:#00A53E;padding:5px 10px 5px 10px;"
+												onclick="filenotfounds.hide()" />
+										</p:confirmDialog>
+
+										<p:confirmDialog id="checkmodifynonocr"
+											header="Exception Message" widgetVar="checkmodifynonocr"
+											width="700" showHeader="false" resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip"
+											message="#{msg['lbl.imageavailablemsg']}">
+											<h:panelGroup layout="block" styleClass="shadow_button">
+												<h:commandLink value="#{msg['lbl.yes']}"
+													actionListener="#{customerPersonalInfo.modifyNonOcr}"
+													target="_new"
+													style="margin:0px 10px 0px 0px!important;background-color: #006E2A; padding:4px 9px 5px 10px; color:#FFFFFF !important;"
+													onclick="checkmodifynonocr.hide()" />
+												<p:commandButton value="#{msg['lbl.no']}"
+													actionListener="#{customerPersonalInfo.addData}"
+													style="margin:0px !important;"
+													oncomplete="checkmodifynonocr.hide()" update="idproofs"
+													process="@this" />
+											</h:panelGroup>
+										</p:confirmDialog>
+
+										<p:dialog header="#{msg['lbl.warning']}" id="duplicateproof"
+											widgetVar="duplicateproof" width="300" height="40"
+											resizable="false" showEffect="clip" hideEffect="clip"
+											modal="true"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+											<p:outputLabel value="#{msg['lbl.duplicate']}" />
+											<p:commandButton value="#{msg['lbl.ok']}"
+												oncomplete="duplicateproof.hide()" ajax="false"
+												immediate="true" />
+										</p:dialog>
+
+										<p:confirmDialog id="migrationexception"
+											header="#{msg['lbl.warning']}" widgetVar="migrationexception"
+											width="900" resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip"
+											message="#{msg['lbl.customerhasregisteredsucessfullywithrefno']} #{customerPersonalInfo.updateCustomerRefNo}.#{msg['lbl.pleaserecallthisrefnoonemos']}">
+											<p:commandButton value="#{msg['lbl.ok']}"
+												oncomplete="migrationexception.hide()" update="mainPanel"
+												immediate="true" />
+										</p:confirmDialog>
+
+										<p:confirmDialog id="scandatamismatch"
+											header="#{msg['lbl.warning']}" widgetVar="scandatamismatch"
+											width="900" resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip"
+											message="#{msg['lbl.missmatchimagescan']}">
+											<p:commandButton value="#{msg['lbl.ok']}"
+												action="#{customerPersonalInfo.checkId}" update="mainPanel" />
+										</p:confirmDialog>
+
+										<p:dialog id="arcmateproblem" header="#{msg['lbl.warning']}"
+											widgetVar="arcmateproblem" width="350" resizable="false"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+											showEffect="clip" hideEffect="clip">
+											<p:outputLabel value="#{msg['lbl.arcmateproblem']}" />
+											<p:commandButton value="#{msg['lbl.ok']}"
+												onclick="arcmateproblem.hide();" process="@this"
+												update="idproofs" />
+										</p:dialog>
+
+										<p:confirmDialog id="scanmust" widgetVar="scanmust"
+											header="Alert Message" resizable="false"
+											style="background-color: white !important;"
+											styleClass="warning" showEffect="clip" hideEffect="clip"
+											closeOnEscape="true" closable="true"
+											message="#{msg['lbl.customernotscan']}">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="imagenotfound" widgetVar="imagenotfound"
+											header="Alert Message" resizable="false"
+											style="background-color: white !important;"
+											styleClass="warning" showEffect="clip" hideEffect="clip"
+											closeOnEscape="true" closable="true"
+											message="#{msg['lbl.imagenotfound']}">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="bloberror" widgetVar="bloberror"
+											header="Alert Message" resizable="false"
+											style="background-color: white !important;"
+											styleClass="warning" showEffect="clip" hideEffect="clip"
+											closeOnEscape="true" closable="true"
+											message="Image is not saved #{customerPersonalInfo.errorMsg}">
+										</p:confirmDialog>
+
+										<p:dialog id="arcmateTable" widgetVar="arcmateTable"
+											width="300" height="100" resizable="false" showEffect="clip"
+											hideEffect="clip" modal="true"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+											<p:outputLabel value="#{msg['lbl.arcmatetable']}" />
+											<p:commandButton value="#{msg['lbl.ok']}"
+												oncomplete="arcmateTable.hide()" />
+										</p:dialog>
+
+										<p:confirmDialog id="needscan" widgetVar="needscan"
+											header="Alert Message" resizable="false"
+											style="background-color: white !important;"
+											styleClass="warning" showEffect="clip" hideEffect="clip"
+											closeOnEscape="true" closable="true"
+											message="Please Scan image">
+										</p:confirmDialog>
+
+										<p:confirmDialog id="imgNotFound" widgetVar="imgNotFound"
+											header="Error" resizable="false"
+											style="background-color: white !important;"
+											styleClass="warning" showEffect="clip" hideEffect="clip"
+											closeOnEscape="true" closable="true"
+											message="Please insert card properly">
+										</p:confirmDialog>
+
+										<p:dialog id="machinenotconnected"
+											widgetVar="machinenotconnected" width="300" height="100"
+											resizable="false" showEffect="clip" hideEffect="clip"
+											modal="true"
+											style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;">
+											<p:outputLabel
+												value="DB Scan machine not connected. Please check" />
+											<p:commandButton value="#{msg['lbl.ok']}"
+												oncomplete="machinenotconnected.hide()" />
+										</p:dialog>
+
+										<p:panel id="idproofs"
+											rendered="#{customerPersonalInfo.booProof}"
+											styleClass="shadow1">
+
+											<p:panel id="panelProof">
+
+
+												<p:panel styleClass="panel_border3">
+													<h4
+														style="margin-top: 25px; text-align: center; font-size: 22px; color: #fff;">
+														<h:outputText value="#{msg['lbl.custidproof']}" />
+													</h4>
+													<div class="clearfix" />
+												</p:panel>
+
+												<p:panel styleClass="panel_border7">
+													<h:panelGroup layout="block" styleClass="content_level1">
+														<p:panel styleClass="left_col">
+															<p:panel styleClass="inner_left_col">
+																<h:outputText id="lbl_idfor" />
+															</p:panel>
+															<p:panel styleClass="inner_right_col">
+															<p:focus context="idfor"></p:focus>
+																<p:message for="idfor" display="text" />
+																<p:selectOneMenu id="idfor" styleClass="dropdown" filter="true" filterMatchMode="contains" tabindex="0"
+																	value="#{customerPersonalInfo.idFor}"
+																	label="ID For">
+																	<p:ajax />
+																</p:selectOneMenu>
+															</p:panel>
+														</p:panel>
+
+														<p:panel styleClass="right_col">
+															<p:panel styleClass="inner_left_col">
+																<h:outputText id="lbl_idtype_1" />
+															</p:panel>
+															<p:panel styleClass="inner_right_col">
+																<p:message for="idtype_1" display="text" />
+																<p:selectOneMenu id="idtype_1" styleClass="dropdown"
+																	filter="true" filterMatchMode="contains"
+																	value="#{customerPersonalInfo.idTypeproof}"
+																	label="Identity Type" tabindex="1">
+																	<f:selectItem itemLabel="#{msg['lbl.selectidtype']}"
+																		itemValue="" />
+																	<f:selectItems
+																		value="#{customerPersonalInfo.idTypeValues.entrySet()}"
+																		var="c" itemLabel="#{c.value}" itemValue="#{c.key}" />
+																	<p:ajax event="change"
+																		listener="#{customerPersonalInfo.getIDTypeProofValue}"
+																		update="expdatePanel,idnumberproofs,dateofexpiry,datepanel" />
+																</p:selectOneMenu>
+
+															</p:panel>
+														</p:panel>
+
+														<p:panel styleClass="left_col" id="idPanelProof">
+															<p:panel styleClass="inner_left_col">
+																<h:outputText value="#{msg['lbl.idnumber']} *" />
+															</p:panel>
+															<p:panel styleClass="inner_right_col">
+																<p:message id="idnosMsg" for="idnumberproofs"
+																	display="text" />
+																<p:inputText id="idnumberproofs"
+																	value="#{customerPersonalInfo.idnumberProof}"
+																	required="true" tabindex="2"
+																	requiredMessage="#{msg['lbl.validationprefix']} #{msg['lbl.idnumber']}"
+																	readonly="#{customerPersonalInfo.readOnlyIdNumber}">
+
+																	<!-- <p:ajax update="idnosMsg" event="blur" /> -->
+																	<p:ajax event="blur"
+																		listener="#{customerPersonalInfo.onblurIdProof}"
+																		update="idPanelProof,idnosMsg" />
+
+																	<p:outputLabel value="#{msg['lbl.validwrongcivil']}"
+																		rendered="#{customerPersonalInfo.booIdTypeCheck}"
+																		style="color: red !important; font-weight:bold;" />
+																</p:inputText>
+															</p:panel>
+														</p:panel>
+
+														<p:panel styleClass="right_col" id="datepanel">
+															<p:panel styleClass="inner_left_col">
+																<h:outputText id="lbl_dateofexpiry" />
+															</p:panel>
+															<p:panel styleClass="inner_right_col" id="expdatePanel"
+																rendered="#{customerPersonalInfo.renderIdExpiryDateCalenderField}">
+																<p:message for="dateofexpiry" display="text"
+																	id="msgdateofexpiry" />
+																<p:calendar id="dateofexpiry" size="24"
+																	value="#{customerPersonalInfo.dateExp}" mode="popup"
+																	yearRange="c-50:c+50" readonlyInput="true"
+																	label="Expiry Date" pattern="dd/MM/yyyy"
+																	navigator="true" tabindex="3"
+																	mindate="#{customerPersonalInfo.minDate}"
+																	maxdate="#{customerPersonalInfo.expDateCheck}">
+																	<p:ajax event="dateSelect"
+																		listener="#{customerPersonalInfo.onDateSelect}"
+																		update="msgdateofexpiry,dateofexpiry" />
+																</p:calendar>
+															</p:panel>
+
+															<p:panel styleClass="inner_right_col"
+																rendered="#{customerPersonalInfo.renderIdExpiryDateInputField}">
+																<p:inputText readonly="true"
+																	value="#{customerPersonalInfo.dateExp}">
+																	<f:convertDateTime pattern="dd/MM/yyyy" />
+
+																</p:inputText>
+															</p:panel>
+														</p:panel>
+
+														<p:panel styleClass="left_col">
+															<h:outputText value="#{msg['lbl.fieldaremandatory']}"
+																style="color:red;  font-size:10px; margin-left:10px !important ;" />
+														</p:panel>
+
+														<div class="clearfix"></div>
+
+													</h:panelGroup>
+												</p:panel>
+
+											</p:panel>
+
+											<p:panel styleClass="panel_border7"
+												style="background-color:#cec !important;">
+												<h:panelGroup layout="block" styleClass="shadow_button3">
+
+
+													<p:commandButton
+														value="#{msg['lbl.checkid']} / #{msg['lbl.scanid']}"
+														style="margin-right:10px;"
+														action="#{customerPersonalInfo.mainCheckId}" tabindex="4"
+														onstart="process.show();" onsuccess="process.hide();"
+														update="panelProof,custidproofPanel,mainPanel">
+													</p:commandButton>
+
+													<!--  <p:commandButton value="#{msg['lbl.checkid']} / #{msg['lbl.scanid']}" style="margin-right:10px;"
+													action="#{customerPersonalInfo.checkId_localTest}" onstart="process.show();" onsuccess="process.hide();"
+													update="panelProof,custidproofPanel,mainPanel">
+												    </p:commandButton>  -->
+
+													<!-- <p:commandButton value="#{msg['lbl.modify']}" id="modifyId"
+													action="#{customerPersonalInfo.modifyScan}" onstart="process.show();" onsuccess="process.hide();"
+													update="mainPanel" style="margin-right:10px;"
+													rendered="#{customerPersonalInfo.renderModifyScan}" /> -->
+
+													<p:commandButton value="#{msg['lbl.back']}"
+														action="#{customerPersonalInfo.backDebitCardPage}"
+														onstart="process.show();" styleClass="btn-info"
+														onsuccess="process.hide();" update="mainPanel" tabindex="5"
+														immediate="true">
+													</p:commandButton>
+													<br />
+													<br />
+												</h:panelGroup>
+
+											</p:panel>
+											<p:panel id="custidproofPanel">
+												<p:dataTable value="#{customerPersonalInfo.createProofList}"
+													var="o" widgetVar="50" styleClass="mydatatableclass"
+													editable="true"
+													rendered="#{customerPersonalInfo.booidproofDatatable}"
+													id="datatable1" emptyMessage="#{msg['lbl.norecordfound']}"
+													rowIndexVar="rowIndex">
+
+													<p:ajax update="datatable1" event="cellEdit"
+														listener="#{customerPersonalInfo.modifiedProofList(o)}" />
+
+													<p:column headerText="#{msg['lbl.bcsno']}">
+														<h:outputText value="#{rowIndex+1}" />
+													</p:column>
+
+													<p:column>
+														<h:outputText />
+														<f:facet name="header">
+															<h:outputText value="#{msg['lbl.idfor']}" />
+														</f:facet>
+
+														<p:cellEditor>
+															<f:facet name="output">
+																<h:outputText value="#{o.idFor}" />
+															</f:facet>
+
+															<f:facet name="input">
+																<h:selectOneMenu value="#{o.id_for}">
+
+																</h:selectOneMenu>
+															</f:facet>
+														</p:cellEditor>
+													</p:column>
+
+													<p:column>
+														<!-- <h:outputText value="#{o.idType}"/> -->
+														<f:facet name="header">
+															<h:outputText value="#{msg['lbl.idtype']}" />
+														</f:facet>
+														<p:cellEditor>
+															<f:facet name="output">
+																<h:outputText value="#{o.idType}" />
+															</f:facet>
+															<f:facet name="input">
+																<p:inputText value="#{o.idType}" />
+															</f:facet>
+														</p:cellEditor>
+													</p:column>
+
+													<p:column>
+														<f:facet name="header">
+															<h:outputText value="#{msg['lbl.idnumber']}" />
+														</f:facet>
+														<p:cellEditor>
+															<f:facet name="output">
+																<h:outputText value="#{o.id_number}" />
+															</f:facet>
+															<f:facet name="input">
+																<p:inputText value="#{o.id_number}" />
+															</f:facet>
+														</p:cellEditor>
+													</p:column>
+
+													<p:column>
+														<f:facet name="header">
+															<h:outputText value="#{msg['lbl.dateofexpiry']}" />
+														</f:facet>
+														<p:cellEditor>
+															<f:facet name="output">
+																<h:outputText value="#{o.date_expiary}" />
+															</f:facet>
+															<f:facet name="input">
+																<p:inputText value="#{o.date_expiary}" />
+															</f:facet>
+														</p:cellEditor>
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.view']}">
+
+														<p:column headerText="#{msg['lbl.view']}">
+
+
+															<h:commandLink
+																actionListener="#{customerPersonalInfo.viewScan(o)}"
+																target="_new" immediate="true" tabindex="6"
+																style="margin:30px 0px 0px 0px!important;padding:5px 10px 5px 10px;"
+																rendered="#{o.booRenderAImageView}">
+																<p:graphicImage value="../images/viewicon.jpg"
+																	width="25" height="25" id="imgEdit" />
+																<p:tooltip for="imgEdit" value="#{msg['lbl.view']}" />
+															</h:commandLink>
+
+															<h:commandLink
+																actionListener="#{customerPersonalInfo.populateImage(o)}"
+																immediate="true" tabindex="7"
+																style="margin:30px 0px 0px 0px!important;padding:5px 10px 5px 10px;"
+																rendered="#{o.booRenderDImageView}">
+																<p:graphicImage value="../images/viewicon.jpg"
+																	width="25" height="25" id="imgEdit1" />
+																<p:tooltip for="imgEdit1" value="#{msg['lbl.view']}" />
+																<p:ajax update=":form1:showimage"
+																	onstart="process.show();" onsuccess="process.hide();" />
+															</h:commandLink>
+
+														</p:column>
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.rescan']}">
+
+														<p:column headerText="#{msg['lbl.rescan']}"
+															rendered="#{o.renderReScan}">
+
+
+															<h:commandLink
+																actionListener="#{customerPersonalInfo.mainRescan(o)}"
+																target="_new" immediate="true" tabindex="8"
+																style="margin:30px 0px 0px 0px!important;padding:5px 10px 5px 10px;">
+																<p:graphicImage value="../images/scanicon.jpg"
+																	width="25" height="25" id="rescanid" />
+																<p:tooltip for="rescanid" value="#{msg['lbl.rescan']}" />
+															</h:commandLink>
+
+														</p:column>
+													</p:column>
+
+												</p:dataTable>
+											</p:panel>
+											<div class="clearfix"></div>
+
+											<div class="clearfix"></div>
+
+											<p:panel styleClass="panel_border5">
+												<h:panelGroup id="idproofbuttons" layout="block"
+													styleClass="shadow_button3"
+													rendered="#{customerPersonalInfo.booidproofDatatable}">
+
+													<p:commandButton value="#{msg['lbl.savenext']}"
+														style="margin-right:10px;" tabindex="9"
+														onstart="process.show();" onsuccess="process.hide();"
+														action="#{customerPersonalInfo.saveCustomerIdProofPage}"
+														process="@this" update="mainPanel" />
+
+													<p:commandButton value="#{msg['lbl.clear']}"
+														styleClass="btn-info" update="mainPanel" tabindex="10"
+														onstart="process.show();" onsuccess="process.hide();"
+														action="#{customerPersonalInfo.clearProofInfo}"
+														process="@this">
+														<p:resetInput target="@form" />
+													</p:commandButton>
+													<div class="clearfix"></div>
+												</h:panelGroup>
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix"></div>
+										<p:panel styleClass="shadow1" id="signaturePanels"
+											rendered="#{customerPersonalInfo.signaturePanelRender}">
+
+											<!-- Pin Number Capture Here  -->
+
+											<p:panel id="otpPanel"
+												rendered="#{customerPersonalInfo.booRenderOtpPanel}"
+												style="background-color:none !important; padding:0px !important;">
+
+												<p:panel styleClass="panel_border3">
+													<h4
+														style="margin-top: 25px; text-align: center; font-size: 22px; color: #fff;">
+														<h:outputText value="OTP Number" />
+													</h4>
+													<div class="clearfix" />
+												</p:panel>
+
+												<p:panel styleClass="panel_border7">
+													<h:panelGroup layout="block" styleClass="content_level1">
+
+														<p:panel styleClass="left_col" id="otpPanelId">
+															<p:panel styleClass="inner_left_col">
+																<h:outputText value="OTP No" />
+															</p:panel>
+															<p:panel styleClass="inner_right_col">
+																<p:message id="otpNoMsg" for="otpNo" display="text" />
+																<p:inputText id="otpNo"
+																	value="#{customerPersonalInfo.otpNo}" tabindex="11">
+																	<p:ajax event="blur"
+																		listener="#{customerPersonalInfo.checkOtpNo}"
+																		update="otpPanel,otpNoMsg,alertmsg" />
+																</p:inputText>
+															</p:panel>
+														</p:panel>
+
+														<!-- <p:panel id="resendOtpPanel"
+															rendered="#{customerPersonalInfo.booRenderOtpPanel}">
+
+
+															<p:panel styleClass="right_col">
+																<p:panel styleClass="inner_left_col">
+																	<p:selectBooleanCheckbox
+																		value="#{customerPersonalInfo.otpSelection}">
+																		<p:ajax update="resendOtpPanel,alertmsg"
+																			process="@this"
+																			listener="#{customerPersonalInfo.selectOtpResend}"
+																			onstart="process.show();" onsuccess="process.hide();" />
+																	</p:selectBooleanCheckbox>
+													                 &nbsp;
+													                <h:outputText value="Choose Resend OTP" />
+																</p:panel>
+
+																<p:panel styleClass="inner_right_col"
+																	rendered="#{customerPersonalInfo.booRenderOtpLinkPanel}">
+																	<p:panelGrid style="width:98%;">
+																		<p:row>
+																			<p:column
+																				style="font-weight: bold; font-size:15px !important; color:blue !important">
+																				<p:commandButton value="CLICK TO RESEND"
+																					action="#{customerPersonalInfo.resendOtp}"
+																					update="resendOtpPanel,alertmsg" process="@this"
+																					styleClass="link1" onstart="process.show();"
+																					onsuccess="process.hide();" />
+																			</p:column>
+																		</p:row>
+																	</p:panelGrid>
+																</p:panel>
+															</p:panel>
+
+														</p:panel> -->
+
+														<h:panelGroup layout="block" class="clearfix" />
+
+														<p:outputLabel
+															value="If OTP not generated Please Click to Authorize  ?"
+															style=" font-weight: bold; color: #037712; padding:20px 0px 0px 0px !important;">
+															<h:commandButton value="#{msg['lbl.clickHere']} "
+																action="#{customerPersonalInfo.enableAuthorization}"
+																style="font-weight: bold !important; font-size: 12px !important; color: blue !important;
+    													        text-decoration: underline !important; border: none !important;  background: none !important;"
+																process="@this" immediate="true" tabindex="12"/>
+														</p:outputLabel>
+
+														<h:panelGroup layout="block" class="clearfix" />
+
+														<!-- Authorization Page Here  -->
+
+														<p:panel id="otpAuthPanel"
+															rendered="#{customerPersonalInfo.booRenderOtpAuthPanel}">
+
+															<h:panelGroup layout="block" class="clearfix" />
+															<p:panel styleClass="left_col"
+																style="padding: 0px 250px 0px 250px;">
+																<p:panel styleClass="inner_left_col">
+																	<h:outputText value="#{msg['lbl.authorzed']}" />
+																</p:panel>
+
+																<p:panel styleClass="inner_right_col">
+																	<p:message id="msgauthBy" for="authBy" display="text" />
+																	<p:selectOneMenu id="authBy"
+																		value="#{customerPersonalInfo.otpAuthorizedBy}"
+																		filterMatchMode="contains" filter="true" tabindex="13">
+																		<f:selectItem itemLabel="Select Authorized"
+																			itemValue="" />
+																		<f:selectItems
+																			value="#{customerPersonalInfo.branchManagerApproval}"
+																			var="c" itemLabel="#{c.userName}"
+																			itemValue="#{c.userName}" />
+																		<p:ajax update="msgauthBy" />
+																	</p:selectOneMenu>
+																</p:panel>
+
+															</p:panel>
+
+															<p:panel styleClass="left_col"
+																style="padding: 0px 250px 0px 250px;">
+																<p:panel styleClass="inner_left_col">
+																	<h:outputText value="#{msg['lbl.password']}" />
+																</p:panel>
+
+																<p:panel styleClass="inner_right_col">
+																	<p:message for="authpas" display="text" id="msgauthpas" />
+																	<p:password
+																		value="#{customerPersonalInfo.otpAuthorizedPassword}"
+																		id="authpas" tabindex="14">
+																		<p:ajax update="msgauthpas" />
+																	</p:password>
+																</p:panel>
+															</p:panel>
+
+															<h:panelGroup layout="block" class="clearfix" />
+															<p:panel styleClass="left_col"
+																style="padding: 0px 250px 0px 250px;">
+																<p:panel styleClass="inner_left_col">
+																	<h:outputText value="#{msg['lbl.remarks']}" />
+																</p:panel>
+
+																<p:panel styleClass="inner_right_col">
+																	<p:message for="remarks" display="text" id="msgremarks" />
+																	<p:inputText value="#{customerPersonalInfo.otpRemarks}"
+																		id="remarks" tabindex="15">
+																		<p:ajax update="msgremarks" />
+																	</p:inputText>
+																</p:panel>
+															</p:panel>
+															<h:panelGroup layout="block" class="clearfix" />
+
+														</p:panel>
+
+													</h:panelGroup>
+
+												</p:panel>
+
+											</p:panel>
+
+											<div class="clearfix"></div>
+
+											<!-- Digital Signature Capture Here  -->
+
+											<p:panel styleClass="panel_border3">
+												<h4
+													style="margin-top: 25px; text-align: center; font-size: 22px; color: #fff;">
+													<h:outputText value="#{msg['lbl.digisign']}" />
+												</h4>
+												<div class="clearfix" />
+											</p:panel>
+
+											<p:panel styleClass="panel_border8">
+												<h:panelGroup layout="block"
+													styleClass="content_level_Digitalsign">
+													<p:panel id="signaturePanel"
+														rendered="#{customerPersonalInfo.signatureCaptureRender}"
+														styleClass="left_col"
+														style="background-color:none !important; padding:0px !important;">
+
+														<p:panel styleClass="inner_left_col">
+															<h:outputText value="#{msg['lbl.signature']}*"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<table width="100%" height="20%" border="0" color="#CCC">
+																<tr>
+																	<td style="border: 1px solid #CCC;"><canvas
+																			id="cnv" width="300" height="100"></canvas></td>
+																</tr>
+															</table>
+															<p:commandButton id="s1" value="#{msg['lbl.sign']}"
+																onclick="javascript:onSign()" tabindex="16"
+																onstart="process.show();" onsuccess="process.hide();" />
+															<p:commandButton styleClass="btn-info" id="s2"
+																value="#{msg['lbl.clear']}"
+																onclick="javascript:onClear()" tabindex="17"
+																onstart="process.show();" onsuccess="process.hide();" />
+															<!-- <p:commandButton id="s3" value="#{msg['lbl.done']}" onclick="javascript:onDone()" onstart="process.show();" onsuccess="process.hide();"/> -->
+															<h:inputHidden id="digitalsign"
+																value="#{customerPersonalInfo.digitalSignature}">
+															</h:inputHidden>
+														</p:panel>
+													</p:panel>
+
+													<p:panel id="signatureSpecimenPanel"
+														rendered="#{customerPersonalInfo.signatureSpecimenRender}"
+														styleClass="left_col"
+														style="background-color:none !important; padding:0px !important;">
+														<p:panel styleClass="inner_left_col">
+															<h:outputText
+																value="&nbsp;&nbsp;#{msg['lbl.signaturespecimen']}"></h:outputText>
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+
+															<table width="100%" height="20%" border="0" color="#CCC">
+																<tr>
+																	<td style="border: 1px solid #CCC;"><h:graphicImage
+																			url="data:image/gif;base64,#{customerPersonalInfo.digitalSignature}"
+																			style=" width:100%; height:100px;" /></td>
+																</tr>
+															</table>
+														</p:panel>
+
+													</p:panel>
+												</h:panelGroup>
+											</p:panel>
+
+											<div class="clearfix"></div>
+											<p:panel styleClass="panel_border5">
+												<h:panelGroup layout="block" styleClass="shadow_button1">
+													<p:commandButton id="back1" value="#{msg['lbl.back']}"
+														styleClass="btn-warning" onstart="process.show();"
+														onsuccess="process.hide();" tabindex="18"
+														action="#{customerPersonalInfo.backScanPage}"
+														update="mainPanel" immediate="true"
+														style="margin-right:10px; "></p:commandButton>
+													<p:commandButton id="submit1" value="#{msg['lbl.submit']}"
+														onstart="process.show();" onsuccess="process.hide();"
+														onmouseover="javascript:onDone()" tabindex="19"
+														action="#{customerPersonalInfo.finalSave}"
+														update=":form1:mainPanel"
+														rendered="#{customerPersonalInfo.renFirstSuccess}"
+														style="margin-right:10px; "></p:commandButton>
+													<p:commandButton id="submit2" value="#{msg['lbl.submit']}"
+														onstart="process.show();" onsuccess="process.hide();"
+														action="#{customerPersonalInfo.finalSave}" tabindex="20"
+														update=":form1:mainPanel"
+														rendered="#{customerPersonalInfo.renSecondSuccess}"></p:commandButton>
+												</h:panelGroup>
+											</p:panel>
+										</p:panel>
+									</p:panel>
+								</h:form>
+							</h:panelGroup>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+					</h:panelGroup></td>
+			</tr>
+		</table>
+		<div class="clearfix"></div>
+
+		<ui:include src="#{facesBean.footer}"></ui:include>
+
+	</f:view>
+</h:body>
+</html>

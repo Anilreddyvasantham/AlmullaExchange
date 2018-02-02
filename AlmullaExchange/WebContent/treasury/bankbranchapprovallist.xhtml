@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script src="../js/SigWeb.js" type="text/javascript"></script>
+	<script src="../js/digitalsignature.js"></script>
+	<script type="text/javascript">
+		var baseUri = "http://localhost:47289/SigWeb/";
+
+		history.pushState(null, null, 'bankbranchapprovallist.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'bankbranchapprovallist.xhtml');
+		});
+	</script>
+</h:head>
+
+<h:body>
+
+	<p:confirmDialog id="unapprove" widgetVar="unapprove" width="400"
+		height="17" resizable="false"
+		style="background-color: white !important;" header="Warning Dailog"
+		styleClass="warning" showEffect="clip" hideEffect="clip"
+		closeOnEscape="true" closable="true"
+		message="#{msg['lbl.sameusernotabletoapprove']}">
+	</p:confirmDialog>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form1">
+
+								<p:dialog modal="true" showHeader="true"
+									header="#{msg['lbl.bco.plswait']}" widgetVar="process"
+									id="process" width="300" height="50" resizable="false"
+									draggable="false" closable="false"
+									style=" font-weight:bold; font-size: 17px !important;text-align:center;background-color: #FFF !important;;">
+									<div style="text-align: center;">
+										<p:graphicImage value="../images/preloader.gif" />
+									</div>
+								</p:dialog>
+								
+								<p:confirmDialog id="saveerror"
+									widgetVar="saveerror" height="20" resizable="false"
+									style="background-color: white !important;"
+									header="#{msg['lbl.warningDailog']}" styleClass="warning"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true"
+									message="#{bankBranchDetails.errorMsg}">
+								</p:confirmDialog>
+
+								<p:dialog id="approve" widgetVar="approve" width="350"
+									height="80" resizable="false" modal="true"
+									style="background-color: white !important;"
+									styleClass="success" header="Success" closable="false"
+									showEffect="clip" hideEffect="clip">
+									<p:outputLabel value="Approved Successfully"
+										style="text-align: center; font-size:15px !important;" />
+									<br />
+									<p:commandButton value="#{msg['lbl.ok']}"
+										oncomplete="approve.hide()"
+										process="@this" style="margin-left: 150px !important;" />
+								</p:dialog>
+
+								<h1>
+									<h:outputText value="#{msg['lbl.bankbranchapproval']}" />
+								</h1>
+
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h2>
+										<h:outputText value="#{msg['lbl.bankbranchapprovallist']}" />
+
+										<p:commandLink action="#{bankBranchDetails.exit}"
+											process="@this">
+											<p:graphicImage value="../images/return.jpg" width="25"
+												height="25" id="imgEdit" styleClass="icon_right"
+												style="float:right;" />
+											<p:tooltip for="imgEdit" value="Go to Home"
+												style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" />
+										</p:commandLink>
+									</h2>
+
+									<p:panel id="bankApproval" styleClass="panel_border">
+
+
+										<p:dataTable id="dataTableId" var="o" sortMode="multiple"
+											styleClass="mydatatableclass" rows="10" paginator="true"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="5,10,15"
+											value="#{bankBranchDetails.bankBranchApprovalList}"
+											selection="#{bankBranchDetails.bankBranchApprovalSelectedList}"
+											rowIndexVar="rowIndex" rowKey="#{o.branchPk}"
+											emptyMessage="#{msg['lbl.recordnotfound']}"
+											paginatorPosition="bottom"
+											rowStyleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+
+											<p:column headerText="#{msg['lbl.sino']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.bankCode']}"
+												sortBy="#{o.bankCode}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{o.bankCode}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.bankFullName']}"
+												sortBy="#{o.bankFullName}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{o.bankFullName}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.branchname']}"
+												sortBy="#{o.fullName}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{o.branchCode} - #{o.fullName}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.location']}"
+												sortBy="#{o.location}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{o.location}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.email']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{o.email}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.approve']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<p:commandLink
+													action="#{bankBranchDetails.gotoBankBranchApproval(o)}"
+													process="@this" onstart="process.show();"
+													onsuccess="process.hide();">
+													<p:graphicImage value="../images/approve.jpg" width="25"
+														height="25" id="imgEdit" />
+													<p:tooltip for="imgEdit" value="#{msg['lbl.approve']}"
+														style="color: white !important;
+																	background-color: rgb(0, 165, 62) !important;
+																	font-weight: bold !important;
+																	border-radius: 3px !important;" />
+												</p:commandLink>
+											</p:column>
+
+											<p:column selectionMode="multiple" width="10%"
+												headerText="Select" style="width:5%;"/>
+
+										</p:dataTable>
+
+										<p:spacer height="30" />
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<p:panel styleClass="shadow_button"
+											style=" background-color:#FFF !important;">
+
+											<p:commandButton value="#{msg['lbl.submit']}"
+												update="mainPanel,saveerror"
+												onstart="process.show();" onsuccess="process.hide()"
+												action="#{bankBranchDetails.updateBankBranchApproval}"
+												style="margin-right:10px;" />
+
+											<p:commandButton value="#{msg['lbl.clear']}"
+												onstart="process.show();" onsuccess="process.hide()"
+												action="#{bankBranchDetails.clickOnOKApprove}"
+												immediate="true" update="mainPanel"
+												style="margin-right:10px;" />
+
+											<p:commandButton value="#{msg['lbl.exit']}"
+												onstart="process.show();" onsuccess="process.hide()"
+												action="#{bankBranchDetails.exit}" immediate="true"
+												update="mainPanel" />
+										</p:panel>
+									</p:panel>
+
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

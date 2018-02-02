@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</h:head>
+
+<h:body>
+
+	<p:dialog id="complete" widgetVar="complete" width="260" height="70"
+		showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+
+		<p:outputLabel value="Record Successfully Saved...!" />
+		<br />
+		
+
+		<p:commandButton value="#{msg['lbl.ok']}"
+			action="#{districtMasterBean.clickOk}"
+			style="margin-right:10px; " />
+
+	</p:dialog>
+	
+	 <p:confirmDialog id="uploadFileEmpty" widgetVar="uploadFileEmpty" width="400" styleClass="red"  showHeader="false" resizable="false" 	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" message="Please select country and upload atleast one file.">
+      </p:confirmDialog>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form">
+
+								<h1>
+									<h:outputText value="District Master" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h3>
+										<h:outputText value="District Master" />
+									</h3>
+
+									<p:panel styleClass="panel_border">
+
+										<p:panel id="headerPanel">
+
+
+<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.country']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgCountry" for="country" display="text" />
+													<p:selectOneMenu id="country"
+														value="#{districtMasterBean.countryId}"
+														filter="true" filterMatchMode="contains" required="true"
+														requiredMessage="#{msg['lbl.pleaseselectcountry']}">
+														<f:selectItem itemLabel="#{msg['lbl.beleselect']}"
+															itemValue="" />
+														<f:selectItems value="#{districtMasterBean.lstCountry}"
+															var="c" itemLabel="#{c.fsCountryMaster.countryCode} - #{c.countryName}"
+															itemValue="#{c.fsCountryMaster.countryId}" />
+														<p:ajax event="change"
+															update="msgCountry,country" />
+
+													</p:selectOneMenu>
+												</p:panel>
+											</p:panel>
+
+
+
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="FileUpload(XLS,XLXS)" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+
+
+
+												<p:panel styleClass="inner_right_col">
+
+													<p:fileUpload id="fileUplod" mode="advanced" fileUploadListener="#{districtMasterBean.exportExcel}" fileLimit="1" fileLimitMessage="one File is Allowed"
+													label="Choose a file"
+													sizeLimit="50485762222"
+													allowTypes="/(\.|\/)(xls|xlsx)$/"
+													required="true"
+													requiredMessage="Upload a File"
+													invalidSizeMessage="The maximum file size allowed is 1 Megabyte !"
+													invalidFileMessage="You are allowed to upload only XLS and XLSX !" oncomplete="PF('imageUpload').show()">
+													</p:fileUpload>
+													
+												</p:panel>
+
+											</p:panel>
+	<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" styleClass="shadow_button"
+												id="uploadpanel">
+												<p:commandButton value="#{msg['lbl.add']}"  action="#{districtMasterBean.uploadtoDatatable}" update="mainPanel"
+													style="margin-right:10px; " process="@this" tabindex="10" />
+												<!-- <p:commandButton value="#{msg['lbl.exit']}" immediate="true"  action="#{districtMasterBean.exit}"
+													tabindex="11" /> -->
+											</h:panelGroup>
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:panel rendered="#{districtMasterBean.booDistrictDetails}">
+											<p:panel id="datatTablePanel">
+												<p:dataTable id="dataTableId" var="d" sortMode="multiple"
+													rows="10" paginator="true"
+													paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+													rowsPerPageTemplate="5,10,15" value="#{districtMasterBean.lstDistrictMasterDataTables}"
+													rowIndexVar="rowIndex" emptyMessage="No records Found"
+													rowStyleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}"
+													paginatorPosition="bottom">
+
+													<p:column headerText="#{msg['lbl.sino']}">
+														<h:outputText value="#{rowIndex+1}" />
+													</p:column>
+
+													<!-- <p:column headerText="Country" sortBy=""
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="India" />
+													</p:column> -->
+													
+													
+													 <p:column headerText="State" sortBy=""
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{d.stateName}" />
+													</p:column> 
+													
+													<p:column headerText="District Code" sortBy="#{d.districtCode}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{d.districtCode}" />
+													</p:column>
+
+													<p:column headerText="English District Description" sortBy="#{d.englishDistrictName}"
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{d.englishDistrictName}" />
+													</p:column>
+													<p:column headerText="Local District Description" sortBy=""
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{d.localDistrictName}" />
+													</p:column>
+														
+													
+													<p:column headerText="Status" sortBy=""
+														styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+														<h:outputText value="#{d.dynamicLabelForActivateDeactivate}" />
+													</p:column>
+
+													
+												</p:dataTable>
+											</p:panel>
+											
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" class="clearfix" />
+											 <h:panelGroup layout="block" styleClass="shadow_button"
+												id="submitpanel">
+												<p:commandButton value="#{msg['lbl.submit']}" action="#{districtMasterBean.save}"
+													style="margin-right:10px; " process="@this" tabindex="10" />
+												<p:commandButton value="#{msg['lbl.exit']}" immediate="true"  action="#{districtMasterBean.exit}" 
+													tabindex="11" />
+											</h:panelGroup> 
+											</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+										</p:panel>
+									</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

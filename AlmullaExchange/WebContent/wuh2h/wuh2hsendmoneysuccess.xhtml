@@ -1,0 +1,733 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script type="text/javascript">
+		var baseUri = makeUri();
+		history.pushState(null, null, 'wuh2hsendmoneysuccess.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'wuh2hsendmoneysuccess.xhtml');
+		});
+
+		$(document).ready(function() {
+			$(window).scroll(function() {
+				if ($(this).scrollTop() > 100) {
+					$('#goTop').stop().animate({
+						bottom : '30px'
+					}, 300);
+				} else {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				}
+			});
+			$('#goTop').click(function() {
+				$('html, body').stop().animate({
+					scrollTop : 0
+				}, 500, function() {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				});
+			});
+		});
+	</script>
+	<style>
+.centeralign {
+	margin-left: auto;
+	margin-right: auto;
+	width: 6em
+}
+
+.ui-datatable .ui-state-highlight {
+	background-color: red;
+}
+</style>
+</h:head>
+
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="form1"
+								onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'text') return false;}">
+								<h1>
+									<h:outputText value="Western Union H2H Money Send" />
+								</h1>
+
+
+
+								<p:panel id="mainPanel" styleClass="shadow"
+									style="margin: 20px 10px !important; background-color:#FFF !important;"
+									>
+									<p:confirmDialog id="error" widgetVar="error" resizable="false"
+										style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{wuh2hbean.errorMessage}">
+									</p:confirmDialog>
+									<p:confirmDialog id="sqlexception" widgetVar="sqlexception"
+									header="#{msg['lbl.remitApplicationExceptionMessage']}"
+									resizable="false" style="background-color: white !important;"
+									styleClass="warning" showEffect="clip" hideEffect="clip"
+									closeOnEscape="true" closable="true"
+									message="#{msg['lbl.procedureErrorMessage']} : #{wuh2hbean.exceptionMessage}">
+								</p:confirmDialog>
+								<p:confirmDialog id="noDataForReport" widgetVar="noDataForReport"
+		height="20" resizable="false" width="400"
+		style="background-color: white !important;"
+		header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" message="#{msg['lbl.dataNullForReportGenaration']}">
+	</p:confirmDialog>
+	
+	
+									<p:panel id="beneficiaryListId" styleClass="shadow"
+										style=" background-color:#FFF !important;margin-top:-5px!important">
+
+										<div class="clearfix" />
+										<p:spacer height="2px" />
+
+										<p:panel style="padding:0px 00px 0px 00px !important;">
+											<fieldset
+												style="border: 1.5px solid #64b381 !important; padding: 10px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+												<legend
+													style="font-size: 15px; font-weight: bold; color: #037712;"
+													align="top">&nbsp;Customer / Sender Info&nbsp;</legend>
+												<p:panel styleClass="left_col"
+													style="margin-top:-5px!important">
+													<p:panel styleClass="inner_left_col">
+														<h:outputLabel value="#{msg['lbl.customerrefno']}"
+															style="color:#05000a;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{wuh2hbean.customerrefno}"
+															styleClass="ui-state-disabled" readonly="true">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+													<div class="clearfix"></div>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputLabel value="#{msg['lbl.idNumber']}"
+															style="color:#05000a;" />
+													</p:panel>
+
+													<p:panel styleClass="inner_right_col">
+														<p:inputText value="#{wuh2hbean.idNumber}"
+															styleClass="ui-state-disabled" readonly="true">
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+													<div class="clearfix"></div>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputLabel value="#{msg['lbl.customerName']}"
+															style="color:#05000a;" />
+														<h:outputText />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText styleClass="ui-state-disabled"
+															value="#{wuh2hbean.customerFullName}" readonly="true"
+															>
+														</p:inputText>
+													</p:panel>
+													<div class="clearfix"></div>
+												</p:panel>
+
+												<p:panel styleClass="left_col"
+													style="margin-button:-10px!important">
+													<p:panel styleClass="inner_left_col">
+														<h:outputLabel value="#{msg['lbl.CustomerLocalName']}"
+															style="color:#05000a;" />
+														<h:outputText />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText styleClass="ui-state-disabled"
+															value="#{wuh2hbean.customerLocalFullName}"
+															readonly="true" >
+														</p:inputText>
+													</p:panel>
+													<div class="clearfix"></div>
+												</p:panel>
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputLabel value="ID Type" style="color:#05000a;" />
+														<h:outputText />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText styleClass="ui-state-disabled"
+															value="#{wuh2hbean.customerTypeIdDesc}" readonly="true"
+															>
+														</p:inputText>
+													</p:panel>
+													<div class="clearfix"></div>
+												</p:panel>
+												
+												<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputLabel value="Expiry Date" style="color:#05000a;" />
+															<h:outputText />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText styleClass="ui-state-disabled"
+																value="#{wuh2hbean.customerExpDate}" readonly="true"
+																>
+																<f:convertDateTime pattern="dd/MM/yyyy" />
+															</p:inputText>
+														</p:panel>
+														<div class="clearfix"></div>
+													</p:panel>
+													<div class="clearfix"></div>
+													
+													<p:panel styleClass="left_col">
+														<p:panel styleClass="inner_left_col">
+															<h:outputLabel value="WU Card No" style="color:#05000a;" />
+															<h:outputText />
+														</p:panel>
+														<p:panel styleClass="inner_right_col">
+															<p:inputText styleClass="ui-state-disabled"
+																value="#{wuh2hbean.sendWUcardNo}" readonly="true"
+																>
+															</p:inputText>
+														</p:panel>
+													</p:panel>
+											</fieldset>
+										</p:panel>
+									</p:panel>
+									<p:panel id="receiverinfopanel">
+
+										<fieldset
+											style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+											<legend
+												style="font-size: 15px; font-weight: bold; color: #037712;"
+												align="top">&nbsp;Receiver / Beneficiary Info&nbsp;</legend>
+											<p:panel>
+
+												<div class="clearfix"></div>
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="First Name" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+
+														<p:inputText styleClass="ui-state-disabled"
+															value="#{wuh2hbean.receiverFirstName}" readonly="true"
+															>
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Last Name" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText styleClass="ui-state-disabled"
+															value="#{wuh2hbean.receiverLastName}" readonly="true"
+															>
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Country" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText styleClass="ui-state-disabled"
+															value="#{wuh2hbean.receiverCountry}" readonly="true"
+															>
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Currency" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText styleClass="ui-state-disabled"
+															value="#{wuh2hbean.receiverCurrency}" readonly="true"
+															>
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<div class="clearfix"></div>
+											</p:panel>
+										</fieldset>
+									</p:panel>
+									
+									<p:panel id="sendconformationpanel">
+										<fieldset
+											style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+											<legend
+												style="font-size: 15px; font-weight: bold; color: #037712;"
+												align="top">&nbsp;Transaction Details&nbsp;</legend>
+
+											<p:panel>
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="WU Card No" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText styleClass="ui-state-disabled"
+															value="#{wuh2hbean.sendWUcardNo}" readonly="true"
+															>
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Promotion Code" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText styleClass="ui-state-disabled"
+															value="#{wuh2hbean.promotionCode}" readonly="true"
+															>
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Exchange Rate" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText styleClass="ui-state-disabled"
+															value="#{wuh2hbean.sendExchangeRate}" readonly="true"
+															>
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Commission" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText styleClass="ui-state-disabled"
+															value="#{wuh2hbean.sendCommission}" readonly="true"
+															>
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Message Charges" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText styleClass="ui-state-disabled"
+															value="#{wuh2hbean.wuMessageCharge}" readonly="true"
+															>
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Gross Amount" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText styleClass="ui-state-disabled"
+															value="#{wuh2hbean.sendNetAmountSent}" readonly="true"
+															>
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Discount" />
+													</p:panel>   
+													<p:panel styleClass="inner_right_col">
+														<p:inputText styleClass="ui-state-disabled"
+															value="#{wuh2hbean.sendPromoDiscountAmount}" readonly="true"
+															>
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Net Amount Payable" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText styleClass="ui-state-disabled"
+															value="#{wuh2hbean.sendPayableAmount}" readonly="true"
+															>
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Net Amount Sent" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText styleClass="ui-state-disabled"
+															value="#{wuh2hbean.sendDestPrincipleAmount}" readonly="true"
+															>
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Delivery Services" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText styleClass="ui-state-disabled"
+															value="#{wuh2hbean.deliveryService}" readonly="true"
+															>
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<div class="clearfix"></div>
+
+											<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="MTCN" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText styleClass="ui-state-disabled"
+															value="#{wuh2hbean.sendMtcno}" readonly="true"
+															>
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												
+												<!-- <p:panel styleClass="left_col" id="source">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Source Of Income"
+															style="color:#05000a;"></h:outputText>
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="sourceofincome" display="text" />
+														<p:selectOneMenu id="sourceofincome"
+															value="#{wuh2hbean.sendSourceOfIncome}" required="true"
+															requiredMessage="#{msg['lbl.choosesource']}"
+															filter="true" filterMatchMode="contains">
+															<f:selectItem
+																itemLabel="#{msg['lbl.selectsourceoffunds']}"
+																itemValue="" />
+															<f:selectItems value="#{wuh2hbean.sourceOfIncomeList}"
+																var="s"
+																itemLabel="#{s.sourceOfIncomeId.sourceCode} - #{s.sourceOfIncomeFullDesc}"
+																itemValue="#{s.sourceOfIncomeId.sourceCode}" />
+															<p:ajax update="msgpurposeoftransaction"></p:ajax>
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel> -->
+
+												<!-- <p:panel styleClass="left_col" id="purpose">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Purpose Of Transaction"
+															style="color:#05000a;"></h:outputText>
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="purposeoftransaction" display="text"
+															id="msgpurposeoftransaction" />
+														<p:selectOneMenu id="purposeoftransaction"
+															value="#{wuh2hbean.sendPurposeOfTransactions}"
+															required="true"
+															requiredMessage="#{msg['lbl.choosepurpose']}"
+															filter="true" filterMatchMode="contains">
+															<f:selectItem itemLabel="#{msg['lbl.selectpurpose']} "
+																itemValue="" />
+															<f:selectItems
+																value="#{wuh2hbean.purposeOfTransactionsList}" var="p"
+																itemValue="#{p.purposeShortDesc}"
+																itemLabel="#{p.purposeShortDesc} - #{p.purposeFullDesc}"></f:selectItems>
+															<p:ajax update="msgpurposeoftransaction"></p:ajax>
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel>
+												<div class="clearfix"></div> -->
+												
+												<!-- <p:panel styleClass="left_col" rendered="#{wuh2hbean.displayWUState}" >
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Payout State" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgpayoutstate" for="payoutstate"
+															display="text" />
+														<p:selectOneMenu id="payoutstate"
+															value="#{wuh2hbean.wuStateCode}" filter="true"
+															required="true" filterMatchMode="contains"
+															requiredMessage="Please select Payout State">
+															<f:selectItem itemLabel="Select State"
+																itemValue="" />
+															<f:selectItems value="#{wuh2hbean.wuStateList}" var="c"
+																itemLabel="#{c.wuStateCode} - #{c.wuStateDescription}"
+																itemValue="#{c.wuStateCode}" />
+															<p:ajax event="change"
+																listener="#{wuh2hbean.fetchWUCityList}" update="payoutcity"
+																onstart="process.show();" onsuccess="process.hide();" />
+
+															<p:ajax />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel> -->
+												
+												<!-- <p:panel styleClass="left_col" rendered="#{wuh2hbean.displayWUCity}" >
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Payout City" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message id="msgpayoutcity" for="payoutcity"
+															display="text" />
+														<p:selectOneMenu id="payoutcity"
+															value="#{wuh2hbean.wuCityName}" filter="true"
+															required="true" filterMatchMode="contains"
+															requiredMessage="Please select Payout City">
+															<f:selectItem itemLabel="Select City"
+																itemValue="" />
+															<f:selectItems value="#{wuh2hbean.wuCityList}" var="c"
+																itemLabel="#{c.wuCityName}"
+																itemValue="#{c.wuCityName}" />
+															
+															<p:ajax />
+														</p:selectOneMenu>
+													</p:panel>
+												</p:panel> -->
+												
+												
+												<div class="clearfix"></div>
+
+												<!-- <p:panel styleClass="left_col" >
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="Collection Amount" />
+														<h:outputText value="*" style="color:red !important;" />
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="colamount" display="text"
+															id="colamountmsg" />
+														<p:inputText id="colamount"
+															value="#{wuh2hbean.cashAmount}" required="true"
+															requiredMessage="Enter Collection Amount!">
+
+															<f:validator
+																validatorId="com.amg.exchange.validator.NegativeNotAllowedValidator" />
+															<p:ajax event="blur" 
+																listener="#{wuh2hbean.checkcashcollection}"
+																update="colamount,colamountmsg,amountgreater"
+																onstart="process.show();" onsuccess="process.hide();" />
+															<p:ajax />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+												<div class="clearfix"></div> -->
+												
+												
+												
+											</p:panel>
+
+										</fieldset>
+									</p:panel>
+									
+									
+									<!-- <h:panelGrid columns="3"
+										style="text-align:center;vertical-align: top;">
+									
+									<p:panel id="txninfopanel" header="Transaction Info"
+											style="width:1040px;border: 1.5px solid #64b381 !important;border-radius: 5px 10px 5px 10px / 10px 5px 10px 5px;vertical-align: top">
+
+											<h:panelGrid columns="4" cellpadding="4" style="width:1040px">
+												<h:outputLabel  value="MTCN" style="font-weight: bold !important;"/>
+												<h:outputText id="mtcn" value=": #{wuh2hbean.sendMtcno}" style="font-weight: normal !important"/>											
+												<h:outputLabel  value="WU Card No" style="font-weight: bold !important;"/>													
+												<h:outputText value=": *#{wuh2hbean.wuCardno}" style="font-weight: normal !important"/>
+												<h:outputLabel  value="Receipt No/Date" style="font-weight: bold !important;"/>
+												<h:outputText value=": " style="font-weight: normal !important"/>
+												<h:outputLabel  value="Transaction No" style="font-weight: bold !important;"/>
+												<h:outputText value=": #{wuh2hbean.financeYear}/#{wuh2hbean.documentNo}" style="font-weight: normal !important"/>
+												<h:outputLabel  value="Points Earned" style="font-weight: bold !important;"/>
+												<h:outputText value=": #{wuh2hbean.senderPointsEarned}" style="font-weight: normal !important"/>
+												<h:outputLabel  value="New Points Earned" style="font-weight: bold !important;"/>
+												<h:outputText value=": #{wuh2hbean.senderNewPointsEarned}" style="font-weight: normal !important"/>
+												
+											</h:panelGrid>
+										</p:panel>
+									</h:panelGrid> -->
+									<!-- <h:panelGrid columns="3"
+										style="text-align:center;vertical-align: top;">
+										<p:panel id="senderinfopanel" header="Sender Info"
+											style="width:500px;border: 1.5px solid #64b381 !important;border-radius: 5px 10px 5px 10px / 10px 5px 10px 5px;vertical-align: top">
+
+											<h:panelGrid columns="2" cellpadding="5">
+												<h:outputLabel  value="First Name:" style="font-weight: bold !important;"/>
+												<h:outputText value=": #{wuh2hbean.senderFirstName}" style="font-weight: normal !important"/>
+												
+												<h:outputLabel  value="Last Name:" style="font-weight: bold !important;"/>
+												<h:outputText value=": #{wuh2hbean.senderLastName}" style="font-weight: normal !important"/>
+												
+
+												<h:outputLabel  value="Contact Phone" style="font-weight: bold !important;"/>
+												<h:outputText value=": #{wuh2hbean.senderContactPhone}" style="font-weight: normal !important"/>
+
+												<h:outputLabel  value="ID No" style="font-weight: bold !important;"/>
+												<h:outputText value=": #{wuh2hbean.senderIdNumber}" style="font-weight: normal !important"/>
+												<h:outputLabel  value="ID Type" style="font-weight: bold !important;"/>
+												<h:outputText value=": #{wuh2hbean.senderIdType}" style="font-weight: normal !important"/>
+												<h:outputLabel for="" value="Issue Of Country" style="font-weight: bold !important;"/>
+												<h:outputText value=": #{wuh2hbean.senderIdIssueCountry}" style="font-weight: normal !important"/>
+												
+												<h:outputLabel  value="Source Of Income" style="font-weight: bold !important;"/>
+												<h:outputText value=": #{wuh2hbean.sourceOfIncome}" style="font-weight: normal !important"/>
+											</h:panelGrid>
+										</p:panel>
+										<p:panel style="width:20px"></p:panel>
+										<p:panel id="receiverinfopanel" header="Receiver Info"
+											style="width:500px;border: 1.5px solid #64b381 !important;;border-radius: 5px 10px 5px 10px / 10px 5px 10px 5px;vborder-radius: 25px;vertical-align: top">
+
+											<h:panelGrid columns="2" cellpadding="5">
+												<h:outputLabel  value="First Name:" style="font-weight: bold !important;"/>
+												<h:outputText value=": #{wuh2hbean.receiverFirstName}" style="font-weight: normal !important"/>
+
+												<h:outputLabel  value="Last Name:" style="font-weight: bold !important;"/>
+												<h:outputText value=": #{wuh2hbean.receiverLastName}" style="font-weight: normal !important"/>
+
+												<h:outputLabel  value="Purpose Of Remittance" style="font-weight: bold !important;"/>
+												<h:outputText value=": #{wuh2hbean.purposeOfTransactions}" style="font-weight: normal !important"/>
+												
+												<h:outputLabel  value="Payment Mode" style="font-weight: bold !important;"/>
+												<h:outputText value=": CASH" style="font-weight: normal !important"/>
+												
+												<h:outputLabel  value="Contact Phone" style="font-weight: bold !important;"/>
+												<h:outputText value=": #{wuh2hbean.receiverContactPhone}" style="font-weight: normal !important"/>
+												
+												<h:outputLabel  value="Address" style="font-weight: bold !important;"/>
+												<h:outputText value=": " style="font-weight: normal !important"/>
+											</h:panelGrid>
+										</p:panel>
+									</h:panelGrid> -->
+									
+									<!-- <h:panelGrid columns="3"
+										style="text-align:center;vertical-align: top;">
+										<p:panel id="financialinfopanel" header="Remittance/Financial Info"
+											style="width:500px;border: 1.5px solid #64b381 !important;border-radius: 5px 10px 5px 10px / 10px 5px 10px 5px;vertical-align: top">
+
+											<h:panelGrid columns="2" cellpadding="5">
+												<h:outputLabel  value="Origin Principle/Currency" style="font-weight: bold !important;"/>
+												<h:outputText value=": #{wuh2hbean.originISOCurrencyCode}**********#{wuh2hbean.sendOriginPrincipleAmount}" style="font-weight: normal !important"/>
+
+												<h:outputLabel  value="Destination Principle/Currency" style="font-weight: bold !important;"/>
+												<h:outputText value=": #{wuh2hbean.receiverISOCurrencyCode}**********#{wuh2hbean.sendDestPrincipleAmount}" style="font-weight: normal !important"/>
+
+												<h:outputLabel  value="Commission" style="font-weight: bold !important;"/>
+												<h:outputText value=": #{wuh2hbean.originISOCurrencyCode}**********#{wuh2hbean.sendCommission}" style="font-weight: normal !important"/>
+												
+												<h:outputLabel  value="Exchange Rate" style="font-weight: bold !important;"/>
+												<h:outputText value=": #{wuh2hbean.originISOCurrencyCode}**********#{wuh2hbean.sendExchangeRate}" style="font-weight: normal !important"/>
+												
+												<h:outputLabel  value="Other Charges" style="font-weight: bold !important;"/>
+												<h:outputText value=": #{wuh2hbean.originISOCurrencyCode}**********#{wuh2hbean.sendPlusChargeAmount}" style="font-weight: normal !important"/>
+												
+												<h:outputLabel  value="Total KWD Amount" style="font-weight: bold !important;"/>
+												<h:outputText value=": #{wuh2hbean.originISOCurrencyCode}**********#{wuh2hbean.sendGrossTotalAmount}" style="font-weight: normal !important"/>
+											</h:panelGrid>
+										</p:panel>
+										<p:panel style="width:20px"></p:panel>
+										<p:panel id="paymentinfopanel" header="Payment Info"
+											style="width:500px;border: 1.5px solid #64b381 !important;;border-radius: 5px 10px 5px 10px / 10px 5px 10px 5px;vborder-radius: 25px;vertical-align: top">
+
+											<h:panelGrid columns="2" cellpadding="5">
+												<h:outputLabel  value="Amount Paid" style="font-weight: bold !important;"/>
+												<h:outputText value=": #{wuh2hbean.originISOCurrencyCode}**********#{wuh2hbean.cashAmount}" style="font-weight: normal !important"/>
+
+												<h:outputLabel  value="Amount Refund" style="font-weight: bold !important;"/>
+												<h:outputText value=": #{wuh2hbean.originISOCurrencyCode}**********#{wuh2hbean.payRefund}" style="font-weight: normal !important"/>
+
+												<h:outputLabel  value="Amount Payable" style="font-weight: bold !important;"/>
+												<h:outputText value=": #{wuh2hbean.receiverISOCurrencyCode}**********#{wuh2hbean.sendDestPrincipleAmount}" style="font-weight: normal !important"/>
+												
+												<h:outputLabel  value="Net Paid Amount" style="font-weight: bold !important;"/>
+												<h:outputText value=": #{wuh2hbean.originISOCurrencyCode}**********#{wuh2hbean.sendGrossTotalAmount}" style="font-weight: normal !important"/>
+												
+												<h:outputLabel  value="WU Promo Encashment" style="font-weight: bold !important;"/>
+												<h:outputText value=": " style="font-weight: normal !important"/>
+												
+												<h:outputLabel  value="Payment Mode" style="font-weight: bold !important;"/>
+												<h:outputText value=": CASH" style="font-weight: normal !important"/>
+											</h:panelGrid>
+										</p:panel>
+									</h:panelGrid> -->
+									
+									<h:panelGrid columns="4"
+										style="width:100%;text-align:center;vertical-align: top;">
+									
+									<p:panel id="printpanel" header="Print Receipt"
+											style="width:100%;border: 1.5px solid #64b381 !important;border-radius: 5px 10px 5px 10px / 10px 5px 10px 5px;vertical-align: top">
+
+											<h:panelGrid columns="2" cellpadding="2" style="width:100%">
+												<h:commandButton value="Do you want generate receipt Click Here" 
+												action="#{wuh2hbean.generateWUSendReport}"
+												onclick="this.form.target='_blank'" 
+												style="font-weight: bold !important; font-size: 12px !important; color: blue !important;
+    													  text-decoration: underline !important; border: none !important;  background: none !important;"
+												process="@this"  update="noDataForReport,mainPanel,error"/>
+												
+											</h:panelGrid>
+										</p:panel>
+									</h:panelGrid>
+									
+									
+									
+									<h:panelGroup layout="block" styleClass="shadow_button">
+
+												<p:commandButton value="#{msg['lbl.exit']}"
+													action="#{wuh2hbean.exitWU}" update="mainPanel"
+													immediate="true" onstart="process.show();"
+													onsuccess="process.hide();" style="margin-right:10px;"
+													process="@this" />
+												
+												<h:panelGroup layout="block" class="clearfix" />
+											</h:panelGroup>
+									
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+		<a id="goTop" />
+	</f:view>
+
+</h:body>
+</html>

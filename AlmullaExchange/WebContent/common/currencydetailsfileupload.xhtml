@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+</h:head>
+<p:dialog id="complete" widgetVar="complete" width="270" height="70"
+	showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} " />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{currencyMasterBean.clickOnOKFileSave}"
+		process="@this" />
+</p:dialog>
+<p:confirmDialog id="dataNotFund" widgetVar="dataNotFund" width="450"
+	height="17" resizable="false"
+	style=" border:2px solid red !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.noRecordFound']}"
+	header="#{msg['lbl.warningDailog']}">
+</p:confirmDialog>
+<p:confirmDialog id="upload" widgetVar="upload" width="450" height="17"
+	resizable="false"
+	style=" border:2px solid red !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.pleaseUploadxlsOrxlsxFile']}"
+	header="#{msg['lbl.warningDailog']}">
+</p:confirmDialog>
+ 
+<p:dialog id="uploadfile" widgetVar="uploadfile"
+												width="250" height="40" resizable="false"
+												style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 15px no-repeat #FFF !important;"
+												showEffect="clip" hideEffect="clip" closeOnEscape="true"
+												closable="true" header="upload message">
+												<p:outputLabel value="#{msg['lbl.fileUploadedSuccess']}" />
+</p:dialog>
+<h:body>
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="currencyForm">
+								<p:dialog id="ratioSelect" widgetVar="ratioSelect" width="550"
+									height="205" showHeader="false" resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+									<p:panel styleClass="shadow">
+										<p:panel>
+											<h:outputText value="#{msg['lbl.approvedDate']}" />
+											<h:outputText value="" />&nbsp;&nbsp;&nbsp;
+                                        <h:outputText
+												value="#{msg['lbl.approvedBy']} " />
+											<h:outputText value="" />
+										</p:panel>
+										<div class="clearfix" />
+										<hr></hr>
+										<p:panel>
+											<h:selectOneRadio id="validselect" tabindex="1"
+												value="#{currencyMasterBean.selectType}" label="Method Type"
+												required="true"
+												requiredMessage="#{msg['lbl.modevalidation']}">
+												<f:selectItem itemValue="1" itemLabel="#{msg['lbl.manual']}" />
+												<f:selectItem itemValue="2" itemLabel="#{msg['lbl.fileUpload']}"
+													id="smart1" />
+											</h:selectOneRadio>
+										</p:panel>
+										<p:spacer width="15px" />
+										<div class="clearfix" />
+										<h:panelGroup styleClass="shadow">
+											<div class="clearfix" />
+											<p:commandButton value="#{msg['lbl.ok']}"
+												actionListener="#{currencyMasterBean.clickOnGo}"
+												process="@this" oncomplete="PF('ratioSelect').hide();"
+												update="mainPanel" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												onclick="PF('ratioSelect').hide()" process="@this" />
+										</h:panelGroup>
+									</p:panel>
+								</p:dialog>
+
+								<h1>
+									<h:outputText value="#{msg['lbl.currencymaster']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h3>
+										<h:outputText value="#{msg['lbl.currencymaster']}" />
+									</h3>
+									<p:commandLink action="#{currencyMasterBean.exit}"
+										process="@this">
+										<p:graphicImage value="../images/return.jpg" width="25"
+											height="25" id="imgEdit" styleClass="icon_right"
+											style="float:right;" />
+										<p:tooltip for="imgEdit" value="Go to Home" />
+									</p:commandLink>
+									<p:panel styleClass="panel_border">
+										<p:panel id="headerPanel">
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.fileUploaded']}" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+
+													<p:fileUpload id="fileUplod" mode="advanced"
+														fileUploadListener="#{currencyMasterBean.exportExcel}"
+														fileLimit="1" fileLimitMessage="one File is Allowed"
+														update="messages" label="Choose a file"
+														sizeLimit="50485762222" allowTypes="/(\.|\/)(xls|xlsx)$/"
+														required="true" requiredMessage="Upload a File"
+														invalidSizeMessage="The maximum file size allowed is 1 Megabyte !"
+														invalidFileMessage="You are allowed to upload only XLS and XLSX !"
+														oncomplete="PF('imageUpload').show()">
+														<p:message id="messages" for="fileUplod"
+															value="File Not Selected" style="color:red;" />
+													</p:fileUpload>
+												</p:panel>
+											</p:panel>
+											<h:panelGroup layout="block" class="clearfix" />
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.add']}"
+												action="#{currencyMasterBean.uploadtoDatatable}"
+												update="mainPanel" process="@this" immediate="true" />
+											<!-- <p:commandButton value="#{msg['lbl.exit']}" action="#{currencyMasterBean.exit}" immediate="true" /> -->
+										</h:panelGroup>
+										<p:dataTable var="c"
+											value="#{currencyMasterBean.currencyListDT}" rows="10"
+											paginator="true"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="5,10,15" editable="true" id="datatable"
+											emptyMessage="#{msg['lbl.norecordfound']}"
+											rowIndexVar="rowIndex" paginatorPosition="bottom"
+											rendered="#{currencyMasterBean.renderFileuploadDatatable}">
+
+											<p:column headerText="#{msg['lbl.sino']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{rowIndex+1}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.currencycode']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.currencyCode}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.currencyName']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.currencyName}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.arabicCurrencyName']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.arabicCurrencyName}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.quoteName']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.quoteName}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.arabicQuoteName']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.arabicQuoteName}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.currencyDesc']} "
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.currencyDesc}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.swiftCurrency']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.swiftCurrency}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.currencyDesc']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.currencyDesc}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.decimalNumbr']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.decimalNumber}" />
+											</p:column>
+
+											<p:column headerText="#{msg['lbl.decimalName']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.decimalName}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.arabicDecimalName']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.arabicDecimalName}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.isoCurrencyCode']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.isoCurrencyCode}" />
+											</p:column>
+										  <p:column headerText="#{msg['lbl.cbkprintindicator']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.cbkPrintInd}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.cbkshortindicator']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.cbkSortInd}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.onlineIndicator']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.onlineInd}" />
+											</p:column>  
+											<p:column headerText="#{msg['lbl.countryId']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.countryId}" />
+											</p:column>
+
+
+											  <p:column headerText="#{msg['lbl.cashminrate']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.cashMinRate}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.cashmaxrate']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.cashMaxRate}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.fundminrate']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.fundMinRate}" />
+											</p:column>
+											<p:column headerText="#{msg['lbl.fundmaxrate']}" styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.fundMaxRate}" />
+											</p:column> 
+											<p:column headerText="#{msg['lbl.enqStatus']}"
+												styleClass="#{rowIndex mod 2 == 0 ? 'evenrow' : 'oddrow'}">
+												<h:outputText value="#{c.dynamicLabelForActivateDeactivate}"
+													style="color:darkslategray!important;	font-weight:bold;"
+													update="datatable" process="@this" immediate="true" />
+
+											</p:column>
+
+										</p:dataTable>
+										<h:panelGroup layout="block" styleClass="shadow_button"
+											rendered="#{currencyMasterBean.renderFileuploadSubmit}">
+											<p:commandButton value="#{msg['lbl.submit']}"
+												action="#{currencyMasterBean.saveFileUploadDatatableRecords}" />
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{currencyMasterBean.exit}" immediate="true" />
+										</h:panelGroup>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:spacer height="20px" />
+										<h:panelGroup layout="block" class="clearfix" />
+									</p:panel>
+									<h:panelGroup layout="block" class="clearfix" />
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

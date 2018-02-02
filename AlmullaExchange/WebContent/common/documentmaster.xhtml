@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<script>
+	function clearForm(){
+		
+		var dat1 = document.getElementById("documentMasterForm:englishId");
+		dat1.value='';
+			
+	}
+ 
+	 document.oncontextmenu=function(){return false};   
+	 
+	</script>
+	<script >
+		 	
+		 history.pushState(null, null, 'documentmaster.xhtml');
+		    window.addEventListener('popstate', function(event) {
+		    history.pushState(null, null, 'documentmaster.xhtml');
+		    });
+	</script>
+</h:head>
+
+
+<p:dialog id="approv" widgetVar="approv" width="270" height="70"
+	showHeader="false" resizable="false"
+	style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" modal="true">
+	<p:outputLabel value="#{msg['lbl.approvedSuccess']}" />
+	<br />
+	<p:spacer width="15px" />
+	<p:commandButton value="#{msg['lbl.ok']}"
+		actionListener="#{documentApprovalBean.navigateToDocumentApprovalPage}"
+		process="@this" />
+</p:dialog>
+<p:confirmDialog id="exist" widgetVar="exist" width="400" height="17"
+	resizable="false"
+	style=" border:2px solid green !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip" closeOnEscape="true"
+	closable="true" message="#{msg['lbl.norecordfound']}">
+</p:confirmDialog>
+<p:confirmDialog widgetVar="succ" width="300" showHeader="false"
+	resizable="false"
+	style=" border:2px solid #F33535 !important; padding:0px !important;  color:red; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+	showEffect="clip" hideEffect="clip"
+	message="#{msg['lbl.thisDocAlreadyExist']}" header="#{msg['lbl.warningDailog']}">
+</p:confirmDialog>
+
+
+ <p:dialog id="activateRecord" widgetVar="activateRecord" width="300" height="70" showHeader="false" resizable="false" style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+                                                          showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"  >
+                                                          <p:outputLabel  value="#{msg['lbl.doyouactivaterecord']}"/>
+                                                          <p:spacer height="10px"/>
+                                                          <p:panel>
+ 					        <p:commandButton value="#{msg['lbl.ok']}" style="margin-right:10px; "  actionListener="#{documentMasterBean.activateRecord}" process="@this" oncomplete="PF('activateRecord').hide();"  update=":documentMasterForm"/> 
+                            <p:commandButton value="#{msg['lbl.cancel']}"  onclick="PF('activateRecord').hide();" immediate="true"/> 
+								</p:panel>                        
+                            </p:dialog>
+
+<h:body>
+	<p:dialog id="complete" widgetVar="complete" width="270" height="70"
+		showHeader="false" resizable="false"
+		style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true" modal="true">
+		<p:outputLabel value="#{msg['lbl.recordsSuccessfullySaved']} " />
+		<br />
+		<p:spacer width="15px" />
+		<p:commandButton value="#{msg['lbl.ok']}"
+			actionListener="#{documentMasterBean.callSaveMethod}"
+			immediate="true" />
+	</p:dialog>
+	 <p:dialog id="alreadyapprov" widgetVar="alreadyapprov" width="310" height="70" showHeader="false" resizable="false" style=" border:2px solid green !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+                      									showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" modal="true"  >
+            											<p:outputLabel value="#{msg['lbl.thisrecordalreadyapprovedby']}"/><br/>
+            								<p:spacer width="15px" />
+            											<p:commandButton value="#{msg['lbl.ok']}" actionListener="#{documentApprovalBean.clickOKButton}" process="@this"/>          
+</p:dialog>			
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+		<table align="left" width="100%" style="height: 100%;">
+			<tr>
+				<td align="left" valign="top" style="height: 100%;"><ui:include
+						src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+				<td class="rightColumn" valign="top"><h:panelGroup
+						layout="block" class="container">
+						<h:panelGroup layout="block" class="main_div">
+							<div class="menu_button">
+								<img style="cursor: pointer; position: relative; left: 15px;"
+									id="HideHandle" name="HideHandle"
+									src="../images/toggle_plus.png" alt=""
+									onclick='hideLeftCol("leftCol");closeMenus();' />
+							</div>
+							<h:form id="documentMasterForm">
+								<p:dialog id="permanentDelete" widgetVar="permanentDelete"
+									width="300" height="70" showHeader="false" resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+									<p:outputLabel
+										value="#{msg['lbl.doyouwanttodeleterecordperminently']}" />
+									<p:spacer height="10px" />
+									<p:panel>
+										<p:commandButton value="#{msg['lbl.ok']}"
+											style="margin-right:10px; "
+											actionListener="#{documentMasterBean.confirmPermanentDelete}"
+											process="@this" oncomplete="PF('permanentDelete').hide();"
+											update=":documentMasterForm" />
+										<p:commandButton value="#{msg['lbl.cancel']}"
+											onclick="PF('permanentDelete').hide();" immediate="true" />
+									</p:panel>
+								</p:dialog>
+								<!-- Remarks Dailog  -->
+								<p:dialog id="remarks" widgetVar="remarks" width="550"
+									height="205" showHeader="false" resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background:224px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+									<p:panel styleClass="shadow">
+										<p:panel>
+											<h:outputText value="#{msg['lbl.approvedDate']} " />
+											<h:outputText value="#{documentMasterBean.approvedDate}"
+												style="color:DARKBLACK" />&nbsp;&nbsp;&nbsp;
+                                        <h:outputText
+												value="#{msg['lbl.approvedBy']} " />
+											<h:outputText value="#{documentMasterBean.approvedBy}"
+												style="color:DARKBLACK" />
+										</p:panel>
+								<div class="clearfix" />
+										<hr></hr>
+										<p:panel>
+											<h:outputText value="#{msg['lbl.enterremarks']}" />
+										</p:panel>
+										<p:panel>
+											<h:inputTextarea value="#{documentMasterBean.remarks}"
+												rows="5" cols="50" >
+												<p:ajax />
+											</h:inputTextarea>
+										</p:panel>
+										<p:spacer width="15px" />
+										<div class="clearfix" />
+										<h:panelGroup styleClass="shadow">
+											<div class="clearfix" />
+											<p:commandButton value="#{msg['lbl.ok']}"
+												actionListener="#{documentMasterBean.remarkSelectedRecord}"
+												process="@this" oncomplete="PF('remarks').hide();"
+												update="mainPanel" />
+											<p:commandButton value="#{msg['lbl.cancel']}"
+												actionListener="#{documentMasterBean.cancelRemarks}"
+												process="@this" />
+										</h:panelGroup>
+									</p:panel>
+								</p:dialog>
+								<!-- dilaog remark -->
+
+
+								<h1>
+									<h:outputText value="#{msg['lbl.docMaster']}" />
+								</h1>
+								<p:panel styleClass="shadow" id="mainPanel">
+									<h3>
+										<h:outputText value="#{msg['lbl.docMaster']}" />
+									</h3>
+									<p:confirmDialog id="error" widgetVar="error"  
+resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" 
+showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{documentMasterBean.errorMessage}" >
+</p:confirmDialog>
+<p:confirmDialog id="nullPointerId" widgetVar="nullPointerId"  
+resizable="false" style="background-color: white !important;" header="#{msg['lbl.warningDailog']}" styleClass="warning" 
+showEffect="clip" hideEffect="clip" closeOnEscape="true" closable="true" message="#{documentMasterBean.errorMessage} - #{msg['lbl.nullPonterExcepetion']}" >
+</p:confirmDialog>
+<p:dialog id="pending" widgetVar="pending"
+										width="400" height="80" resizable="false"
+										style="background-color: white !important;"
+										styleClass="warning" header="#{msg['lbl.warningDailog']}" closable="false"
+										showEffect="clip" hideEffect="clip">
+										<p:outputLabel
+											value="#{msg['lbl.plsApproveRecord']}"
+											 style="text-align: center; font-size:15px !important;"  />
+										<br />
+										<p:commandButton value="#{msg['lbl.ok']}"
+											onclick="PF('pending').hide();" immediate="true"
+											style="margin-left: 150px !important;" />
+									</p:dialog>
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+									
+									<p:panel styleClass="panel_border">
+										<p:panel id="headerPanel">
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.docCode']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgdocument" for="documentid" display="text" />
+													<p:autoComplete id="documentid"
+														value="#{documentMasterBean.documentCode}" maxlength="3"
+														maxResults="10" onchange="clearForm(this);"
+														required="true"
+														completeMethod="#{documentMasterBean.autoCompleteData}"
+														requiredMessage="Please Enter Company Code"
+														validatorMessage="Document Code Allow Numbers Only"
+														readonly="#{documentMasterBean.readOnly}">
+														<f:convertNumber integerOnly="true" />
+														<f:validateLongRange minimum="1" />
+														<p:ajax update="mainPanel,msgdocument,documentid"
+															event="itemSelect"
+															listener="#{documentMasterBean.population}" />
+														<p:ajax update="mainPanel,msgdocument,documentid"
+															event="blur" listener="#{documentMasterBean.population}" process="@this"/>
+													</p:autoComplete>
+
+												</p:panel>
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.docDesc']}" />
+													<h:outputText value="*" style="color:red !important;" />
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:message id="msgbankindicator" for="englishId"
+														display="text" />
+													<p:inputText
+														value="#{documentMasterBean.documentDescription}"
+														id="englishId" required="true"
+														requiredMessage="Please Enter Document Description"
+														autocomplete="off"
+														onkeyup="this.value=this.value.toUpperCase()"
+														validatorMessage="Enter English Language Only"
+														readonly="#{documentMasterBean.readOnly}" >
+														<f:validateRegex pattern="[a-zA-Z -]+" />
+														<p:ajax event="blur" update="msgbankindicator" />
+														
+													</p:inputText>
+												</p:panel>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" styleClass="shadow_button"
+												rendered="#{documentMasterBean.booRenderSaveExit}">
+												<p:commandButton value="#{msg['lbl.add']}"
+													action="#{documentMasterBean.duplicateCheck}"
+													style="margin-right:10px;" update="mainPanel" />
+												<p:commandButton value="#{msg['lbl.view']}" style="margin-right:10px;"
+													action="#{documentMasterBean.viewAllRecords}"
+													update=":documentMasterForm:mainPanel" immediate="true"
+													process="@this" />
+												<p:commandButton value="#{msg['lbl.clear']}"
+													action="#{documentMasterBean.clearAll}" process="@this"
+													  update="documentMasterForm"
+													disabled="#{documentMasterBean.hideClear}" />
+												<h:panelGroup layout="block" class="clearfix" />
+											</h:panelGroup>
+											<p:panel rendered="#{documentMasterBean.booRenderDataTable}"
+												id="dataTablePanel">
+												<p:dataTable id="dataTable"
+													value="#{documentMasterBean.listDT}" var="d"  styleClass="mydatatableclass"
+													rowIndexVar="rowIndex" emptyMessage="#{msg['lbl.noRecordFound']}"
+													rows="10" paginator="true"
+													paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+													paginatorPosition="bottom" rowsPerPageTemplate="5,10,15"
+													sortMode="multiple">
+
+													<p:column headerText="#{msg['lbl.sino']}"
+														style="width:30px;">
+														<h:outputText value="#{rowIndex+1}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.docCode']}">
+														<h:outputText value="#{d.documentCode}" />
+													</p:column>
+
+													<p:column headerText="#{msg['lbl.docDesc']}">
+														<h:outputText value="#{d.documentDescription}" />
+													</p:column>
+
+
+
+
+													<p:column headerText="#{msg['lbl.edit']}">
+														<p:commandButton value="" id="imgEdit" styleClass="edit"
+															action="#{documentMasterBean.editRecord(d)}"
+															disabled="#{documentMasterBean.hideEditButton}"
+															update=":documentMasterForm" process="@this">
+														</p:commandButton>
+													</p:column>
+													<p:column headerText="#{msg['lbl.active/deactive']}"
+														style="text-align:center !important;">
+														<p:commandLink
+															action="#{documentMasterBean.checkStatusType(d)}"
+															value="#{d.dynamicActivateDeactivate}"
+															style="color:blue !important; text-decoration:underline !important;"
+															update=":documentMasterForm"
+															immediate="true" process="@this" />
+													</p:column>
+
+												</p:dataTable>
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+											<p:spacer height="20px" />
+											<h:panelGroup layout="block" class="clearfix" />
+											<h:panelGroup layout="block" styleClass="shadow_button"
+												rendered="#{documentMasterBean.booRenderSubmitPanel}">
+												<p:commandButton id="#{msg['lbl.submit']}" value="#{msg['lbl.submit']}"
+													action="#{documentMasterBean.saveDataTableRecords}"
+													style="margin-right:10px;" immediate="true"
+													disabled="#{documentMasterBean.hideSubmit}" />
+												<p:commandButton value="#{msg['lbl.exit']}"
+													action="#{documentMasterBean.exit}" process="@this" />
+												<h:panelGroup layout="block" class="clearfix" />
+											</h:panelGroup>
+											<h:panelGroup layout="block" styleClass="shadow_button"
+												rendered="#{documentMasterBean.booApprovePanel}">
+												<p:commandButton value="#{msg['lbl.approve']}"
+													action="#{documentMasterBean.approveRecord}"
+													update="mainPanel" process="@this" />
+												<p:commandButton value="#{msg['lbl.cancel']}"
+													action="#{documentMasterBean.cancel}" update="mainPanel"
+													process="@this" />
+												<h:panelGroup layout="block" class="clearfix" />
+											</h:panelGroup>
+
+											<p:panel styleClass="left_col">
+												<h:outputText id="mandatory"
+													value=" #{msg['lbl.*filedsAreMandatory']}"
+													style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+											</p:panel>
+
+										</p:panel>
+										<h:panelGroup layout="block" class="clearfix" />
+									</p:panel>
+								</p:panel>
+							</h:form>
+						</h:panelGroup>
+						<h:panelGroup layout="block" class="clearfix" />
+					</h:panelGroup> <h:panelGroup layout="block" class="clearfix" /></td>
+			</tr>
+		</table>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

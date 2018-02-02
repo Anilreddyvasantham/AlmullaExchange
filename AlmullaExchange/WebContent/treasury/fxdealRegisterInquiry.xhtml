@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" language="javascript">
+		function generateReport() {
+			document.getElementById("form:reportId").click();
+		}
+		document.onkeydown = function(e) {
+			//Enter button pressed 
+			/* if (e.keyCode === 13) {
+				return false;
+			} */
+		};
+
+		history.pushState(null, null, 'fxdealRegisterInquiry.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'fxdealRegisterInquiry.xhtml');
+		});
+	</script>
+</h:head>
+<h:body dir="#{facesBean.direction}" onload="generateReport();">
+	<p:confirmDialog id="notApproved" widgetVar="notApproved" width="370"
+		styleClass="red" header="#{msg['lbl.warningDailog']}"
+		resizable="false" style="background-color: white !important;"
+		showEffect="clip" hideEffect="clip" message="#{msg['lbl.isNoRecrds']}">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="fromToDateCheck" widgetVar="fromToDateCheck"
+		width="450" styleClass="red" header="#{msg['lbl.warningDailog']}"
+		resizable="false" style="background-color: white !important;"
+		showEffect="clip" hideEffect="clip"
+		message="#{msg['lbl.fromdatetodatecheck']}">
+	</p:confirmDialog>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+		<h:form id="Form">
+
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;"><ui:include
+							src="#{facesBean.fxdeal_menu}"></ui:include></td>
+
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle"
+										src="../images/toggle_plus.png" alt=""
+										onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+								<h1>
+									<h:outputText value="#{msg['lbl.fxdealregisterinquiry']}" />
+								</h1>
+
+								<p:panel styleClass="shadow" id="mainPanel"
+									style="background-color:#FFF !important; ">
+
+									<p:confirmDialog id="dataexception" widgetVar="dataexception"
+										header="Error Message" resizable="false" width="700"
+										style="background-color: white !important;"
+										styleClass="warning" showEffect="clip" hideEffect="clip"
+										closeOnEscape="true" closable="true"
+										message="#{fxDealRegisterInquiryBean.exceptionMessage}">
+									</p:confirmDialog>
+
+									<p:dialog modal="true" showHeader="false" widgetVar="process"
+										id="process" width="300" height="60" resizable="false"
+										draggable="false" closable="false"
+										style=" border: 2px green solid !important;background-color: #FFF !important;">
+										<div
+											style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+											<p:graphicImage value="../images/processImg.gif"
+												style="float: left !important; margin-right: 24px !important; " />
+											<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+												style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+										</div>
+									</p:dialog>
+
+									<p:confirmDialog id="exist" widgetVar="exist" width="400"
+										height="20" resizable="false"
+										style=" border:2px solid green !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="#{msg['lbl.recordnotfound']}">
+									</p:confirmDialog>
+
+									<p:confirmDialog id="noRecordsInDataTable"
+										widgetVar="noRecordsInDataTable" width="400" height="20"
+										resizable="false"
+										style=" border:2px solid green !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true" message="No Records in data tabale!">
+									</p:confirmDialog>
+
+									<h2>
+										<h:outputText value="#{msg['lbl.fxdealregisterinquiry']}" />
+										<p:commandLink action="#{bankBranchDetails.cancel}"
+											process="@this">
+											<p:graphicImage value="../images/return.jpg" width="25"
+												height="25" id="imgEdit" styleClass="icon_right"
+												style="float:right;" />
+											<p:tooltip for="imgEdit" value="Go to Home" />
+										</p:commandLink>
+									</h2>
+
+									<p:panel styleClass="panel_border">
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.company']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="companyid" display="text" id="msgcompanyid" />
+												<p:selectOneMenu id="companyid"
+													value="#{fxDealRegisterInquiryBean.companyId}"
+													filter="true" filterMatchMode="contains" required="false"
+													requiredMessage="Please Select Company" tabindex="1">
+													<f:selectItem itemLabel="#{msg['lbl.company']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{fxDealRegisterInquiryBean.lstCompany}" var="c"
+														itemLabel="#{c.fsCompanyMaster.companyCode} -  #{c.companyName}"
+														itemValue="#{c.fsCompanyMaster.companyId}" />
+													<p:ajax update="msgcompanyid" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col" id="Bank">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.bank']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="bankId" display="text" id="msgbankId" />
+												<p:selectOneMenu id="bankId"
+													value="#{fxDealRegisterInquiryBean.bankId}" filter="true"
+													filterMatchMode="contains" required="false"
+													requiredMessage="Please Select Bank" tabindex="2">
+													<f:selectItem itemLabel="#{msg['lbl.selectbank']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{fxDealRegisterInquiryBean.lstAllBankApplicabity}"
+														var="c"
+														itemLabel="#{c.bankMaster.bankCode} -  #{c.bankMaster.bankFullName}"
+														itemValue="#{c.bankMaster.bankId}" />
+													<p:ajax for="bankId" event="change"
+														listener="#{fxDealRegisterInquiryBean.populateCurrencyBasedOnBankForPurchase}"
+														update="mainPanel" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col" id="pdCurrency">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.purchaseCurrency']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="pdcurrencyId" display="text" />
+												<p:selectOneMenu id="pdcurrencyId"
+													value="#{fxDealRegisterInquiryBean.pdCurrencyId}"
+													filter="true" filterMatchMode="contains" required="false"
+													requiredMessage="Please Select Currency" tabindex="3">
+													<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{fxDealRegisterInquiryBean.lstPurchaseCurrency}"
+														var="c"
+														itemLabel="#{c.fsCurrencyMaster.currencyCode} - #{c.fsCurrencyMaster.currencyName}"
+														itemValue="#{c.fsCurrencyMaster.currencyId}" />
+													<p:ajax for="pdcurrencyId" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col" id="sdCurrency">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.saleCurrency']}" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="sdcurrencyId" display="text" />
+												<p:selectOneMenu id="sdcurrencyId"
+													value="#{fxDealRegisterInquiryBean.sdCurrencyId}"
+													filter="true" filterMatchMode="contains" required="false"
+													requiredMessage="Please Select Currency" tabindex="4">
+													<f:selectItem itemLabel="#{msg['lbl.selectcurrency']}"
+														itemValue="" />
+													<f:selectItems
+														value="#{fxDealRegisterInquiryBean.lstSaleCurrency}"
+														var="c"
+														itemLabel="#{c.fsCurrencyMaster.currencyCode} - #{c.fsCurrencyMaster.currencyName}"
+														itemValue="#{c.fsCurrencyMaster.currencyId}" />
+													<p:ajax for="sdcurrencyId" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col" id="fromDateId">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="From Doc Date" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="fromdate" display="text" id="msgfromdate" />
+												<p:calendar id="fromdate"
+													value="#{fxDealRegisterInquiryBean.fromDocDate}"
+													mode="popup"
+													maxdate="#{fxDealRegisterInquiryBean.effectiveMaxDate}"
+													pattern="dd/MM/yyyy" required="true"
+													requiredMessage="Please Enter From Date" tabindex="5">
+													<p:ajax event="dateSelect"
+														listener="#{fxDealRegisterInquiryBean.onDateSelectFrom}"
+														update="msgfromdate" />
+												</p:calendar>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col" id="toDateId">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="To Doc Date" />
+												<h:outputText value="*" style="color:red;font-weight:bold;" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="toDate" display="text" id="msgtoDate" />
+												<p:calendar id="toDate"
+													value="#{fxDealRegisterInquiryBean.toDocDate}" mode="popup"
+													maxdate="#{fxDealRegisterInquiryBean.effectiveMaxDate}"
+													pattern="dd/MM/yyyy" required="true"
+													requiredMessage="Please Enter To Date" tabindex="6">
+													<p:ajax event="dateSelect"
+														listener="#{fxDealRegisterInquiryBean.onDateSelectTo}"
+														update="msgtoDate" />
+												</p:calendar>
+											</p:panel>
+										</p:panel>
+
+										<p:panel styleClass="left_col">
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="Status" />
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:message for="statusId" display="text" />
+												<p:selectOneMenu id="statusId"
+													value="#{fxDealRegisterInquiryBean.selectedSearchValueId}"
+													filter="true" filterMatchMode="contains" required="false"
+													requiredMessage="Please Select Status" tabindex="7">
+													<f:selectItem itemLabel="Select Status" itemValue="0" />
+													<f:selectItem itemLabel="ALL" itemValue="1" />
+													<f:selectItem itemLabel="Y - CONFIRMED" itemValue="2" />
+													<f:selectItem itemLabel="U - UN_CONFIRMED" itemValue="3" />
+													<p:ajax for="statusId" />
+												</p:selectOneMenu>
+											</p:panel>
+										</p:panel>
+
+										<div class="clearfix"></div>
+										<p:spacer height="10px" />
+										<div class="clearfix"></div>
+
+										<h:panelGroup layout="block" styleClass="shadow_button">
+											<p:commandButton value="#{msg['lbl.enquiry']}"
+												action="#{fxDealRegisterInquiryBean.viewAll}"
+												style="margin-right:10px;" update="mainPanel" />
+											<p:commandButton value="#{msg['lbl.clear']}"
+												action="#{fxDealRegisterInquiryBean.clear}"
+												style="margin-right:10px;" process="@this"
+												update="mainPanel">
+												<p:resetInput target="@form" />
+											</p:commandButton>
+											<p:commandButton value="#{msg['lbl.exit']}"
+												action="#{fxDealRegisterInquiryBean.exit}"
+												update="mainPanel" immediate="true" process="@this" />
+										</h:panelGroup>
+
+
+										<p:panel id="dataPanel">
+
+											<p:dataTable id="dataTable" styleClass="mydatatableclass"
+												value="#{fxDealRegisterInquiryBean.lstTreasuryDealRegister}"
+												rows="15" paginator="true"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+												rowsPerPageTemplate="15,20,25" var="d"
+												rowIndexVar="rowIndex"
+												emptyMessage="#{msg['lbl.noRecordFound']}"
+												paginatorPosition="bottom">
+
+												<p:columnGroup type="header">
+													<p:row>
+														<p:column rowspan="2" headerText="#{msg['lbl.sino']}" />
+														<p:column rowspan="2"
+															headerText="#{msg['lbl.dealyear']} / #{msg['lbl.delanumbe']}" />
+														<p:column rowspan="2"
+															headerText="#{msg['lbl.documentdate']}" />
+														<p:column colspan="5" headerText="#{msg['lbl.purchase']} " />
+														<p:column colspan="5" headerText="#{msg['lbl.sale']} " />
+														<p:column rowspan="2"
+															headerText="#{msg['lbl.exchangerate']} " />
+														<p:column rowspan="2" headerText="#{msg['lbl.view']} " />
+													</p:row>
+													<p:row>
+														<p:column colspan="2" headerText="#{msg['lbl.bank']}" />
+														<p:column headerText="#{msg['lbl.currency']}" />
+														<p:column headerText="#{msg['lbl.fcamount']}" />
+														<p:column headerText="#{msg['lbl.valuedate']}" />
+														<p:column colspan="2" headerText="#{msg['lbl.bank']}" />
+														<p:column headerText="#{msg['lbl.currency']}" />
+														<p:column headerText="#{msg['lbl.fcamount']}" />
+														<p:column headerText="#{msg['lbl.valuedate']}" />
+													</p:row>
+												</p:columnGroup>
+
+												<p:column
+													style="width:5% !important; text-align:center !important; margin-left:10px;">
+													<h:outputText value="#{rowIndex+1}" />
+												</p:column>
+
+												<p:column
+													style="width:10% !important; text-align:center !important; margin-left:10px;">
+													<h:outputText
+														value="#{d.documentFinanceYear} / #{d.documentNumber}" />
+												</p:column>
+
+												<p:column
+													style="width:10% !important; text-align:center !important; margin-left:10px;">
+													<h:outputText value="#{d.documentDate}">
+														<f:convertDateTime pattern="dd/MM/YYYY"></f:convertDateTime>
+													</h:outputText>
+												</p:column>
+
+												<p:column
+													style="width:5% !important; text-align:center !important; margin-left:10px;">
+													<h:outputText value="#{d.pdBankCode}" />
+												</p:column>
+
+												<p:column
+													style="width:10% !important; text-align:center !important; margin-left:10px;">
+													<h:outputText value="#{d.pdBankFullName}" />
+												</p:column>
+
+												<p:column
+													style="width:5% !important; text-align:center !important; margin-left:10px;">
+													<h:outputText value="#{d.pdQuoteName}" />
+												</p:column>
+
+												<p:column
+													style="width:5% !important; text-align:center !important; margin-left:10px;">
+													<h:outputText value="#{d.pdFCAmount}" />
+												</p:column>
+
+												<p:column
+													style="width:5% !important; text-align:center !important; margin-left:10px;">
+													<h:outputText value="#{d.valueDate}">
+														<f:convertDateTime pattern="dd/MM/YYYY"></f:convertDateTime>
+													</h:outputText>
+												</p:column>
+
+												<p:column
+													style="width:5% !important; text-align:center !important; margin-left:10px;">
+													<h:outputText value="#{d.sdBankCode}" />
+												</p:column>
+
+												<p:column
+													style="width:10% !important; text-align:center !important; margin-left:10px;">
+													<h:outputText value="#{d.sdBankFullName}" />
+												</p:column>
+
+												<p:column
+													style="width:5% !important; text-align:center !important; margin-left:10px;">
+													<h:outputText value="#{d.sdQuoteName}" />
+												</p:column>
+
+												<p:column
+													style="width:5% !important; text-align:center !important; margin-left:10px;">
+													<h:outputText value="#{d.sdFCAmount}" />
+												</p:column>
+
+												<p:column
+													style="width:5% !important; text-align:center !important; margin-left:10px;">
+													<h:outputText value="#{d.valueDate}">
+														<f:convertDateTime pattern="dd/MM/YYYY"></f:convertDateTime>
+													</h:outputText>
+												</p:column>
+
+												<p:column
+													style="width:10% !important; text-align:center !important; margin-left:10px;">
+													<h:outputText value="#{d.pdExchangeRate}" />
+												</p:column>
+
+												<p:column
+													style="width:10% !important; text-align:center !important; margin-left:10px;">
+													<p:commandLink value="view"
+														action="#{fxdetailinfobean.fetchingAllRecordsFromDBInquire(d)}"
+														process="@this" update="dataTable"
+														style="color:blue !important; text-decoration:underline !important;"
+														onstart="process.show();" onsuccess="process.hide();" />
+												</p:column>
+
+											</p:dataTable>
+
+											<div class="clearfix"></div>
+											<p:spacer height="10px;"></p:spacer>
+
+											<h:panelGrid columns="3" style="padding-left: 30%;">
+												<h:panelGroup layout="block" styleClass="shadow_button">
+													<h:commandButton value="Generate Excel Report"
+														action="#{fxDealRegisterInquiryBean.downloadList}"
+														onclick="this.form.target='_blank'"
+														style="font-weight: bold !important; font-size: 12px !important; color: blue !important;
+    													  text-decoration: underline !important; border: none !important;  background: none !important;"
+														process="@this" update="mainPanel,errorPage" />
+												</h:panelGroup>
+												
+												<p:spacer width="10px;"></p:spacer>
+
+												<h:panelGroup layout="block" styleClass="shadow_button">
+													<h:commandButton value="Generate PDF Report" id="reportId"
+														action="#{fxDealRegisterInquiryBean.generateFxDealRegisterReport}"
+														onclick="this.form.target='_blank'"
+														style="font-weight: bold !important; font-size: 12px !important; color: blue !important;
+    													  text-decoration: underline !important; border: none !important;  background: none !important;"
+														process="@this" update="mainPanel" />
+
+													<h:panelGroup layout="block" class="clearfix" />
+												</h:panelGroup>
+											</h:panelGrid>
+
+
+
+										</p:panel>
+
+										<div class="clearfix"></div>
+										<h:panelGroup layout="block" class="clearfix" />
+										<p:panel styleClass="left_col">
+											<h:outputText id="mandatory"
+												value=" #{msg['lbl.*filedsAreMandatory']}"
+												style="color:red; padding:10px !important; font-size:10px; font-weight:bold;" />
+										</p:panel>
+									</p:panel>
+								</p:panel>
+								<div class="clearfix"></div>
+								<p:spacer height="10px" />
+								<div class="clearfix"></div>
+
+							</h:panelGroup>
+
+						</h:panelGroup></td>
+				</tr>
+			</table>
+		</h:form>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footerwithoutRuleEngine}"></ui:include>
+	</f:view>
+</h:body>
+</html>

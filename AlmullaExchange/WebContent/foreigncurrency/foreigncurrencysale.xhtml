@@ -1,0 +1,793 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="../css/dataTable.css" />
+	<script src="../js/SigWeb.js" type="text/javascript"></script>
+	<script src="../js/digitalsignature.js"></script>
+	<script type="text/javascript">
+		//var baseUri = "http://localhost:47289/SigWeb/";
+		var baseUri = makeUri();
+		$(function() {
+			/*
+			 * this swallows backspace keys on any non-input element.
+			 * stops backspace -> back
+			 */
+			var rx = /INPUT|SELECT|TEXTAREA/i;
+
+			$(document).bind(
+					"keydown keypress",
+					function(e) {
+						if (e.which == 8) { // 8 == backspace
+							if (!rx.test(e.target.tagName) || e.target.disabled
+									|| e.target.readOnly) {
+								e.preventDefault();
+							}
+						}
+					});
+		});
+	</script>
+
+	<script type="text/javascript">
+		$(document).on("keypress", ".dropdown", function(event) {
+			if (event.keyCode == 32) {
+				$('.ui-selectonemenu-trigger', this).click();
+			}
+		});
+	</script>
+
+
+	<script type="text/javascript">
+		var baseUri = makeUri();
+		history.pushState(null, null, 'foreigncurrencysale.xhtml');
+		window.addEventListener('popstate', function(event) {
+			history.pushState(null, null, 'foreigncurrencysale.xhtml');
+		});
+
+		
+		
+		$(document).ready(function() {
+			$(window).scroll(function() {
+				if ($(this).scrollTop() > 100) {
+					$('#goTop').stop().animate({
+						bottom : '30px'
+					}, 300);
+				} else {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				}
+			});
+			$('#goTop').click(function() {
+				$('html, body').stop().animate({
+					scrollTop : 0
+				}, 500, function() {
+					$('#goTop').stop().animate({
+						bottom : '-100px'
+					}, 300);
+				});
+			});
+		});
+	</script>
+
+	<style>
+.centeralign {
+	margin-left: auto;
+	margin-right: auto;
+	width: 6em
+}
+</style>
+</h:head>
+
+<h:body onload="javascript:onClear()">
+
+	<p:confirmDialog id="denominationerror" widgetVar="denominationerror"
+		height="17" resizable="false" width="350"
+		style="background-color: white !important;" header="Warning Dailog"
+		styleClass="warning" showEffect="clip" hideEffect="clip"
+		closeOnEscape="true" closable="true"
+		message="Denomination Details Not Available">
+	</p:confirmDialog>
+
+	<p:confirmDialog id="signatureError" widgetVar="signatureError"
+		height="17" resizable="false" width="500"
+		style="background-color: white !important;"
+		header="#{msg['lbl.warningDailog']}" styleClass="warning"
+		showEffect="clip" hideEffect="clip" closeOnEscape="true"
+		closable="true"
+		message="#{msg['lbl.customerDigitalSignatureIsMandatroy']}">
+	</p:confirmDialog>
+
+	<f:view>
+		<ui:include src="#{facesBean.header}"></ui:include>
+		<ui:include src="#{facesBean.menu}"></ui:include>
+
+		<f:event listener="#{foreignCurrencySaleBean.populateValue}"
+			type="preRenderView" />
+
+		<h:form id="form1" target="_blank">
+			<p:dialog id="showValid" widgetVar="showValid" width="260"
+				height="70" showHeader="true" resizable="false"
+				style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+				showEffect="clip" hideEffect="clip" closeOnEscape="true"
+				closable="true" modal="true">
+
+				<p:outputLabel
+					value="#{msg['lbl.totalamountcantsmallerthansaleamount']}  #{foreignCurrencySaleBean.saleAmount}" />
+				<br />
+
+			</p:dialog>
+			<p:dialog id="dlgNegNotAllowed" widgetVar="dlgNegNotAllowed"
+				width="330" height="30" resizable="false"
+				style=" border:2px solid #F33535 !important;  background:url('../images/warning.png') 5px 45px no-repeat #FFF !important;"
+				showEffect="clip" hideEffect="clip" closeOnEscape="true"
+				closable="true" showHeader="true" modal="true">
+
+				<p:outputLabel style="padding-left:20px; color:red !important;"
+					value="#{msg['lbl.noofnotescantbenegative']}" />
+
+			</p:dialog>
+
+			<p:dialog id="printDialog" widgetVar="printDialog" width="260"
+				height="70" showHeader="true" resizable="false"
+				style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 224px 45px no-repeat #FFF !important;"
+				showEffect="clip" hideEffect="clip" closeOnEscape="true"
+				closable="true" modal="true" process="@this">
+				<p:outputLabel value="#{msg['lbl.printoption']}" />
+				<br />
+				<p:commandButton value="#{msg['lbl.print']}"
+					actionListener="#{foreignCurrencySaleBean.reportexecute}"
+					style="margin-right:10px;" process="@this"
+					onclick="PF('complete').hide()" />
+			</p:dialog>
+
+			<p:confirmDialog id="limit" widgetVar="limit" width="600"
+				header="Warning DialogBox" height="17" resizable="false"
+				style=" border:2px solid #F33535 !important; padding:0px !important;  color:red !important; font-weight:bold; background:url('../images/warning-icon.png') 5px 15px no-repeat #FFF !important;"
+				showEffect="clip" hideEffect="clip" closeOnEscape="true"
+				closable="true"
+				message="Your Exceed Limit #{foreignCurrencySaleBean.temLocalSaleAmount}">
+			</p:confirmDialog>
+
+			<p:dialog id="invalidNoOFNotes" widgetVar="invalidNoOFNotes"
+				modal="true" width="350" height="100" resizable="false"
+				style="background-color: white !important;" styleClass="warning"
+				header="#{msg['lbl.warningDailog']}" closable="false"
+				showEffect="clip" hideEffect="clip">
+				<p:outputLabel
+					value="#{msg['lbl.enternoofnoteswithincurrentstock']} : #{foreignCurrencySaleBean.validNoOFQuantity} !!!!!" />
+				<br />
+				<h:panelGroup style="display:block; text-align:center">
+					<p:commandButton value="#{msg['lbl.ok']}"
+						actionListener="#{foreignCurrencySaleBean.clearDataTableClearDenomination}"
+						onclick="PF('invalidNoOFNotes').hide();" process="@this" />
+				</h:panelGroup>
+			</p:dialog>
+
+
+			<table align="left" width="100%" style="height: 100%;">
+				<tr>
+					<td align="left" valign="top" style="height: 100%;">
+						<!-- <ui:include src="../common/common_menu.xhtml"></ui:include> -->
+						<ui:include src="#{facesBean.fxdeal_menu}"></ui:include>
+					</td>
+
+					<td class="rightColumn" valign="top"><h:panelGroup
+							layout="block" class="container">
+							<h:panelGroup layout="block" class="main_div">
+								<div class="menu_button">
+									<img style="cursor: pointer; position: relative; left: 15px;"
+										id="HideHandle" name="HideHandle"
+										src="../images/toggle_plus.png" alt=""
+										onclick='hideLeftCol("leftCol");closeMenus();' />
+								</div>
+
+								<p:dialog id="complete" widgetVar="complete" showHeader="false"
+									resizable="false"
+									style=" border:3px solid #00a53e !important; font-weight:bold; background:url('../images/tick-green.png') 345px 45px no-repeat #FFF !important;"
+									showEffect="clip" hideEffect="clip" closeOnEscape="true"
+									closable="true" modal="true">
+
+									<p:outputLabel
+										value="FC Sale Saved Successfully, Do u want do Another FC SALE" />
+									<br />
+
+									<p:commandButton value="Yes" oncomplete="complete.hide()"
+										actionListener="#{foreignCurrencySaleBean.fcSaleNavigationPage}"
+										process="@this" />
+									<p:commandButton value="No" oncomplete="complete.hide()"
+										actionListener="#{foreignCurrencySaleBean.completed}"
+										process="@this" />
+								</p:dialog>
+
+								<h1>
+									<h:outputText value="#{msg['lbl.foreignCurrencySale']}" />
+								</h1>
+
+								<p:panel styleClass="shadow" id="mainPanel">
+
+									<p:confirmDialog id="finalerrormsg" widgetVar="finalerrormsg"
+										resizable="false" style="background-color: white !important;"
+										header="#{msg['lbl.warningDailog']}" styleClass="warning"
+										showEffect="clip" hideEffect="clip" closeOnEscape="true"
+										closable="true"
+										message="#{msg['lbl.errorMessage']} : #{foreignCurrencySaleBean.errmsg} ">
+									</p:confirmDialog>
+
+									<p:panel
+										rendered="#{foreignCurrencySaleBean.booRenderFcSalePanel}">
+
+										<h2>
+											<h:outputText value="#{msg['lbl.foreignCurrencySale']}" />
+										</h2>
+										<p:panel styleClass="panel_border">
+											<p:panel styleClass="left_col">
+
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.receiptNo']}*"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+
+															<p:column
+																style="width:30%; text-align:left; padding:0px 5px 0px 0px !important;">
+																<p:inputText id="financeYear" tabindex="-1"
+																	value="#{foreignCurrencySaleBean.finaceYear}"
+																	required="true" requiredMessage="Enter Financial Year"
+																	readonly="true">
+																	<p:ajax event="blur" update="msgfinanceYear" />
+																	<p:message for="financeYear" display="text"
+																		id="msgfinanceYear" />
+																</p:inputText>
+															</p:column>
+															<p:column
+																style="width:70%; padding:0px 5px 0px 10px !important;">
+																<p:inputText id="documentSerialId" tabindex="-1"
+																	value="#{foreignCurrencySaleBean.documentSerialId}"
+																	required="true"
+																	requiredMessage="Enter Document Serial ID"
+																	readonly="true">
+																	<p:ajax event="blur" update="msgdocumentSerialId" />
+																	<p:message for="documentSerialId" display="text"
+																		id="msgdocumentSerialId" />
+																</p:inputText>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+
+
+											</p:panel>
+
+											<p:panel styleClass="left_col">
+
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.date']}*"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="currentDate" value="#{currentDate}"
+														tabindex="-1" readonly="true" size="8" required="true"
+														requiredMessage="Enter Current Date">
+														<p:ajax event="blur" update="msgcurrentDate" />
+														<p:message for="currentDate" display="text"
+															id="msgcurrentDate" />
+														<f:convertDateTime pattern="dd-MM-yyyy" type="date" />
+													</p:inputText>
+												</p:panel>
+
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+											<p:panel styleClass="left_col">
+
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.location']}*"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText value="#{foreignCurrencySaleBean.location}"
+														tabindex="-1" style="font-size:11px !important;"
+														readonly="true" />
+												</p:panel>
+
+
+											</p:panel>
+
+
+
+											<p:panel styleClass="left_col">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.customerName']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="name" tabindex="-1"
+														value="#{foreignCurrencySaleBean.name}" readonly="true">
+														<p:tooltip for="name" value="#{msg['lbl.customername']}" />
+													</p:inputText>
+												</p:panel>
+
+											</p:panel>
+
+											<h:panelGroup layout="block" class="clearfix" />
+
+
+											<p:panel styleClass="left_col">
+
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.telephone']}*"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+													<p:inputText id="telephone" tabindex="-1"
+														value="#{foreignCurrencySaleBean.mobile}" readonly="true" />
+												</p:panel>
+
+											</p:panel>
+
+
+											<p:panel id="purchasePanel"
+												style="background-color:none !important; padding:0px !important;">
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.purchaseCurrency']}*"></h:outputText>
+													</p:panel>
+
+													<p:panel styleClass="inner_right_col">
+														<p:inputText tabindex="-1"
+															value="#{foreignCurrencySaleBean.countryCurrencyName}"
+															readonly="true" />
+													</p:panel>
+
+												</p:panel>
+
+
+												<p:dialog modal="true" showHeader="false"
+													widgetVar="process" id="process" width="300" height="60"
+													resizable="false" draggable="false" closable="false"
+													style=" border: 2px green solid !important;background-color: #FFF !important;">
+													<div
+														style="margin-left: 15px !important; font-size: 18px !important; color: #459D45 !important;">
+														<p:graphicImage value="../images/processImg.gif"
+															style="float: left !important; margin-right: 24px !important; " />
+														<p:outputLabel value="#{msg['lbl.pleaseWait']}"
+															style="color: green !important; font-size: 20px !important; font-weight: bold; margin-top: 10px;" />
+													</div>
+												</p:dialog>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<p:panel styleClass="left_col">
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.saleCurrency']}*"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:message for="purchasecurrency" display="text"
+															id="msgpurchasecurrency" />
+														<p:selectOneMenu id="purchasecurrency"
+															styleClass="dropdown" tabindex="1"
+															value="#{foreignCurrencySaleBean.currencyId}"
+															filter="true" filterMatchMode="contains" required="true"
+															requiredMessage="Choose Currency">
+															<f:selectItem
+																itemLabel="#{msg['lbl.selectsalecurrency']} "
+																itemValue="" />
+															<f:selectItems
+																value="#{foreignCurrencySaleBean.currencyList}" var="c"
+																itemValue="#{c.currencyId}"
+																itemLabel="#{c.currencyCode} - #{c.currencyName}" />
+															<p:ajax event="change" onstart="process.show();"
+																onsuccess="process.hide();"
+																update=":form1:pnlDataTable,pnlForeignCurrencyName"
+																listener="#{foreignCurrencySaleBean.getDenominationTable}" />
+														</p:selectOneMenu>
+													</p:panel>
+
+												</p:panel>
+
+												<!-- <div class="clearfix"></div> -->
+												<p:panel styleClass="left_col">
+
+													<p:panel styleClass="inner_left_col">
+														<h:outputText value="#{msg['lbl.saleAmount']}*"></h:outputText>
+													</p:panel>
+													<p:panel styleClass="inner_right_col">
+														<p:inputText id="saleAmount" tabindex="2"
+															value="#{foreignCurrencySaleBean.localSaleAmount}"
+															readonly="false" required="true"
+															requiredMessage="Please enter Sale Amount">
+															<p:ajax event="blur"
+																listener="#{foreignCurrencySaleBean.checkLimit}"
+																update="saleAmount,limit" />
+															<p:message for="saleAmount" display="text" />
+														</p:inputText>
+													</p:panel>
+												</p:panel>
+
+												<h:panelGroup layout="block" class="clearfix" />
+
+												<!-- <p:panel styleClass="left_col" id="imgPanel">
+
+											<p:panel styleClass="inner_left_col">
+												<h:outputText value="#{msg['lbl.scannedImage']}"></h:outputText>
+											</p:panel>
+											<p:panel styleClass="inner_right_col">
+												<p:graphicImage value="#{foreignCurrencySaleBean.myImage}"
+													cache="false" height="171" width="200" />
+											</p:panel>
+
+										</p:panel> -->
+
+
+
+												<div class="clearfix"></div>
+												<p:spacer height="30px;" />
+
+												<p:panel id="pnlDataTable"
+													style="border:none !important; padding-right:5px; padding-bottom:15px; margin:5px; background-color:none !important; ">
+
+													<!-- p:dataTable id="datatable" styleClass="mydatatableclass" 
+											value="#{foreignCurrencySaleBean.lstData}" var="o"
+											editable="true" editMode="cell" rowIndexVar="rowIndex"
+											emptyMessage="#{msg['lbl.norecordfound']}">
+											 
+											 <p:column headerText="#{msg['lbl.slNo']}">
+										<h:outputText value="#{rowIndex+1}"/>
+									</p:column>
+											 
+											<p:column style="width:5% !important;text-align:center !important; "
+												headerText="#{msg['lbl.fclocalpurchaseserialno']}">
+												<h:outputText value="#{o.serial}." />
+											</p:column>
+
+											<p:column style="width:25% !important;text-align:center !important; "
+												headerText="#{msg['lbl.fclocalpurchasedenominationname']}"
+												sortBy="#{o.item}">
+												<h:outputText value="#{o.denominationDesc}" />
+											</p:column>
+
+											<p:column style="width:15% !important; text-align:center !important;"
+												headerText="#{msg['lbl.fclocalpurchasecurrentstock']}">
+												<h:outputText value="#{o.stock}" />
+											</p:column>
+
+											<p:column style="width:10% !important; text-align:center;  "
+												headerText="#{msg['lbl.fclocalpurchasenoofnotes']}">
+												 <p:cellEditor style="text-align:center !important; ">
+													<f:facet name="output">
+														<h:outputText value="#{o.qty}" />
+													</f:facet>
+													<f:facet name="input">
+													<p:message for="q" display="text" style="text-shadow:none !important; text-align:center !important;" />
+														<p:inputText id="q" value="#{o.qty}" style="text-align:center !important; ">
+															<p:ajax event="blur" listener="#{foreignCurrencySaleBean.onCellEdit(o)}" update=":form1:totalPurchaseAmount,:form1:totalSellAmount, :form1:datatable, :form1:invalidNoOFNotes, :form1:showValid ,:form1:avgExchageRate"/>
+															<f:validator validatorId="com.amg.exchange.validator.FcSaleQValidator" />
+														</p:inputText>
+													</f:facet>
+												</p:cellEditor>
+											</p:column>
+											<p:column headerText="#{msg['lbl.saleAmount']}" style="width:15% !important; text-align:center !important;">
+											        <h:outputText id="saleAmount" value="#{o.saleAmount}" />
+											    </p:column>
+											    
+											<p:column style="width:15% !important; text-align:center !important;"
+												headerText="#{msg['lbl.exchangeRate']}">
+												<h:outputText value="#{o.exchangeRate}" />
+											</p:column>
+											
+											<p:column headerText="#{msg['lbl.purchaseAmount']}" style="width:25% !important; text-align:center !important;">
+											        <h:outputText id="purchaseAmount" value="#{o.purchaseAmount}" />
+											    </p:column>
+
+										</p:dataTable> -->
+
+
+
+
+													<table cellpadding="0" cellspacing="0" border="0"
+														width="100%" class="mytable">
+														<tr>
+															<th>#{msg['lbl.fclocalpurchaseserialno']}</th>
+															<th>#{msg['lbl.fclocalpurchasedenominationname']}</th>
+															<th>#{msg['lbl.fclocalpurchasecurrentstock']}</th>
+															<th>#{msg['lbl.fclocalpurchasenoofnotes']}</th>
+															<th>#{msg['lbl.neededSaleAmount']}</th>
+															<th>#{msg['lbl.exchangeRate']}</th>
+															<th>#{msg['lbl.purchaseAmount']}</th>
+														</tr>
+														<ui:repeat value="#{foreignCurrencySaleBean.lstData}"
+															var="o" varStatus="status">
+
+															<tr>
+																<td style="width: 15% ! important;"><h:outputText
+																		value="#{status.index+1}" /></td>
+																<td style="width: 15% ! important;"><h:outputText
+																		value="#{o.denominationDesc}" /></td>
+																<td style="width: 15% ! important;"><h:outputText
+																		value="#{o.stock}" /></td>
+
+																<td style="width: 15% ! important;"><p:message
+																		for="q" display="text"
+																		style="text-shadow:none !important; text-align:center !important;" />
+																	<p:inputText id="q" value="#{o.qty}" tabindex="3"
+																		style="text-align:center !important; "
+																		converterMessage="#{msg['lbl.enterOnlyNumbers']}">
+																		<p:ajax event="blur"
+																			listener="#{foreignCurrencySaleBean.onCellEdit(o)}"
+																			update=":form1:mainPanel" />
+																		<f:validator validatorId="allowOnlyNumber" />
+																	</p:inputText></td>
+
+																<td style="width: 15% ! important;"><h:outputText
+																		value="#{o.saleAmount}" /></td>
+																<td style="width: 15% ! important;"><h:outputText
+																		value="#{o.exchangeRate}" /></td>
+
+																<td style="width: 15% ! important;"><h:outputText
+																		value="#{o.purchaseAmount}" id="purchaseAmount" /></td>
+															</tr>
+														</ui:repeat>
+
+
+													</table>
+
+													<p:spacer height="10px" />
+													<p:panelGrid style="width:100%;" id="pnlgdtotpuramt">
+														<p:row>
+
+															<!-- <p:column style="width:25%;">
+						           					 <p:inputText id="total" value="#{foreignCurrencySaleBean.totalValue}" style="font-weight:bold;" readonly="true"/>
+						        					</p:column> -->
+															<p:column style="width:28%; text-align:right;">
+																<h:outputText style="font-weight:bold;"
+																	value="#{msg['lbl.totalSaleAmount']}"></h:outputText>
+															</p:column>
+															<p:column style="width:25%;">
+																<p:inputText id="totalSellAmount" tabindex="-1"
+																	value="#{foreignCurrencySaleBean.totsaleAmount}"
+																	readonly="true" />
+															</p:column>
+															<p:column style="width:26%; text-align:right;">
+																<h:outputText style="font-weight:bold;"
+																	value="#{msg['lbl.totalPurchaseAmount']}"></h:outputText>
+															</p:column>
+															<p:column style="width:18%;">
+																<p:inputText id="totalPurchaseAmount" tabindex="-1"
+																	value="#{foreignCurrencySaleBean.totalPurchaseAmount}"
+																	readonly="true" />
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+
+												<h2>
+													<h:outputText value="#{msg['lbl.foreignCurrencySale']}"></h:outputText>
+												</h2>
+
+
+												<p:panel styleClass="left_col" id="pnlForeignCurrencyName">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+															<p:column style="width:30%;">
+																<h:outputText value="#{msg['lbl.exchangeRate']}*"></h:outputText>
+															</p:column>
+															<p:column
+																style="width:50%; padding-left:15px !important;">
+																<p:inputText id="foreignCurrencyName" readonly="true"
+																	tabindex="-1"
+																	value="#{foreignCurrencySaleBean.foreignCurrencyName}" />
+															</p:column>
+															<p:column style="width:5%;">
+																<h:outputText value="@"></h:outputText>
+															</p:column>
+															<p:column
+																style="width:55%; padding-top:5px !important; padding-right:10px !important;">
+																<p:panel id="avgRateColumn"
+																	style="padding:0px !important; margin:0px !important;">
+																	<p:inputText id="avgExchageRate" tabindex="-1"
+																		value="#{foreignCurrencySaleBean.avgExchageRate}"
+																		readonly="true" />
+																</p:panel>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+
+												<div class="clearfix"></div>
+												<p:panel styleClass="left_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+															<p:column style="width:30%;">
+
+																<h:outputText value="#{msg['lbl.remarks']}"></h:outputText>
+
+															</p:column>
+
+															<p:column style="width:70%;">
+
+																<p:inputText id="remarks" tabindex="3"
+																	value="#{foreignCurrencySaleBean.remarks}" />
+
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+															<p:column style="width:30%;">
+																<h:outputText value="#{msg['lbl.sourceOfFund']}*"></h:outputText>
+															</p:column>
+
+															<p:column style="width:70%;">
+																<p:message for="sourceofincome" display="text"
+																	id="msgsourceofincome" />
+																<p:selectOneMenu id="sourceofincome"
+																	styleClass="dropdown" tabindex="4"
+																	value="#{foreignCurrencySaleBean.sourceOfIncomes}"
+																	filter="true" filterMatchMode="contains"
+																	required="true"
+																	requiredMessage="Choose Source of Income">
+																	<f:selectItem
+																		itemLabel="#{msg['lbl.selectsourceoffunds']}"
+																		itemValue="" />
+																	<f:selectItems
+																		value="#{foreignCurrencySaleBean.sourceOfIncomeList}"
+																		var="s"
+																		itemLabel="#{s.sourceOfIncomeId.sourceCode} - #{s.sourceOfIncomeFullDesc}"
+																		itemValue="#{s.sourceOfIncomeId.sourceId}" />
+																	<p:ajax update="msgsourceofincome" />
+																</p:selectOneMenu>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+												<div class="clearfix"></div>
+
+												<p:panel styleClass="left_col">
+													<p:panelGrid style="width:100%;">
+														<p:row>
+															<p:column style="width:30%;">
+																<h:outputText value="#{msg['lbl.purpose']}*"></h:outputText>
+															</p:column>
+															<p:column style="width:70%;">
+																<p:message for="purposeoftransaction" display="text"
+																	id="msgpurposeoftransaction" />
+																<p:selectOneMenu id="purposeoftransaction"
+																	styleClass="dropdown" tabindex="5"
+																	value="#{foreignCurrencySaleBean.purposeOfTransactions}"
+																	required="true" filter="true"
+																	filterMatchMode="contains"
+																	requiredMessage="Choose Purpose of Transaction">
+																	<f:selectItem itemLabel="#{msg['lbl.selectpurpose']} "
+																		itemValue="" />
+																	<f:selectItems
+																		value="#{foreignCurrencySaleBean.purposeOfTransactionsList}"
+																		var="p" itemValue="#{p.purposeId}"
+																		itemLabel="#{p.purposeFullDesc}"></f:selectItems>
+																	<p:ajax update="msgpurposeoftransaction" />
+																</p:selectOneMenu>
+															</p:column>
+														</p:row>
+													</p:panelGrid>
+												</p:panel>
+
+											</p:panel>
+
+											<!--END OF FIRST PANEL  -->
+
+											<div class="clearfix"></div>
+
+											<!-- Digital Signature Capture Here  -->
+
+											<p:panel id="signaturePanel" styleClass="left_col"
+												style="background-color:none !important; padding:0px !important;"
+												rendered="#{foreignCurrencySaleBean.renderCustomerSignatureCheck}">
+
+												<p:panel styleClass="inner_left_col">
+													<h:outputText value="#{msg['lbl.signature']}*"></h:outputText>
+												</p:panel>
+
+												<p:panel styleClass="inner_right_col">
+													<table width="100%" height="20%" border="0" color="#CCC">
+														<tr>
+															<td style="border: 1px solid #CCC;"><canvas id="cnv"
+																	width="300" height="100"></canvas></td>
+														</tr>
+													</table>
+													<p:commandButton id="s1" value="#{msg['lbl.sign']}"
+														styleClass="dropdown" tabindex="6"
+														onclick="javascript:onSign()" onstart="process.show();"
+														onsuccess="process.hide();" />
+													<p:commandButton styleClass="btn-info" id="s2"
+														value="#{msg['lbl.clear']}" onclick="javascript:onClear()"
+														tabindex="7" onstart="process.show();"
+														onsuccess="process.hide();" />
+													<h:inputHidden id="digitalsign"
+														value="#{foreignCurrencySaleBean.digitalSign}" />
+
+												</p:panel>
+											</p:panel>
+
+											<p:panel id="signatureSpecimenPanel" styleClass="left_col"
+												style="background-color:none !important; padding:0px !important;">
+												<p:panel styleClass="inner_left_col">
+													<h:outputText
+														value="&nbsp;&nbsp;#{msg['lbl.signaturespecimen']}"></h:outputText>
+												</p:panel>
+												<p:panel styleClass="inner_right_col">
+
+													<h:graphicImage
+														url="data:image/gif;base64,#{foreignCurrencySaleBean.signatureSpecimen}"
+														style=" width:100%; height:100px;" />
+												</p:panel>
+											</p:panel>
+
+											<!--  Signature capture code end here -->
+
+											<div class="clearfix"></div>
+
+											<h:panelGroup layout="block" styleClass="shadow_button">
+
+												<p:commandButton value="#{msg['lbl.save']}" id="Submit1"
+													styleClass="dropdown" tabindex="8"
+													action="#{foreignCurrencySaleBean.saveForeignCurrencyAdjust}"
+													onstart="javascript:onDone();process.show();"
+													update=":form1:mainPanel,showValid,finalerrormsg"
+													onsuccess="process.hide();" />
+												<p:commandButton value="#{msg['lbl.back']}"
+													styleClass="dropdown" tabindex="9"
+													style="margin-left:10px;" process="@this"
+													action="#{foreignCurrencySaleBean.backToRemitanceFirstPanel}"
+													immediate="true" update="mainPanel" />
+												<div class="clearfix"></div>
+											</h:panelGroup>
+											<div class="clearfix"></div>
+										</p:panel>
+										<div class="clearfix"></div>
+									</p:panel>
+
+									<!-- <p:panel rendered="#{foreignCurrencySaleBean.successPanel}"
+										style="padding:60px 100px 60px 100px !important;">
+										<fieldset
+											style="border: 1.5px solid #64b381 !important; padding: 20px 10px !important; -webkit-border-radius: 0 4px 4px 4px !important; border-radius: 0 4px 4px 4px !important;">
+											<legend
+												style="font-size: 20px; font-weight: bold; color: #037712;"
+												align="top">&nbsp;#{msg['lbl.success']}&nbsp;</legend>
+
+											<p:outputLabel
+												value="#{msg['lbl.dataSuccessFullySavedClickOkToContinue']}"
+												style="font-size: 15px !important; font-weight: bold; color: #037712; padding:20px 150px 20px 230px !important;" />
+											<p:panel styleClass="centeralign">
+												<p:commandButton value="#{msg['lbl.ok']}"
+													actionListener="#{foreignCurrencySaleBean.completed}"
+													process="@this" immediate="true" />
+											</p:panel>
+											<p:outputLabel  value="#{msg['lbl.doYouWantPrint']}" style=" font-weight: bold; color: #037712; padding:30px 0px 0px 0px !important;">
+										<h:commandLink value="#{msg['lbl.clickHere']}" actionListener="#{foreignCurrencySaleBean.generateNewUpdatedReports}" style="font-weight: bold; font-size: 12px !important; color:blue !important; text-decoration:underline !important;" process="@this" immediate="true" />
+										</p:outputLabel> 
+										</fieldset>
+									</p:panel> -->
+
+
+								</p:panel>
+
+							</h:panelGroup>
+							<h:panelGroup layout="block" class="clearfix"></h:panelGroup>
+						</h:panelGroup></td>
+				</tr>
+			</table>
+		</h:form>
+		<div class="clearfix"></div>
+		<ui:include src="#{facesBean.footer}"></ui:include>
+	</f:view>
+</h:body>
+</html>

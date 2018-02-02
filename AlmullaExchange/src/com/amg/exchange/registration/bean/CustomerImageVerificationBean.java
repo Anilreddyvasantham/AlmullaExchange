@@ -731,8 +731,7 @@ public class CustomerImageVerificationBean<T> implements Serializable {
 		setIdNum(null);
 		list.clear();
 		verificationList.clear();
-	}
-	
+	}	
 	
 	public void search(){
 		try{

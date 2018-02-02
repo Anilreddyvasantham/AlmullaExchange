@@ -454,7 +454,6 @@ public class FxDealRegisterInquiryBean<T> implements Serializable {
 
 	//Anil (01/15/2018)
 	
-	
 	public void download(){
 		downloadList();
 		generateFxDealRegisterReport();

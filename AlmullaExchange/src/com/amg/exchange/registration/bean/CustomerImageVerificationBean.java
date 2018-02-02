@@ -719,15 +719,9 @@ public class CustomerImageVerificationBean<T> implements Serializable {
 	
 	
 	
-	//Anil(01/10/2018)
-	
+	//Anil(01/10/2018)	
 	private BigDecimal cusId;
-	private String idNum;
-	
-	
-	
-	
-		
+	private String idNum;		
 	
 	
 	public void reset(){
